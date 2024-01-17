@@ -8,5 +8,3 @@ assignees: ''
 ---
 
 Linkki user storyyn tähän.
-
-Hyväksymiskriteerit:
