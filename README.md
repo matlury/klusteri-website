@@ -10,3 +10,4 @@
 - Dokumentaatio suomeksi.
 - Koodi englanniksi.
 - Testikattavuus 70%.
+- Toimii tuotantoympäristössä.
