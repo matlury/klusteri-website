@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["Laura Peltonen <laura.ms.peltonen@helsinki.fi>"]
 readme = "README.md"
-packages = [{include = "klusteri_website"}]
+packages = [{include = "klusteri-website"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
