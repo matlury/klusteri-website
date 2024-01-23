@@ -2,6 +2,8 @@
 
 ![workflow badge](https://github.com/matlury/klusteri-website/workflows/CI/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![codecov](https://codecov.io/gh/matlury/klusteri-website/branch/main/graph/badge.svg?token=OO3HO2Y8BR)](https://codecov.io/gh/matlury/klusteri-website)
+
 
 ## Dokumentaatiot
 
