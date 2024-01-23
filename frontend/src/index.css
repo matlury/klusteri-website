@@ -10,3 +10,33 @@
   height: 100px;
   margin-right: 10px;
 }
+
+#content {
+  width: 50%;
+  border: 5px solid #FFFFFF;
+  float: left;
+  padding: 30px;
+  text-align:center;
+}
+
+#content2 {
+  width: 50%;
+  border: 5px solid #FFFFFF;
+  float: right;
+  padding: 30px;
+  text-align:center;
+}
+
+.flex-container {
+  display: flex;
+}
+
+form #login-button {
+  padding:5px;
+  border: none;
+  text-align: center;
+  width: 5em;
+  margin: auto;
+  background: white;
+  border-radius: .5em;
+}
