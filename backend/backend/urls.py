@@ -24,6 +24,5 @@ router.register(r'users', views.IndexView, 'ilotalo')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('api/', include('ilotalo.urls'))
-    path('api/', include('router.urls'))
+    path('', include(router.urls))
 ]
