@@ -27,7 +27,22 @@ Placeholder
 ## Komentorivitoiminnot
 
 ### Backend
-Placeholder
+Mene (ulompaan) backend-hakemistoon, asenna riippuvuudet ja käynnistä virtuaaliympäristö
+```bash
+poetry install
+poetry shell
+```
+
+Jos backendin koodia on muutettu, täytyy ajaa seuraavat komennot ennen kuin backendin voi käynnistää
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+Käynnistä backend
+```bash
+python manage.py runserver
+```
 
 ### Frontend
 Placeholder
