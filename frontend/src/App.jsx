@@ -1,10 +1,10 @@
-import './index.css';
-import matlu from './matlu.png';
-import FrontPage from './pages/frontpage';
-import LoginPage from './pages/loginpage';
-import ChristinaRegina from './pages/christina_regina';
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import './index.css'
+import matlu from './matlu.png'
+import FrontPage from './pages/frontpage'
+import LoginPage from './pages/loginpage'
+import ChristinaRegina from './pages/christina_regina'
+import React from 'react'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 
 const App = () => {
   const OpenFrontPage = () => {
@@ -17,8 +17,8 @@ const App = () => {
   }
 
   const OpenReservations = () => {
-    const reservations_url = '/varaukset';
-    window.open(reservations_url, '_blank');
+    const reservations_url = '/varaukset'
+    window.open(reservations_url, '_blank')
   }
 
   const OpenKeys = () => {
@@ -63,13 +63,13 @@ const App = () => {
               <Route path="/" element={<FrontPage />} />
             </Routes>
           </div>
-        <div className='right_content'>
-          <LoginPage />
+          <div className='right_content'>
+            <LoginPage />
+          </div>
         </div>
       </div>
-      </div>
     </Router>
-  );
-};
+  )
+}
 
 export default App;
