@@ -14,7 +14,7 @@ const LoginPage = () => {
 
   const handleLogin = () => {
     setLoggedIn(true)
-  }
+  };
 
   const loginForm = () => (
     <form>
