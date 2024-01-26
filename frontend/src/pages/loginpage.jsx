@@ -12,6 +12,10 @@ const LoginPage = () => {
     console.log('New user registration...');
   };
 
+  const handleLogin = () => {
+    setLoggedIn(true)
+  };
+
   const loginForm = () => (
     <form>
       <div>
@@ -31,17 +35,17 @@ const LoginPage = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
-      <button type="button" onClick={handleLogin}>
+      <button type="login-button" onClick={handleLogin}>
         Login
       </button>
-      <button type="button" onClick={handleNewUser}>
+      <button type="create-button" onClick={handleNewUser}>
         Create new account
       </button>
     </form>
   );
 
   return (
-    <div id="content2">
+    <div id="right_content">
       {loggedIn ? (
         <p>Welcome, {username}!</p>
       ) : (
