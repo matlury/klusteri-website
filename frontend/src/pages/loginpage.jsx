@@ -17,7 +17,7 @@ const LoginPage = () => {
       )
 
     return (
-        <div id= 'content2'>
+        <div className= 'right_content'>
             <p>
             {loginForm()}
             </p>

@@ -3,7 +3,7 @@ import '../index.css'
 
 const FrontPage = () => {
     return (
-        <div id= 'content'>
+        <div className= 'textbox'>
             <h1>Ilotalo</h1>
             <p> ”sub hoc tecto cives academici excoluntur”?</p>
             <p>Talon latinankielinen nimi, Domus Gaudium, tarkoittaa Ilo- tai Riemu-nimistä taloa. Se viittaa luontevasti opiskelun ja opiskelijaelämän riemuihin</p>
