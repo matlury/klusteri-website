@@ -6,17 +6,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
 
-  const handleLogin = () => {
-    const validUsername = 'demoUser';
-    const validPassword = 'demoPassword';
-    if (username === validUsername && password === validPassword) {
-      setLoggedIn(true);
-      console.log('Login successful!');
-    } else {
-      setLoggedIn(false);
-      console.log('Invalid username or password. Please try again.');
-    }
-  };
+
 
   const handleNewUser = () => {
     console.log('New user registration...');
