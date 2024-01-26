@@ -45,5 +45,14 @@ python manage.py runserver
 ```
 
 ### Frontend
-Placeholder
+Mene **frontend** tiedoston sisälle juuresta.
+Asenna riippuvuudet komennolla:
+
+```
+npm install
+```
+Käynnistä frontend komennolla:
+```
+npm run dev
+```
 
