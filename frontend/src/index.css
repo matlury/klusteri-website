@@ -68,6 +68,16 @@ form #login-button {
   border-radius: .5em;
 }
 
+form #create-button {
+  padding:5px;
+  border: none;
+  text-align: center;
+  width: 5em;
+  margin: auto;
+  background: white;
+  border-radius: .5em;
+}
+
 .link {
   color: white;
   text-decoration: none;
