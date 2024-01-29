@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios'
 import '../index.css'
+import NewAccountPage from './createpage'
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
+  const [showCreateUser, setShowCreateUser] = useState(false)
 
 
   //esimerkkifunktio datan hakemiselle rajapinnasta
@@ -34,8 +36,8 @@ const LoginPage = () => {
       })
   }
 
-  const handleNewUser = () => {
-    console.log('New user registration...');
+  const handleCreateUser = () => {
+    setShowCreateUser(true); 
   };
 
   const handleLogin = () => {
@@ -64,7 +66,7 @@ const LoginPage = () => {
       <button type="login-button" onClick={handleLogin}>
         Login
       </button>
-      <button type="create-button" onClick={handleNewUser}>
+      <button type="create-button" onClick={handleCreateUser}>
         Create new account
       </button>
     </form>
@@ -72,13 +74,17 @@ const LoginPage = () => {
 
   return (
     <div id="right_content">
-      {loggedIn ? (
-        <p>Welcome, {username}!</p>
-      ) : (
-        <p>{loginForm()}</p>
-      )}
-    </div>
+    {showCreateUser ? (
+      <NewAccountPage /> 
+    ) : loggedIn ? (
+      <p>Welcome, {username}!</p>
+    ) : (
+      loginForm() 
+    )}
+  </div>
   );
 };
+
+
 
 export default LoginPage;

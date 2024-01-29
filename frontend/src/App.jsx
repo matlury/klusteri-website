@@ -1,12 +1,24 @@
-import './index.css'
-import matlu from './matlu.png'
-import FrontPage from './pages/frontpage'
-import LoginPage from './pages/loginpage'
+import './index.css';
+import matlu from './matlu.png';
+import FrontPage from './pages/frontpage';
+import LoginPage from './pages/loginpage';
+import NewAccountPage from './pages/createpage';
 import ChristinaRegina from './pages/christina_regina'
-import React from 'react'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import { useState } from 'react'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 const App = () => {
+
+  const [showLoginPage, setShowLoginPage] = useState(true);
+
+  const handleCreateNewUser = () => {
+    setShowLoginPage(false);
+  };
+
+  const handleBackToLogin = () => {
+    setShowLoginPage(true);
+  };
+
   const OpenFrontPage = () => {
     const frontpage_url = '/'
     window.open(frontpage_url, '_blank')
@@ -41,6 +53,7 @@ const App = () => {
     window.open(rules_and_instructions_url, '_blank')
   }
 
+  
   return (
     <Router>
       <div>
@@ -64,12 +77,19 @@ const App = () => {
             </Routes>
           </div>
           <div className='right_content'>
-            <LoginPage />
+          {showLoginPage ? (
+              <LoginPage onCreateNewUser={handleCreateNewUser} />
+            ) : (
+              <NewAccountPage onBackToLogin={handleBackToLogin} />
+            )}
           </div>
         </div>
       </div>
     </Router>
-  )
-}
+  );
+};
+
+
+
 
 export default App;
