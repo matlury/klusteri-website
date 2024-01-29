@@ -20,7 +20,8 @@ from rest_framework import routers
 from ilotalo import views
 
 router = routers.DefaultRouter()
-router.register(r'users', views.IndexView, 'ilotalo')
+router.register(r'users', views.UserView, 'ilotalo')
+router.register(r'organizations', views.OrganizationView, 'organisaatiot')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
