@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import axios from 'axios';
 import LoginPage from './loginpage';
-import '../index.css'
-import axios from 'axios'
+import '../index.css';
 
-const NewAccountPage = ({ onBackToLogin }) => {
+const NewAccountPage = ({ onAccountCreated }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('')
-  const [telegram, setTelegram] = useState('')
+  const [email, setEmail] = useState('');
+  const [telegram, setTelegram] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [showLoginPage, setShowLoginPage] = useState(false)
+  const [showLoginPage, setShowLoginPage] = useState(false);
 
   const handleCreateAccount = () => {
     if (password !== confirmPassword) {
@@ -17,96 +17,65 @@ const NewAccountPage = ({ onBackToLogin }) => {
       return;
     }
 
-    const userObject = {
-      username: username,
-      password: password,
-      email: email,
-      telegram: telegram,
-      role: 5
-    }
+    const userObject = { username, password, email, telegram, role: 5 };
 
-    axios
-    .post('http://localhost:8000/users/', userObject)
-    .then(response => {
-      console.log(response)
-    })
-
-    console.log('Account created successfully!');
-    if (onAccountCreated) {
-      onAccountCreated();
-    }
-  
+    axios.post('http://localhost:8000/users/', userObject).then(response => {
+      console.log(response);
+      console.log('Account created successfully!');
+      onAccountCreated && onAccountCreated();
+    });
   };
+
   const handleBackToLogin = () => {
-    setShowLoginPage(true)
-    }
+    setShowLoginPage(true);
+  };
 
-    const createForm = () => (
-      <form>
-        <h2>Create New Account</h2>
-        <div>
-          Username:
+  const createForm = () => (
+    <form>
+      <h2>Create New Account</h2>
+      {['Username', 'Password', 'Confirm Password', 'e-mail', 'telegram'].map(field => (
+        <div key={field.toLowerCase()}>
+          {field}:
           <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            type={field.toLowerCase() === 'password' ? 'password' : 'text'}
+            value={field === 'Username' ? username : field === 'Password' ? password : field === 'Confirm Password' ? confirmPassword : field === 'e-mail' ? email : field === 'telegram' ? telegram : ''}
+            onChange={(e) => {
+              const value = e.target.value;
+              switch (field) {
+                case 'Username':
+                  setUsername(value);
+                  break;
+                case 'Password':
+                  setPassword(value);
+                  break;
+                case 'Confirm Password':
+                  setConfirmPassword(value);
+                  break;
+                case 'e-mail':
+                  setEmail(value);
+                  break;
+                case 'telegram':
+                  setTelegram(value);
+                  break;
+                default:
+                  break;
+              }
+            }}
           />
         </div>
-        <div>
-          Password:
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <div>
-          Confirm Password:
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-        </div>
-        <div>
-          e-mail:
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div>
-          telegram:
-          <input
-            type="telegram"
-            value={telegram}
-            onChange={(e) => setTelegram(e.target.value)}
-          />
-        </div>
-        <button type="button" onClick={handleCreateAccount}>
-          Create Account
-        </button>
-        <button type="button" onClick={handleBackToLogin}>
-          Back
-        </button>
-      </form>
-    );
-
-
+      ))}
+      <button type="button" onClick={handleCreateAccount}>
+        Create Account
+      </button>
+      <button type="button" onClick={handleBackToLogin}>
+        Back
+      </button>
+    </form>
+  );
 
   return (
-    <div id="right_content">
-      {showLoginPage ? (
-        <LoginPage />
-    ) : (
-      createForm()
-    )}
-  </div>
+    <div id="right_content">{showLoginPage ? <LoginPage /> : createForm()}</div>
   );
 };
-
-
-
 
 export default NewAccountPage;
