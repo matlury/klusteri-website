@@ -1,14 +1,13 @@
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './index.css';
 import matlu from './matlu.png';
 import FrontPage from './pages/frontpage';
 import LoginPage from './pages/loginpage';
 import NewAccountPage from './pages/createpage';
-import ChristinaRegina from './pages/christina_regina'
-import { useState } from 'react'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import ChristinaRegina from './pages/christina_regina';
 
 const App = () => {
-
   const [showLoginPage, setShowLoginPage] = useState(true);
 
   const handleCreateNewUser = () => {
@@ -27,33 +26,27 @@ const App = () => {
     const christinaregina_url = '/christinaregina'
     window.open(christinaregina_url, '_blank')
   }
-
   const OpenReservations = () => {
     const reservations_url = '/varaukset'
     window.open(reservations_url, '_blank')
   }
-
   const OpenKeys = () => {
     const keys_url = '/omat_avaimet'
     window.open(keys_url, '_blank')
   }
-
   const OpenInformation = () => {
     const information_url = '/omat_tiedot'
     window.open(information_url, '_blank')
   }
-
   const OpenContacts = () => {
     const contacts_url = '/yhteystiedot'
     window.open(contacts_url, '_blank')
   }
-
   const OpenRulesAndInstructions = () => {
     const rules_and_instructions_url = '/saannot_ja_ohjeet'
     window.open(rules_and_instructions_url, '_blank')
   }
 
-  
   return (
     <Router>
       <div>
@@ -69,7 +62,7 @@ const App = () => {
           <span className="link" onClick={OpenContacts}>Yhteystiedot</span>
           <span className="link" onClick={OpenRulesAndInstructions}>Säännöt ja ohjeet</span>
         </div>
-        <div id='ContentBlock' className='flex-container' >
+        <div id='ContentBlock' className='flex-container'>
           <div className='left_content'>
             <Routes>
               <Route path="/christinaregina" element={<ChristinaRegina />} />
@@ -77,10 +70,10 @@ const App = () => {
             </Routes>
           </div>
           <div className='right_content'>
-          {showLoginPage ? (
+            {showLoginPage ? (
               <LoginPage onCreateNewUser={handleCreateNewUser} />
             ) : (
-              <NewAccountPage onBackToLogin={handleBackToLogin} />
+              <NewAccountPage onAccountCreated={handleCreateNewUser} />
             )}
           </div>
         </div>
@@ -88,8 +81,5 @@ const App = () => {
     </Router>
   );
 };
-
-
-
 
 export default App;

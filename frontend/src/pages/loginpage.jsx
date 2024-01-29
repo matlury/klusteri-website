@@ -9,7 +9,6 @@ const LoginPage = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [showCreateUser, setShowCreateUser] = useState(false)
 
-
   //esimerkkifunktio datan hakemiselle rajapinnasta
   const getData = () => {
     axios
@@ -84,7 +83,5 @@ const LoginPage = () => {
   </div>
   );
 };
-
-
 
 export default LoginPage;

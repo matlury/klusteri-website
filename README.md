@@ -55,4 +55,3 @@ Käynnistä frontend komennolla:
 ```
 npm run dev
 ```
-
