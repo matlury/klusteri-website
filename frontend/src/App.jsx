@@ -20,31 +20,31 @@ const App = () => {
 
   const OpenFrontPage = () => {
     const frontpage_url = '/'
-    window.open(frontpage_url, '_blank')
+    window.open(frontpage_url, '_self')
   }
   const OpenChristinaRegina = () => {
     const christinaregina_url = '/christinaregina'
-    window.open(christinaregina_url, '_blank')
+    window.open(christinaregina_url, '_self')
   }
   const OpenReservations = () => {
     const reservations_url = '/varaukset'
-    window.open(reservations_url, '_blank')
+    window.open(reservations_url, '_self')
   }
   const OpenKeys = () => {
     const keys_url = '/omat_avaimet'
-    window.open(keys_url, '_blank')
+    window.open(keys_url, '_self')
   }
   const OpenInformation = () => {
     const information_url = '/omat_tiedot'
-    window.open(information_url, '_blank')
+    window.open(information_url, '_self')
   }
   const OpenContacts = () => {
     const contacts_url = '/yhteystiedot'
-    window.open(contacts_url, '_blank')
+    window.open(contacts_url, '_self')
   }
   const OpenRulesAndInstructions = () => {
     const rules_and_instructions_url = '/saannot_ja_ohjeet'
-    window.open(rules_and_instructions_url, '_blank')
+    window.open(rules_and_instructions_url, '_self')
   }
 
   return (
