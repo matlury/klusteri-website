@@ -1,37 +1,47 @@
 from django.test import TestCase
-from ilotalo.models import User, Organization
+from django.core.exceptions import ValidationError
+from ilotalo.models import User
+
 
 # Create your tests here.
 class UserTest(TestCase):
     def setUp(self):
         User.objects.create(
-            username = "testuser",
-            password = 1234,
-            email = "test@gmail.com",
-            telegram = "testtg",
-            role = 5
+            username="testuser",
+            password=1234,
+            email="test@gmail.com",
+            telegram="testtg",
+            role=5,
         )
-        user = User.objects.all()[0]
-        print(user)
 
-    def test_if_works(self):
-        self.assertTrue(True)
+    def test_too_long_password(self):
+        """
+        Test creating a new user with a password over 20 characters long
+        """
+        new_user = User.objects.create(
+            username="name",
+            password=1234567899876543211111,
+            email="test@helsinki.com",
+            telegram="tgname",
+            role=5,
+        )
 
-    def test_another(self):
-        self.assertFalse(False)
+        # Function full_clean() checks if an object has valid parameters
+        with self.assertRaises(ValidationError):
+            new_user.full_clean()
 
+    def test_too_long_username(self):
+        """
+        Test creating a new user with a password over 20 characters long
+        """
 
+        new_user = User.objects.create(
+            username="usernameisovertwentycharacters",
+            password=12345,
+            email="test@helsinki.com",
+            telegram="tgname",
+            role=5,
+        )
 
-"""
-class AnimalTestCase(TestCase):
-    def setUp(self):
-        Animal.objects.create(name="lion", sound="roar")
-        Animal.objects.create(name="cat", sound="meow")
-
-    def test_animals_can_speak(self):
-        "Animals that can speak are correctly identified"
-        lion = Animal.objects.get(name="lion")
-        cat = Animal.objects.get(name="cat")
-        self.assertEqual(lion.speak(), 'The lion says "roar"')
-        self.assertEqual(cat.speak(), 'The cat says "meow"')
-"""
+        with self.assertRaises(ValidationError):
+            new_user.full_clean()

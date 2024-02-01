@@ -1,9 +1,6 @@
-#import pymongo
 from rest_framework import viewsets
 from .serializers import UserSerializer, OrganizationSerializer
 from .models import User, Organization
-from .utils import db_connection
-
 # Create your views here.
 
 class UserView(viewsets.ModelViewSet):

@@ -84,20 +84,6 @@ DATABASES = {
     }
 }
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': 'users',
-#        'ENFORCE_SCHEMA': False,
-#        'CLIENT': {
-#            'host': 'mongodb+srv://valtteriahola:noll4KLUSS3@cluster0.fr4aq6v.mongodb.net/softwareproject?retryWrites=true&w=majority'
-#
-#        }
-#    }
-#}
-
-
-
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
