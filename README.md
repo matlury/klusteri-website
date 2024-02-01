@@ -27,6 +27,8 @@ Placeholder
 ## Komentorivitoiminnot
 
 ### Backend
+
+#### Käynnistäminen
 Mene (ulompaan) backend-hakemistoon, asenna riippuvuudet ja käynnistä virtuaaliympäristö
 ```bash
 poetry install
@@ -42,6 +44,13 @@ python manage.py migrate
 Käynnistä backend
 ```bash
 python manage.py runserver
+```
+
+#### Testien suorittaminen
+
+Aja seuraava komento (ulommassa) backend-hakemistossa
+```bash
+python manage.py test ilotalo/tests
 ```
 
 ### Frontend
