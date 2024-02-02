@@ -29,13 +29,17 @@ Placeholder
 ### Backend
 
 #### Käynnistäminen
-Mene (ulompaan) backend-hakemistoon, asenna riippuvuudet ja käynnistä virtuaaliympäristö
+Mene backend-hakemistoon
+```bash
+~klusteri-website/$ cd backend 
+```
+Asenna riippuvuudet ja käynnistä virtuaaliympäristö
 ```bash
 poetry install
 poetry shell
 ```
 
-Jos backendin koodia on muutettu, täytyy ajaa seuraavat komennot ennen kuin backendin voi käynnistää
+Jos backendin koodia on muutettu, backend ei välttämättä käynnisty ennen kuin seuraavat komennot on ajettu
 ```bash
 python manage.py makemigrations
 python manage.py migrate
@@ -48,9 +52,22 @@ python manage.py runserver
 
 #### Testien suorittaminen
 
-Aja seuraava komento (ulommassa) backend-hakemistossa
+Mene backend-hakemistoon
 ```bash
-python manage.py test ilotalo/tests
+~klusteri-website/$ cd backend 
+```
+Aja seuraava komento
+```bash
+python manage.py test tests
+```
+
+Testit voi ajaa myös pytestin avulla
+```bash
+poetry run coverage run --branch -m pytest
+```
+Tällöin testikattavuusraportin saa tulostettua konsoliin komennolla
+```
+coverage report
 ```
 
 ### Frontend
