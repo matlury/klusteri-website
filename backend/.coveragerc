@@ -1,0 +1,5 @@
+[run]
+omit = ilotalo/migrations/*, tests/*, *manage.py, *__init__.py, *settings.py
+
+[report]
+omit = ilotalo/migrations/*, tests/*, *manage.py, *__init__.py
