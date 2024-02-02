@@ -70,17 +70,21 @@ coverage report
 ### Frontend
 
 #### Käynnistäminen
-Mene **frontend** tiedoston sisälle juuresta.
+Mene **frontend**-hakemistoon juuresta.
 Asenna riippuvuudet komennolla:
 
 ```
 npm install
 ```
-Käynnistä frontend komennolla:
+Käynnistä **frontend** komennolla:
 ```
 npm run dev
 ```
 
 #### Testaaminen
 
-Placeholder
+Mene **frontend**-hakemistoon.
+Aja testit komennolla:
+```
+npm test
+```
