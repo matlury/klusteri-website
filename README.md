@@ -21,9 +21,6 @@
 - Testikattavuus 70%.
 - Toimii tuotantoympäristössä.
 
-## Asennus
-Placeholder
-
 ## Komentorivitoiminnot
 
 ### Backend
@@ -71,6 +68,8 @@ coverage report
 ```
 
 ### Frontend
+
+#### Käynnistäminen
 Mene **frontend** tiedoston sisälle juuresta.
 Asenna riippuvuudet komennolla:
 
@@ -81,3 +80,7 @@ Käynnistä frontend komennolla:
 ```
 npm run dev
 ```
+
+#### Testaaminen
+
+Placeholder
