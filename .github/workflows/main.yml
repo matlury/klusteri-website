@@ -21,6 +21,7 @@ jobs:
       - name: Install dependencies
         run: poetry install
       - name: Run tests
+        working-directory: ./backend
         run: poetry run coverage run --branch -m pytest
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
