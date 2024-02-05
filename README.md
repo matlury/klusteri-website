@@ -10,6 +10,7 @@
 - [Product Backlog](https://github.com/orgs/matlury/projects/1)
 - [Sprint 0 Task Board](https://github.com/orgs/matlury/projects/2/views/1)
 - [Sprint 1 Task Board](https://github.com/orgs/matlury/projects/4)
+- [Sprint 2 Task Board](https://github.com/orgs/matlury/projects/9)
 - [Työaikakirjanpito](https://helsinkifi-my.sharepoint.com/:x:/g/personal/lottatan_ad_helsinki_fi/EZIQBLlssnFAqYrJUHNZ14gBl33k5Y19wSDGfExXcVhacw?e=qAxWNy)
 
 ## Definition of Done
