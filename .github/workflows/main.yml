@@ -25,7 +25,5 @@ jobs:
         run: poetry run coverage run --branch -m pytest
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
-        with:
-          files: ./backend/coverage.xml
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
