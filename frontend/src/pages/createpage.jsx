@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import LoginPage from './loginpage';
 import '../index.css';
@@ -24,6 +24,7 @@ const NewAccountPage = ({ onAccountCreated }) => {
       console.log('Account created successfully!');
       onAccountCreated && onAccountCreated();
     });
+    setShowLoginPage(true);
   };
 
   const handleBackToLogin = () => {
@@ -37,8 +38,14 @@ const NewAccountPage = ({ onAccountCreated }) => {
         <div key={field.toLowerCase()}>
           {field}:
           <input
-            type={field.toLowerCase() === 'password' ? 'password' : 'text'}
-            value={field === 'Username' ? username : field === 'Password' ? password : field === 'Confirm Password' ? confirmPassword : field === 'e-mail' ? email : field === 'telegram' ? telegram : ''}
+            type={field.toLowerCase().includes('password') ? 'password' : 'text'}
+            value={
+              field === 'Username' ? username :
+              field === 'Password' ? password :
+              field === 'Confirm Password' ? confirmPassword :
+              field === 'e-mail' ? email :
+              field === 'telegram' ? telegram : ''
+            }
             onChange={(e) => {
               const value = e.target.value;
               switch (field) {
