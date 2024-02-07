@@ -6,5 +6,5 @@ COPY . .
 
 RUN poetry install
 
-CMD ["poetry", "run", "python", "manage.py", "runserver"]
+ENTRYPOINT ["poetry", "run", "python", "manage.py", "runserver"]
 
