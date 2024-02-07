@@ -15,7 +15,6 @@ dnspython = "^2.5.0"
 pytest-django = "^4.8.0"
 djangorestframework-simplejwt = "^5.3.1"
 djoser = "^2.2.2"
-psycopg2 = "^2.9.9"
 psycopg2-binary = "^2.9.9"
 
 
