@@ -1,8 +1,10 @@
 FROM python:3.10.13-bullseye
-WORKDIR /backend
+
+RUN pip install poetry
+
 COPY . .
 
 RUN poetry install
 
-EXPOSE 5000
-CMD ["python", "manage.py", "runserver"]
+CMD ["poetry", "run", "python", "manage.py", "runserver"]
+
