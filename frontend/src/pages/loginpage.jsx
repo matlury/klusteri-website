@@ -8,6 +8,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
   const [showCreateUser, setShowCreateUser] = useState(false)
+  const [user, setUser] = useState('')
 
   //esimerkkifunktio datan hakemiselle rajapinnasta
   const getData = () => {
@@ -39,9 +40,9 @@ const LoginPage = () => {
     setShowCreateUser(true); 
   };
 
-  const handleLogin = () => {
+  const handleLogin = async (event) => {
     setLoggedIn(true)
-  };
+  }
 
   const loginForm = () => (
     <form>
@@ -81,6 +82,7 @@ const LoginPage = () => {
       loginForm() 
     )}
   </div>
+
   );
 };
 
