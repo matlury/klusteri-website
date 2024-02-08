@@ -89,3 +89,20 @@ Aja testit komennolla:
 ```
 npm test
 ```
+
+## Codecov
+
+Codecovin testikattavuuden päivittämiseksi on muodostettava uudet testikattavuusraportit. Kun tämän jälkeen committaa ja pushaa githubiin, Codecovin näkymä päivittyy automaattisesti.  
+
+**HUOM!** Jos main.yml-tiedostossa tekee muutoksia "Upload coverage reports to codecov"-otsikon alle, on muodostettava uudet testikattavuusraportit ennen githubiin pushaamista. Muuten Codecov pudottaa testikattavuuden nollaan.
+
+Raportin muodostaminen backendille
+```bash
+~klusteri-website/backend/$ poetry run coverage xml
+```
+
+Raportin muodostaminen frontendille
+```bash
+~klusteri-website/frontend/$ npx jest --coverage
+```
+
