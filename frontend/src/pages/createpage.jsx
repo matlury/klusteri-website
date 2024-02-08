@@ -9,6 +9,7 @@ const NewAccountPage = ({ onAccountCreated }) => {
   const [email, setEmail] = useState('');
   const [telegram, setTelegram] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPasswords, setShowPasswords] = useState(false);
   const [showLoginPage, setShowLoginPage] = useState(false);
 
   const handleCreateAccount = () => {
@@ -31,6 +32,10 @@ const NewAccountPage = ({ onAccountCreated }) => {
     setShowLoginPage(true);
   };
 
+  const toggleShowPasswords = () => {
+    setShowPasswords(prevState => !prevState);
+  };
+
   const createForm = () => (
     <form>
       <h2>Create New Account</h2>
@@ -38,7 +43,7 @@ const NewAccountPage = ({ onAccountCreated }) => {
         <div key={field.toLowerCase()}>
           {field}:
           <input
-            type={field.toLowerCase().includes('password') ? 'password' : 'text'}
+            type={field.toLowerCase().includes('password') && !showPasswords ? 'password' : 'text'}
             value={
               field === 'Username' ? username :
               field === 'Password' ? password :
@@ -76,6 +81,9 @@ const NewAccountPage = ({ onAccountCreated }) => {
       </button>
       <button type="button" onClick={handleBackToLogin}>
         Back
+      </button>
+      <button type="button" onClick={toggleShowPasswords}>
+        {showPasswords ? "Hide Passwords" : "Show Passwords"}
       </button>
     </form>
   );
