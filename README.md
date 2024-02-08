@@ -67,6 +67,10 @@ Tällöin testikattavuusraportin saa tulostettua konsoliin komennolla
 ```
 coverage report
 ```
+Pylint testin suorittaminen onnistuu komennolla
+```
+pylint backend
+```
 
 ### Frontend
 
