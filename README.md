@@ -89,6 +89,10 @@ Aja testit komennolla:
 ```
 npm test
 ```
+Aja **Eslint** komennolla:
+```
+npx eslint src
+```
 
 ## Codecov
 
