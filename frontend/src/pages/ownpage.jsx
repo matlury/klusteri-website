@@ -13,11 +13,25 @@ const OwnPage = () => {
   const [isChecked, setIsChecked] = useState(false)
   const [checkedOrgs, setCheckedOrgs] = useState({});
 
-
+  // Hakee järjestöt tietokannasta
   useEffect(() => {
     getOrganisations();
   }, []);
 
+  const getOrganisations = () => {
+    axios
+      .get('http://localhost:8000/organizations/')
+      .then(response => {
+        const data = response.data;
+        setOrganisations(data);
+      })
+      .catch(error => {
+        console.error('Error fetching organisations:', error);
+      });
+  };
+
+  
+  // Näyttää peruskäyttäjän tiedot
   const userPage = () => (
     <form>
       <div>
@@ -63,26 +77,13 @@ const OwnPage = () => {
     </form>
   );
 
-  const getOrganisations = () => {
-    axios
-      .get('http://localhost:8000/organizations/')
-      .then(response => {
-        const data = response.data;
-        setOrganisations(data);
-      })
-      .catch(error => {
-        console.error('Error fetching organisations:', error);
-      });
-  };
-
+  // Näyttää järjestön tiedot view-napin painamisen jälkeen
   const toggleDetails = orgId => {
-    // Toggle visibility of organization details
     setCheckedOrgs(prevState => ({
       ...prevState,
       [orgId]: !prevState[orgId]
     }));
-  
-    // Set selected organization
+
     setSelectedOrg(orgId === selectedOrg ? null : orgId);
   };
 
@@ -90,6 +91,7 @@ const OwnPage = () => {
     setIsChecked(event.target.checked);
   };
 
+  // Järjestöjen yksityiskohtaisemmat tiedot
   const renderOrganizationDetails = orgId => {
     const organization = organisations.find(org => org.id === orgId);
     if (selectedOrg === orgId && organization) {
@@ -135,6 +137,7 @@ const OwnPage = () => {
     return null;
   };
 
+  // Järjestöjen sivut
   const organisationPage = () => (
     <div>
       <h2>Järjestöt</h2>
