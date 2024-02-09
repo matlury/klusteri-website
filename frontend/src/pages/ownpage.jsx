@@ -30,11 +30,7 @@ const OwnPage = () => {
       });
   };
 
-
-
-
-
-  
+  //fronttibranch testi
   
   // Näyttää peruskäyttäjän tiedot
   const userPage = () => (
