@@ -11,6 +11,8 @@ const OwnPage = () => {
   const [orgPassword, setNewOrgPassword] = useState('')
   const [confirmOrgPassword, setConfirmOrgPassword] = useState('')
   const [isChecked, setIsChecked] = useState(false)
+  const [checkedOrgs, setCheckedOrgs] = useState({});
+
 
   useEffect(() => {
     getOrganisations();
@@ -74,6 +76,13 @@ const OwnPage = () => {
   };
 
   const toggleDetails = orgId => {
+    // Toggle visibility of organization details
+    setCheckedOrgs(prevState => ({
+      ...prevState,
+      [orgId]: !prevState[orgId]
+    }));
+  
+    // Set selected organization
     setSelectedOrg(orgId === selectedOrg ? null : orgId);
   };
 
