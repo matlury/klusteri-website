@@ -6,5 +6,5 @@ COPY . .
 
 RUN poetry install
 
-ENTRYPOINT ["poetry", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+ENTRYPOINT ["poetry", "run", "python", "manage.py", "runserver"]
 
