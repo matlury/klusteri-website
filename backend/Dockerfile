@@ -1,18 +1,17 @@
 FROM python:3.10.13-bullseye
 
-ENV PYTHONUNBUFFERED=1
+ENV POETRY_VIRTUALENVS_IN_PROJECT=true
 
 WORKDIR /backend
 
+COPY . .
+
+RUN chmod -R 777 *
+
 RUN pip install poetry
 
-RUN poetry config virtualenvs.create false
-
-COPY pyproject.toml poetry.lock /backend/
+COPY poetry.lock pyproject.toml /backend/
 
 RUN poetry install
 
-COPY . .
-
 ENTRYPOINT ["poetry", "run", "python", "manage.py", "runserver"]
-
