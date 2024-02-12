@@ -22,6 +22,9 @@ jobs:
         run: poetry install
       - name: Run tests
         working-directory: ./backend
+        env:
+          HOST_USER_EMAIL: ${{ secrets.EMAIL_HOST_USER }}
+          HOST_USER_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
         run: poetry run coverage run --branch -m pytest
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
