@@ -4,6 +4,6 @@ services:
   api:
     build:
       dockerfile: Dockerfile
-      context: "./backend"
+      context: "."
     ports:
       - "8000:8000"
