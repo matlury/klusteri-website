@@ -14,4 +14,6 @@ COPY poetry.lock pyproject.toml /backend/
 
 RUN poetry install
 
+EXPOSE 8000
+
 ENTRYPOINT ["poetry", "run", "python", "manage.py", "runserver"]
