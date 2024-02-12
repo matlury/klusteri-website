@@ -11,13 +11,28 @@ const NewAccountPage = ({ onAccountCreated }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPasswords, setShowPasswords] = useState(false);
   const [showLoginPage, setShowLoginPage] = useState(false);
+  const [error, setError] = useState('');
 
   const handleCreateAccount = () => {
-    if (password !== confirmPassword) {
-      console.log('Passwords do not match. Please try again.');
+    // Tarkista, että käyttäjänimi, salasana, sähköposti ja vahvista salasana eivät ole tyhjiä
+    if (!username || !password || !email || !confirmPassword) {
+      setError('Käyttäjänimi, salasana, sähköposti ja vahvista salasana ovat pakollisia kenttiä.');
       return;
     }
 
+    // Tarkista, että salasana ja vahvista salasana ovat samat
+    if (password !== confirmPassword) {
+      setError('Salasanat eivät täsmää.');
+      return;
+    }
+
+    // Tarkista, että salasana on 8-20 merkkiä pitkä
+    if (password.length < 8 || password.length > 20) {
+      setError('Salasanan tulee olla 8-20 merkkiä pitkä.');
+      return;
+    }
+
+    // Lähetä käyttäjän tiedot palvelimelle
     const userObject = { username, password, email, telegram, role: 5 };
 
     axios.post('http://localhost:8000/users/', userObject).then(response => {
@@ -37,55 +52,68 @@ const NewAccountPage = ({ onAccountCreated }) => {
   };
 
   const createForm = () => (
-    <form>
-      <h2>Create New Account</h2>
-      {['Username', 'Password', 'Confirm Password', 'e-mail', 'telegram'].map(field => (
-        <div key={field.toLowerCase()}>
-          {field}:
-          <input
-            type={field.toLowerCase().includes('password') && !showPasswords ? 'password' : 'text'}
-            value={
-              field === 'Username' ? username :
-              field === 'Password' ? password :
-              field === 'Confirm Password' ? confirmPassword :
-              field === 'e-mail' ? email :
-              field === 'telegram' ? telegram : ''
-            }
-            onChange={(e) => {
-              const value = e.target.value;
-              switch (field) {
-                case 'Username':
-                  setUsername(value);
-                  break;
-                case 'Password':
-                  setPassword(value);
-                  break;
-                case 'Confirm Password':
-                  setConfirmPassword(value);
-                  break;
-                case 'e-mail':
-                  setEmail(value);
-                  break;
-                case 'telegram':
-                  setTelegram(value);
-                  break;
-                default:
-                  break;
-              }
-            }}
-          />
+    <div className="background">
+      <form className="form-container">
+        <h2>Luo uusi käyttäjä</h2>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        <div className="input-fields">
+          <div>
+            Käyttäjänimi:
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+          <div>
+            Salasana:
+            <input
+              type={showPasswords ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <input
+              type="checkbox"
+              checked={showPasswords}
+              onChange={toggleShowPasswords}
+            />
+            Näytä salasana
+          </div>
+          <div>
+            Vahvista salasana:
+            <input
+              type={showPasswords ? 'text' : 'password'}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </div>
+          <div>
+            Sähköposti:
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div>
+            Telegram (valinnainen):
+            <input
+              type="text"
+              value={telegram}
+              onChange={(e) => setTelegram(e.target.value)}
+            />
+          </div>
         </div>
-      ))}
-      <button type="button" onClick={handleCreateAccount}>
-        Create Account
-      </button>
-      <button type="button" onClick={handleBackToLogin}>
-        Back
-      </button>
-      <button type="button" onClick={toggleShowPasswords}>
-        {showPasswords ? "Hide Passwords" : "Show Passwords"}
-      </button>
-    </form>
+        <div className="button-container">
+          <button type="button" onClick={handleCreateAccount}>
+            Luo käyttäjä
+          </button>
+          <button type="button" onClick={handleBackToLogin}>
+            Takaisin
+          </button>
+        </div>
+      </form>
+    </div>
   );
 
   return (
