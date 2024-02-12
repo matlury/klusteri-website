@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import LoginPage from './loginpage';
 import '../index.css';
@@ -9,6 +9,7 @@ const NewAccountPage = ({ onAccountCreated }) => {
   const [email, setEmail] = useState('');
   const [telegram, setTelegram] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPasswords, setShowPasswords] = useState(false);
   const [showLoginPage, setShowLoginPage] = useState(false);
 
   const handleCreateAccount = () => {
@@ -24,10 +25,15 @@ const NewAccountPage = ({ onAccountCreated }) => {
       console.log('Account created successfully!');
       onAccountCreated && onAccountCreated();
     });
+    setShowLoginPage(true);
   };
 
   const handleBackToLogin = () => {
     setShowLoginPage(true);
+  };
+
+  const toggleShowPasswords = () => {
+    setShowPasswords(prevState => !prevState);
   };
 
   const createForm = () => (
@@ -37,8 +43,14 @@ const NewAccountPage = ({ onAccountCreated }) => {
         <div key={field.toLowerCase()}>
           {field}:
           <input
-            type={field.toLowerCase() === 'password' ? 'password' : 'text'}
-            value={field === 'Username' ? username : field === 'Password' ? password : field === 'Confirm Password' ? confirmPassword : field === 'e-mail' ? email : field === 'telegram' ? telegram : ''}
+            type={field.toLowerCase().includes('password') && !showPasswords ? 'password' : 'text'}
+            value={
+              field === 'Username' ? username :
+              field === 'Password' ? password :
+              field === 'Confirm Password' ? confirmPassword :
+              field === 'e-mail' ? email :
+              field === 'telegram' ? telegram : ''
+            }
             onChange={(e) => {
               const value = e.target.value;
               switch (field) {
@@ -69,6 +81,9 @@ const NewAccountPage = ({ onAccountCreated }) => {
       </button>
       <button type="button" onClick={handleBackToLogin}>
         Back
+      </button>
+      <button type="button" onClick={toggleShowPasswords}>
+        {showPasswords ? "Hide Passwords" : "Show Passwords"}
       </button>
     </form>
   );
