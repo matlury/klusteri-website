@@ -9,8 +9,8 @@ class TestDjangoAPI(TestCase):
         self.client = APIClient()
         self.data = {
             "username": "klusse",
-            "password": 1234,
-            "email": "klusse@gmail.com",
+            "password": "vahvaSalasana1234",
+            "email": "klusse.osoite@gmail.com",
             "telegram": "klussentg",
             "role": 5,
         }
@@ -28,8 +28,8 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/users/",
             data={
                 "username": "christina",
-                "password": 1234,
-                "email": "regina@gmail.com",
+                "password": "vahvaSalasana1234",
+                "email": "regina.gaudium@gmail.com",
                 "telegram": "domustg",
                 "role": 5,
             },
@@ -46,8 +46,8 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/users/",
             data={
                 "username": "christinareginadomusgaudium",
-                "password": 1234,
-                "email": "regina@gmail.com",
+                "password": "vahvaSalasana1234",
+                "email": "regina.gaudium@gmail.com",
                 "telegram": "domustg",
                 "role": 5,
             },
@@ -64,7 +64,7 @@ class TestDjangoAPI(TestCase):
             data={
                 "username": "christina",
                 "password": 123456789123456789123456789,
-                "email": "regina@gmail.com",
+                "email": "regina.gaudium@gmail.com",
                 "telegram": "domustg",
                 "role": 5,
             },
@@ -90,8 +90,8 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/users/",
             data={
                 "username": "christina",
-                "password": 1234,
-                "email": "regina@gmail.com",
+                "password": "vahvaSalasana1234",
+                "email": "regina.gaudium@gmail.com",
                 "telegram": "domustg",
                 "role": 5,
             },
