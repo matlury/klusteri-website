@@ -4,6 +4,8 @@ RUN pip install poetry
 
 COPY . .
 
+ENV PYTHONPATH=${PYTHONPATH}:${PWD}
+
 RUN poetry config virtualenvs.create false
 
 RUN poetry install
