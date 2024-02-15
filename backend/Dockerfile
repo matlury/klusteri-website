@@ -16,4 +16,4 @@ RUN poetry install
 
 EXPOSE 8000
 
-ENTRYPOINT ["poetry", "run", "python", "manage.py", "runserver"]
+ENTRYPOINT ["poetry", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
