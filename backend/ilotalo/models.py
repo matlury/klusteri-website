@@ -5,15 +5,13 @@ from django.contrib.auth.models import (
     BaseUserManager,
 )
 
-# Create your models here.
-
-
 class UserAccountManager(BaseUserManager):
     def create_user(self, username, password, email, telegram, role):
         """
         if not email:
             raise ValueError('ei toimi')
         email = self.normalize_email(email)
+        email = email.lower()
         """
         user = self.model(
             username=username,
@@ -36,25 +34,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     telegram = models.CharField(max_length=100, default="", unique=True)
     role = models.IntegerField(default=5)
     is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
 
     objects = UserAccountManager()
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username", "password", "telegram", "role"]
-
-
-"""
-class User(models.Model):
-    username = models.CharField(max_length=20)
-    password = models.CharField(max_length=20, default="")
-    email = models.EmailField(max_length=100, default="", unique=True)
-    telegram = models.CharField(max_length=100, default="", unique=True)
-    role = models.IntegerField(default=5)
-
-    def __str__(self):
-        return f"{self.username}, {self.email}"
-"""
-
+    REQUIRED_FIELDS = ["username", "password", "role"]
 
 class Organization(models.Model):
     name = models.CharField(max_length=50, default="", unique=True)
