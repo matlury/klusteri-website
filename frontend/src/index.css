@@ -1,14 +1,13 @@
 #blackscreen {
-  background-color: black;
-  color: white;
-  padding: 100px;
+  background-color: #000000;
+  padding: 60px;
 }
-
 
 #leftLogo {
   width: 200px;
   height: 100px;
   margin-right: 10px;
+  margin-left: 600px;
 }
 
 #map {
@@ -18,15 +17,13 @@
 
 #nav {
   background-color: #000000;
-  margin-left: 0;
   margin-right: auto;
   width: 100%;
-  font-size: .8em;
+  font-size: .9em;
   display: flex;
   justify-content: space-evenly;
   flex-wrap: wrap;
   position: sticky;
-  top: 0;
   color: #FFFFFF;
 }
 
@@ -117,7 +114,7 @@ ul {
 }
 
 .input-fields div {
-  margin-bottom: 15px;
+  margin-bottom: 17px;
 }
 
 .button-container {
@@ -125,10 +122,13 @@ ul {
 }
 
 .button-container button {
-  margin-right: 5px;
+  margin-right: 9px;
 }
 
 .background {
-  background-color: #1616161e;
-  block-size: 440px;
+  background-color: #ffae00c4;
+  block-size: 550px;
+  box-shadow: 0 29px 52px rgba(0,0,0,0.40), 0 25px 16px rgba(0,0,0,0.20);
+  border-style: solid;
+  border-width: thin;
 }

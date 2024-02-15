@@ -1,11 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1708001970849" clover="3.2.0">
-  <project timestamp="1708001970849" name="All files">
-    <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1" elements="3" coveredelements="3" complexity="0" loc="2" ncloc="2" packages="1" files="1" classes="1"/>
-    <file name="frontpage.jsx" path="C:\Users\Valts\Documents\klusteri-website\frontend\src\pages\frontpage.jsx">
+<coverage generated="1708025380322" clover="3.2.0">
+  <project timestamp="1708025380323" name="All files">
+    <metrics statements="61" coveredstatements="21" conditionals="26" coveredconditionals="7" methods="23" coveredmethods="4" elements="110" coveredelements="32" complexity="0" loc="61" ncloc="61" packages="1" files="3" classes="3"/>
+    <file name="createpage.jsx" path="/home/peltlaur/Asiakirjat/klusteri-website/frontend/src/pages/createpage.jsx">
+      <metrics statements="37" coveredstatements="18" conditionals="22" coveredconditionals="7" methods="12" coveredmethods="3"/>
+      <line num="6" count="1" type="stmt"/>
+      <line num="7" count="3" type="stmt"/>
+      <line num="8" count="3" type="stmt"/>
+      <line num="9" count="3" type="stmt"/>
+      <line num="10" count="3" type="stmt"/>
+      <line num="11" count="3" type="stmt"/>
+      <line num="12" count="3" type="stmt"/>
+      <line num="13" count="3" type="stmt"/>
+      <line num="14" count="3" type="stmt"/>
+      <line num="16" count="3" type="stmt"/>
+      <line num="21" count="1" type="cond" truecount="2" falsecount="4"/>
+      <line num="22" count="1" type="stmt"/>
+      <line num="23" count="1" type="stmt"/>
+      <line num="30" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="31" count="0" type="stmt"/>
+      <line num="32" count="0" type="stmt"/>
+      <line num="39" count="0" type="cond" truecount="0" falsecount="4"/>
+      <line num="40" count="0" type="stmt"/>
+      <line num="41" count="0" type="stmt"/>
+      <line num="47" count="0" type="stmt"/>
+      <line num="49" count="0" type="stmt"/>
+      <line num="50" count="0" type="stmt"/>
+      <line num="51" count="0" type="stmt"/>
+      <line num="52" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="54" count="0" type="stmt"/>
+      <line num="57" count="3" type="stmt"/>
+      <line num="58" count="0" type="stmt"/>
+      <line num="61" count="3" type="stmt"/>
+      <line num="62" count="0" type="stmt"/>
+      <line num="65" count="3" type="stmt"/>
+      <line num="66" count="3" type="stmt"/>
+      <line num="76" count="0" type="stmt"/>
+      <line num="84" count="0" type="stmt"/>
+      <line num="92" count="0" type="stmt"/>
+      <line num="106" count="0" type="stmt"/>
+      <line num="114" count="0" type="stmt"/>
+      <line num="130" count="3" type="stmt"/>
+    </file>
+    <file name="frontpage.jsx" path="/home/peltlaur/Asiakirjat/klusteri-website/frontend/src/pages/frontpage.jsx">
       <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
       <line num="4" count="1" type="stmt"/>
       <line num="5" count="1" type="stmt"/>
+    </file>
+    <file name="loginpage.jsx" path="/home/peltlaur/Asiakirjat/klusteri-website/frontend/src/pages/loginpage.jsx">
+      <metrics statements="22" coveredstatements="1" conditionals="4" coveredconditionals="0" methods="10" coveredmethods="0"/>
+      <line num="6" count="1" type="stmt"/>
+      <line num="7" count="0" type="stmt"/>
+      <line num="8" count="0" type="stmt"/>
+      <line num="9" count="0" type="stmt"/>
+      <line num="10" count="0" type="stmt"/>
+      <line num="13" count="0" type="stmt"/>
+      <line num="14" count="0" type="stmt"/>
+      <line num="17" count="0" type="stmt"/>
+      <line num="19" count="0" type="stmt"/>
+      <line num="24" count="0" type="stmt"/>
+      <line num="25" count="0" type="stmt"/>
+      <line num="31" count="0" type="stmt"/>
+      <line num="34" count="0" type="stmt"/>
+      <line num="38" count="0" type="stmt"/>
+      <line num="39" count="0" type="stmt"/>
+      <line num="42" count="0" type="stmt"/>
+      <line num="43" count="0" type="stmt"/>
+      <line num="46" count="0" type="stmt"/>
+      <line num="47" count="0" type="stmt"/>
+      <line num="53" count="0" type="stmt"/>
+      <line num="62" count="0" type="stmt"/>
+      <line num="74" count="0" type="stmt"/>
     </file>
   </project>
 </coverage>
