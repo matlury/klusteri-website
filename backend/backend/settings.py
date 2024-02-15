@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-5yvx^z)huz-zg-px7102vn#yi5i#s*93^p8a2$*&_l@@#@fu!w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['klusteri-website-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi']
 
 
 # Application definition
