@@ -14,6 +14,7 @@ class UserAccountManager(BaseUserManager):
         if not email:
             raise ValueError('ei toimi')
         email = self.normalize_email(email)
+        email = email.lower()
         """
         user = self.model(
             username=username,
@@ -36,11 +37,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     telegram = models.CharField(max_length=100, default="", unique=True)
     role = models.IntegerField(default=5)
     is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
 
     objects = UserAccountManager()
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username", "password", "telegram", "role"]
+    REQUIRED_FIELDS = ["username", "password", "role"]
+
+    
 
 
 """
