@@ -5,9 +5,6 @@ from django.contrib.auth.models import (
     BaseUserManager,
 )
 
-# Create your models here.
-
-
 class UserAccountManager(BaseUserManager):
     def create_user(self, username, password, email, telegram, role):
         """
@@ -43,22 +40,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "password", "role"]
-
-    
-
-
-"""
-class User(models.Model):
-    username = models.CharField(max_length=20)
-    password = models.CharField(max_length=20, default="")
-    email = models.EmailField(max_length=100, default="", unique=True)
-    telegram = models.CharField(max_length=100, default="", unique=True)
-    role = models.IntegerField(default=5)
-
-    def __str__(self):
-        return f"{self.username}, {self.email}"
-"""
-
 
 class Organization(models.Model):
     name = models.CharField(max_length=50, default="", unique=True)
