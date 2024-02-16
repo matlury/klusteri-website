@@ -76,7 +76,6 @@ class TestDjangoAPI(TestCase):
     def test_modify_user(self):
         """A user's information can be changed"""
         self.data["username"] = "klusteri"
-
         response = self.client.patch(
             "http://localhost:8000/users/1/", data=self.data, format="json"
         )

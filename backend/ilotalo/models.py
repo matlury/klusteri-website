@@ -5,6 +5,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
 )
 
+
 class UserAccountManager(BaseUserManager):
     def create_user(self, username, password, email, telegram, role):
         """
@@ -31,7 +32,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=20)
     password = models.CharField(max_length=20, default="")
     email = models.EmailField(max_length=100, default="", unique=True)
-    telegram = models.CharField(max_length=100, default="", unique=True, null=True, blank=True)
+    telegram = models.CharField(max_length=100, default="", blank=True)
     role = models.IntegerField(default=5)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -40,7 +41,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "password", "role"]
-
+    
 class Organization(models.Model):
     name = models.CharField(max_length=50, default="", unique=True)
     email = models.EmailField(max_length=100, default="", unique=True)
