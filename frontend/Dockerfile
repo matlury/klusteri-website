@@ -1,4 +1,4 @@
-FROM node:20.11-alpine3.19
+FROM node:20.11.1-alpine3.19
 
 WORKDIR /frontend
 
@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 5173
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "dev", "0.0.0.0:5173"]
