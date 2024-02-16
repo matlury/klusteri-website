@@ -14,25 +14,36 @@ const NewAccountPage = ({ onAccountCreated }) => {
   const [error, setError] = useState('');
 
   const handleCreateAccount = () => {
-    // Tarkista, että käyttäjänimi, salasana, sähköposti ja vahvista salasana eivät ole tyhjiä
+    /*
+    Check that username, password, email
+    and confirm password are not empty
+    */
     if (!username || !password || !email || !confirmPassword) {
       setError('Käyttäjänimi, salasana, sähköposti ja vahvista salasana ovat pakollisia kenttiä.');
       return;
     }
 
-    // Tarkista, että salasana ja vahvista salasana ovat samat
+    /*
+    Check that the password and
+    confirm password are the same
+    */
     if (password !== confirmPassword) {
       setError('Salasanat eivät täsmää.');
       return;
     }
 
-    // Tarkista, että salasana on 8-20 merkkiä pitkä
+    /*
+    Check that the password is 
+    8-20 characters long
+    */
     if (password.length < 8 || password.length > 20) {
       setError('Salasanan tulee olla 8-20 merkkiä pitkä.');
       return;
     }
 
-    // Lähetä käyttäjän tiedot palvelimelle
+    /*
+    Send the user information to the server
+    */
     const userObject = { username, password, email, telegram, role: 5 };
 
     axios.post('http://localhost:8000/users/', userObject).then(response => {
@@ -72,12 +83,6 @@ const NewAccountPage = ({ onAccountCreated }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <input
-              type="checkbox"
-              checked={showPasswords}
-              onChange={toggleShowPasswords}
-            />
-            Näytä salasana
           </div>
           <div>
             Vahvista salasana:
@@ -86,6 +91,12 @@ const NewAccountPage = ({ onAccountCreated }) => {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
+            <input
+              type="checkbox"
+              checked={showPasswords}
+              onChange={toggleShowPasswords}
+            />
+            Näytä salasana
           </div>
           <div>
             Sähköposti:
