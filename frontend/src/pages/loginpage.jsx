@@ -8,40 +8,26 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
   const [showCreateUser, setShowCreateUser] = useState(false)
-
-  //esimerkkifunktio datan hakemiselle rajapinnasta
-  const getData = () => {
-    axios
-    .get('http://localhost:8000/users/')
-    .then(response => {
-      const data = response.data
-      //setUsername(data[1].username)
-      console.log(response.data)
-    })
-  }
-
-  //esimerkkifunktio datan lähettämiselle rajapintaan
-  const sendData = () => {
-    const userObject = {
-      username: username,
-      password: password,
-      role: 5
-    }
-  
-    axios
-      .post('http://localhost:8000/users/', userObject)
-      .then(response => {
-        console.log(response)
-      })
-  }
+  const [error, setError] = useState('');
 
   const handleCreateUser = () => {
     setShowCreateUser(true); 
   };
 
-  const handleLogin = () => {
-    setLoggedIn(true)
-  };
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(`${process.env.API_URL}/api/token/`, {
+        username,
+        password
+      })
+      localStorage.setItem('accessToken', response.data.access);
+      localStorage.setItem('refreshToken', response.data.refresh);
+      setLoggedIn(true)
+    } catch (err) {
+      setError('Invalid username or password');
+    }
+  }
 
   const loginForm = () => (
     <form>
