@@ -26,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
             username = validated_data['username'],
             password = validated_data['password'],
             email = validated_data['email'],
-            telegram = validated_data['telegram'],
+            telegram = validated_data.get('telegram', ''),
             role = validated_data['role'],
         )
 
