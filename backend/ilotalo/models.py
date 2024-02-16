@@ -31,7 +31,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=20)
     password = models.CharField(max_length=20, default="")
     email = models.EmailField(max_length=100, default="", unique=True)
-    telegram = models.CharField(max_length=100, default="", unique=True)
+    telegram = models.CharField(max_length=100, default="", unique=True, null=True, blank=True)
     role = models.IntegerField(default=5)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
