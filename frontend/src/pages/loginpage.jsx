@@ -2,41 +2,56 @@ import React, { useState } from 'react';
 import axios from 'axios'
 import '../index.css'
 import NewAccountPage from './createpage'
+import axiosClient from "../axios.js";
+import { useStateContext } from "../context/ContextProvider.jsx";
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loggedIn, setLoggedIn] = useState(false);
   const [showCreateUser, setShowCreateUser] = useState(false)
   const [error, setError] = useState('');
+  const { user, token, setUser, setToken } = useStateContext()
 
   const handleCreateUser = () => {
     setShowCreateUser(true); 
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(`${process.env.API_URL}/api/token/`, {
-        username,
-        password
-      })
-      localStorage.setItem('accessToken', response.data.access);
-      localStorage.setItem('refreshToken', response.data.refresh);
-      setLoggedIn(true)
-    } catch (err) {
-      setError('Invalid username or password');
+  const handleLogin = event => {
+    event.preventDefault()
+
+    const credentials = {
+      email: email,
+      password: password
     }
+
+    axiosClient.post('/token/', credentials)
+      .then(({ data }) => {
+        setToken(data.access);
+        axiosClient.get('/users/userlist', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+        .then(response => {
+          setUser(response.data)
+          console.log('User details:', response.data)
+      })})
+      .catch((err) => {
+        const response = err.response;
+        if (response && response.status === 422) {
+          setError(response.data.message)
+        }
+      })
   }
 
   const loginForm = () => (
     <form>
       <div>
-        Käyttäjänimi:
+        Sähköposti:
         <input
-          id="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          id="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
       </div>
       <div>
@@ -61,8 +76,8 @@ const LoginPage = () => {
     <div id="right_content">
     {showCreateUser ? (
       <NewAccountPage /> 
-    ) : loggedIn ? (
-      <p>Welcome, {username}!</p>
+    ) : user ? (
+      <p>Welcome, {user.username}!</p>
     ) : (
       loginForm() 
     )}
