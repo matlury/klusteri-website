@@ -166,11 +166,14 @@ class TestDjangoAPI(TestCase):
             },
             format="json",
         )
-
+        access_token = tokens.data["access"]
+        
         #fetch the data
         response = self.client.get(
             "http://localhost:8000/api/users/userlist",
-            headers={"Authorization": f"Bearer {tokens.data["access"]}"}
+            headers={
+                "Authorization": f"Bearer {access_token}"
+            }
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
