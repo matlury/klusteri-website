@@ -192,12 +192,13 @@ class TestDjangoAPI(TestCase):
             },
             format="json",
         )
-
+        refresh_token = tokens.data["refresh"]
+    
         #get a new access token
         response = self.client.post(
             "http://localhost:8000/api/token/refresh/",
             data={
-                "refresh": f"{tokens.data["refresh"]}"
+                "refresh": f"{refresh_token}"
             },
             format="json",
         )
