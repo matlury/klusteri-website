@@ -56,14 +56,14 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(User.objects.count(), 1)
 
-    def test_creating_user_password_too_long(self):
+    def test_creating_user_password_too_common(self):
         """A new user can't be posted to /users/ if the password is too long"""
 
         response = self.client.post(
             "http://localhost:8000/users/",
             data={
                 "username": "christina",
-                "password": 123456789123456789123456789,
+                "password": "password",
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "domustg",
                 "role": 5,
@@ -76,7 +76,6 @@ class TestDjangoAPI(TestCase):
     def test_modify_user(self):
         """A user's information can be changed"""
         self.data["username"] = "klusteri"
-
         response = self.client.patch(
             "http://localhost:8000/users/1/", data=self.data, format="json"
         )
@@ -101,6 +100,27 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(User.objects.count(), 2)
 
         response = self.client.delete("http://localhost:8000/users/2/", format="json")
-        
+
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(User.objects.count(), 1)
+
+    def test_register_new_user(self):
+        """A user with all required fields can be registered via api/users/register.
+        This endpoint adds improved validation
+        """
+
+        response = self.client.post(
+            "http://localhost:8000/api/users/register",
+            data={
+                "username": "christina",
+                "password": "vahvaSalasana1234",
+                "email": "regina.gaudium@gmail.com",
+                "telegram": "",
+                "role": 5,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(User.objects.count(), 2)
+
+
