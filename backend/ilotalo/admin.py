@@ -1,6 +1,10 @@
 from django.contrib import admin
 from .models import User, Organization
 
+"""
+Manage the contents of the admin page at <baseurl>/admin
+"""
+
 class UserAdmin(admin.ModelAdmin):
     list_display = ('username', 'password', 'email', 'telegram', 'role')
 

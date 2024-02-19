@@ -3,6 +3,10 @@ from rest_framework.test import APIClient
 from rest_framework import status
 from ilotalo.models import User
 
+"""
+These tests are related to the API between frontend and backend
+"""
+
 
 class TestDjangoAPI(TestCase):
     def setUp(self):
@@ -38,7 +42,7 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(User.objects.count(), 2)
         self.assertEqual(User.objects.all()[1].username, "christina")
-    
+
     def test_create_two_users_with_blank_telegram(self):
         """
         Creating multiple users with no telegram name should be possible.
@@ -136,7 +140,7 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(User.objects.count(), 1)
-   
+
     def test_register_user_with_duplicate(self):
         """Creating a user fails if their telegram name is taken"""
 
@@ -153,53 +157,43 @@ class TestDjangoAPI(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(User.objects.count(), 1)
- 
+
     def test_fetch_user_data_with_token(self):
         """User data can be fetched with an access token"""
 
-        #get the web tokens
+        # get the web tokens
         tokens = self.client.post(
             "http://localhost:8000/api/token/",
-            data={
-                "email": "klusse.osoite@gmail.com",
-                "password": "vahvaSalasana1234"
-            },
+            data={"email": "klusse.osoite@gmail.com", "password": "vahvaSalasana1234"},
             format="json",
         )
         access_token = tokens.data["access"]
-        
-        #fetch the data
+
+        # fetch the data
         response = self.client.get(
             "http://localhost:8000/api/users/userlist",
-            headers={
-                "Authorization": f"Bearer {access_token}"
-            }
+            headers={"Authorization": f"Bearer {access_token}"},
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["email"], "klusse.osoite@gmail.com")
         self.assertEqual(response.data["telegram"], "klussentg")
-    
+
     def test_get_new_access_token(self):
         """A new access token can be generated with a refresh token"""
 
-        #get the web tokens
+        # get the web tokens
         tokens = self.client.post(
             "http://localhost:8000/api/token/",
-            data={
-                "email": "klusse.osoite@gmail.com",
-                "password": "vahvaSalasana1234"
-            },
+            data={"email": "klusse.osoite@gmail.com", "password": "vahvaSalasana1234"},
             format="json",
         )
         refresh_token = tokens.data["refresh"]
-    
-        #get a new access token
+
+        # get a new access token
         response = self.client.post(
             "http://localhost:8000/api/token/refresh/",
-            data={
-                "refresh": f"{refresh_token}"
-            },
+            data={"refresh": f"{refresh_token}"},
             format="json",
         )
 

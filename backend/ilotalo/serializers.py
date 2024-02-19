@@ -11,7 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ("id", "username", "password", "email", "telegram", "role")
 
     def validate_telegram(self, tgname):
-        """Check if a telegram name is taken"""
+        """Checks if a telegram name is taken"""
         user_id = self.instance.id if self.instance else None
         if tgname:
             duplicate = User.objects.exclude(id=user_id).filter(telegram=tgname)
@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
         return tgname
 
     def validate(self, data):
-        # user = User(**data)
+        """Validates password when creating a new user"""
         password = data.get("password")
 
         try:
@@ -33,6 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
+        """Serializes the User object as JSON"""
         user = User.objects.create_user(
             username=validated_data["username"],
             password=validated_data["password"],
@@ -45,12 +46,18 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserNoPasswordSerializer(serializers.ModelSerializer):
+    """
+    Serializes a User object as JSON without displaying the hashed password
+    """
+
     class Meta:
         model = User
         fields = ("id", "username", "email", "telegram", "role")
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
+    """Serializes an Organization object as JSON"""
+
     class Meta:
         model = Organization
         fields = ("id", "name", "email", "homepage", "size")
