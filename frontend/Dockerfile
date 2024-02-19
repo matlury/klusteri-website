@@ -8,6 +8,8 @@ RUN npm install
 
 COPY . .
 
+RUN chmod -R 777 *
+
 EXPOSE 5173
 
 CMD ["npm", "run", "dev"]
