@@ -4,11 +4,11 @@ WORKDIR /frontend
 
 COPY package.json package-lock.json ./
 
+RUN chmod -R 777 *
+
 RUN npm install
 
 COPY . .
-
-RUN chmod -R 777 *
 
 EXPOSE 5173
 
