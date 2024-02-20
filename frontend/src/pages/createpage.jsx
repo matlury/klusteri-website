@@ -63,68 +63,64 @@ const NewAccountPage = ({ onAccountCreated }) => {
   };
 
   const createForm = () => (
-    <div className="background">
-      <form className="form-container">
-        <h2>Luo uusi käyttäjä</h2>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <div className="input-fields">
-          <div>
-            Käyttäjänimi:
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-          <div>
-            Salasana:
-            <input
-              type={showPasswords ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <div>
-            Vahvista salasana:
-            <input
-              type={showPasswords ? 'text' : 'password'}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-            <input
-              type="checkbox"
-              checked={showPasswords}
-              onChange={toggleShowPasswords}
-            />
-            Näytä salasana
-          </div>
-          <div>
-            Sähköposti:
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div>
-            Telegram (valinnainen):
-            <input
-              type="text"
-              value={telegram}
-              onChange={(e) => setTelegram(e.target.value)}
-            />
-          </div>
+    <form className="form-container">
+      <h2>Luo uusi käyttäjä</h2>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <div className="input-fields">
+        <div>
+          Käyttäjänimi:
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
         </div>
-        <div className="button-container">
-          <button type="button" onClick={handleCreateAccount}>
-            Luo käyttäjä
-          </button>
-          <button type="button" onClick={handleBackToLogin}>
-            Takaisin
-          </button>
+        <div>
+          Salasana:
+          <input
+            type={showPasswords ? 'text' : 'password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </div>
-      </form>
-    </div>
+        <div>
+          Vahvista salasana:
+          <input
+            type={showPasswords ? 'text' : 'password'}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+          <input
+            type="checkbox"
+            checked={showPasswords}
+            onChange={toggleShowPasswords}
+          />
+          Näytä salasana
+        </div>
+        <div>
+          Sähköposti:
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div>
+          Telegram (valinnainen):
+          <input
+            type="text"
+            value={telegram}
+            onChange={(e) => setTelegram(e.target.value)}
+          />
+        </div>
+      </div>
+      <button className="login-button" type="button" onClick={handleBackToLogin}>
+        Takaisin
+      </button>
+      <button className="create-user-button" type="button" onClick={handleCreateAccount}>
+        Luo käyttäjä
+      </button>
+    </form>
   );
 
   return (
