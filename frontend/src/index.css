@@ -109,7 +109,7 @@ ul {
 }
 
 .form-container {
-  width: 200px;
+  width: 600px;
   margin: 0 auto;
 }
 
@@ -125,10 +125,76 @@ ul {
   margin-right: 9px;
 }
 
-.background {
-  background-color: #ffae00c4;
-  block-size: 550px;
-  box-shadow: 0 29px 52px rgba(0,0,0,0.40), 0 25px 16px rgba(0,0,0,0.20);
-  border-style: solid;
-  border-width: thin;
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.login-button {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 0px;
+  cursor: pointer;
+}
+
+.create-user-button {
+  background-color: #28a745;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 0px;
+  cursor: pointer;
+  margin-left: 17px;
+}
+
+.logout-button {
+  background-color: #dc3545;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 0px;
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  width: 1em;
+  height: 1rem;
+  accent-color: green;
+  margin-top: 20px;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+input[type="email"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
