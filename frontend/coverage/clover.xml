@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1706894168355" clover="3.2.0">
-  <project timestamp="1706894168355" name="All files">
+<coverage generated="1708331074015" clover="3.2.0">
+  <project timestamp="1708331074015" name="All files">
     <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1" elements="3" coveredelements="3" complexity="0" loc="2" ncloc="2" packages="1" files="1" classes="1"/>
-    <file name="frontpage.jsx" path="/home/peltlaur/Asiakirjat/klusteri-website/frontend/src/pages/frontpage.jsx">
+    <file name="frontpage.jsx" path="C:\Users\Valts\Documents\klusteri-website\frontend\src\pages\frontpage.jsx">
       <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
       <line num="4" count="1" type="stmt"/>
       <line num="5" count="1" type="stmt"/>

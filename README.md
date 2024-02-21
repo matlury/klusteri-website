@@ -11,6 +11,7 @@
 - [Sprint 0 Task Board](https://github.com/orgs/matlury/projects/2/views/1)
 - [Sprint 1 Task Board](https://github.com/orgs/matlury/projects/4)
 - [Sprint 2 Task Board](https://github.com/orgs/matlury/projects/9)
+- [Sprint 3 Task Board](https://github.com/orgs/matlury/projects/10/views/1?layout=board&filterQuery=label%3Atask&groupedBy%5BcolumnId%5D=78602831)
 - [Työaikakirjanpito](https://helsinkifi-my.sharepoint.com/:x:/g/personal/lottatan_ad_helsinki_fi/EZIQBLlssnFAqYrJUHNZ14gBl33k5Y19wSDGfExXcVhacw?e=qAxWNy)
 
 ## Definition of Done
@@ -67,6 +68,10 @@ Tällöin testikattavuusraportin saa tulostettua konsoliin komennolla
 ```
 coverage report
 ```
+Pylint testin suorittaminen onnistuu komennolla
+```
+pylint backend
+```
 
 ### Frontend
 
@@ -89,3 +94,24 @@ Aja testit komennolla:
 ```
 npm test
 ```
+Aja **Eslint** komennolla:
+```
+npx eslint src
+```
+
+## Codecov
+
+Codecovin testikattavuuden päivittämiseksi on muodostettava uudet testikattavuusraportit. Kun tämän jälkeen committaa ja pushaa githubiin, Codecovin näkymä päivittyy automaattisesti.  
+
+**HUOM!** Jos main.yml-tiedostossa tekee muutoksia "Upload coverage reports to codecov"-otsikon alle, on muodostettava uudet testikattavuusraportit ennen githubiin pushaamista. Muuten Codecov pudottaa testikattavuuden nollaan.
+
+Raportin muodostaminen backendille
+```bash
+~klusteri-website/backend/$ poetry run coverage xml
+```
+
+Raportin muodostaminen frontendille
+```bash
+~klusteri-website/frontend/$ npx jest --coverage
+```
+
