@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './index.css';
 import matlu from './matlu.png';
@@ -10,6 +10,15 @@ import OwnPage from './pages/ownpage';
 
 const App = () => {
   const [showLoginPage, setShowLoginPage] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  useEffect(() => {
+    // Katsoo onko jokin käyttäjä kirjautunut sisään
+    const loggedInStatus = localStorage.getItem('isLoggedIn');
+    if (loggedInStatus === 'true') {
+      setIsLoggedIn(true);
+    }
+  }, [])
 
   const handleCreateNewUser = () => {
     setShowLoginPage(false);
@@ -17,6 +26,15 @@ const App = () => {
 
   const handleBackToLogin = () => {
     setShowLoginPage(true);
+  };
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+    localStorage.setItem('isLoggedIn', 'true')}
+
+  const handleLogout = () => {
+    setIsLoggedIn(false)
+    localStorage.removeItem('isLoggedIn');
   };
 
   const OpenFrontPage = () => {
@@ -74,12 +92,12 @@ const App = () => {
             <Routes>
               <Route path="/christinaregina" element={<ChristinaRegina />} />
               <Route path="/" element={<FrontPage />} />
-              <Route path="/omat_tiedot" element={<OwnPage />} />
+              <Route path="/omat_tiedot" element={<OwnPage isLoggedIn={isLoggedIn}/>} />
             </Routes>
           </div>
           <div className='right_content'>
             {showLoginPage ? (
-              <LoginPage onCreateNewUser={handleCreateNewUser} />
+              <LoginPage onLogin={handleLogin} onLogout={handleLogout} onCreateNewUser={handleCreateNewUser}/>
             ) : (
               <NewAccountPage onAccountCreated={handleCreateNewUser} />
             )}
@@ -90,4 +108,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default App
