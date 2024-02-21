@@ -51,3 +51,28 @@ class RetrieveUserView(APIView):
         user = UserSerializer(user)
 
         return Response(user.data, status=status.HTTP_200_OK)
+
+class UpdateUserView(APIView):
+    """View for updating a User object"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request, pk):
+        object = self.get_object(pk)
+        return Response(object, status=status.HTTP_200_OK)
+
+"""
+def get_object(self, pk):
+    try:
+        return Snippet.objects.get(pk=pk)
+    except Snippet.DoesNotExist:
+        raise Http404
+
+def put(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer = SnippetSerializer(snippet, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+"""

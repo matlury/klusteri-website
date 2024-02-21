@@ -43,6 +43,9 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
         return user
+    
+    def patch(self, validated_data):
+        pass
 
 
 class UserNoPasswordSerializer(serializers.ModelSerializer):
