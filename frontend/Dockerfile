@@ -2,7 +2,7 @@ FROM node:iron-slim
 
 WORKDIR /frontend
 
-COPY package*.json .
+COPY package*.json ./
 
 RUN npm install
 
