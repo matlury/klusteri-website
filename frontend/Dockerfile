@@ -8,7 +8,10 @@ RUN npm install
 
 COPY . .
 
-RUN chgrp -R 0 /frontend && chmod -R g+rwX /frontend
+RUN mkdir -p /.npm && \
+    chown -R node:node /.npm
+
+USER node
 
 EXPOSE 5173
 
