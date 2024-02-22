@@ -1,17 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../index.css';
 import NewAccountPage from './createpage';
 import axiosClient from "../axios.js";
 import { useStateContext } from "../context/ContextProvider.jsx";
 
-const LoginPage = () => {
+const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showCreateUser, setShowCreateUser] = useState(false);
   const { user, setUser, setToken } = useStateContext();
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  // Merkitsee kirjautuneen käyttäjän
+  useEffect(() => {
+    const loggedUser = localStorage.getItem('loggedUser')
+    if (loggedUser) {
+      setUser(JSON.parse(loggedUser))
+    }
+  }, [setUser])
+
 
   const handleCreateUser = () => {
     setShowCreateUser(true);
+    onCreateNewUser()
   };
 
   const handleLogin = event => {
@@ -33,6 +44,9 @@ const LoginPage = () => {
         .then(response => {
           setUser(response.data);
           console.log('User details:', response.data);
+          localStorage.setItem('loggedUser', JSON.stringify(response.data))
+          setIsLoggedIn(true)
+          onLogin()
       })})
       .catch((err) => {
         const response = err.response;
@@ -43,8 +57,10 @@ const LoginPage = () => {
   };
 
   const handleLogout = () => {
-    setUser(null);
-    setToken(null);
+    localStorage.removeItem('loggedUser')
+    setUser(null)
+    setIsLoggedIn(false)
+    onLogout()
   };
 
   return (
