@@ -2,8 +2,14 @@ from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from rest_framework import serializers
 from .models import User, Organization
-from django.core.exceptions import ValidationError
 
+
+"""
+Serializers convert complex data such as model instances (User, Organization etc.) to Python datatypes.
+Those can then be easily rendered to JSON, XML or other contenty types. Serializers can also deserialize incoming data
+back to complex data types.
+More info: https://www.django-rest-framework.org/api-guide/serializers/
+"""
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -44,11 +50,23 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
     
-    def update(self, instance, validated_data):
-        instance.email = validated_data.get('email')
-        instance = User.objects.update_user(instance)
-        
-        return instance
+class UserNewTelegramSerializer(serializers.ModelSerializer):
+    """
+    Serializer for updating a telegram name
+    """
+
+    class Meta:
+        model = User
+        fields = ("id", "username", "email", "telegram", "role")
+    
+    def validate_telegram(self, tgname):
+        """Checks if a telegram name is taken"""
+        user_id = self.instance.id if self.instance else None
+        if tgname:
+            duplicate = User.objects.exclude(id=user_id).filter(telegram=tgname)
+            if duplicate.exists():
+                raise serializers.ValidationError("This telegram name is taken")
+        return tgname
 
 
 class UserNoPasswordSerializer(serializers.ModelSerializer):

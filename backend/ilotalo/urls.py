@@ -1,10 +1,10 @@
 from django.urls import path
-from .views import RegisterView, RetrieveUserView, UpdateEmailView
+from .views import RegisterView, RetrieveUserView, UpdateUserView
 
 """Define URL endpoints for the ilotalo app"""
 
 urlpatterns = [
     path("register", RegisterView.as_view()),
     path("userlist", RetrieveUserView.as_view()),
-    path("update", UpdateEmailView.as_view())
+    path("update/<int:pk>/", UpdateUserView.as_view())
 ]
