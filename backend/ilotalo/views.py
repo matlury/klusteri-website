@@ -3,15 +3,26 @@ from .serializers import (
     UserSerializer,
     OrganizationSerializer,
     UserNoPasswordSerializer,
+    UserNewTelegramSerializer
 )
 from .models import User, Organization
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
 
+"""
+Views receive web requests and return web responses.
+More info: https://www.django-rest-framework.org/api-guide/views/
+"""
+
 
 class UserView(viewsets.ModelViewSet):
-    """Displays a list of all User objects at <baseurl>/users/"""
+    """
+    Displays a list of all User objects at <baseurl>/users/
+    Actions provided by ModelViewSet: 
+        .list(), .retrieve(), .create(), .update(), .partial_update(), .delete()
+    Each method listed above can be overwritten for customized object management
+    """
 
     serializer_class = UserSerializer
     queryset = User.objects.all()
@@ -43,11 +54,55 @@ class RegisterView(APIView):
 class RetrieveUserView(APIView):
     """View for fetching a User object with a JSON web token at <baseurl>/api/users/userlist/"""
 
-    #IsAuthenticated permission class will deny entry for unauthenticated users
+    # Isauthenticated will deny access if request has no access token
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
+        """
+        Request for fetching a user's data
+
+        Parameters
+        ----------
+        request: str
+            Client sends an access token to this endpoint and it is converted to 
+            the matching user's unique identifier (email address)
+        """
         user = request.user
         user = UserSerializer(user)
 
         return Response(user.data, status=status.HTTP_200_OK)
+
+
+class UpdateUserView(APIView):
+    """View for updating a User object at <baseurl>/api/users/update/<user.id>/"""
+
+    # IsAuthenticated will deny access if request has no access token
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, pk=None):
+        """
+        Request for updating the email address
+
+        Parameters
+        ----------
+        request: dict
+            Contains the new data (email or telegram)
+        pk (primary key): str
+            Id of the User object to be updated
+        """
+        user_to_update = User.objects.get(id=pk)
+
+        # check which field is going to be updated
+        if 'email' in request.data.keys():
+            user = UserNoPasswordSerializer(
+                instance=user_to_update, data=request.data, partial=True
+            )
+        elif 'telegram' in request.data.keys():
+            user = UserNewTelegramSerializer(
+                instance=user_to_update, data=request.data, partial=True
+            )
+
+        if user.is_valid():
+            user.save()
+            return Response(user.data, status=status.HTTP_200_OK)
+        return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)

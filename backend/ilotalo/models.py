@@ -49,7 +49,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     AbstractBaseUser: Core implementation of a user model. Includes i.e. password hashing and tokenized password resets.
     PermissionsMixin: Django's permission framework
     """
-
+    id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=20)
     password = models.CharField(max_length=20, default="")
     email = models.EmailField(max_length=100, default="", unique=True)

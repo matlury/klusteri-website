@@ -1,24 +1,22 @@
 """
-URL configuration for backend project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.0/topics/http/urls/
+URL configuration for backend.
 
 URL endpoints:
 <baseurl>/admin/
     - Django admin page
 <baseurl>/
-    - Endpoints registered by DefaultRouter
+    - Url endpoints registered by DefaultRouter
     - users/ displays a list of all User objects
     - organizations/ displays a list of all Organization objects
 <baseurl>/api/token/
     - Get new JSON web tokens for a user
 <baseurl>/api/token/refresh/
     - Get a new access token for a user
-<basurl>/api/users/
-    - Endpoints defined in ilotalo/urls.py
+<baseurl>/api/users/
+    - URL endpoints defined in ilotalo/urls.py
     - register/ handles registartion of new users
     - userlist/ displays data of a specific user
+    - newemail/<user.id>/ update an email address
 """
 
 from django.contrib import admin
