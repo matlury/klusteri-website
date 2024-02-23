@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const OwnPage = () => {
+const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [telegram, setTelegram] = useState('');
@@ -12,11 +12,21 @@ const OwnPage = () => {
   const [confirmOrgPassword, setConfirmOrgPassword] = useState('')
   const [isChecked, setIsChecked] = useState(false)
   const [checkedOrgs, setCheckedOrgs] = useState({});
+  const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn)
 
-  // Hakee järjestöt tietokannasta
+  // merkitsee sisäänkirjautumisen
   useEffect(() => {
-    getOrganisations();
-  }, []);
+    setIsLoggedIn(propIsLoggedIn);
+  }, [propIsLoggedIn]);
+
+
+  // hakee organisaatiot jos on kirjauduttu sisään
+  useEffect(() => {
+    if (isLoggedIn) {
+      getOrganisations();
+      }
+  }, [isLoggedIn])
+
 
   const getOrganisations = () => {
     axios
@@ -154,13 +164,16 @@ const OwnPage = () => {
 
   return (
     <div>
+    {!isLoggedIn && <p>Kirjaudu ensin sisään</p>}
+    {isLoggedIn && (
       <div id="left_content">
         <div id="leftleft_content">
           {userPage()}
           {organisationPage()}
         </div>
       </div>
-    </div>
+    )}
+  </div>
   );
 };
 
