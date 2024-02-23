@@ -12,30 +12,32 @@ const App = () => {
   const [showLoginPage, setShowLoginPage] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
+
+  // Checks whether a user is logged in
   useEffect(() => {
-    // Katsoo onko jokin käyttäjä kirjautunut sisään
     const loggedInStatus = localStorage.getItem('isLoggedIn');
     if (loggedInStatus === 'true') {
       setIsLoggedIn(true);
     }
   }, [])
 
+  // Hides login page and shows create new user page
   const handleCreateNewUser = () => {
     setShowLoginPage(false);
   };
 
-  const handleBackToLogin = () => {
-    setShowLoginPage(true);
-  };
-
+  // Sets localstorage value to true, if someone is logged in
   const handleLogin = () => {
     setIsLoggedIn(true);
     localStorage.setItem('isLoggedIn', 'true')}
 
+  // Removes localstorage value if someone logs out
   const handleLogout = () => {
     setIsLoggedIn(false)
     localStorage.removeItem('isLoggedIn');
   };
+
+  // The next constants are paths to different pages on the website. They are accessible by clicking their names in the navigation bar
 
   const OpenFrontPage = () => {
     const frontpage_url = '/'
@@ -71,6 +73,7 @@ const App = () => {
     window.open(privacypolicy_url, '_self')
   }
 
+  // Routes to the different pages. Everything is displayed on the left side of the screen, except the login info and register info is on the right side
   return (
     <Router>
       <div>

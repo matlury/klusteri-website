@@ -14,13 +14,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const [checkedOrgs, setCheckedOrgs] = useState({});
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn)
 
-  // merkitsee sisäänkirjautumisen
+  // Writes down if a user is logged in
   useEffect(() => {
     setIsLoggedIn(propIsLoggedIn);
   }, [propIsLoggedIn]);
 
 
-  // hakee organisaatiot jos on kirjauduttu sisään
+  // Fetches the organisations if a user is logged in
   useEffect(() => {
     if (isLoggedIn) {
       getOrganisations();
@@ -40,7 +40,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       });
   };
 
-  // Näyttää peruskäyttäjän tiedot
+  // Shows the information of a standard user
   const userPage = () => (
     <form>
       <div>
@@ -86,7 +86,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     </form>
   );
 
-  // Näyttää järjestön tiedot view-napin painamisen jälkeen
+  // Shows the information of organizations after clicking the view-button
   const toggleDetails = orgId => {
     setCheckedOrgs(prevState => ({
       ...prevState,
@@ -96,11 +96,12 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     setSelectedOrg(orgId === selectedOrg ? null : orgId);
   };
 
+  // Handles the change if you click on the checkbox
   const handleCheckboxChange = (event) => {
     setIsChecked(event.target.checked);
   };
 
-  // Järjestöjen yksityiskohtaisemmat tiedot
+  // Shows more detailed information of the organizations
   const renderOrganizationDetails = orgId => {
     const organization = organisations.find(org => org.id === orgId);
     if (selectedOrg === orgId && organization) {
@@ -146,7 +147,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     return null;
   };
 
-  // Järjestöjen sivut
+  // Organizationpage
   const organisationPage = () => (
     <div>
       <h2>Järjestöt</h2>

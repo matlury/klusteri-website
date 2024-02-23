@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useStateContext } from "./context/ContextProvider.jsx";
 
 // Get API_URL from environment or use a default value
 const API_URL = import.meta.env.API_URL || 'http://localhost:8000';
@@ -7,6 +6,8 @@ const API_URL = import.meta.env.API_URL || 'http://localhost:8000';
 const axiosClient = axios.create({
   baseURL: `${API_URL}/api`
 });
+
+// Checks the authorization of the user using axios
 
 axiosClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('ACCESS_TOKEN');

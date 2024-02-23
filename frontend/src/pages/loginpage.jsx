@@ -11,7 +11,7 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
   const { user, setUser, setToken } = useStateContext();
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
-  // Merkitsee kirjautuneen käyttäjän
+  // Saves the logged user (if there is one)
   useEffect(() => {
     const loggedUser = localStorage.getItem('loggedUser')
     if (loggedUser) {
@@ -19,12 +19,13 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
     }
   }, [setUser])
 
-
+  // Handles the switch to the create user view if the button is clicked
   const handleCreateUser = () => {
     setShowCreateUser(true);
     onCreateNewUser()
   };
 
+  // Handles the login function
   const handleLogin = event => {
     event.preventDefault();
 
@@ -33,6 +34,7 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
       password: password
     };
 
+    // Checks if the credentials match using tokens, and if the user is authenticated it saves the logged user to local storage
     axiosClient.post('/token/', credentials)
       .then(({ data }) => {
         setToken(data.access);
@@ -45,6 +47,7 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
           setUser(response.data);
           console.log('User details:', response.data);
           localStorage.setItem('loggedUser', JSON.stringify(response.data))
+          localStorage.setItem('isLoggedIn', true)
           setIsLoggedIn(true)
           onLogin()
       })})
@@ -56,12 +59,17 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
       });
   };
 
+  // Handles the logout function
   const handleLogout = () => {
     localStorage.removeItem('loggedUser')
+    localStorage.removeItem('isLoggedIn')
     setUser(null)
     setIsLoggedIn(false)
     onLogout()
   };
+
+  // renders the NewAccountPage if the showCreateUser function is true, if the user is logged in, it shows the username and logout-button
+  // if the user is not logged nor in the create new user page, it shows the loginpage
 
   return (
     <div id="right_content">

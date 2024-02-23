@@ -1,20 +1,22 @@
 import { createContext, useContext, useState } from "react";
 
+// Creates a context for managing global application state
 const StateContext = createContext({
     user: null,
     token: null,
     notification: null,
 
+    // Functions to update state values
     setUser: () => { },
     setToken: () => { },
     setNotification: () => { },
 });
 
+// ContextProvider component to provide state to child components
 export const ContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('ACCESS_TOKEN') || null);
     const [notification, setNotification] = useState(null);
-
 
     const updateToken = (token) => {
         setToken(token);
@@ -32,6 +34,7 @@ export const ContextProvider = ({ children }) => {
         }, 5000);
     };
 
+    // Provide state values and update functions to child components
     return (
         <StateContext.Provider
             value={{
@@ -48,4 +51,6 @@ export const ContextProvider = ({ children }) => {
     );
 };
 
+
+// Custom hook to access context values in functional components
 export const useStateContext = () => useContext(StateContext);
