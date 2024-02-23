@@ -44,8 +44,11 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
     
-    def patch(self, validated_data):
-        pass
+    def update(self, instance, validated_data):
+        instance.email = validated_data.get('email')
+        instance = User.objects.update_user(instance)
+        
+        return instance
 
 
 class UserNoPasswordSerializer(serializers.ModelSerializer):

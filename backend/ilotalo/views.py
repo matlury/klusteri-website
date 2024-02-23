@@ -52,27 +52,25 @@ class RetrieveUserView(APIView):
 
         return Response(user.data, status=status.HTTP_200_OK)
 
-class UpdateUserView(APIView):
+class UpdateEmailView(APIView):
     """View for updating a User object"""
 
     permission_classes = [permissions.IsAuthenticated]
 
-    def patch(self, request, pk):
-        object = self.get_object(pk)
-        return Response(object, status=status.HTTP_200_OK)
+    def patch(self, request):
+        requesting_user = request.user
+        requesting_user = UserSerializer(data=requesting_user)
+        print("pyynnön lähettäjä", requesting_user)
 
-"""
-def get_object(self, pk):
-    try:
-        return Snippet.objects.get(pk=pk)
-    except Snippet.DoesNotExist:
-        raise Http404
+        updated_user = request.data
+        updated_user = UserSerializer(updated_user)
 
-def put(self, request, pk, format=None):
-        snippet = self.get_object(pk)
-        serializer = SnippetSerializer(snippet, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-"""
+        if not requesting_user.is_valid():
+            return Response(requesting_user.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        if not updated_user.is_valid():
+            return Response(updated_user.errors, status=status.HTTP_400_BAD_REQUEST)
+        user = updated_user.update(requesting_user, updated_user.validated_data)
+        user = UserNoPasswordSerializer(user)
+
+        return Response(status=status.HTTP_200_OK)

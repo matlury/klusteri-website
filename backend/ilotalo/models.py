@@ -38,7 +38,12 @@ class UserAccountManager(BaseUserManager):
         user.save()
 
         return user
+    
+    def update_user(self, instance):
+        user = instance
+        user.save()
 
+        return user
 
 class User(AbstractBaseUser, PermissionsMixin):
     """
