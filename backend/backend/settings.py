@@ -33,6 +33,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "klusteri-website-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi",
     "localhost",
+    "127.0.0.1",
 ]
 
 

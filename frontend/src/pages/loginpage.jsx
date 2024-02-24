@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import '../index.css';
-import NewAccountPage from './createpage';
-import axiosClient from "../axios.js";
-import { useStateContext } from "../context/ContextProvider.jsx";
+import React, { useState, useEffect } from 'react'
+import '../index.css'
+import NewAccountPage from './createpage'
+import axiosClient from "../axios.js"
+import { useStateContext } from "../context/ContextProvider.jsx"
 
 const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showCreateUser, setShowCreateUser] = useState(false);
-  const { user, setUser, setToken } = useStateContext();
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [showCreateUser, setShowCreateUser] = useState(false)
+  const { user, setUser, setToken } = useStateContext()
+  const [setIsLoggedIn] = useState(false)
+  const [error, setError] = useState('');
 
   // Saves the logged user (if there is one)
   useEffect(() => {
@@ -21,43 +22,46 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
 
   // Handles the switch to the create user view if the button is clicked
   const handleCreateUser = () => {
-    setShowCreateUser(true);
+    setShowCreateUser(true)
     onCreateNewUser()
-  };
+  }
 
-  // Handles the login function
-  const handleLogin = event => {
-    event.preventDefault();
+// Handles the login function
+const handleLogin = event => {
+  event.preventDefault()
 
-    const credentials = {
-      email: email,
-      password: password
-    };
+  const credentials = {
+    email: email,
+    password: password
+  }
 
-    // Checks if the credentials match using tokens, and if the user is authenticated it saves the logged user to local storage
-    axiosClient.post('/token/', credentials)
-      .then(({ data }) => {
-        setToken(data.access);
-        axiosClient.get('/users/userlist', {
-          headers: {
-            Authorization: `Bearer ${data.access}`
-          }
-        })
-        .then(response => {
-          setUser(response.data);
-          console.log('User details:', response.data);
-          localStorage.setItem('loggedUser', JSON.stringify(response.data))
-          localStorage.setItem('isLoggedIn', true)
-          setIsLoggedIn(true)
-          onLogin()
-      })})
-      .catch((err) => {
-        const response = err.response;
-        if (response && response.status === 422) {
-          setError(response.data.message);
+  // Checks if the credentials match using tokens, and if the user is authenticated it saves the logged user to local storage
+  axiosClient.post('/token/', credentials)
+    .then(({ data }) => {
+      setToken(data.access)
+      axiosClient.get('/users/userlist', {
+        headers: {
+          Authorization: `Bearer ${data.access}`
         }
-      });
-  };
+      })
+      .then(response => {
+        setUser(response.data)
+        console.log('User details:', response.data)
+        localStorage.setItem('loggedUser', JSON.stringify(response.data))
+        localStorage.setItem('isLoggedIn', true)
+        setIsLoggedIn(true)
+        onLogin()
+      })
+    })
+    .catch((err) => {
+      const response = err.response
+      if (response && response.status === 422) {
+        setError(response.data.message)
+      } else {
+        setError('Sähköposti tai salasana virheellinen!')
+      }
+    })
+}
 
   // Handles the logout function
   const handleLogout = () => {
@@ -66,7 +70,7 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
     setUser(null)
     setIsLoggedIn(false)
     onLogout()
-  };
+  }
 
   // renders the NewAccountPage if the showCreateUser function is true, if the user is logged in, it shows the username and logout-button
   // if the user is not logged nor in the create new user page, it shows the loginpage
@@ -103,10 +107,11 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
           </div>
           <button className="login-button" type="submit" onClick={handleLogin}>Kirjaudu sisään</button>
           <button className="create-user-button" type="button" onClick={handleCreateUser}>Luo uusi käyttäjä</button>
+          {error && <div style={{ color: 'red' }}>{error}</div>}
         </form>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default LoginPage;
+export default LoginPage

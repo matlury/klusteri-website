@@ -1,11 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1708331074015" clover="3.2.0">
-  <project timestamp="1708331074015" name="All files">
-    <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1" elements="3" coveredelements="3" complexity="0" loc="2" ncloc="2" packages="1" files="1" classes="1"/>
-    <file name="frontpage.jsx" path="C:\Users\Valts\Documents\klusteri-website\frontend\src\pages\frontpage.jsx">
+<coverage generated="1708785217249" clover="3.2.0">
+  <project timestamp="1708785217249" name="All files">
+    <metrics statements="46" coveredstatements="31" conditionals="12" coveredconditionals="6" methods="21" coveredmethods="8" elements="79" coveredelements="45" complexity="0" loc="46" ncloc="46" packages="1" files="2" classes="2"/>
+    <file name="frontpage.jsx" path="/home/peltlaur/Asiakirjat/klusteri-website/frontend/src/pages/frontpage.jsx">
       <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
       <line num="4" count="1" type="stmt"/>
       <line num="5" count="1" type="stmt"/>
+    </file>
+    <file name="ownpage.jsx" path="/home/peltlaur/Asiakirjat/klusteri-website/frontend/src/pages/ownpage.jsx">
+      <metrics statements="44" coveredstatements="29" conditionals="12" coveredconditionals="6" methods="20" coveredmethods="7"/>
+      <line num="4" count="1" type="stmt"/>
+      <line num="5" count="3" type="stmt"/>
+      <line num="6" count="3" type="stmt"/>
+      <line num="7" count="3" type="stmt"/>
+      <line num="8" count="3" type="stmt"/>
+      <line num="9" count="3" type="stmt"/>
+      <line num="10" count="3" type="stmt"/>
+      <line num="11" count="3" type="stmt"/>
+      <line num="12" count="3" type="stmt"/>
+      <line num="13" count="3" type="stmt"/>
+      <line num="14" count="3" type="stmt"/>
+      <line num="15" count="3" type="stmt"/>
+      <line num="18" count="3" type="stmt"/>
+      <line num="19" count="2" type="stmt"/>
+      <line num="24" count="3" type="stmt"/>
+      <line num="25" count="2" type="cond" truecount="2" falsecount="0"/>
+      <line num="26" count="1" type="stmt"/>
+      <line num="31" count="3" type="stmt"/>
+      <line num="32" count="1" type="stmt"/>
+      <line num="35" count="1" type="stmt"/>
+      <line num="36" count="1" type="stmt"/>
+      <line num="39" count="0" type="stmt"/>
+      <line num="44" count="3" type="stmt"/>
+      <line num="45" count="2" type="stmt"/>
+      <line num="51" count="0" type="stmt"/>
+      <line num="60" count="0" type="stmt"/>
+      <line num="69" count="0" type="stmt"/>
+      <line num="90" count="3" type="stmt"/>
+      <line num="91" count="0" type="stmt"/>
+      <line num="96" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="100" count="3" type="stmt"/>
+      <line num="101" count="0" type="stmt"/>
+      <line num="105" count="3" type="stmt"/>
+      <line num="106" count="0" type="stmt"/>
+      <line num="107" count="0" type="cond" truecount="0" falsecount="4"/>
+      <line num="108" count="0" type="stmt"/>
+      <line num="124" count="0" type="stmt"/>
+      <line num="132" count="0" type="stmt"/>
+      <line num="147" count="0" type="stmt"/>
+      <line num="151" count="3" type="stmt"/>
+      <line num="152" count="2" type="stmt"/>
+      <line num="156" count="0" type="stmt"/>
+      <line num="158" count="0" type="stmt"/>
+      <line num="166" count="3" type="stmt"/>
     </file>
   </project>
 </coverage>

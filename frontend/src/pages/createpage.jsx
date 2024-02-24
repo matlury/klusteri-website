@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import LoginPage from './loginpage';
-import '../index.css';
+import React, { useState } from 'react'
+import axios from 'axios'
+import LoginPage from './loginpage'
+import '../index.css'
 
 const NewAccountPage = ({ onAccountCreated }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
-  const [telegram, setTelegram] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPasswords, setShowPasswords] = useState(false);
-  const [showLoginPage, setShowLoginPage] = useState(false);
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('')
+  const [telegram, setTelegram] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPasswords, setShowPasswords] = useState(false)
+  const [showLoginPage, setShowLoginPage] = useState(false)
+  const [error, setError] = useState('')
+  const [userCreated, setUserCreated] = useState(false)
 
   const handleCreateAccount = () => {
     /*
@@ -19,8 +20,8 @@ const NewAccountPage = ({ onAccountCreated }) => {
     and confirm password are not empty
     */
     if (!username || !password || !email || !confirmPassword) {
-      setError('Käyttäjänimi, salasana, sähköposti ja vahvista salasana ovat pakollisia kenttiä.');
-      return;
+      setError('Käyttäjänimi, salasana, sähköposti ja vahvista salasana ovat pakollisia kenttiä.')
+      return
     }
 
     /*
@@ -28,8 +29,8 @@ const NewAccountPage = ({ onAccountCreated }) => {
     confirm password are the same
     */
     if (password !== confirmPassword) {
-      setError('Salasanat eivät täsmää.');
-      return;
+      setError('Salasanat eivät täsmää.')
+      return
     }
 
     /*
@@ -37,30 +38,69 @@ const NewAccountPage = ({ onAccountCreated }) => {
     8-20 characters long
     */
     if (password.length < 8 || password.length > 20) {
-      setError('Salasanan tulee olla 8-20 merkkiä pitkä.');
-      return;
+      setError('Salasanan tulee olla 8-20 merkkiä pitkä.')
+      return
     }
 
     /*
-    Send the user information to the server
+    Check if telegram is provided and unique
     */
-    const userObject = { username, password, email, telegram, role: 5 };
+    if (telegram) {
+      axios.get(`http://localhost:8000/users/?telegram=${telegram}`)
+        .then(response => {
+          const existingUsers = response.data
+          if (existingUsers.some(user => user.telegram === telegram)) {
+            setError('Telegram on jo käytössä.')
+          } else {
+            // Proceed with account creation
+            createAccount()
+          }
+        })
+        .catch(error => {
+          console.error('Error checking telegram:', error)
+          setError('Virhe tarkistettaessa telegramia.')
+        })
+    } else {
+      // Proceed with account creation
+      createAccount()
+    }
+  }
 
-    axios.post('http://localhost:8000/users/', userObject).then(response => {
-      console.log(response);
-      console.log('Account created successfully!');
-      onAccountCreated && onAccountCreated();
-    });
-    setShowLoginPage(true);
-  };
+  const createAccount = () => {
+    /*
+    Send request to server to check if email is already in use
+    */
+    axios.get(`http://localhost:8000/users/?email=${email}`)
+      .then(response => {
+        const existingUsers = response.data
+        if (existingUsers.some(user => user.email === email)) {
+          setError('Sähköposti on jo käytössä.')
+        } else {
+          // Send the user information to the server
+          const userObject = { username, password, email, telegram, role: 5 }
+          axios.post('http://localhost:8000/users/', userObject)
+            .then(response => {
+              console.log(response)
+              console.log('Account created successfully!')
+              setUserCreated(true)
+              onAccountCreated && onAccountCreated()
+            })
+          setShowLoginPage(true)
+        }
+      })
+      .catch(error => {
+        console.error('Error checking email:', error)
+        setError('Virhe tarkistettaessa sähköpostia.')
+      })
+  }
 
   const handleBackToLogin = () => {
-    setShowLoginPage(true);
-  };
+    setShowLoginPage(true)
+  }
 
   const toggleShowPasswords = () => {
-    setShowPasswords(prevState => !prevState);
-  };
+    setShowPasswords(prevState => !prevState)
+  }
 
   const createForm = () => (
     <form className="form-container">
@@ -121,11 +161,13 @@ const NewAccountPage = ({ onAccountCreated }) => {
         Luo käyttäjä
       </button>
     </form>
-  );
+  )
 
   return (
-    <div id="right_content">{showLoginPage ? <LoginPage /> : createForm()}</div>
-  );
-};
+    <div id="right_content">{showLoginPage ? <LoginPage /> : createForm()}
+      {userCreated && <p style={{ color: 'green' }}>Käyttäjä luotu onnistuneesti!</p>}
+    </div>
+  )
+}
 
-export default NewAccountPage;
+export default NewAccountPage
