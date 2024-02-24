@@ -1,30 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 
 const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [telegram, setTelegram] = useState('');
-  const [role, setRole] = useState('5');
-  const [organisations, setOrganisations] = useState([]);
-  const [selectedOrg, setSelectedOrg] = useState(null);
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [telegram, setTelegram] = useState('')
+  const [role, setRole] = useState('5')
+  const [organisations, setOrganisations] = useState([])
+  const [selectedOrg, setSelectedOrg] = useState(null)
   const [orgPassword, setNewOrgPassword] = useState('')
   const [confirmOrgPassword, setConfirmOrgPassword] = useState('')
   const [isChecked, setIsChecked] = useState(false)
-  const [checkedOrgs, setCheckedOrgs] = useState({});
+  const [setCheckedOrgs] = useState({})
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn)
 
   // Writes down if a user is logged in
   useEffect(() => {
-    setIsLoggedIn(propIsLoggedIn);
-  }, [propIsLoggedIn]);
+    setIsLoggedIn(propIsLoggedIn)
+  }, [propIsLoggedIn])
 
 
   // Fetches the organisations if a user is logged in
   useEffect(() => {
     if (isLoggedIn) {
-      getOrganisations();
-      }
+      getOrganisations()
+    }
   }, [isLoggedIn])
 
 
@@ -32,13 +32,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     axios
       .get('http://localhost:8000/organizations/')
       .then(response => {
-        const data = response.data;
-        setOrganisations(data);
+        const data = response.data
+        setOrganisations(data)
       })
       .catch(error => {
-        console.error('Error fetching organisations:', error);
-      });
-  };
+        console.error('Error fetching organisations:', error)
+      })
+  }
 
   // Shows the information of a standard user
   const userPage = () => (
@@ -47,6 +47,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         Käyttäjänimi:
         <input
           id="username"
+          type="username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
@@ -79,10 +80,12 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         Tyyppi:
       </div>
       <div>
-        Myöntöpäivä:
+        Myöntämis päivä:
       </div>
       <br />
-      <button type="edit-button">Vahvista muutokset</button>
+      <button className="login-button" type="button">
+        Vahvista muutokset
+      </button>
     </form>
   );
 
@@ -91,19 +94,19 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     setCheckedOrgs(prevState => ({
       ...prevState,
       [orgId]: !prevState[orgId]
-    }));
+    }))
 
-    setSelectedOrg(orgId === selectedOrg ? null : orgId);
-  };
+    setSelectedOrg(orgId === selectedOrg ? null : orgId)
+  }
 
   // Handles the change if you click on the checkbox
   const handleCheckboxChange = (event) => {
-    setIsChecked(event.target.checked);
-  };
+    setIsChecked(event.target.checked)
+  }
 
   // Shows more detailed information of the organizations
   const renderOrganizationDetails = orgId => {
-    const organization = organisations.find(org => org.id === orgId);
+    const organization = organisations.find(org => org.id === orgId)
     if (selectedOrg === orgId && organization) {
       return (
         <div>
@@ -118,36 +121,38 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           <form>
             <div>
               Uusi salasana:
-                <input
-                  id="orgPassword"
-                  value={orgPassword}
-                  onChange={(e) => setNewOrgPassword(e.target.value)}/>
+              <input
+                id="orgPassword"
+                value={orgPassword}
+                onChange={(e) => setNewOrgPassword(e.target.value)} />
             </div>
             <div>
-              Uusi salasana uudelleen:
-                <input
-                  id="confirmOrgPassword"
-                  type="confirmOrgPassword"
-                  value={confirmOrgPassword}
-                  onChange={(e) => setConfirmOrgPassword(e.target.value)}/>
+              Toista uusi salasana:
+              <input
+                id="confirmOrgPassword"
+                type="confirmOrgPassword"
+                value={confirmOrgPassword}
+                onChange={(e) => setConfirmOrgPassword(e.target.value)} />
             </div>
           </form>
           <div>
             <label>
-            <p style={{ display: 'inline-block', marginRight: '10px' }}>* Nimet saa julkaista</p>
-            <input
-              type="checkbox"
-              checked={isChecked}
-              onChange={handleCheckboxChange}/>
+              <p style={{ display: 'inline-block', marginRight: '10px' }}>* Nimet saa julkaista</p>
+              <input
+                type="checkbox"
+                checked={isChecked}
+                onChange={handleCheckboxChange} />
             </label>
           </div>
         </div>
-      );
+      )
     }
-    return null;
-  };
+    return null
+  }
 
-  // Organizationpage
+  /* 
+  Organization list 
+  */
   const organisationPage = () => (
     <div>
       <h2>Järjestöt</h2>
@@ -165,17 +170,17 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   return (
     <div>
-    {!isLoggedIn && <p>Kirjaudu ensin sisään</p>}
-    {isLoggedIn && (
-      <div id="left_content">
-        <div id="leftleft_content">
-          {userPage()}
-          {organisationPage()}
+      {!isLoggedIn && <p>Kirjaudu sisään muokataksesi tietoja</p>}
+      {isLoggedIn && (
+        <div id="left_content">
+          <div id="leftleft_content">
+            {userPage()}
+            {organisationPage()}
+          </div>
         </div>
-      </div>
-    )}
-  </div>
-  );
-};
+      )}
+    </div>
+  )
+}
 
-export default OwnPage;
+export default OwnPage
