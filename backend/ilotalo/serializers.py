@@ -50,9 +50,9 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
     
-class UserNewTelegramSerializer(serializers.ModelSerializer):
+class UserUpdateSerializer(serializers.ModelSerializer):
     """
-    Serializer for updating a telegram name
+    Serializer for updating a user
     """
 
     class Meta:

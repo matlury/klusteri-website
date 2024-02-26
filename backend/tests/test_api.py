@@ -335,3 +335,16 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["telegram"], "")
 
+    def test_updating_non_existent_user(self):
+        """Backend responds with 404 if a user is not found when updating information"""
+
+        # update the telegram name
+        response = self.client.put(
+            "http://localhost:8000/api/users/update/123/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={"telegram": "newtg"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
