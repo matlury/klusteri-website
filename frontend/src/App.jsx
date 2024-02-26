@@ -7,6 +7,11 @@ import LoginPage from './pages/loginpage';
 import NewAccountPage from './pages/createpage';
 import ChristinaRegina from './pages/christina_regina';
 import OwnPage from './pages/ownpage';
+import PrivacyPolicy from './pages/privacypolicy';
+import Contacts from './pages/contacts';
+import Rules_and_Instructions from './pages/rules_instructions';
+import Reservations from './pages/reservations';
+import OwnKeys from './pages/ownkeys';
 
 const App = () => {
   const [showLoginPage, setShowLoginPage] = useState(true);
@@ -69,7 +74,7 @@ const App = () => {
   }
 
   const OpenPrivacyPolicy = () => {
-    const privacypolicy_url = 'https://matlu.fi/static/3f7acf0e44035d9fee529336282a10e7/0cb49548aae9482eede839a1970fdb7b.pdf'
+    const privacypolicy_url = '/tietosuojaseloste'
     window.open(privacypolicy_url, '_self')
   }
 
@@ -96,6 +101,11 @@ const App = () => {
               <Route path="/christinaregina" element={<ChristinaRegina />} />
               <Route path="/" element={<FrontPage />} />
               <Route path="/omat_tiedot" element={<OwnPage isLoggedIn={isLoggedIn}/>} />
+              <Route path="/tietosuojaseloste" element={<PrivacyPolicy />} />
+              <Route path="/yhteystiedot" element={<Contacts />} />
+              <Route path="/saannot_ja_ohjeet" element={<Rules_and_Instructions />} />
+              <Route path="/varaukset" element={<Reservations />} />
+              <Route path="/omat_avaimet" element={<OwnKeys isLoggedIn={isLoggedIn}/>} />
             </Routes>
           </div>
           <div className='right_content'>

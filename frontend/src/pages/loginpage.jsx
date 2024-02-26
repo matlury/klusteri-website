@@ -9,7 +9,6 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
   const [password, setPassword] = useState('')
   const [showCreateUser, setShowCreateUser] = useState(false)
   const { user, setUser, setToken } = useStateContext()
-  const [setIsLoggedIn] = useState(false)
   const [error, setError] = useState('');
 
   // Saves the logged user (if there is one)
@@ -49,7 +48,6 @@ const handleLogin = event => {
         console.log('User details:', response.data)
         localStorage.setItem('loggedUser', JSON.stringify(response.data))
         localStorage.setItem('isLoggedIn', true)
-        setIsLoggedIn(true)
         onLogin()
       })
     })
@@ -68,7 +66,6 @@ const handleLogin = event => {
     localStorage.removeItem('loggedUser')
     localStorage.removeItem('isLoggedIn')
     setUser(null)
-    setIsLoggedIn(false)
     onLogout()
   }
 
