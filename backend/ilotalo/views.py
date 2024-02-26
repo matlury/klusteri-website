@@ -3,12 +3,13 @@ from .serializers import (
     UserSerializer,
     OrganizationSerializer,
     UserNoPasswordSerializer,
-    UserNewTelegramSerializer
+    UserUpdateSerializer
 )
 from .models import User, Organization
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
+from django.core.exceptions import ObjectDoesNotExist
 
 """
 Views receive web requests and return web responses.
@@ -90,17 +91,15 @@ class UpdateUserView(APIView):
         pk (primary key): str
             Id of the User object to be updated
         """
-        user_to_update = User.objects.get(id=pk)
 
-        # check which field is going to be updated
-        if 'email' in request.data.keys():
-            user = UserNoPasswordSerializer(
-                instance=user_to_update, data=request.data, partial=True
-            )
-        elif 'telegram' in request.data.keys():
-            user = UserNewTelegramSerializer(
-                instance=user_to_update, data=request.data, partial=True
-            )
+        try:
+            user_to_update = User.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+
+        user = UserUpdateSerializer(
+            instance=user_to_update, data=request.data, partial=True
+        )
 
         if user.is_valid():
             user.save()
