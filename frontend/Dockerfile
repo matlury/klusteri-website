@@ -1,5 +1,7 @@
 FROM node:iron-slim
 
+RUN npm install -g npm@10.4.0
+
 WORKDIR /frontend
 
 COPY package*.json ./
