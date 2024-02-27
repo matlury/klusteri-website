@@ -43,6 +43,15 @@ const NewAccountPage = ({ onAccountCreated }) => {
     }
 
     /*
+    Check that the password is not
+    only numbers
+    */
+    if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
+      setError('Salasana ei saa sisältää pelkkiä numeroita.')
+      return
+    }
+
+    /*
     Check if telegram is provided and unique
     */
     if (telegram) {
@@ -70,13 +79,12 @@ const NewAccountPage = ({ onAccountCreated }) => {
     /*
     Send request to server to check if email is already in use
     */
-    axios.get(`http://localhost:8000/users/?email=${email}`)
+      axios.get(`http://localhost:8000/users/?email=${email}`)
       .then(response => {
         const existingUsers = response.data
         if (existingUsers.some(user => user.email === email)) {
           setError('Sähköposti on jo käytössä.')
         } else {
-          // Send the user information to the server
           const userObject = { username, password, email, telegram, role: 5 }
           axios.post('http://localhost:8000/users/', userObject)
             .then(response => {
@@ -84,7 +92,16 @@ const NewAccountPage = ({ onAccountCreated }) => {
               console.log('Account created successfully!')
               setUserCreated(true)
               onAccountCreated && onAccountCreated()
+
+              // Set timeout to hide success message after 5 seconds
+              setTimeout(() => {
+                setUserCreated(false);
+              }, 5000);
             })
+            .catch(error => {
+              console.error('Error creating account:', error);
+              setError('Virhe luotaessa käyttäjää.');
+            });
           setShowLoginPage(true)
         }
       })
