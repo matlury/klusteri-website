@@ -7,9 +7,16 @@ from .serializers import (
     UserSerializer,
     OrganizationSerializer,
     UserNoPasswordSerializer,
-    UserUpdateSerializer
+    UserUpdateSerializer,
 )
 from .models import User, Organization
+from .config import Role
+
+LEPPISPJ = Role.LEPPISPJ.value
+LEPPISVARAPJ = Role.LEPPISVARAPJ.value
+MUOKKAUS = Role.MUOKKAUS.value
+AVAIMELLINEN = Role.AVAIMELLINEN.value
+TAVALLINEN = Role.TAVALLINEN.value
 
 """
 Views receive web requests and return web responses.
@@ -20,7 +27,7 @@ More info: https://www.django-rest-framework.org/api-guide/views/
 class UserView(viewsets.ModelViewSet):
     """
     Displays a list of all User objects at <baseurl>/users/
-    Actions provided by ModelViewSet: 
+    Actions provided by ModelViewSet:
         .list(), .retrieve(), .create(), .update(), .partial_update(), .delete()
     Each method listed above can be overwritten for customized object management
     """
@@ -65,7 +72,7 @@ class RetrieveUserView(APIView):
         Parameters
         ----------
         request: str
-            Client sends an access token to this endpoint and it is converted to 
+            Client sends an access token to this endpoint and it is converted to
             the matching user's unique identifier (email address)
         """
         user = request.user
@@ -105,3 +112,52 @@ class UpdateUserView(APIView):
             user.save()
             return Response(user.data, status=status.HTTP_200_OK)
         return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CreateOrganizationView(APIView):
+    """View for creating a new organization <baseurl>/api/organizations/create"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] != LEPPISPJ:
+            return Response(
+                "Only LeppisPJ can create organizations",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = OrganizationSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class RemoveOrganizationView(APIView):
+    """View for creating a new organization <baseurl>/api/organizations/create"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, pk):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] != LEPPISPJ:
+            return Response(
+                "Only LeppisPJ can remove organizations",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            organization_to_remove = Organization.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            return Response(
+                "Organization not found", status=status.HTTP_404_NOT_FOUND
+            )
+
+        organization_to_remove.delete()
+
+        return Response(f"Organization {organization_to_remove.name} successfully removed", status=status.HTTP_200_OK)
