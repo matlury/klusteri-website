@@ -35,7 +35,7 @@ class TestDjangoAPI(TestCase):
         self.refresh_token = response.data["refresh"]
 
         response = self.client.get(
-            "http://localhost:8000/api/users/userlist",
+            "http://localhost:8000/api/users/userinfo",
             headers={"Authorization": f"Bearer {self.access_token}"},
         )
 
@@ -178,7 +178,7 @@ class TestDjangoAPI(TestCase):
 
         # fetch the data
         response = self.client.get(
-            "http://localhost:8000/api/users/userlist",
+            "http://localhost:8000/api/users/userinfo",
             headers={"Authorization": f"Bearer {access_token}"},
         )
 
