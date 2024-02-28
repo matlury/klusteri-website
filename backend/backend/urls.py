@@ -23,7 +23,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from ilotalo import views
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenBlacklistView
 
 router = routers.DefaultRouter()
 router.register(r"users", views.UserView, "ilotalo")
@@ -34,5 +34,6 @@ urlpatterns = [
     path("", include(router.urls)),
     path("api/token/", TokenObtainPairView.as_view()),
     path("api/token/refresh/", TokenRefreshView.as_view()),
+    path("api/token/blacklist/", TokenBlacklistView.as_view()),
     path("api/users/", include("ilotalo.urls")),
 ]
