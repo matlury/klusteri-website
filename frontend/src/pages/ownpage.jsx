@@ -90,7 +90,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         Tyyppi:
       </div>
       <div>
-        Myöntämis päivä:
+        Myöntämispäivä:
       </div>
       <br />
       <button onClick={handleUserDetails} className="create-user-button" type="button">
@@ -114,6 +114,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     setIsChecked(event.target.checked)
   }
 
+  // Handles the user info update when the 'Vahvista Muutokset' button is clicked
   const handleUserDetails = (event) => {
     event.preventDefault();
   
@@ -127,15 +128,20 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     const user_id = loggedUser.id;
   
     console.log(user_id);
-  
-    axiosClient.put(`/users/update/${user_id}/`, details)
+
+    const confirmUpdate = window.confirm("Oletko varma, että haluat päivittää käyttäjätietojasi?")
+    if (confirmUpdate) {
+      axiosClient.put(`/users/update/${user_id}/`, details)
       .then(response => {
         console.log('User details updated successfully:', response.data);
         localStorage.setItem('loggedUser', JSON.stringify(response.data))
       })
       .catch(error => {
         console.error('Error updating user details:', error);
-      });
+      })
+    } else {
+      console.log("User cancelled the update.")
+    }
   }
 
   // Shows more detailed information of the organizations
