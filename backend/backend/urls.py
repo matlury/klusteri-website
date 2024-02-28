@@ -36,4 +36,5 @@ urlpatterns = [
     path("api/token/refresh/", TokenRefreshView.as_view()),
     path("api/token/blacklist/", TokenBlacklistView.as_view()),
     path("api/users/", include("ilotalo.urls")),
+    path("api/organizations/", include("ilotalo.urls"))
 ]

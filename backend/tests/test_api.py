@@ -12,6 +12,8 @@ These tests are related to the API between frontend and backend
 class TestDjangoAPI(TestCase):
     def setUp(self):
         self.client = APIClient()
+
+        # Create a mock normal user for testing
         self.data = {
             "username": "klusse",
             "password": "vahvaSalasana1234",
@@ -41,6 +43,37 @@ class TestDjangoAPI(TestCase):
 
         self.user = response.data
 
+        # Create a mock LeppisPJ for testing
+        leppispj_data = self.data = {
+            "username": "LeppisPJ",
+            "password": "vahvaSalasana1234",
+            "email": "leppispj@gmail.com",
+            "telegram": "tgleppispj",
+            "role": 1,
+        }
+
+        self.client.post(
+            "http://localhost:8000/api/users/register",
+            data=leppispj_data,
+            format="json",
+        )
+
+        response = self.client.post(
+            "http://localhost:8000/api/token/",
+            data={"email": "leppispj@gmail.com", "password": "vahvaSalasana1234"},
+            format="json",
+        )
+        self.leppis_access_token = response.data["access"]
+        self.leppis_refresh_token = response.data["refresh"]
+
+        response = self.client.get(
+            "http://localhost:8000/api/users/userinfo",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+        )
+
+        self.leppispj = response.data
+        self.user_count = 2
+
     def test_creating_user(self):
         """A new user can be created if the parameters are valid"""
 
@@ -56,8 +89,7 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(User.objects.count(), 2)
-        self.assertEqual(User.objects.all()[1].username, "christina")
+        self.assertEqual(User.objects.count(), self.user_count + 1)
 
     def test_create_two_users_with_blank_telegram(self):
         """
@@ -90,7 +122,7 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(User.objects.count(), 3)
+        self.assertEqual(User.objects.count(), self.user_count + 2)
 
     def test_creating_user_with_username_too_long(self):
         """A new user can't be posted to /users/ if the username is too long"""
@@ -107,7 +139,7 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(User.objects.count(), 1)
+        self.assertEqual(User.objects.count(), self.user_count)
 
     def test_creating_user_with_password_too_common(self):
         """A new user can't be posted to /users/ if the password is too long"""
@@ -124,7 +156,7 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(User.objects.count(), 1)
+        self.assertEqual(User.objects.count(), self.user_count)
 
     def test_delete_user(self):
         """A user can be deleted"""
@@ -141,12 +173,12 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(User.objects.count(), 2)
+        self.assertEqual(User.objects.count(), self.user_count + 1)
 
         response = self.client.delete("http://localhost:8000/users/2/", format="json")
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(User.objects.count(), 1)
+        self.assertEqual(User.objects.count(), self.user_count)
 
     def test_register_user_with_duplicate(self):
         """Creating a user fails if their telegram name is taken"""
@@ -163,7 +195,7 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(User.objects.count(), 1)
+        self.assertEqual(User.objects.count(), self.user_count)
 
     def test_fetch_user_data_with_token(self):
         """User data can be fetched with an access token"""
@@ -309,7 +341,7 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(self.user["telegram"], "klussentg")
-    
+
     def test_updating_telegram_name(self):
         """An authorized user can update their telegram name"""
 
@@ -348,3 +380,93 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_creating_organization(self):
+        """Only LeppisPJ can create a new organization"""
+
+        # create an organization as LeppisPJ
+        response = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "name": "Matrix Ry",
+                "email": "matrix_ry@gmail",
+                "homepage": "matrix-ry.fi",
+                "size": 1,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        response = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "name": "Matrix Ry",
+                "email": "matrix_ry@gmail.com",
+                "homepage": "matrix-ry.fi",
+                "size": 1,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # creating an organization fails if the user is not LeppisPJ
+        response = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={
+                "name": "TKO-Äly Ry",
+                "email": "tkoaly_ry@gmail.com",
+                "homepage": "tko_aly.fi",
+                "size": 1,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_removing_organization(self):
+        """Only LeppisPJ can remove an organization"""
+
+        # create an organization as LeppisPJ
+        response = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "name": "Matrix Ry",
+                "email": "matrix_ry@gmail.com",
+                "homepage": "matrix-ry.fi",
+                "size": 1,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # deleting the organization fails if the user is not LeppisPJ
+        response = self.client.delete(
+            "http://localhost:8000/api/organizations/remove/1/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # delete the organization as LeppisPJ
+        response = self.client.delete(
+            "http://localhost:8000/api/organizations/remove/123/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        response = self.client.delete(
+            "http://localhost:8000/api/organizations/remove/1/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

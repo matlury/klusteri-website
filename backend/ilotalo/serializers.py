@@ -11,6 +11,7 @@ back to complex data types.
 More info: https://www.django-rest-framework.org/api-guide/serializers/
 """
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -49,7 +50,8 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
         return user
-    
+
+
 class UserUpdateSerializer(serializers.ModelSerializer):
     """
     Serializer for updating a user
@@ -58,7 +60,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("id", "username", "email", "telegram", "role")
-    
+
     def validate_telegram(self, tgname):
         """Checks if a telegram name is taken"""
         user_id = self.instance.id if self.instance else None
