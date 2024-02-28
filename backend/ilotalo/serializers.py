@@ -14,7 +14,7 @@ More info: https://www.django-rest-framework.org/api-guide/serializers/
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("id", "username", "password", "email", "telegram", "role")
+        fields = ("id", "username", "email", "telegram", "role")
 
     def validate_telegram(self, tgname):
         """Checks if a telegram name is taken"""

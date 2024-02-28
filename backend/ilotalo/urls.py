@@ -5,6 +5,6 @@ from .views import RegisterView, RetrieveUserView, UpdateUserView
 
 urlpatterns = [
     path("register", RegisterView.as_view()),
-    path("userlist", RetrieveUserView.as_view()),
+    path("userinfo", RetrieveUserView.as_view()),
     path("update/<int:pk>/", UpdateUserView.as_view())
 ]
