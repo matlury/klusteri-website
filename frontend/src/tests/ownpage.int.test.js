@@ -27,7 +27,7 @@ describe('OwnPage', () => {
             expect(screen.getByText('Telegram:')).toBeTruthy()
             expect(screen.getByText('Rooli: 5')).toBeTruthy()
             expect(screen.getByText('Virka:')).toBeTruthy()
-            expect(screen.getByText('Myöntämis päivä:')).toBeTruthy()
+            expect(screen.getByText('Myöntämispäivä:')).toBeTruthy()
             expect(screen.getByText('Järjestöt')).toBeTruthy();
         });
       })
