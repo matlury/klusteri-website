@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
+import axiosClient from '../axios.js'
 
 const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const [username, setUsername] = useState('')
@@ -14,10 +15,19 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const [setCheckedOrgs] = useState({})
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn)
 
+  const API_URL = import.meta.env.API_URL || 'http://localhost:8000'
+
   // Writes down if a user is logged in
   useEffect(() => {
-    setIsLoggedIn(propIsLoggedIn)
-  }, [propIsLoggedIn])
+    setIsLoggedIn(propIsLoggedIn);
+    if (propIsLoggedIn) {
+      const loggedUser = JSON.parse(localStorage.getItem('loggedUser'));
+      setUsername(loggedUser.username);
+      setEmail(loggedUser.email);
+      setTelegram(loggedUser.telegram);
+      setRole(loggedUser.role);
+    }
+  }, [propIsLoggedIn]);
 
 
   // Fetches the organisations if a user is logged in
@@ -30,7 +40,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   const getOrganisations = () => {
     axios
-      .get('http://localhost:8000/organizations/')
+      .get(`${API_URL}/organizations/`)
       .then(response => {
         const data = response.data
         setOrganisations(data)
@@ -83,25 +93,49 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         Myöntämis päivä:
       </div>
       <br />
-      <button className="login-button" type="button">
+      <button onClick={handleUserDetails} className="create-user-button" type="button">
         Vahvista muutokset
       </button>
     </form>
   );
 
   // Shows the information of organizations after clicking the view-button
-  const toggleDetails = orgId => {
-    setCheckedOrgs(prevState => ({
-      ...prevState,
-      [orgId]: !prevState[orgId]
-    }))
-
-    setSelectedOrg(orgId === selectedOrg ? null : orgId)
-  }
-
+  const toggleDetails = (orgId) => {
+    setSelectedOrg((prevSelectedOrg) => {
+      if (prevSelectedOrg === orgId) {
+        return null;
+      }
+      return orgId;
+    });
+  };
+  
   // Handles the change if you click on the checkbox
   const handleCheckboxChange = (event) => {
     setIsChecked(event.target.checked)
+  }
+
+  const handleUserDetails = (event) => {
+    event.preventDefault();
+  
+    const details = {
+      username: username,
+      email: email,
+      telegram: telegram
+    };
+  
+    const loggedUser = JSON.parse(localStorage.getItem('loggedUser'));
+    const user_id = loggedUser.id;
+  
+    console.log(user_id);
+  
+    axiosClient.put(`/users/update/${user_id}/`, details)
+      .then(response => {
+        console.log('User details updated successfully:', response.data);
+        localStorage.setItem('loggedUser', JSON.stringify(response.data))
+      })
+      .catch(error => {
+        console.error('Error updating user details:', error);
+      });
   }
 
   // Shows more detailed information of the organizations
@@ -150,9 +184,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     return null
   }
 
-  /* 
-  Organization list 
-  */
+  //  Organization list 
+  
   const organisationPage = () => (
     <div>
       <h2>Järjestöt</h2>
