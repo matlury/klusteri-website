@@ -130,6 +130,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     console.log(user_id);
 
     const confirmUpdate = window.confirm("Oletko varma, että haluat päivittää käyttäjätietojasi?")
+    
     if (confirmUpdate) {
       axiosClient.put(`/users/update/${user_id}/`, details)
       .then(response => {
