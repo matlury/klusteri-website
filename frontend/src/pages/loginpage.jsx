@@ -38,7 +38,7 @@ const handleLogin = event => {
   axiosClient.post('/token/', credentials)
     .then(({ data }) => {
       setToken(data.access)
-      axiosClient.get('/users/userlist', {
+      axiosClient.get('/users/userinfo', {
         headers: {
           Authorization: `Bearer ${data.access}`
         }
