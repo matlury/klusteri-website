@@ -86,27 +86,26 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-
+"""
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
-
 """
+
+
 DATABASES = {
     "default": {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'klusteri_testdb', 
-        'USER': 'klusteri_testdb',
-        'PASSWORD': '',
-        'HOST': 'possu-test.it.helsinki.fi', 
-        'PORT': '5432',
+        'NAME': os.getenv("TEST_DB_NAME"), 
+        'USER': os.getenv("TEST_DB_USER"),
+        'PASSWORD': os.getenv("TEST_DB_PASSWORD"),
+        'HOST': os.getenv("TEST_DB_HOST"), 
+        'PORT': os.getenv("TEST_DB_PORT"),
     }
 }
-"""
 
 
 REST_FRAMEWORK = {
