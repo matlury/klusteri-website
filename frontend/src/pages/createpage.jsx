@@ -25,12 +25,28 @@ const NewAccountPage = ({ onAccountCreated }) => {
     }
 
     /*
+    Check that the username are not space
+    */
+    if (!/^[a-zA-Z0-9.\-_$@*!]{1,20}$/.test(username)) {
+      setError('Käyttäjänimen tulee olla enintään 20 merkkiä eikä saa sisältää välilyöntejä.')
+      return
+    }
+
+    /*
     Check that the password and
     confirm password are the same
     */
     if (password !== confirmPassword) {
       setError('Salasanat eivät täsmää.')
       return
+    }
+
+    /*
+    Check that the email is valid
+    */
+    if (!/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email)) {
+        setError("Viheellinen sähköposti osoite.")
+        return
     }
 
     /*
@@ -47,7 +63,7 @@ const NewAccountPage = ({ onAccountCreated }) => {
     only numbers
     */
     if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
-      setError('Salasana ei saa sisältää pelkkiä numeroita.')
+      setError('Salasana ei saa sisältää pelkkiä numeroita tai kirjaimia.')
       return
     }
 
