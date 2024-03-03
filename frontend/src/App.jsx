@@ -17,7 +17,6 @@ const App = () => {
   const [showLoginPage, setShowLoginPage] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
-
   // Checks whether a user is logged in
   useEffect(() => {
     const loggedInStatus = localStorage.getItem('isLoggedIn');
