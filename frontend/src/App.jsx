@@ -16,8 +16,6 @@ import OwnKeys from './pages/ownkeys';
 const App = () => {
   const [showLoginPage, setShowLoginPage] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [username, setUsername] = useState('')
-
 
   // Checks whether a user is logged in
   useEffect(() => {
