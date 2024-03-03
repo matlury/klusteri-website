@@ -23,6 +23,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
   const API_URL = import.meta.env.API_URL || 'http://localhost:8000'
 
@@ -125,7 +126,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     setIsChecked(event.target.checked)
   }
 
-  // Handles the user info update when the 'Vahvista Muutokset' button is clicked
+  // Handles the user info update when the 'Vahvista Muutokset' button is clicked and gives error messages if the new username, email or telegram are taken by some other user
   const handleUserDetails = (event) => {
     event.preventDefault();
   
@@ -137,26 +138,54 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   
     const loggedUser = JSON.parse(localStorage.getItem('loggedUser'));
     const user_id = loggedUser.id;
-  
-    console.log(user_id);
 
-    const confirmUpdate = window.confirm("Oletko varma, että haluat päivittää käyttäjätietojasi?")
+    if (!username || !email ) {
+      setError('Käyttäjänimi ja sähköposti ovat pakollisia kenttiä.')
+      setTimeout(() => setError(''), 5000)
+      return
+    }
 
-    if (confirmUpdate) {
-      axiosClient.put(`/users/update/${user_id}/`, details)
+    if (telegram) {
+      axios.get(`http://localhost:8000/users/?telegram=${telegram}`)
+        .then(response => {
+          const existingUsers = response.data
+          if (existingUsers.some(user => user.telegram === telegram && user.id !== loggedUser.id)) {
+              setError('Telegram on jo käytössä.')
+              setTimeout(() => setError(''), 5000)
+              return
+          }})}
+
+    axios.get(`http://localhost:8000/users/?email=${email}`)
       .then(response => {
-        console.log('User details updated successfully:', response.data);
-        localStorage.setItem('loggedUser', JSON.stringify(response.data))
+        const existingUsers = response.data
+          if (existingUsers.some(user => user.email === email && user.id !== loggedUser.id)) {
+              setError('Sähköposti on jo käytössä.')
+              setTimeout(() => setError(''), 5000)
+              return
+          }
+          confirmupdate()
+    })
+
+    function confirmupdate() {
+      const confirmUpdate = window.confirm("Oletko varma, että haluat päivittää käyttäjätietojasi?")
+
+      if (confirmUpdate) {
+        axiosClient.put(`/users/update/${user_id}/`, details)
+          .then(response => {
+            console.log('User details updated successfully:', response.data);
+            localStorage.setItem('loggedUser', JSON.stringify(response.data))
+            setSuccess('Tiedot päivitetty onnistuneesti!')
+            setTimeout(() => setSuccess(''), 5000)
       })
       .catch(error => {
-        console.error('Error updating user details:', error);
-      })
-    } else {
-      console.log("User cancelled the update.")
+          console.error('Error updating user details:', error);
+        })
+      } else {
+        console.log("User cancelled the update.")}
     }
   }
 
-  // Shows more detailed information of the organizations
+  // Shows more detailed information of the organizations and if the user has role 1, they can also delete the organization
   const renderOrganizationDetails = orgId => {
     const organization = organisations.find(org => org.id === orgId)
     if (selectedOrg === orgId && organization) {
@@ -197,24 +226,37 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             </label>
           </div>
           <br />
-          <button className="login-button" type="button">
+          {role === 1 && <button onClick={() => handleDeleteOrganization(organization.id)} className="login-button" type="button">
             Poista järjestö
-          </button>
+          </button>}
         </div>
       )
     }
     return null
   }
 
+  // Handles deletion of organization
+  const handleDeleteOrganization = (orgId) => {
+    axiosClient.delete(`/organizations/remove/${orgId}/`)
+        .then(response => {
+          console.log('Organization deleted successfully:', response.data);
+          getOrganisations();
+          setSuccess('Järjestö poistettu onnistuneesti!')
+            setTimeout(() => setSuccess(''), 5000)
+        })
+        .catch(error => {
+          console.error('Error deleting organization:', error);
+        })
+  }
+
   //  Organization list 
-  
   const organisationPage = () => (
     <div>
       <h2>Järjestöt</h2>
       <ul style={{ listStyleType: 'none', padding: 0 }}>
         {organisations.map(org => (
           <li key={org.id}>
-            {org.name}
+            {org.name}  
             <button className= "login-button" onClick={() => toggleDetails(org.id)}>View</button>
             {renderOrganizationDetails(org.id)}
           </li>
@@ -223,6 +265,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     </div>
   );
 
+  // Form for organization creation
   const createOrganization = () => (
     <form>
       <h2>Luo uusi järjestö</h2>
@@ -265,19 +308,25 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     </form>
   )
 
+  // Handles the creation of organizations
   const handleCreateOrganization = () => (
     axios.get(`http://localhost:8000/organizations/?email=${organization_email}`)
       .then(response => {
         const existingOrganizations = response.data
-        if (existingOrganizations.some(org => org.email === email)) {
+        if (existingOrganizations.some(org => org.name === organization_name)) {
+          setError('Nimi on jo käytössä')
+        }
+        if (existingOrganizations.some(org => org.email === organization_email)) {
           setError('Sähköposti on jo käytössä.')
-        } else {
+        }
+        else {
           const organizationObject = { name: organization_name, email: organization_email, homepage: organization_homepage, size: organization_size }
           console.log(organizationObject)
           axios.post('http://localhost:8000/organizations/', organizationObject)
             .then(response => {
               console.log(response)
               console.log('Organization created successfully!')
+              setSuccess('Järjestö luotu onnistuneesti!')
 
             })
             .catch(error => {
@@ -296,6 +345,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       {isLoggedIn && (
         <div id="left_content">
           <div id="leftleft_content">
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {success && <p style={{ color: 'green' }}>{success}</p>}
             {userPage()}
             {organisationPage()}
             {role === 1 && createOrganization()}
