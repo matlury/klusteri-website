@@ -146,7 +146,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
 
     if (telegram) {
-      axios.get(`http://localhost:8000/users/?telegram=${telegram}`)
+      axios.get(`${API_URL}/users/?telegram=${telegram}`)
         .then(response => {
           const existingUsers = response.data
           if (existingUsers.some(user => user.telegram === telegram && user.id !== loggedUser.id)) {
@@ -155,7 +155,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
               return
           }})}
 
-    axios.get(`http://localhost:8000/users/?email=${email}`)
+    axios.get(`${API_URL}/users/?email=${email}`)
       .then(response => {
         const existingUsers = response.data
           if (existingUsers.some(user => user.email === email && user.id !== loggedUser.id)) {
@@ -310,7 +310,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   // Handles the creation of organizations
   const handleCreateOrganization = () => (
-    axios.get(`http://localhost:8000/organizations/?email=${organization_email}`)
+    axios.get(`${API_URL}/organizations/?email=${organization_email}`)
       .then(response => {
         const existingOrganizations = response.data
         if (existingOrganizations.some(org => org.name === organization_name)) {
@@ -322,7 +322,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         else {
           const organizationObject = { name: organization_name, email: organization_email, homepage: organization_homepage, size: organization_size }
           console.log(organizationObject)
-          axios.post('http://localhost:8000/organizations/', organizationObject)
+          axios.post(`${API_URL}/organizations/`, organizationObject)
             .then(response => {
               console.log(response)
               console.log('Organization created successfully!')
