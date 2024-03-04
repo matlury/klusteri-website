@@ -12,6 +12,7 @@
 - [Sprint 1 Task Board](https://github.com/orgs/matlury/projects/4)
 - [Sprint 2 Task Board](https://github.com/orgs/matlury/projects/9)
 - [Sprint 3 Task Board](https://github.com/orgs/matlury/projects/10/views/1?layout=board&filterQuery=label%3Atask&groupedBy%5BcolumnId%5D=78602831)
+- [Sprint 4 Task Board](https://github.com/orgs/matlury/projects/12)
 - [Työaikakirjanpito](https://helsinkifi-my.sharepoint.com/:x:/g/personal/lottatan_ad_helsinki_fi/EZIQBLlssnFAqYrJUHNZ14gBl33k5Y19wSDGfExXcVhacw?e=qAxWNy)
 
 ## Definition of Done
