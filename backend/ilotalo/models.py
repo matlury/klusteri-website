@@ -79,15 +79,15 @@ class Organization(models.Model):
 class Event(models.Model):
     start = models.DateTimeField(
         auto_now=False,
-        auto_now_add=False, 
-        blank=True, 
-        default=f"{datetime.strptime("01/01/1970", "%d/%m/%Y")}"
+        auto_now_add=False,
+        blank=True,
+        default=f"{datetime.strptime("01.01.1970 12:00", "%d.%m.%Y %H:%M")}"
     )
     end = models.DateTimeField(
         auto_now=False,
         auto_now_add=False,
         blank=True,
-        default=f"{datetime.strptime("02/01/1970", "%d/%m/%Y")}"
+        default=f"{datetime.strptime("02.01.1970 14:00", "%d.%m.%Y %H:%M")}"
     )
     room = models.CharField(max_length=50, default="")
     reservation = models.CharField(max_length=100, default="")
