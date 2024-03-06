@@ -4,6 +4,8 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Modal, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Modal, Button } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import '../index.css';
 import { useStateContext } from "../context/ContextProvider.jsx";
 import axios from 'axios'; 
@@ -16,6 +18,7 @@ const MyCalendar = () => {
     return storedEvents ? JSON.parse(storedEvents) : [];
   });
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [eventDetails, setEventDetails] = useState({
     title: '',
@@ -38,20 +41,13 @@ const MyCalendar = () => {
   const endRef = useRef(null);
 
   const handleSelectSlot = ({ start, end }) => {
-    if (user) {
-      setSelectedSlot({ start, end });
-      setShowModal(true);
-    } else {
-      alert('Sinun täytyy kirjautua sisään lisätäksesi tapahtuman.');
-    }
+    setSelectedSlot({ start, end });
+    setEventDetails({
+      ...eventDetails,
+      start,
+      end,
+    });
   };
-
-  useEffect(() => {
-    if (showModal && selectedSlot) {
-      startRef.current.value = moment(selectedSlot.start).format('YYYY-MM-DDTHH:mm');
-      endRef.current.value = moment(selectedSlot.end).format('YYYY-MM-DDTHH:mm');
-    }
-  }, [showModal, selectedSlot]);
 
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);
@@ -149,9 +145,9 @@ const MyCalendar = () => {
             </select>
             <select name="room" value={eventDetails.room} onChange={handleInputChange}>
               <option value="">Valitse huone</option>
-              <option value="Huone 1">Kokoushuone</option>
-              <option value="Huone 2">Kerhotila</option>
-              <option value="Huone 3">Oleskelutila</option>
+              <option value="Kokoushuone">Kokoushuone</option>
+              <option value="Kerhotila">Kerhotila</option>
+              <option value="Oleskelutila">Oleskelutila</option>
             </select>
             <button onClick={handleAddEvent}>Lisää tapahtuma</button>
           </div>
