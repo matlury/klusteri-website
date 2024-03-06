@@ -470,3 +470,53 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_creating_event(self):
+        """Only LeppisPJ can create a new organization"""
+
+        # create an event as LeppisPJ
+        response = self.client.post(
+            "http://localhost:8000/api/events/create_event",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "room": "varasto",
+                "reservation": "varaus",
+                "description": "",
+                "responsible": "Matti",
+                "open": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        response = self.client.post(
+            "http://localhost:8000/api/events/create_event",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "room": "varasto",
+                "reservation": "varaus",
+                "description": "kahvihetki",
+                "responsible": "Matti",
+                "open": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # creating an event fails if the user is not LeppisPJ
+        response = self.client.post(
+            "http://localhost:8000/api/events/create_event",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={
+                "room": "varasto",
+                "reservation": "varaus",
+                "description": "kahvihetki",
+                "responsible": "Matti",
+                "open": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
