@@ -115,14 +115,15 @@ const MyCalendar = () => {
               style={{ width: '100%', height: '100px' }}
             />
             <select name="isOpen" value={eventDetails.isOpen} onChange={handleInputChange}>
-              <option value="avoin">Avoin</option>
-              <option value="suljettu">Suljettu</option>
+              <option value="avoin">Avoin tapahtuma</option>
+              <option value="suljettu">Vain jäsenille</option>
             </select>
             <select name="room" value={eventDetails.room} onChange={handleInputChange}>
               <option value="">Valitse huone</option>
               <option value="Kokoushuone">Kokoushuone</option>
               <option value="Kerhotila">Kerhotila</option>
               <option value="Oleskelutila">Oleskelutila</option>
+              <option value="ChristinaRegina">ChristinaRegina</option>
             </select>
             <button onClick={handleAddEvent}>Lisää tapahtuma</button>
           </div>
@@ -148,8 +149,8 @@ const MyCalendar = () => {
               <p>Järjestäjä: {selectedEvent.organizer}</p>
               <p>Vastuuhenkilö: {selectedEvent.responsible}</p>
               <p>Kuvaus: {selectedEvent.description}</p>
-              <p>Tila: {selectedEvent.isOpen}</p>
               <p>Huone: {selectedEvent.room}</p>
+              <p>Tila: {selectedEvent.isOpen}</p>
             </div>
           )}
         </Modal.Body>
