@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 // Creates a context for managing global application state
 const StateContext = createContext({
@@ -14,9 +14,13 @@ const StateContext = createContext({
 
 // ContextProvider component to provide state to child components
 export const ContextProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem('loggedUser')) || null)
     const [token, setToken] = useState(localStorage.getItem('ACCESS_TOKEN') || null);
     const [notification, setNotification] = useState(null);
+
+    useEffect(() => {
+        localStorage.setItem('loggedUser', JSON.stringify(user));
+      }, [user])
 
     const updateToken = (token) => {
         setToken(token);

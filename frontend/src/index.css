@@ -160,6 +160,17 @@ ul {
   margin-left: 17px;
 }
 
+.change-pj-button {
+  background-color: #030303;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-left: 17px;
+}
+
 .logout-button {
   background-color: #dc3545;
   color: #fff;
