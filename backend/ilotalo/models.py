@@ -8,6 +8,7 @@ from django.contrib.auth.models import (
     PermissionsMixin,
     BaseUserManager,
 )
+from datetime import datetime
 
 
 class UserAccountManager(BaseUserManager):
@@ -49,6 +50,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     AbstractBaseUser: Core implementation of a user model. Includes i.e. password hashing and tokenized password resets.
     PermissionsMixin: Django's permission framework
     """
+
     id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=20)
     password = models.CharField(max_length=20, default="")
@@ -72,3 +74,23 @@ class Organization(models.Model):
     email = models.EmailField(max_length=100, default="", unique=True)
     homepage = models.CharField(max_length=100, default="")
     size = models.IntegerField(default=0)
+
+
+class Event(models.Model):
+    start = models.DateTimeField(
+        auto_now=False,
+        auto_now_add=False, 
+        blank=True, 
+        default=f"{datetime.strptime("01/01/1970", "%d/%m/%Y")}"
+    )
+    end = models.DateTimeField(
+        auto_now=False,
+        auto_now_add=False,
+        blank=True,
+        default=f"{datetime.strptime("02/01/1970", "%d/%m/%Y")}"
+    )
+    room = models.CharField(max_length=50, default="")
+    reservation = models.CharField(max_length=100, default="")
+    description = models.CharField(max_length=500, default="")
+    responsible = models.CharField(max_length=100, default="")
+    open = models.BooleanField(default=True)

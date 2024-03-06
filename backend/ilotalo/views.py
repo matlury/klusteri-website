@@ -8,8 +8,9 @@ from .serializers import (
     OrganizationSerializer,
     UserNoPasswordSerializer,
     UserUpdateSerializer,
+    EventSerializer,
 )
-from .models import User, Organization
+from .models import User, Organization, Event
 from .config import Role
 
 LEPPISPJ = Role.LEPPISPJ.value
@@ -161,3 +162,71 @@ class RemoveOrganizationView(APIView):
         organization_to_remove.delete()
 
         return Response(f"Organization {organization_to_remove.name} successfully removed", status=status.HTTP_200_OK)
+    
+class EventView(viewsets.ModelViewSet):
+    """
+    Displays a list of all User objects at <baseurl>/users/
+    Actions provided by ModelViewSet:
+        .list(), .retrieve(), .create(), .update(), .partial_update(), .delete()
+    Each method listed above can be overwritten for customized object management
+    """
+
+    serializer_class = EventSerializer
+    queryset = Event.objects.all()
+
+class CreateEventView(APIView):
+    """View for creating a new organization <baseurl>/api/organizations/create"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ,
+            MUOKKAUS,
+            AVAIMELLINEN
+        ]:
+            return Response(
+                "You can't add an event",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = EventSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class RemoveEventView(APIView):
+    """View for creating a new organization <baseurl>/api/organizations/create"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, pk):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ,
+            MUOKKAUS,
+            AVAIMELLINEN
+        ]:
+            return Response(
+                "You can't remove",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            event_to_remove = Event.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            return Response(
+                "Event not found", status=status.HTTP_404_NOT_FOUND
+            )
+
+        event_to_remove.delete()
+
+        return Response(f"Event {event_to_remove.reservation} successfully removed", status=status.HTTP_200_OK)
