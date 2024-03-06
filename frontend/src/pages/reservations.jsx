@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { Modal, Button } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import '../index.css';
 
 const localizer = momentLocalizer(moment);
@@ -9,6 +11,7 @@ const localizer = momentLocalizer(moment);
 const MyCalendar = () => {
   const [events, setEvents] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [eventDetails, setEventDetails] = useState({
     title: '',
     organizer: '',
@@ -19,6 +22,7 @@ const MyCalendar = () => {
     start: '',
     end: '',
   });
+  const [showModal, setShowModal] = useState(false);
 
   const handleSelectSlot = ({ start, end }) => {
     setSelectedSlot({ start, end });
@@ -27,6 +31,11 @@ const MyCalendar = () => {
       start,
       end,
     });
+  };
+
+  const handleSelectEvent = (event) => {
+    setSelectedEvent(event);
+    setShowModal(true);
   };
 
   const handleInputChange = (event) => {
@@ -62,6 +71,10 @@ const MyCalendar = () => {
     } else {
       alert('Täytä kaikki tiedot ennen tapahtuman lisäämistä.');
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
   };
 
   return (
@@ -107,9 +120,9 @@ const MyCalendar = () => {
             </select>
             <select name="room" value={eventDetails.room} onChange={handleInputChange}>
               <option value="">Valitse huone</option>
-              <option value="Huone 1">Kokoushuone</option>
-              <option value="Huone 2">Kerhotila</option>
-              <option value="Huone 3">Oleskelutila</option>
+              <option value="Kokoushuone">Kokoushuone</option>
+              <option value="Kerhotila">Kerhotila</option>
+              <option value="Oleskelutila">Oleskelutila</option>
             </select>
             <button onClick={handleAddEvent}>Lisää tapahtuma</button>
           </div>
@@ -123,7 +136,29 @@ const MyCalendar = () => {
         style={{ height: 500 }}
         selectable
         onSelectSlot={handleSelectSlot}
+        onSelectEvent={handleSelectEvent}
       />
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>{selectedEvent && selectedEvent.title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedEvent && (
+            <div>
+              <p>Järjestäjä: {selectedEvent.organizer}</p>
+              <p>Vastuuhenkilö: {selectedEvent.responsible}</p>
+              <p>Kuvaus: {selectedEvent.description}</p>
+              <p>Tila: {selectedEvent.isOpen}</p>
+              <p>Huone: {selectedEvent.room}</p>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Sulje
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
