@@ -112,7 +112,5 @@ Raportin muodostaminen backendille
 ```
 
 Raportin muodostaminen frontendille
-```bash
-~klusteri-website/frontend/$ npx jest --coverage
-```
+placeholder
 
