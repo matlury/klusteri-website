@@ -92,9 +92,9 @@ npm run dev
 
 Mene **frontend**-hakemistoon.
 Aja testit komennolla:
-```
-npm test
-```
+
+placeholder
+
 Aja **Eslint** komennolla:
 ```
 npx eslint src
@@ -112,5 +112,6 @@ Raportin muodostaminen backendille
 ```
 
 Raportin muodostaminen frontendille
+
 placeholder
 
