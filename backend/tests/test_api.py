@@ -520,3 +520,73 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    def test_update_room(self):
+        """An authorized user can update event room"""
+
+        # first create an event to update it
+        event_created = self.client.post(
+            "http://localhost:8000/api/events/create_event",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "room": "Kattilahuone",
+                "reservation": "Varaus suunnitteluun",
+                "description": "Suunnitellaan juhlia",
+                "responsible": "Pete",
+                "open": True,
+            },
+            format="json",
+        )
+
+        # update the room
+        response = self.client.put(
+            "http://localhost:8000/api/events/update_event/1/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={"room": "Toinen huone"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["room"], "Toinen huone")
+    
+    def test_update_room_invalid(self):
+        """An authorized user can update event room"""
+
+        # first create an event to update it
+        event_created = self.client.post(
+            "http://localhost:8000/api/events/create_event",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "room": "Kattilahuone",
+                "reservation": "Varaus suunnitteluun",
+                "description": "Suunnitellaan juhlia",
+                "responsible": "Pete",
+                "open": True,
+            },
+            format="json",
+        )
+
+        # update the room with invalid parameter
+        response = self.client.put(
+            "http://localhost:8000/api/events/update_event/1/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={"room": ""},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(event_created.data["room"], "Kattilahuone")
+    
+    def test_update_with_nonexistentevent(self):
+        """An authorized user can update event room"""
+
+        # update a room in a event that doesn't exist
+        response = self.client.put(
+            "http://localhost:8000/api/events/update_event/1/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={"room": "Kattohuoneisto"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
