@@ -77,7 +77,7 @@ class Organization(models.Model):
 
 
 class Event(models.Model):
-    """esim"""
+    """Model for events"""
 
     datetime_start = datetime.strptime("01.01.1970 12:00", "%d.%m.%Y %H:%M")
     datetime_end = datetime.strptime("02.01.1970 14:00", "%d.%m.%Y %H:%M")

@@ -165,7 +165,7 @@ class RemoveOrganizationView(APIView):
     
 class EventView(viewsets.ModelViewSet):
     """
-    Displays a list of all User objects at <baseurl>/users/
+    Displays a list of all Event objects at <baseurl>/events/
     Actions provided by ModelViewSet:
         .list(), .retrieve(), .create(), .update(), .partial_update(), .delete()
     Each method listed above can be overwritten for customized object management
@@ -175,7 +175,7 @@ class EventView(viewsets.ModelViewSet):
     queryset = Event.objects.all()
 
 class CreateEventView(APIView):
-    """View for creating a new organization <baseurl>/api/organizations/create"""
+    """View for creating a new event <baseurl>/api/events/create_event"""
 
     permission_classes = [permissions.IsAuthenticated]
 
@@ -202,7 +202,7 @@ class CreateEventView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class RemoveEventView(APIView):
-    """View for creating a new organization <baseurl>/api/organizations/create"""
+    """View for removing an event <baseurl>/api/events/delete_event/<event.id>/"""
 
     permission_classes = [permissions.IsAuthenticated]
 
@@ -216,7 +216,7 @@ class RemoveEventView(APIView):
             AVAIMELLINEN
         ]:
             return Response(
-                "You can't remove",
+                "You can't remove the event",
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -230,3 +230,37 @@ class RemoveEventView(APIView):
         event_to_remove.delete()
 
         return Response(f"Event {event_to_remove.reservation} successfully removed", status=status.HTTP_200_OK)
+
+class UpdateEventView(APIView):
+    """View for updating an Event object at <baseurl>/api/events/update_event/<event.id>/"""
+
+    # IsAuthenticated will deny access if request has no access token
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, pk=None):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ,
+            MUOKKAUS,
+            AVAIMELLINEN
+        ]:
+            return Response(
+                "You can't edit the event",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            event_to_update = Event.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            return Response("Event not found", status=status.HTTP_404_NOT_FOUND)
+
+        event = EventSerializer(
+            instance=event_to_update, data=request.data, partial=True
+        )
+
+        if event.is_valid():
+            event.save()
+            return Response(event.data, status=status.HTTP_200_OK)
+        return Response(event.errors, status=status.HTTP_400_BAD_REQUEST)

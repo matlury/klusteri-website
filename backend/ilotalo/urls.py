@@ -7,6 +7,7 @@ from .views import (
     RemoveOrganizationView,
     CreateEventView,
     RemoveEventView,
+    UpdateEventView,
 )
 
 """Define URL endpoints for the ilotalo app"""
@@ -18,5 +19,6 @@ urlpatterns = [
     path("create", CreateOrganizationView.as_view()),
     path("remove/<int:pk>/", RemoveOrganizationView.as_view()),
     path("create_event", CreateEventView.as_view()),
-    path("delete_event/<int:pk>/", RemoveEventView.as_view())
+    path("delete_event/<int:pk>/", RemoveEventView.as_view()),
+    path("update_event/<int:pk>/", UpdateEventView.as_view())
 ]
