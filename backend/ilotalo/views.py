@@ -238,6 +238,19 @@ class UpdateEventView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def put(self, request, pk=None):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ,
+            MUOKKAUS,
+            AVAIMELLINEN
+        ]:
+            return Response(
+                "You can't edit the event",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         try:
             event_to_update = Event.objects.get(id=pk)
         except ObjectDoesNotExist:
