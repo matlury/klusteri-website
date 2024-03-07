@@ -83,9 +83,11 @@ const MyCalendar = () => {
       <div>
         {selectedSlot && (
           <div>
-            <p>Valitun ajanjakson tiedot:</p>
+            <p>Täytä tapahtuman tiedot:</p>
             <p>Alkaa: <input type="datetime-local" name="start" value={eventDetails.start} onChange={handleInputChange} /></p>
+            <p style={{ color: 'red' }}>Huomioithan yökäyttösäännöt klo 00-08.</p>
             <p>Päättyy: <input type="datetime-local" name="end" value={eventDetails.end} onChange={handleInputChange} /></p>
+            <p>Voit tehdä maksimissaan 24h kestävän varauksen.</p>
             <input
               type="text"
               name="title"
@@ -114,16 +116,16 @@ const MyCalendar = () => {
               onChange={handleInputChange}
               style={{ width: '100%', height: '100px' }}
             />
+            <p>Oleskelutilan tai koko klusterin saa varata vain, jos klusterikokous on myöntänyt siihen luvan.</p>
             <select name="isOpen" value={eventDetails.isOpen} onChange={handleInputChange}>
               <option value="avoin">Avoin tapahtuma</option>
               <option value="suljettu">Vain jäsenille</option>
             </select>
             <select name="room" value={eventDetails.room} onChange={handleInputChange}>
-              <option value="">Valitse huone</option>
               <option value="Kokoushuone">Kokoushuone</option>
               <option value="Kerhotila">Kerhotila</option>
               <option value="Oleskelutila">Oleskelutila</option>
-              <option value="ChristinaRegina">ChristinaRegina</option>
+              <option value="Christina Regina">Christina Regina</option>
             </select>
             <button onClick={handleAddEvent}>Lisää tapahtuma</button>
           </div>
@@ -146,11 +148,13 @@ const MyCalendar = () => {
         <Modal.Body>
           {selectedEvent && (
             <div>
+              <p>Alkaa: {moment(selectedEvent.start).format('YYYY-MM-DD HH:mm')}</p>
+              <p>Päättyy: {moment(selectedEvent.end).format('YYYY-MM-DD HH:mm')}</p>
               <p>Järjestäjä: {selectedEvent.organizer}</p>
               <p>Vastuuhenkilö: {selectedEvent.responsible}</p>
               <p>Kuvaus: {selectedEvent.description}</p>
+              <p>Avoimuus: {selectedEvent.isOpen}</p>
               <p>Huone: {selectedEvent.room}</p>
-              <p>Tila: {selectedEvent.isOpen}</p>
             </div>
           )}
         </Modal.Body>
