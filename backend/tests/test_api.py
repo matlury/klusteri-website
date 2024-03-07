@@ -590,7 +590,7 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
     
-    def test_update_room_role1(self):
+    def test_update_room_role5(self):
         """An authorized user can update event room"""
 
         # first create an event to update it
@@ -607,7 +607,7 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
-        # try to update the room with role 1 user
+        # try to update the room with role 5 user
         response = self.client.put(
             "http://localhost:8000/api/events/update_event/1/",
             headers={"Authorization": f"Bearer {self.access_token}"},
