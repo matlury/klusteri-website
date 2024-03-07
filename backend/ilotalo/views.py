@@ -95,7 +95,7 @@ class UpdateUserView(APIView):
         Parameters
         ----------
         request: dict
-            Contains the new data (email or telegram)
+            Contains the new data
         pk (primary key): str
             Id of the User object to be updated
         """
@@ -207,6 +207,7 @@ class RemoveEventView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def delete(self, request, pk):
+        """ pk = primary key """
         user = UserSerializer(request.user)
 
         if user.data["role"] not in [

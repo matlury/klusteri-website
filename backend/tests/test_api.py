@@ -618,11 +618,6 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(event_created.data["room"], "Kattilahuone")
 
-
-
-
-
-
     def test_deleting_event(self):
         """LeppisPJ can delete an event"""
 
