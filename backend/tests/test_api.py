@@ -580,7 +580,7 @@ class TestDjangoAPI(TestCase):
     def test_update_with_nonexistentevent(self):
         """An authorized user can update event room"""
 
-        # update a room in a event that doesn't exist
+        # update a room in an event that doesn't exist
         response = self.client.put(
             "http://localhost:8000/api/events/update_event/1/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
@@ -607,7 +607,7 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
-        # update the room with invalid parameter
+        # try to update the room with role 1 user
         response = self.client.put(
             "http://localhost:8000/api/events/update_event/1/",
             headers={"Authorization": f"Bearer {self.access_token}"},
