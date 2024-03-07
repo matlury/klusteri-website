@@ -77,11 +77,16 @@ class Organization(models.Model):
 
 
 class Event(models.Model):
-    """esim"""
+    """
+    Represents an event with specific attributes such as start and end time, room, reservation details,
+    description, responsible party, and whether it is open or not.
+    """
 
+    # Default start and end times for events
     datetime_start = datetime.strptime("01.01.1970 12:00", "%d.%m.%Y %H:%M")
     datetime_end = datetime.strptime("02.01.1970 14:00", "%d.%m.%Y %H:%M")
 
+    # Fields for event attributes
     start = models.DateTimeField(
         auto_now=False,
         auto_now_add=False,
@@ -94,8 +99,8 @@ class Event(models.Model):
         blank=True,
         default=(f"{datetime_end}")
     )
-    room = models.CharField(max_length=50, default="")
-    reservation = models.CharField(max_length=100, default="")
-    description = models.CharField(max_length=500, default="")
-    responsible = models.CharField(max_length=100, default="")
-    open = models.BooleanField(default=True)
+    room = models.CharField(max_length=50, default="")  # Room where the event takes place
+    reservation = models.CharField(max_length=100, default="")  # Reservation details if any
+    description = models.CharField(max_length=500, default="")  # Description of the event
+    responsible = models.CharField(max_length=100, default="")  # Person responsible for the event
+    open = models.BooleanField(default=True)  # Indicates whether the event is open or not
