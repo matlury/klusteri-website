@@ -14,7 +14,7 @@ const NewAccountPage = ({ onAccountCreated }) => {
   const [error, setError] = useState('')
   const [userCreated, setUserCreated] = useState(false)
 
-  const API_URL = import.meta.env.API_URL || 'http://localhost:8000'
+  const API_URL = import.meta.env.API_URL
   
   const handleCreateAccount = () => {
     /*
