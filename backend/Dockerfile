@@ -14,6 +14,8 @@ COPY poetry.lock pyproject.toml /backend/
 
 RUN poetry install
 
+RUN poetry run python manage.py makemigrations && poetry run python manage.py migrate
+
 EXPOSE 8000
 
 ENTRYPOINT ["poetry", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
