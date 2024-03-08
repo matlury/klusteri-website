@@ -17,7 +17,6 @@ const App = () => {
   const [showLoginPage, setShowLoginPage] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
-
   // Checks whether a user is logged in
   useEffect(() => {
     const loggedInStatus = localStorage.getItem('isLoggedIn');
@@ -39,8 +38,7 @@ const App = () => {
   // Removes localstorage value if someone logs out
   const handleLogout = () => {
     setIsLoggedIn(false)
-    localStorage.removeItem('isLoggedIn');
-  };
+    localStorage.removeItem('isLoggedIn');}
 
   // The next constants are paths to different pages on the website. They are accessible by clicking their names in the navigation bar
 
@@ -100,7 +98,7 @@ const App = () => {
             <Routes>
               <Route path="/christinaregina" element={<ChristinaRegina />} />
               <Route path="/" element={<FrontPage />} />
-              <Route path="/omat_tiedot" element={<OwnPage isLoggedIn={isLoggedIn}/>} />
+              <Route path="/omat_tiedot" element={<OwnPage isLoggedIn={isLoggedIn} />} />
               <Route path="/tietosuojaseloste" element={<PrivacyPolicy />} />
               <Route path="/yhteystiedot" element={<Contacts />} />
               <Route path="/saannot_ja_ohjeet" element={<Rules_and_Instructions />} />
@@ -110,7 +108,7 @@ const App = () => {
           </div>
           <div className='right_content'>
             {showLoginPage ? (
-              <LoginPage onLogin={handleLogin} onLogout={handleLogout} onCreateNewUser={handleCreateNewUser}/>
+              <LoginPage onLogin={handleLogin} onLogout={handleLogout} onCreateNewUser={handleCreateNewUser} />
             ) : (
               <NewAccountPage onAccountCreated={handleCreateNewUser} />
             )}

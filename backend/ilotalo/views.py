@@ -8,8 +8,9 @@ from .serializers import (
     OrganizationSerializer,
     UserNoPasswordSerializer,
     UserUpdateSerializer,
+    EventSerializer,
 )
-from .models import User, Organization
+from .models import User, Organization, Event
 from .config import Role
 
 LEPPISPJ = Role.LEPPISPJ.value
@@ -94,7 +95,7 @@ class UpdateUserView(APIView):
         Parameters
         ----------
         request: dict
-            Contains the new data (email or telegram)
+            Contains the new data
         pk (primary key): str
             Id of the User object to be updated
         """
@@ -161,3 +162,106 @@ class RemoveOrganizationView(APIView):
         organization_to_remove.delete()
 
         return Response(f"Organization {organization_to_remove.name} successfully removed", status=status.HTTP_200_OK)
+    
+class EventView(viewsets.ModelViewSet):
+    """
+    Displays a list of all Event objects at <baseurl>/events/
+    Actions provided by ModelViewSet:
+        .list(), .retrieve(), .create(), .update(), .partial_update(), .delete()
+    Each method listed above can be overwritten for customized object management
+    """
+
+    serializer_class = EventSerializer
+    queryset = Event.objects.all()
+
+class CreateEventView(APIView):
+    """View for creating a new event <baseurl>/api/events/create_event"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ,
+            MUOKKAUS,
+            AVAIMELLINEN
+        ]:
+            return Response(
+                "You can't add an event",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = EventSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class RemoveEventView(APIView):
+    """View for removing an event <baseurl>/api/events/delete_event/<event.id>/"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, pk):
+        """ pk = primary key """
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ,
+            MUOKKAUS,
+            AVAIMELLINEN
+        ]:
+            return Response(
+                "You can't remove the event",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            event_to_remove = Event.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            return Response(
+                "Event not found", status=status.HTTP_404_NOT_FOUND
+            )
+
+        event_to_remove.delete()
+
+        return Response(f"Event {event_to_remove.reservation} successfully removed", status=status.HTTP_200_OK)
+
+class UpdateEventView(APIView):
+    """View for updating an Event object at <baseurl>/api/events/update_event/<event.id>/"""
+
+    # IsAuthenticated will deny access if request has no access token
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, pk=None):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ,
+            MUOKKAUS,
+            AVAIMELLINEN
+        ]:
+            return Response(
+                "You can't edit the event",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            event_to_update = Event.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            return Response("Event not found", status=status.HTTP_404_NOT_FOUND)
+
+        event = EventSerializer(
+            instance=event_to_update, data=request.data, partial=True
+        )
+
+        if event.is_valid():
+            event.save()
+            return Response(event.data, status=status.HTTP_200_OK)
+        return Response(event.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -8,6 +8,7 @@ from django.contrib.auth.models import (
     PermissionsMixin,
     BaseUserManager,
 )
+from datetime import datetime
 
 
 class UserAccountManager(BaseUserManager):
@@ -49,6 +50,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     AbstractBaseUser: Core implementation of a user model. Includes i.e. password hashing and tokenized password resets.
     PermissionsMixin: Django's permission framework
     """
+
     id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=20)
     password = models.CharField(max_length=255, default="")
@@ -72,3 +74,33 @@ class Organization(models.Model):
     email = models.EmailField(max_length=100, default="", unique=True)
     homepage = models.CharField(max_length=100, default="")
     size = models.IntegerField(default=0)
+
+
+class Event(models.Model):
+    """
+    Represents an event with specific attributes such as start and end time, room, reservation details,
+    description, responsible party, and whether it is open or not.
+    """
+
+    # Default start and end times for events
+    datetime_start = datetime.strptime("01.01.1970 12:00", "%d.%m.%Y %H:%M")
+    datetime_end = datetime.strptime("02.01.1970 14:00", "%d.%m.%Y %H:%M")
+
+    # Fields for event attributes
+    start = models.DateTimeField(
+        auto_now = False,
+        auto_now_add = False,
+        blank = True,
+        default = (f"{datetime_start}")
+    )
+    end = models.DateTimeField(
+        auto_now = False,
+        auto_now_add = False,
+        blank = True,
+        default = (f"{datetime_end}")
+    )
+    room = models.CharField(max_length=50, default="")  # Room where the event takes place
+    reservation = models.CharField(max_length=100, default="")  # Reservation details if any
+    description = models.CharField(max_length=500, default="")  # Description of the event
+    responsible = models.CharField(max_length=100, default="")  # Person responsible for the event
+    open = models.BooleanField(default=True)  # Indicates whether the event is open or not

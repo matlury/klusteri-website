@@ -470,3 +470,203 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_creating_event(self):
+        """Only LeppisPJ can create a new organization"""
+
+        # create an event as LeppisPJ
+        response = self.client.post(
+            "http://localhost:8000/api/events/create_event",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "room": "varasto",
+                "reservation": "varaus",
+                "description": "",
+                "responsible": "Matti",
+                "open": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        response = self.client.post(
+            "http://localhost:8000/api/events/create_event",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "room": "varasto",
+                "reservation": "varaus",
+                "description": "kahvihetki",
+                "responsible": "Matti",
+                "open": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # creating an event fails if the user is not LeppisPJ
+        response = self.client.post(
+            "http://localhost:8000/api/events/create_event",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={
+                "room": "varasto",
+                "reservation": "varaus",
+                "description": "kahvihetki",
+                "responsible": "Matti",
+                "open": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    def test_update_room(self):
+        """An authorized user can update event room"""
+
+        # first create an event to update it
+        event_created = self.client.post(
+            "http://localhost:8000/api/events/create_event",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "room": "Kattilahuone",
+                "reservation": "Varaus suunnitteluun",
+                "description": "Suunnitellaan juhlia",
+                "responsible": "Pete",
+                "open": True,
+            },
+            format="json",
+        )
+
+        # update the room
+        response = self.client.put(
+            "http://localhost:8000/api/events/update_event/1/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"room": "Toinen huone"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["room"], "Toinen huone")
+    
+    def test_update_room_invalid(self):
+        """An authorized user can update event room"""
+
+        # first create an event to update it
+        event_created = self.client.post(
+            "http://localhost:8000/api/events/create_event",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "room": "Kattilahuone",
+                "reservation": "Varaus suunnitteluun",
+                "description": "Suunnitellaan juhlia",
+                "responsible": "Pete",
+                "open": True,
+            },
+            format="json",
+        )
+
+        # update the room with invalid parameter
+        response = self.client.put(
+            "http://localhost:8000/api/events/update_event/1/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"room": ""},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(event_created.data["room"], "Kattilahuone")
+    
+    def test_update_with_nonexistentevent(self):
+        """An authorized user can update event room"""
+
+        # update a room in an event that doesn't exist
+        response = self.client.put(
+            "http://localhost:8000/api/events/update_event/1/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"room": "Kattohuoneisto"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_update_room_role5(self):
+        """An authorized user can update event room"""
+
+        # first create an event to update it
+        event_created = self.client.post(
+            "http://localhost:8000/api/events/create_event",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "room": "Kattilahuone",
+                "reservation": "Varaus suunnitteluun",
+                "description": "Suunnitellaan juhlia",
+                "responsible": "Pete",
+                "open": True,
+            },
+            format="json",
+        )
+
+        # try to update the room with role 5 user
+        response = self.client.put(
+            "http://localhost:8000/api/events/update_event/1/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={"room": "Kattohuoneisto"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(event_created.data["room"], "Kattilahuone")
+
+    def test_deleting_event(self):
+        """LeppisPJ can delete an event"""
+
+        # create an event as LeppisPJ
+        response = self.client.post(
+            "http://localhost:8000/api/events/create_event",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "room": "varasto",
+                "reservation": "varaus",
+                "description": "kahvihetki",
+                "responsible": "Matti",
+                "open": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        event_id = response.data['id']
+
+        # delete the event as LeppisPJ
+        response = self.client.delete(
+            f"http://localhost:8000/api/events/delete_event/{event_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # create an event as LeppisPJ to ensure deletion was successful
+        response = self.client.post(
+            "http://localhost:8000/api/events/create_event",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "room": "varasto",
+                "reservation": "varaus",
+                "description": "kahvihetki",
+                "responsible": "Matti",
+                "open": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        event_id = response.data['id']
+
+        # deleting an event fails if the user is not LeppisPJ
+        response = self.client.delete(
+            f"http://localhost:8000/api/events/delete_event/{event_id}/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

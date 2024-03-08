@@ -14,6 +14,8 @@ const NewAccountPage = ({ onAccountCreated }) => {
   const [error, setError] = useState('')
   const [userCreated, setUserCreated] = useState(false)
 
+  const API_URL = import.meta.env.API_URL || 'http://localhost:8000'
+  
   const handleCreateAccount = () => {
     /*
     Check that username, password, email
@@ -25,12 +27,28 @@ const NewAccountPage = ({ onAccountCreated }) => {
     }
 
     /*
+    Check that the username are not space
+    */
+    if (!/^[a-zA-Z0-9.\-_$@*!]{1,20}$/.test(username)) {
+      setError('Käyttäjänimen tulee olla enintään 20 merkkiä eikä saa sisältää välilyöntejä.')
+      return
+    }
+
+    /*
     Check that the password and
     confirm password are the same
     */
     if (password !== confirmPassword) {
       setError('Salasanat eivät täsmää.')
       return
+    }
+
+    /*
+    Check that the email is valid
+    */
+    if (!/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email)) {
+        setError("Viheellinen sähköposti osoite.")
+        return
     }
 
     /*
@@ -47,7 +65,7 @@ const NewAccountPage = ({ onAccountCreated }) => {
     only numbers
     */
     if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
-      setError('Salasana ei saa sisältää pelkkiä numeroita.')
+      setError('Salasana ei saa sisältää pelkkiä numeroita tai kirjaimia.')
       return
     }
 
@@ -55,7 +73,7 @@ const NewAccountPage = ({ onAccountCreated }) => {
     Check if telegram is provided and unique
     */
     if (telegram) {
-      axios.get(`http://localhost:8000/users/?telegram=${telegram}`)
+      axios.get(`${API_URL}/users/?telegram=${telegram}`)
         .then(response => {
           const existingUsers = response.data
           if (existingUsers.some(user => user.telegram === telegram)) {
@@ -79,14 +97,14 @@ const NewAccountPage = ({ onAccountCreated }) => {
     /*
     Send request to server to check if email is already in use
     */
-      axios.get(`http://localhost:8000/users/?email=${email}`)
+      axios.get(`${API_URL}/users/?email=${email}`)
       .then(response => {
         const existingUsers = response.data
         if (existingUsers.some(user => user.email === email)) {
           setError('Sähköposti on jo käytössä.')
         } else {
           const userObject = { username, password, email, telegram, role: 5 }
-          axios.post('http://localhost:8000/users/', userObject)
+          axios.post(`${API_URL}/users/`, userObject)
             .then(response => {
               console.log(response)
               console.log('Account created successfully!')
