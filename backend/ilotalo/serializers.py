@@ -96,7 +96,10 @@ class EventSerializer(serializers.ModelSerializer):
         fields = ("id", "start", "end", "room", "reservation", "description", "responsible", "open")
 
 class NightResponsibilitySerializer(serializers.ModelSerializer):
+<<<<<<< HEAD
     """Serializes a NightResponsibility object as JSON"""
+=======
+>>>>>>> 08e3b3f (backend ykv)
 
     class Meta:
         model = NightResponsibility
