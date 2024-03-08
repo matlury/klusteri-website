@@ -99,6 +99,8 @@ const NewAccountPage = ({ onAccountCreated }) => {
     */
       axios.get(`${API_URL}/api/listobjects/users/?email=${email}`)
       .then(response => {
+        console.log(response)
+        console.log(response.data)
         const existingUsers = response.data
         if (existingUsers.some(user => user.email === email)) {
           setError('Sähköposti on jo käytössä.')
