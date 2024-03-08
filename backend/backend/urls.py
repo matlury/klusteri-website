@@ -32,7 +32,7 @@ router.register(r"events", views.EventView, "events")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", include(router.urls)),
+    path("api/listobjects/", include(router.urls)),
     path("api/token/", TokenObtainPairView.as_view()),
     path("api/token/refresh/", TokenRefreshView.as_view()),
     path("api/token/blacklist/", TokenBlacklistView.as_view()),
