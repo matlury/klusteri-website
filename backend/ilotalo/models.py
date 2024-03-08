@@ -104,3 +104,26 @@ class Event(models.Model):
     description = models.CharField(max_length=500, default="")  # Description of the event
     responsible = models.CharField(max_length=100, default="")  # Person responsible for the event
     open = models.BooleanField(default=True)  # Indicates whether the event is open or not
+
+class NightResponsibility(models.Model):
+    datetime_start = datetime.strptime("01.01.1970 12:00", "%d.%m.%Y %H:%M")
+    datetime_end = datetime.strptime("02.01.1970 14:00", "%d.%m.%Y %H:%M")
+
+    username = models.CharField(max_length=50, default="")
+    email = models.EmailField(max_length=150, default="")
+    responsible_for = models.CharField(max_length=500, default="")
+    login_time = models.DateTimeField(
+        auto_now = False,
+        auto_now_add = False,
+        blank = True,
+        default = (f"{datetime_start}")
+    )
+    logout_time = models.DateTimeField(
+        auto_now = False,
+        auto_now_add = False,
+        blank = True,
+        default = (f"{datetime_end}")
+    )
+    present = models.BooleanField(default=True)
+    late = models.BooleanField(default=False)
+    

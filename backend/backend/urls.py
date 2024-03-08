@@ -29,6 +29,7 @@ router = routers.DefaultRouter()
 router.register(r"users", views.UserView, "ilotalo")
 router.register(r"organizations", views.OrganizationView, "organisaatiot")
 router.register(r"events", views.EventView, "events")
+router.register(r"nightresponsibilities", views.NightResponsibilityView, "nightresponsibilities")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -38,5 +39,6 @@ urlpatterns = [
     path("api/token/blacklist/", TokenBlacklistView.as_view()),
     path("api/users/", include("ilotalo.urls")),
     path("api/organizations/", include("ilotalo.urls")),
-    path("api/events/", include("ilotalo.urls"))
+    path("api/events/", include("ilotalo.urls")),
+    path("api/ykv/", include("ilotalo.urls"))
 ]

@@ -9,9 +9,11 @@ from .serializers import (
     UserNoPasswordSerializer,
     UserUpdateSerializer,
     EventSerializer,
+    NightResponsibilitySerializer,
 )
-from .models import User, Organization, Event
+from .models import User, Organization, Event, NightResponsibility
 from .config import Role
+from datetime import datetime
 
 LEPPISPJ = Role.LEPPISPJ.value
 LEPPISVARAPJ = Role.LEPPISVARAPJ.value
@@ -265,3 +267,89 @@ class UpdateEventView(APIView):
             event.save()
             return Response(event.data, status=status.HTTP_200_OK)
         return Response(event.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class NightResponsibilityView(viewsets.ModelViewSet):
+    """
+    Displays a list of all NightResponsibility objects at <baseurl>/ykv/
+    Actions provided by ModelViewSet:
+        .list(), .retrieve(), .create(), .update(), .partial_update(), .delete()
+    Each method listed above can be overwritten for customized object management
+    """
+
+    serializer_class = NightResponsibilitySerializer
+    queryset = NightResponsibility.objects.all()
+
+class CreateNightResponsibilityView(APIView):
+    """View for creating a new ykv <baseurl>/api/ykv/create_responsibility"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ,
+            MUOKKAUS,
+            AVAIMELLINEN
+        ]:
+            return Response(
+                "You can't take responsibility",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = NightResponsibilitySerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class UpdateNightResponsibilityView(APIView):
+    """View for updating a NightResponsibility object at <baseurl>/api/ykv/update_responsibility/<responsibility.id>/"""
+
+    # IsAuthenticated will deny access if request has no access token
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, pk=None):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ,
+            MUOKKAUS,
+            AVAIMELLINEN
+        ]:
+            return Response(
+                "You can't edit this",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            responsibility_to_update = NightResponsibility.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            return Response("Not found", status=status.HTTP_404_NOT_FOUND)
+
+        # Check if logout is later than 7.15
+        limit = datetime.now()
+        limit = limit.replace(hour=7, minute=15)
+        datetime_format = "%Y-%m-%d %H:%M"
+        logout_time = datetime.strptime(request.data["logout_time"], datetime_format) 
+
+        if logout_time > limit:
+            request.data["late"] = True
+        else:
+            request.data["late"] = False
+
+        request.data["present"] = False
+
+        responsibility = NightResponsibilitySerializer(
+            instance=responsibility_to_update, data=request.data, partial=True
+        )
+
+        if responsibility.is_valid():
+            responsibility.save()
+            return Response(responsibility.data, status=status.HTTP_200_OK)
+        return Response(responsibility.errors, status=status.HTTP_400_BAD_REQUEST)
+
