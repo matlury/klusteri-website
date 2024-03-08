@@ -10,12 +10,12 @@ RUN chmod -R 777 *
 
 RUN pip install poetry
 
-COPY poetry.lock pyproject.toml /backend/
+RUN poetry config virtualenvs.create false
 
-RUN poetry install
+RUN poetry install --no-dev
 
-RUN poetry run python manage.py makemigrations && poetry run python manage.py migrate
+WORKDIR /backend/backend
 
 EXPOSE 8000
 
-ENTRYPOINT ["poetry", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["/bin/bash", "-c", "python manage.py makemigrations;python manage.py migrate;python manage.py runserver 0.0.0.0:8000"]
