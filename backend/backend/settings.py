@@ -167,4 +167,4 @@ AUTH_USER_MODEL = "ilotalo.User"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-CORS_ORIGIN_WHITELIST = ["http://localhost:5173"]
+CORS_ORIGIN_WHITELIST = ["http://localhost:5173", "https://klusteri-website-front-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi/"]
