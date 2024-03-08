@@ -1,7 +1,7 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from rest_framework import serializers
-from .models import User, Organization
+from .models import User, Organization, Event, NightResponsibility
 
 
 """
@@ -87,3 +87,15 @@ class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = ("id", "name", "email", "homepage", "size")
+
+class EventSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Event
+        fields = ("id", "start", "end", "room", "reservation", "description", "responsible", "open")
+
+class NightResponsibilitySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = NightResponsibility
+        fields = ("id", "username", "email", "responsible_for", "login_time", "logout_time", "present", "late")
