@@ -19,6 +19,7 @@ const NewAccountPage = ({ onAccountCreated }) => {
 =======
   const API_URL = import.meta.env.API_URL
 >>>>>>> 8702fcb (kovat keinot käyttöön)
+  const API_URL = process.env.API_URL
   
   const handleCreateAccount = () => {
     /*
