@@ -29,8 +29,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
-  const API_URL = import.meta.env.API_URL || 'http://localhost:8000'
-
+  const API_URL = process.env.API_URL
   // Writes down if a user is logged in
   useEffect(() => {
     setIsLoggedIn(propIsLoggedIn);
