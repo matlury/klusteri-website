@@ -92,9 +92,9 @@ npm run dev
 
 Mene **frontend**-hakemistoon.
 Aja testit komennolla:
-
-placeholder
-
+```
+npm test
+```
 Aja **Eslint** komennolla:
 ```
 npx eslint src
@@ -112,6 +112,6 @@ Raportin muodostaminen backendille
 ```
 
 Raportin muodostaminen frontendille
-
-placeholder
-
+```bash
+~klusteri-website/frontend/$ npx jest --coverage
+```
