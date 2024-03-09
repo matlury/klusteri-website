@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1709973582230" clover="3.2.0">
-  <project timestamp="1709973582230" name="All files">
+<coverage generated="1709974164331" clover="3.2.0">
+  <project timestamp="1709974164331" name="All files">
     <metrics statements="289" coveredstatements="125" conditionals="110" coveredconditionals="36" methods="107" coveredmethods="29" elements="506" coveredelements="190" complexity="0" loc="289" ncloc="289" packages="1" files="10" classes="10"/>
     <file name="christina_regina.jsx" path="/home/peltlaur/Asiakirjat/klusteri-website/frontend/src/pages/christina_regina.jsx">
       <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
