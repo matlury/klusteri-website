@@ -1,21 +1,20 @@
 import { render, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import Contacts from '../../src/pages/contacts'
-import React from 'react';
 
 jest.mock('react', () => ({
   ...jest.requireActual('react'),
   createElement: jest.fn(),
-}));
+}))
 
 test('redirects to Christinaregina page when the link button is clicked', () => {
-  const openSpy = jest.spyOn(window, 'open').mockImplementation(() => {});
+  const openSpy = jest.spyOn(window, 'open').mockImplementation(() => {})
 
-  const { getByText } = render(<Contacts />);
-  const linkButton = getByText('Christina Regina');
-  fireEvent.click(linkButton);
+  const { getByText } = render(<Contacts />)
+  const linkButton = getByText('Christina Regina')
+  fireEvent.click(linkButton)
 
-  expect(openSpy).toHaveBeenCalledWith('/christinaregina', '_self');
+  expect(openSpy).toHaveBeenCalledWith('/christinaregina', '_self')
 
   // Restore the original window.open after the test
   openSpy.mockRestore()
