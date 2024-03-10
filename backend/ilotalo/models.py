@@ -106,6 +106,12 @@ class Event(models.Model):
     open = models.BooleanField(default=True)  # Indicates whether the event is open or not
 
 class NightResponsibility(models.Model):
+    """
+    NightResponsibility model for tracking user responsibilities during night shifts.
+    This model records user information such as username, email, responsibilities, 
+    login and logout times, and attendance status.
+    """
+
     datetime_start = datetime.strptime("01.01.1970 12:00", "%d.%m.%Y %H:%M")
     datetime_end = datetime.strptime("02.01.1970 14:00", "%d.%m.%Y %H:%M")
 

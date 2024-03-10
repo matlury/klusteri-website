@@ -89,12 +89,14 @@ class OrganizationSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "email", "homepage", "size")
 
 class EventSerializer(serializers.ModelSerializer):
+    """Serializes an Event object as JSON"""
 
     class Meta:
         model = Event
         fields = ("id", "start", "end", "room", "reservation", "description", "responsible", "open")
 
 class NightResponsibilitySerializer(serializers.ModelSerializer):
+    """Serializes a NightResponsibility object as JSON"""
 
     class Meta:
         model = NightResponsibility
