@@ -3,7 +3,6 @@ import '@testing-library/jest-dom';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import OwnPage from '../pages/ownpage';
 
-
 const user = {
     username: 'example_username',
     email: 'example_email@example.com',
@@ -59,4 +58,3 @@ describe('OwnPage Component', () => {
         expect(getByText('Järjestöt')).toBeInTheDocument()
     })
 });
-

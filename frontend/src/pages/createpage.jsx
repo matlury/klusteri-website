@@ -145,24 +145,27 @@ const NewAccountPage = ({ onAccountCreated }) => {
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <div className="input-fields">
         <div>
-          Käyttäjänimi:
+        <label htmlFor="usernameInput">Käyttäjänimi:</label>
           <input
+            id="usernameInput"
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
         </div>
         <div>
-          Salasana:
+        <label htmlFor="passwordInput">Salasana:</label>
           <input
+            id="passwordInput"
             type={showPasswords ? 'text' : 'password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
         <div>
-          Vahvista salasana:
+        <label htmlFor="confirmPasswordInput">Vahvista salasana:</label>
           <input
+            id="confirmPasswordInput"
             type={showPasswords ? 'text' : 'password'}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
@@ -175,16 +178,18 @@ const NewAccountPage = ({ onAccountCreated }) => {
           Näytä salasana
         </div>
         <div>
-          Sähköposti:
+        <label htmlFor="emailInput">Sähköposti:</label>
           <input
+            id="emailInput"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div>
-          Telegram (valinnainen):
+        <label htmlFor="telegramInput">Telegram (valinnainen):</label>
           <input
+            id="telegramInput"
             type="text"
             value={telegram}
             onChange={(e) => setTelegram(e.target.value)}
