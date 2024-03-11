@@ -3,6 +3,7 @@ import '@testing-library/jest-dom';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import LoginPage from '../pages/loginpage';
 import axiosClient from '../axios.js'
+import { setUser } from "../context/ContextProvider.jsx"
 
 jest.mock('../axios')
 
