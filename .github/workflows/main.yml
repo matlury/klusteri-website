@@ -26,11 +26,11 @@ jobs:
         env:
           EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
           EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
-          NAME: ${{ "TEST_DB_NAME" }}
-          USER: ${{ "TEST_DB_USER" }}
-          PASSWORD: ${{ "TEST_DB_PASSWORD" }}
-          HOST: ${{ "TEST_DB_HOST" }}
-          PORT: ${{ "TEST_DB_PORT" }}
+          NAME: ${{ secrets.TEST_DB_NAME }}
+          USER: ${{ secrets.TEST_DB_USER }}
+          PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
+          HOST: ${{ secrets.TEST_DB_HOST }}
+          PORT: ${{ secrets.TEST_DB_PORT }}
         run: poetry run coverage run --branch -m pytest
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
