@@ -162,7 +162,7 @@ class TestDjangoAPI(TestCase):
         """A user can be deleted"""
 
         response = self.client.post(
-            "http://localhost:8000/users/",
+            "http://localhost:8000/api/listobjects/users/",
             data={
                 "username": "christina",
                 "password": "vahvaSalasana1234",
@@ -175,7 +175,7 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(User.objects.count(), self.user_count + 1)
 
-        response = self.client.delete("http://localhost:8000/users/2/", format="json")
+        response = self.client.delete("http://localhost:8000/api/listobjects/users/2/", format="json")
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(User.objects.count(), self.user_count)
