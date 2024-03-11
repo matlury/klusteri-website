@@ -5,6 +5,7 @@ import LoginPage from '../pages/loginpage';
 import axiosClient from '../axios.js'
 import { setUser } from "../context/ContextProvider.jsx"
 
+
 jest.mock('../axios')
 
 test('renders login form', () => {
@@ -22,7 +23,7 @@ test('renders login form', () => {
 });
 
 test('error message when logging in with invalid credentials', async () => {
-  axiosClient.post.mockRejectedValueOnce({ response: { status: 401 } });
+  axiosClient.post.mockRejectedValueOnce({ response: { status: 401 } })
 
 // Render the LoginPage component
   const { getByLabelText, getByText, queryByText } = render(
@@ -44,9 +45,9 @@ test('error message when logging in with invalid credentials', async () => {
       password: 'invalidpassword'
     });
 
-    expect(queryByText('Sähköposti tai salasana virheellinen!')).toBeInTheDocument();
-    expect(localStorage.getItem('loggedUser')).toBeNull();
-    expect(localStorage.getItem('isLoggedIn')).toBeNull();
+    expect(queryByText('Sähköposti tai salasana virheellinen!')).toBeInTheDocument()
+    expect(localStorage.getItem('loggedUser')).toBeNull()
+    expect(localStorage.getItem('isLoggedIn')).toBeNull()
   })
 })
 
@@ -64,12 +65,12 @@ test('logging in with valid credentials works', async () => {
   );
 
   // Fill in email and password fields
-  const emailInput = getByLabelText('Sähköposti:');
-  const passwordInput = getByLabelText('Salasana:');
-  fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-  fireEvent.change(passwordInput, { target: { value: 'password123' } });
+  const emailInput = getByLabelText('Sähköposti:')
+  const passwordInput = getByLabelText('Salasana:')
+  fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
+  fireEvent.change(passwordInput, { target: { value: 'password123' } })
 
-  const loginButton = getByText('Kirjaudu sisään');
+  const loginButton = getByText('Kirjaudu sisään')
   fireEvent.click(loginButton);
 
   await waitFor(() => {
@@ -86,5 +87,5 @@ test('logging in with valid credentials works', async () => {
     expect(localStorage.getItem('loggedUser')).toEqual(JSON.stringify(mockUserData));
     expect(localStorage.getItem('isLoggedIn')).toEqual('true');
     expect(queryByText('Sähköposti tai salasana virheellinen!')).not.toBeInTheDocument();
-  });
+  })
 })
