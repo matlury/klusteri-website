@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
@@ -33,6 +34,7 @@ ALLOWED_HOSTS = [
     "klusteri-website-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi",
     "localhost",
     "127.0.0.1",
+    "klusteri-website-db-test-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi"
 ]
 
 
@@ -86,27 +88,26 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-
+"""
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
-
 """
+
+
 DATABASES = {
     "default": {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'klusteri_testdb', 
-        'USER': 'klusteri_testdb',
-        'PASSWORD': '',
-        'HOST': 'possu-test.it.helsinki.fi', 
-        'PORT': '5432',
+        'NAME': os.getenv("TEST_DB_NAME"), 
+        'USER': os.getenv("TEST_DB_USER"),
+        'PASSWORD': os.getenv("TEST_DB_PASSWORD"),
+        'HOST': os.getenv("TEST_DB_HOST"), 
+        'PORT': os.getenv("TEST_DB_PORT"),
     }
 }
-"""
 
 
 REST_FRAMEWORK = {
@@ -166,4 +167,4 @@ AUTH_USER_MODEL = "ilotalo.User"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-CORS_ORIGIN_WHITELIST = ["http://localhost:5173"]
+CORS_ORIGIN_WHITELIST = ["http://localhost:5173", "https://klusteri-website-front-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi"]

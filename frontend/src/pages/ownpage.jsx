@@ -124,7 +124,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
 
     if (telegram) {
-      axios.get(`${API_URL}/users/?telegram=${telegram}`)
+      axios.get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`)
         .then(response => {
           const existingUsers = response.data
           if (existingUsers.some(user => user.telegram === telegram && user.id !== loggedUser.id)) {
@@ -133,7 +133,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
               return
           }})}
 
-    axios.get(`${API_URL}/users/?email=${email}`)
+    axios.get(`${API_URL}/api/listobjects/users/?email=${email}`)
       .then(response => {
         const existingUsers = response.data
           if (existingUsers.some(user => user.email === email && user.id !== loggedUser.id)) {
@@ -170,7 +170,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // Keeps the organization information up-to-date
   const getOrganisations = () => {
     axios
-      .get(`${API_URL}/organizations/`)
+      .get(`${API_URL}/api/listobjects/organizations/`)
       .then(response => {
         const data = response.data
         setOrganisations(data)
@@ -320,7 +320,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   // Handles the creation of organizations
   const handleCreateOrganization = () => (
-    axios.get(`${API_URL}/organizations/?email=${organization_email}`)
+    axios.get(`${API_URL}/api/listobjects/organizations/?email=${organization_email}`)
       .then(response => {
         const existingOrganizations = response.data
         if (existingOrganizations.some(org => org.name === organization_name)) {
@@ -332,7 +332,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         else {
           const organizationObject = { name: organization_name, email: organization_email, homepage: organization_homepage, size: organization_size }
           console.log(organizationObject)
-          axios.post(`${API_URL}/organizations/`, organizationObject)
+          axios.post(`${API_URL}/api/listobjects/organizations/`, organizationObject)
             .then(response => {
               console.log(response)
               console.log('Organization created successfully!')
@@ -371,7 +371,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   const getAllUsers = () => {
     axios
-      .get(`${API_URL}/users/`)
+      .get(`${API_URL}/api/listobjects/users/`)
       .then(response => {
         const data = response.data
         setAllUsers(data)

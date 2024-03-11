@@ -73,7 +73,7 @@ const NewAccountPage = ({ onAccountCreated }) => {
     Check if telegram is provided and unique
     */
     if (telegram) {
-      axios.get(`${API_URL}/users/?telegram=${telegram}`)
+      axios.get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`)
         .then(response => {
           const existingUsers = response.data
           if (existingUsers.some(user => user.telegram === telegram)) {
@@ -97,14 +97,16 @@ const NewAccountPage = ({ onAccountCreated }) => {
     /*
     Send request to server to check if email is already in use
     */
-      axios.get(`${API_URL}/users/?email=${email}`)
+      axios.get(`${API_URL}/api/listobjects/users/?email=${email}`)
       .then(response => {
+        console.log(response)
+        console.log(response.data)
         const existingUsers = response.data
         if (existingUsers.some(user => user.email === email)) {
           setError('Sähköposti on jo käytössä.')
         } else {
           const userObject = { username, password, email, telegram, role: 5 }
-          axios.post(`${API_URL}/users/`, userObject)
+          axios.post(`${API_URL}/api/listobjects/users/`, userObject)
             .then(response => {
               console.log(response)
               console.log('Account created successfully!')
