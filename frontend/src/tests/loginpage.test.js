@@ -1,23 +1,26 @@
-import '@testing-library/jest-dom'
-import { render, fireEvent, waitFor } from '@testing-library/react'
-import LoginPage from '../pages/loginpage'
+import React from 'react';
+import '@testing-library/jest-dom';
+import { render, fireEvent, waitFor } from '@testing-library/react';
+import LoginPage from '../pages/loginpage';
 import axiosClient from '../axios.js'
+import { setUser } from "../context/ContextProvider.jsx"
+
 
 jest.mock('../axios')
 
 test('renders login form', () => {
-  const { getByLabelText, getByText } = render(<LoginPage />)
-
-  const emailInput = getByLabelText('Sähköposti:')
-  const passwordInput = getByLabelText('Salasana:')
-  const loginButton = getByText('Kirjaudu sisään')
-  const createUserButton = getByText('Luo uusi käyttäjä')
+  const { getByLabelText, getByText } = render(<LoginPage />);
   
-  expect(emailInput).toBeInTheDocument()
-  expect(passwordInput).toBeInTheDocument()
-  expect(loginButton).toBeInTheDocument()
-  expect(createUserButton).toBeInTheDocument()
-})
+  const emailInput = getByLabelText('Sähköposti:');
+  const passwordInput = getByLabelText('Salasana:');
+  const loginButton = getByText('Kirjaudu sisään');
+  const createUserButton = getByText('Luo uusi käyttäjä');
+  
+  expect(emailInput).toBeInTheDocument();
+  expect(passwordInput).toBeInTheDocument();
+  expect(loginButton).toBeInTheDocument();
+  expect(createUserButton).toBeInTheDocument();
+});
 
 test('error message when logging in with invalid credentials', async () => {
   axiosClient.post.mockRejectedValueOnce({ response: { status: 401 } })
@@ -25,22 +28,22 @@ test('error message when logging in with invalid credentials', async () => {
 // Render the LoginPage component
   const { getByLabelText, getByText, queryByText } = render(
     <LoginPage onLogin={jest.fn()} onLogout={jest.fn()} onCreateNewUser={jest.fn()} />
-  )
+  );
 
   // Fill in email and password fields
-  const emailInput = getByLabelText('Sähköposti:')
-  const passwordInput = getByLabelText('Salasana:')
-  fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
-  fireEvent.change(passwordInput, { target: { value: 'invalidpassword' } })
+  const emailInput = getByLabelText('Sähköposti:');
+  const passwordInput = getByLabelText('Salasana:');
+  fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+  fireEvent.change(passwordInput, { target: { value: 'invalidpassword' } });
 
-  const loginButton = getByText('Kirjaudu sisään')
-  fireEvent.click(loginButton)
+  const loginButton = getByText('Kirjaudu sisään');
+  fireEvent.click(loginButton);
 
   await waitFor(() => {
     expect(axiosClient.post).toHaveBeenCalledWith('/token/', {
       email: 'test@example.com',
       password: 'invalidpassword'
-    })
+    });
 
     expect(queryByText('Sähköposti tai salasana virheellinen!')).toBeInTheDocument()
     expect(localStorage.getItem('loggedUser')).toBeNull()
@@ -49,17 +52,17 @@ test('error message when logging in with invalid credentials', async () => {
 })
 
 test('logging in with valid credentials works', async () => {
-  const mockUserData = { id: 1, username: 'testuser' }
-  const mockToken = 'mock-access-token'
+  const mockUserData = { id: 1, username: 'testuser' };
+  const mockToken = 'mock-access-token';
 
   // Mock the response of axios post and get requests
-  axiosClient.post.mockResolvedValueOnce({ data: { access: mockToken } })
-  axiosClient.get.mockResolvedValueOnce({ data: mockUserData })
+  axiosClient.post.mockResolvedValueOnce({ data: { access: mockToken } });
+  axiosClient.get.mockResolvedValueOnce({ data: mockUserData });
 
   // Render the LoginPage component
   const { getByLabelText, queryByText, getByText } = render(
     <LoginPage onLogin={jest.fn()} onLogout={jest.fn()} onCreateNewUser={jest.fn()} />
-  )
+  );
 
   // Fill in email and password fields
   const emailInput = getByLabelText('Sähköposti:')
@@ -74,15 +77,15 @@ test('logging in with valid credentials works', async () => {
     expect(axiosClient.post).toHaveBeenCalledWith('/token/', {
       email: 'test@example.com',
       password: 'password123'
-    })
+    });
     expect(axiosClient.get).toHaveBeenCalledWith('/users/userinfo', {
       headers: {
         Authorization: `Bearer ${mockToken}`
       }
-    })
+    });
 
-    expect(localStorage.getItem('loggedUser')).toEqual(JSON.stringify(mockUserData))
-    expect(localStorage.getItem('isLoggedIn')).toEqual('true')
-    expect(queryByText('Sähköposti tai salasana virheellinen!')).not.toBeInTheDocument()
+    expect(localStorage.getItem('loggedUser')).toEqual(JSON.stringify(mockUserData));
+    expect(localStorage.getItem('isLoggedIn')).toEqual('true');
+    expect(queryByText('Sähköposti tai salasana virheellinen!')).not.toBeInTheDocument();
   })
 })
