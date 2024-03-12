@@ -682,8 +682,8 @@ class TestDjangoAPI(TestCase):
                 "username": "matti",
                 "email": "matti@hotmail.com",
                 "responsible_for": "",
-                "login_time": "1970-01-01T12:00:00",
-                "logout_time": "1970-01-02T14:00:00",
+                "login_time": "1970-01-01T12:00",
+                "logout_time": "1970-01-02T14:00",
                 "present": True,
                 "late": False
             },
@@ -699,8 +699,8 @@ class TestDjangoAPI(TestCase):
                 "username": "matti",
                 "email": "matti@hotmail.com",
                 "responsible_for": "kutsutut vieraat",
-                "login_time": "1970-01-01T12:00:00",
-                "logout_time": "1970-01-02T14:00:00",
+                "login_time": "1970-01-01T12:00",
+                "logout_time": "1970-01-02T14:00",
                 "present": True,
                 "late": False
             },
@@ -717,8 +717,8 @@ class TestDjangoAPI(TestCase):
                "username": "matti",
                 "email": "matti@hotmail.com",
                 "responsible_for": "kutsutut vieraat",
-                "login_time": "1970-01-01T12:00:00",
-                "logout_time": "1970-01-02T14:00:00",
+                "login_time": "1970-01-01T12:00",
+                "logout_time": "1970-01-02T14:00",
                 "present": True,
                 "late": False
             },
@@ -738,10 +738,7 @@ class TestDjangoAPI(TestCase):
                 "username": "matti",
                 "email": "matti@hotmail.com",
                 "responsible_for": "kutsutut vieraat",
-                "login_time": "1970-01-01T12:00:00",
-                "logout_time": "1970-01-02T14:00:00",
-                "present": True,
-                "late": False
+                "login_time": "1970-01-01T12:00"
             },
             format="json",
         )
@@ -749,12 +746,39 @@ class TestDjangoAPI(TestCase):
         response = self.client.put(
             "http://localhost:8000/api/ykv/update_responsibility/1/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"responsible_for": "tietyt vieraat"},
+            data={"responsible_for": "tietyt vieraat", "logout_time": "1970-01-01T13:00"},
             format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["responsible_for"], "tietyt vieraat")
+    
+    def test_ykv_logout(self):
+        """An authorized user can update ykv"""
+
+        # first create an ykv
+        ykv_created = self.client.post(
+            "http://localhost:8000/api/ykv/create_responsibility",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "username": "matti",
+                "email": "matti@hotmail.com",
+                "responsible_for": "kutsutut vieraat",
+                "login_time": "2024-03-05T18:00"
+            },
+            format="json",
+        )
+
+        # not late logout
+        response = self.client.put(
+            "http://localhost:8000/api/ykv/update_responsibility/1/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"logout_time": "2024-03-05T23:00"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["late"], False)
     
     def test_ykv_late_logout(self):
         """An authorized user can update ykv"""
@@ -767,27 +791,16 @@ class TestDjangoAPI(TestCase):
                 "username": "matti",
                 "email": "matti@hotmail.com",
                 "responsible_for": "kutsutut vieraat",
-                "login_time": "2024-03-05T18:00:00"
+                "login_time": "2024-03-06T20:00"
             },
             format="json",
         )
-
-        # not late logout
-        response = self.client.put(
-            "http://localhost:8000/api/ykv/update_responsibility/1/",
-            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"logout_time": "2024-03-05T23:00:00"},
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["late"], False)
 
         # late logout
         response = self.client.put(
             "http://localhost:8000/api/ykv/update_responsibility/1/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"logout_time": "2024-03-06T8:00:00"},
+            data={"logout_time": "2024-03-07T07:30"},
             format="json",
         )
 
@@ -805,8 +818,8 @@ class TestDjangoAPI(TestCase):
                 "username": "matti",
                 "email": "matti@hotmail.com",
                 "responsible_for": "kutsutut vieraat",
-                "login_time": "1970-01-01T12:00:00",
-                "logout_time": "1970-01-02T14:00:00",
+                "login_time": "1970-01-01T12:00",
+                "logout_time": "1970-01-02T14:00",
                 "present": True,
                 "late": False
             },
