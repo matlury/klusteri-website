@@ -335,7 +335,7 @@ class UpdateNightResponsibilityView(APIView):
         limit = datetime.now()
         limit = limit.replace(hour=7, minute=15)
         datetime_format = "%Y-%m-%d %H:%M"
-        logout_time = datetime.strptime(request.data["logout_time"], datetime_format) 
+        logout_time = datetime.strptime(request.data["logout_time"], datetime_format)
 
         if logout_time > limit:
             request.data["late"] = True
