@@ -33,12 +33,9 @@ jobs:
       - name: Install dependencies
         working-directory: ./backend
         run: poetry install
-      - name: Activate virtual environment
-        working-directory: ./backend
-        run: poetry shell
       - name: Make migrations
         working-directory: ./backend
-        run: python manage.py migrate
+        run: poetry run python manage.py migrate
       - name: Run tests
         working-directory: ./backend
         env:
