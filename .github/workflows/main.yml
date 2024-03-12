@@ -9,6 +9,18 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: github_actions
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3.10
@@ -21,16 +33,14 @@ jobs:
       - name: Install dependencies
         working-directory: ./backend
         run: poetry install
+      - name: Make migrations
+        working-directory: ./backend
+        run: poetry run python manage.py migrate
       - name: Run tests
         working-directory: ./backend
         env:
           EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
           EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
-          NAME: ${{ secrets.TEST_DB_NAME }}
-          USER: ${{ secrets.TEST_DB_USER }}
-          PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
-          HOST: ${{ secrets.TEST_DB_HOST }}
-          PORT: ${{ secrets.TEST_DB_PORT }}
         run: poetry run coverage run --branch -m pytest
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
