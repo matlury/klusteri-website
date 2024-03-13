@@ -5,6 +5,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Modal, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../index.css';
+import { useStateContext } from "../context/ContextProvider.jsx";
 
 const localizer = momentLocalizer(moment);
 
@@ -23,15 +24,20 @@ const MyCalendar = () => {
     end: '',
   });
   const [showModal, setShowModal] = useState(false);
+  const { user } = useStateContext(); // Lisätty user-tila kirjautumistarkistusta varten
 
   const handleSelectSlot = ({ start, end }) => {
-    setSelectedSlot({ start, end });
-    setEventDetails({
-      ...eventDetails,
-      start,
-      end,
-    });
-    setShowModal(true);
+    if (user) {
+      setSelectedSlot({ start, end });
+      setEventDetails({
+        ...eventDetails,
+        start,
+        end,
+      });
+      setShowModal(true);
+    } else {
+      alert('Sinun täytyy kirjautua sisään lisätäksesi tapahtuman.');
+    }
   };
 
   const handleSelectEvent = (event) => {
