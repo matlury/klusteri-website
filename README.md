@@ -39,9 +39,12 @@ poetry install
 poetry shell
 ```
 
-Jos backendin koodia on muutettu, backend ei välttämättä käynnisty ennen kuin seuraavat komennot on ajettu
+Jos koodissa määriteltyjä tietokantatauluja on muokattu, on luotava uusi migraatio tietokantaa varten
 ```bash
 python manage.py makemigrations
+```
+Omalta laitteelta löytyvän PostgreSQL-tietokannan saa alustettua valmiiden migraatioiden mukaan seuraavalla komennolla
+```bash
 python manage.py migrate
 ```
 
