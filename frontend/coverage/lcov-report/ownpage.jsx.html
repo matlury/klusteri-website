@@ -1113,7 +1113,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
     }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    if (telegram) {</span>
-<span class="cstat-no" title="statement not covered" >      axios.get(`${API_URL}/users/?telegram=${telegram}`)</span>
+<span class="cstat-no" title="statement not covered" >      axios.get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`)</span>
         .then(<span class="fstat-no" title="function not covered" >re</span>sponse =&gt; {
           const existingUsers = <span class="cstat-no" title="statement not covered" >response.data</span>
 <span class="cstat-no" title="statement not covered" >          if (existingUsers.some(<span class="fstat-no" title="function not covered" >us</span>er =&gt; <span class="cstat-no" title="statement not covered" >user.telegram === telegram &amp;&amp; user.id !== loggedUser.id)</span>) {</span>
@@ -1122,7 +1122,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
 <span class="cstat-no" title="statement not covered" >              return</span>
           }})}
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    axios.get(`${API_URL}/users/?email=${email}`)</span>
+<span class="cstat-no" title="statement not covered" >    axios.get(`${API_URL}/api/listobjects/users/?email=${email}`)</span>
       .then(<span class="fstat-no" title="function not covered" >re</span>sponse =&gt; {
         const existingUsers = <span class="cstat-no" title="statement not covered" >response.data</span>
 <span class="cstat-no" title="statement not covered" >          if (existingUsers.some(<span class="fstat-no" title="function not covered" >us</span>er =&gt; <span class="cstat-no" title="statement not covered" >user.email === email &amp;&amp; user.id !== loggedUser.id)</span>) {</span>
@@ -1159,7 +1159,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
   // Keeps the organization information up-to-date
   const getOrganisations = () =&gt; {
     axios
-      .get(`${API_URL}/organizations/`)
+      .get(`${API_URL}/api/listobjects/organizations/`)
       .then(<span class="fstat-no" title="function not covered" >re</span>sponse =&gt; {
         const data = <span class="cstat-no" title="statement not covered" >response.data</span>
 <span class="cstat-no" title="statement not covered" >        setOrganisations(data)</span>
@@ -1309,7 +1309,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
 &nbsp;
   // Handles the creation of organizations
   const handleCreateOrganization = <span class="fstat-no" title="function not covered" >()</span> =&gt; (
-<span class="cstat-no" title="statement not covered" >    axios.get(`${API_URL}/organizations/?email=${organization_email}`)</span>
+<span class="cstat-no" title="statement not covered" >    axios.get(`${API_URL}/api/listobjects/organizations/?email=${organization_email}`)</span>
       .then(<span class="fstat-no" title="function not covered" >re</span>sponse =&gt; {
         const existingOrganizations = <span class="cstat-no" title="statement not covered" >response.data</span>
 <span class="cstat-no" title="statement not covered" >        if (existingOrganizations.some(<span class="fstat-no" title="function not covered" >or</span>g =&gt; <span class="cstat-no" title="statement not covered" >org.name === organization_name)</span>) {</span>
@@ -1321,7 +1321,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
         else {
           const organizationObject = <span class="cstat-no" title="statement not covered" >{ name: organization_name, email: organization_email, homepage: organization_homepage, size: organization_size }</span>
 <span class="cstat-no" title="statement not covered" >          console.log(organizationObject)</span>
-<span class="cstat-no" title="statement not covered" >          axios.post(`${API_URL}/organizations/`, organizationObject)</span>
+<span class="cstat-no" title="statement not covered" >          axios.post(`${API_URL}/api/listobjects/organizations/`, organizationObject)</span>
             .then(<span class="fstat-no" title="function not covered" >re</span>sponse =&gt; {
 <span class="cstat-no" title="statement not covered" >              console.log(response)</span>
 <span class="cstat-no" title="statement not covered" >              console.log('Organization created successfully!')</span>
@@ -1360,7 +1360,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
 &nbsp;
   const getAllUsers = () =&gt; {
     axios
-      .get(`${API_URL}/users/`)
+      .get(`${API_URL}/api/listobjects/users/`)
       .then(<span class="fstat-no" title="function not covered" >re</span>sponse =&gt; {
         const data = <span class="cstat-no" title="statement not covered" >response.data</span>
 <span class="cstat-no" title="statement not covered" >        setAllUsers(data)</span>
@@ -1456,7 +1456,7 @@ export default OwnPage</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-03-11T11:24:05.015Z
+                at 2024-03-13T11:21:28.662Z
             </div>
         <script src="prettify.js"></script>
         <script>
