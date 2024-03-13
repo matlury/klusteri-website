@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -31,6 +31,7 @@ const MyCalendar = () => {
       start,
       end,
     });
+    setShowModal(true);
   };
 
   const handleSelectEvent = (event) => {
@@ -57,7 +58,7 @@ const MyCalendar = () => {
         room,
       };
       setEvents([...events, newEvent]);
-      setSelectedSlot(null);
+      setShowModal(false);
       setEventDetails({
         title: '',
         organizer: '',
@@ -80,57 +81,6 @@ const MyCalendar = () => {
   return (
     <div className="textbox">
       <h1>Varauskalenteri</h1>
-      <div>
-        {selectedSlot && (
-          <div>
-            <p>Täytä tapahtuman tiedot:</p>
-            <p>Alkaa: <input type="datetime-local" name="start" value={eventDetails.start} onChange={handleInputChange} /></p>
-            <p style={{ color: 'red' }}>Huomioithan yökäyttösäännöt klo 00-08.</p>
-            <p>Päättyy: <input type="datetime-local" name="end" value={eventDetails.end} onChange={handleInputChange} /></p>
-            <p>Voit tehdä maksimissaan 24h kestävän varauksen.</p>
-            <input
-              type="text"
-              name="title"
-              placeholder="Tapahtuman nimi"
-              value={eventDetails.title}
-              onChange={handleInputChange}
-            />
-            <input
-              type="text"
-              name="organizer"
-              placeholder="Järjestäjä"
-              value={eventDetails.organizer}
-              onChange={handleInputChange}
-            />
-            <input
-              type="text"
-              name="responsible"
-              placeholder="Vastuuhenkilö"
-              value={eventDetails.responsible}
-              onChange={handleInputChange}
-            />
-            <textarea
-              name="description"
-              placeholder="Tapahtuman kuvaus"
-              value={eventDetails.description}
-              onChange={handleInputChange}
-              style={{ width: '100%', height: '100px' }}
-            />
-            <p>Oleskelutilan tai koko klusterin saa varata vain, jos klusterikokous on myöntänyt siihen luvan.</p>
-            <select name="isOpen" value={eventDetails.isOpen} onChange={handleInputChange}>
-              <option value="avoin">Avoin tapahtuma</option>
-              <option value="suljettu">Vain jäsenille</option>
-            </select>
-            <select name="room" value={eventDetails.room} onChange={handleInputChange}>
-              <option value="Kokoushuone">Kokoushuone</option>
-              <option value="Kerhotila">Kerhotila</option>
-              <option value="Oleskelutila">Oleskelutila</option>
-              <option value="Christina Regina">Christina Regina</option>
-            </select>
-            <button onClick={handleAddEvent}>Lisää tapahtuma</button>
-          </div>
-        )}
-      </div>
       <Calendar
         localizer={localizer}
         events={events}
@@ -143,18 +93,63 @@ const MyCalendar = () => {
       />
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
-          <Modal.Title>{selectedEvent && selectedEvent.title}</Modal.Title>
+          <Modal.Title>{selectedEvent ? selectedEvent.title : 'Lisää tapahtuma'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedEvent && (
-            <div>
+            <>
               <p>Alkaa: {moment(selectedEvent.start).format('YYYY-MM-DD HH:mm')}</p>
               <p>Päättyy: {moment(selectedEvent.end).format('YYYY-MM-DD HH:mm')}</p>
               <p>Järjestäjä: {selectedEvent.organizer}</p>
               <p>Vastuuhenkilö: {selectedEvent.responsible}</p>
               <p>Kuvaus: {selectedEvent.description}</p>
-              <p>Avoimuus: {selectedEvent.isOpen}</p>
+              <p>Tila: {selectedEvent.isOpen}</p>
               <p>Huone: {selectedEvent.room}</p>
+            </>
+          )}
+          {!selectedEvent && (
+            <div>
+              <p>Valitun ajanjakson tiedot:</p>
+              <p>Alkaa: <input type="datetime-local" name="start" value={eventDetails.start} onChange={handleInputChange} /></p>
+              <p>Päättyy: <input type="datetime-local" name="end" value={eventDetails.end} onChange={handleInputChange} /></p>
+              <input
+                type="text"
+                name="title"
+                placeholder="Tapahtuman nimi"
+                value={eventDetails.title}
+                onChange={handleInputChange}
+              />
+              <input
+                type="text"
+                name="organizer"
+                placeholder="Järjestäjä"
+                value={eventDetails.organizer}
+                onChange={handleInputChange}
+              />
+              <input
+                type="text"
+                name="responsible"
+                placeholder="Vastuuhenkilö"
+                value={eventDetails.responsible}
+                onChange={handleInputChange}
+              />
+              <textarea
+                name="description"
+                placeholder="Tapahtuman kuvaus"
+                value={eventDetails.description}
+                onChange={handleInputChange}
+                style={{ width: '100%', height: '100px' }}
+              />
+              <select name="isOpen" value={eventDetails.isOpen} onChange={handleInputChange}>
+                <option value="avoin">Avoin tapahtuma</option>
+                <option value="suljettu">Vain jäsenille</option>
+              </select>
+              <select name="room" value={eventDetails.room} onChange={handleInputChange}>
+                <option value="Kokoushuone">Kokoushuone</option>
+                <option value="Kerhotila">Kerhotila</option>
+                <option value="Oleskelutila">Oleskelutila</option>
+                <option value="ChristinaRegina">ChristinaRegina</option>
+              </select>
             </div>
           )}
         </Modal.Body>
@@ -162,14 +157,15 @@ const MyCalendar = () => {
           <Button variant="secondary" onClick={handleCloseModal}>
             Sulje
           </Button>
+          {!selectedEvent && (
+            <Button variant="primary" onClick={handleAddEvent}>
+              Tallenna
+            </Button>
+          )}
         </Modal.Footer>
       </Modal>
     </div>
   );
 };
 
-const Reservations = () => {
-  return <MyCalendar />;
-};
-
-export default Reservations;
+export default MyCalendar;
