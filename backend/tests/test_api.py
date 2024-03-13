@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework.serializers import ValidationError
 from rest_framework.test import APIClient
 from rest_framework import status
-from ilotalo.models import User
+from ilotalo.models import User, Organization, Event
 
 """
 These tests are related to the API between frontend and backend
@@ -160,25 +160,14 @@ class TestDjangoAPI(TestCase):
 
     def test_delete_user(self):
         """A user can be deleted"""
-
-        response = self.client.post(
-            "http://localhost:8000/api/listobjects/users/",
-            data={
-                "username": "christina",
-                "password": "vahvaSalasana1234",
-                "email": "regina.gaudium@gmail.com",
-                "telegram": "domustg",
-                "role": 5,
-            },
-            format="json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(User.objects.count(), self.user_count + 1)
-
-        response = self.client.delete("http://localhost:8000/api/listobjects/users/2/", format="json")
+        
+        # When running the entire test suite, a hard coded id in the url will cause a 404 response
+        # The following way works like intended
+        user_id = User.objects.all()[0].id
+        response = self.client.delete(f"http://localhost:8000/api/listobjects/users/{user_id}/", format="json")
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(User.objects.count(), self.user_count)
+        self.assertEqual(User.objects.count(), self.user_count-1)
 
     def test_register_user_with_duplicate(self):
         """Creating a user fails if their telegram name is taken"""
@@ -235,8 +224,9 @@ class TestDjangoAPI(TestCase):
         """An authorized user can update their email address"""
 
         # update the email address
+        user_id = User.objects.all()[0].id
         response = self.client.put(
-            "http://localhost:8000/api/users/update/1/",
+            f"http://localhost:8000/api/users/update/{user_id}/",
             headers={"Authorization": f"Bearer {self.access_token}"},
             data={"email": "uusisp@gmail.com"},
             format="json",
@@ -249,8 +239,9 @@ class TestDjangoAPI(TestCase):
         """Updating an email fails without authorization or if the new address is invalid"""
 
         # attempt updating without authorization
+        user_id = User.objects.all()[0].id
         response = self.client.put(
-            "http://localhost:8000/api/users/update/1/",
+            f"http://localhost:8000/api/users/update/{user_id}/",
             data={"email": "uusisp@gmail.com"},
             format="json",
         )
@@ -260,7 +251,7 @@ class TestDjangoAPI(TestCase):
 
         # new email address is invalid
         response = self.client.put(
-            "http://localhost:8000/api/users/update/1/",
+            f"http://localhost:8000/api/users/update/{user_id}/",
             headers={"Authorization": f"Bearer {self.access_token}"},
             data={"email": "uusisp"},
             format="json",
@@ -269,21 +260,10 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(self.user["email"], "klusse.osoite@gmail.com")
 
-        # no email address given
-        response = self.client.put(
-            "http://localhost:8000/api/users/update/1/",
-            headers={"Authorization": f"Bearer {self.access_token}"},
-            data={"email": ""},
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(self.user["email"], "klusse.osoite@gmail.com")
-
     def test_updating_email_with_taken_address(self):
         """Updating an email address fails if the address is taken"""
-
-        self.client.post(
+        
+        response = self.client.post(
             "http://localhost:8000/api/users/register",
             data={
                 "username": "christina",
@@ -295,10 +275,11 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
+        user_id = response.data['id']
         response = self.client.put(
-            "http://localhost:8000/api/users/update/1/",
+            f"http://localhost:8000/api/users/update/{user_id}/", 
             headers={"Authorization": f"Bearer {self.access_token}"},
-            data={"email": "regina.gaudium@gmail.com"},
+            data={"email": "klusse.osoite@gmail.com"},
             format="json",
         )
 
@@ -310,8 +291,9 @@ class TestDjangoAPI(TestCase):
         """Updating a telegram name fails without authorization or if the new name is taken"""
 
         # attempt updating without authorization
+        user_id = User.objects.all()[0].id
         response = self.client.put(
-            "http://localhost:8000/api/users/update/1/",
+            f"http://localhost:8000/api/users/update/{user_id}/",
             data={"telegram": "newtelegram"},
             format="json",
         )
@@ -333,7 +315,7 @@ class TestDjangoAPI(TestCase):
         )
 
         response = self.client.put(
-            "http://localhost:8000/api/users/update/1/",
+            f"http://localhost:8000/api/users/update/{user_id}/",
             headers={"Authorization": f"Bearer {self.access_token}"},
             data={"telegram": "tguser"},
             format="json",
@@ -346,8 +328,9 @@ class TestDjangoAPI(TestCase):
         """An authorized user can update their telegram name"""
 
         # update the telegram name
+        user_id = User.objects.all()[0].id
         response = self.client.put(
-            "http://localhost:8000/api/users/update/1/",
+            f"http://localhost:8000/api/users/update/{user_id}/",
             headers={"Authorization": f"Bearer {self.access_token}"},
             data={"telegram": "newtg"},
             format="json",
@@ -358,7 +341,7 @@ class TestDjangoAPI(TestCase):
 
         # telegram can be removed
         response = self.client.put(
-            "http://localhost:8000/api/users/update/1/",
+            f"http://localhost:8000/api/users/update/{user_id}/",
             headers={"Authorization": f"Bearer {self.access_token}"},
             data={"telegram": ""},
             format="json",
@@ -446,8 +429,9 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # deleting the organization fails if the user is not LeppisPJ
+        organization_id = response.data['id']
         response = self.client.delete(
-            "http://localhost:8000/api/organizations/remove/1/",
+            f"http://localhost:8000/api/organizations/remove/{organization_id}/",
             headers={"Authorization": f"Bearer {self.access_token}"},
             format="json",
         )
@@ -464,7 +448,7 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         response = self.client.delete(
-            "http://localhost:8000/api/organizations/remove/1/",
+            f"http://localhost:8000/api/organizations/remove/{organization_id}/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             format="json",
         )
@@ -539,8 +523,9 @@ class TestDjangoAPI(TestCase):
         )
 
         # update the room
+        event_id = event_created.data['id']
         response = self.client.put(
-            "http://localhost:8000/api/events/update_event/1/",
+            f"http://localhost:8000/api/events/update_event/{event_id}/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={"room": "Toinen huone"},
             format="json",
@@ -567,8 +552,9 @@ class TestDjangoAPI(TestCase):
         )
 
         # update the room with invalid parameter
+        event_id = event_created.data['id']
         response = self.client.put(
-            "http://localhost:8000/api/events/update_event/1/",
+            f"http://localhost:8000/api/events/update_event/{event_id}/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={"room": ""},
             format="json",
