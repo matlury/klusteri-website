@@ -332,17 +332,18 @@ class UpdateNightResponsibilityView(APIView):
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
 
         # Check if logout is later than 7.15
-        limit = datetime.now()
-        limit = limit.replace(hour=7, minute=15)
-        datetime_format = "%Y-%m-%d %H:%M"
-        logout_time = datetime.strptime(request.data["logout_time"], datetime_format)
+        get_logout = request.data.get("logout_time")
+        if get_logout:
+            limit = datetime.now().replace(hour=7, minute=15)
+            datetime_format = "%Y-%m-%d %H:%M"
+            logout_time = datetime.strptime(request.data["logout_time"], datetime_format)
 
-        if logout_time > limit:
-            request.data["late"] = True
-        else:
-            request.data["late"] = False
+            if logout_time > limit:
+                request.data["late"] = True
+            else:
+                request.data["late"] = False
 
-        request.data["present"] = False
+            request.data["present"] = False
 
         responsibility = NightResponsibilitySerializer(
             instance=responsibility_to_update, data=request.data, partial=True

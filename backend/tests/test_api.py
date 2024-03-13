@@ -718,21 +718,23 @@ class TestDjangoAPI(TestCase):
 
         # first create an ykv to update it
         ykv_created = self.client.post(
-            "http://localhost:8000/api/ykv/create_responsibility",
+            f"http://localhost:8000/api/ykv/create_responsibility",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
                 "username": "matti",
                 "email": "matti@hotmail.com",
                 "responsible_for": "kutsutut vieraat",
-                "login_time": "1970-01-01T12:00"
+                "login_time": "1970-01-01T12:00",
+                "logout_time": "1970-01-02T14:00"
             },
             format="json",
         )
 
+        ykv_id = ykv_created.data['id']
         response = self.client.put(
-            "http://localhost:8000/api/ykv/update_responsibility/1/",
+            f"http://localhost:8000/api/ykv/update_responsibility/{ykv_id}/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"responsible_for": "tietyt vieraat", "logout_time": "1970-01-01T13:00"},
+            data={"responsible_for": "tietyt vieraat"},
             format="json",
         )
 
@@ -750,16 +752,17 @@ class TestDjangoAPI(TestCase):
                 "username": "matti",
                 "email": "matti@hotmail.com",
                 "responsible_for": "kutsutut vieraat",
-                "login_time": "2024-03-05T18:00"
+                "login_time": "2024-03-05 18:00"
             },
             format="json",
         )
 
-        # not late logout
+        # before 7.15 logout
+        ykv_id = ykv_created.data['id']
         response = self.client.put(
-            "http://localhost:8000/api/ykv/update_responsibility/1/",
+            f"http://localhost:8000/api/ykv/update_responsibility/{ykv_id}/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"logout_time": "2024-03-05T23:00"},
+            data={"logout_time": "2024-03-05 23:00"},
             format="json",
         )
 
@@ -777,21 +780,33 @@ class TestDjangoAPI(TestCase):
                 "username": "matti",
                 "email": "matti@hotmail.com",
                 "responsible_for": "kutsutut vieraat",
-                "login_time": "2024-03-06T20:00"
+                "login_time": "2024-03-12 20:00"
             },
             format="json",
         )
 
         # late logout
+        ykv_id = ykv_created.data['id']
         response = self.client.put(
-            "http://localhost:8000/api/ykv/update_responsibility/1/",
+            f"http://localhost:8000/api/ykv/update_responsibility/{ykv_id}/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"logout_time": "2024-03-07T07:30"},
+            data={"logout_time": "2024-03-13 08:30"},
             format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["late"], True)
+    
+    def test_update_ykv_notfound(self):
+        # try to update ykv that don't exist
+        response = self.client.put(
+            f"http://localhost:8000/api/ykv/update_responsibility/2/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"responsible_for": "tietyt vieraat"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
     
     def test_update_ykv_role5(self):
         """An authorized user can update ykv"""
@@ -813,10 +828,40 @@ class TestDjangoAPI(TestCase):
         )
 
         # try to update ykv with role 5 user
+        ykv_id = ykv_created.data['id']
         response = self.client.put(
-            "http://localhost:8000/api/ykv/update_responsibility/1/",
+            f"http://localhost:8000/api/ykv/update_responsibility/{ykv_id}/",
             headers={"Authorization": f"Bearer {self.access_token}"},
             data={"responsible_for": "tietyt vieraat"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(ykv_created.data["responsible_for"], "kutsutut vieraat")
+    
+    def test_update_ykv_invalid(self):
+        """An authorized user can update ykv"""
+
+        # first create an ykv to update it
+        ykv_created = self.client.post(
+            f"http://localhost:8000/api/ykv/create_responsibility",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "username": "matti",
+                "email": "matti@hotmail.com",
+                "responsible_for": "kutsutut vieraat",
+                "login_time": "1970-01-01T12:00",
+                "logout_time": "1970-01-02T14:00"
+            },
+            format="json",
+        )
+
+        # try to update responsible_for with empty
+        ykv_id = ykv_created.data['id']
+        response = self.client.put(
+            f"http://localhost:8000/api/ykv/update_responsibility/{ykv_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"responsible_for": ""},
             format="json",
         )
 
