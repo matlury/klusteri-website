@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1710156245031" clover="3.2.0">
-  <project timestamp="1710156245031" name="All files">
-    <metrics statements="289" coveredstatements="142" conditionals="110" coveredconditionals="52" methods="107" coveredmethods="33" elements="506" coveredelements="227" complexity="0" loc="289" ncloc="289" packages="1" files="10" classes="10"/>
-    <file name="christina_regina.jsx" path="/home/peltlaur/Asiakirjat/klusteri-website/frontend/src/pages/christina_regina.jsx">
+<coverage generated="1710328888673" clover="3.2.0">
+  <project timestamp="1710328888674" name="All files">
+    <metrics statements="291" coveredstatements="142" conditionals="110" coveredconditionals="52" methods="107" coveredmethods="33" elements="508" coveredelements="227" complexity="0" loc="291" ncloc="291" packages="1" files="10" classes="10"/>
+    <file name="christina_regina.jsx" path="/Users/adarautiainen/Documents/klusteri-website/frontend/src/pages/christina_regina.jsx">
       <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
       <line num="5" count="1" type="stmt"/>
       <line num="6" count="1" type="stmt"/>
     </file>
-    <file name="contacts.jsx" path="/home/peltlaur/Asiakirjat/klusteri-website/frontend/src/pages/contacts.jsx">
+    <file name="contacts.jsx" path="/Users/adarautiainen/Documents/klusteri-website/frontend/src/pages/contacts.jsx">
       <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
       <line num="4" count="1" type="stmt"/>
       <line num="5" count="2" type="stmt"/>
@@ -15,8 +15,8 @@
       <line num="7" count="1" type="stmt"/>
       <line num="9" count="2" type="stmt"/>
     </file>
-    <file name="createpage.jsx" path="/home/peltlaur/Asiakirjat/klusteri-website/frontend/src/pages/createpage.jsx">
-      <metrics statements="69" coveredstatements="38" conditionals="38" coveredconditionals="24" methods="21" coveredmethods="7"/>
+    <file name="createpage.jsx" path="/Users/adarautiainen/Documents/klusteri-website/frontend/src/pages/createpage.jsx">
+      <metrics statements="71" coveredstatements="38" conditionals="38" coveredconditionals="24" methods="21" coveredmethods="7"/>
       <line num="6" count="2" type="stmt"/>
       <line num="7" count="39" type="stmt"/>
       <line num="8" count="39" type="stmt"/>
@@ -59,40 +59,42 @@
       <line num="96" count="39" type="stmt"/>
       <line num="100" count="0" type="stmt"/>
       <line num="102" count="0" type="stmt"/>
-      <line num="103" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="103" count="0" type="stmt"/>
       <line num="104" count="0" type="stmt"/>
+      <line num="105" count="0" type="cond" truecount="0" falsecount="2"/>
       <line num="106" count="0" type="stmt"/>
-      <line num="107" count="0" type="stmt"/>
+      <line num="108" count="0" type="stmt"/>
       <line num="109" count="0" type="stmt"/>
-      <line num="110" count="0" type="stmt"/>
       <line num="111" count="0" type="stmt"/>
-      <line num="112" count="0" type="cond" truecount="0" falsecount="2"/>
-      <line num="115" count="0" type="stmt"/>
-      <line num="116" count="0" type="stmt"/>
-      <line num="120" count="0" type="stmt"/>
-      <line num="121" count="0" type="stmt"/>
+      <line num="112" count="0" type="stmt"/>
+      <line num="113" count="0" type="stmt"/>
+      <line num="114" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="117" count="0" type="stmt"/>
+      <line num="118" count="0" type="stmt"/>
+      <line num="122" count="0" type="stmt"/>
       <line num="123" count="0" type="stmt"/>
-      <line num="127" count="0" type="stmt"/>
-      <line num="128" count="0" type="stmt"/>
-      <line num="132" count="39" type="stmt"/>
-      <line num="133" count="0" type="stmt"/>
-      <line num="136" count="39" type="stmt"/>
-      <line num="137" count="0" type="stmt"/>
-      <line num="140" count="39" type="stmt"/>
-      <line num="141" count="39" type="stmt"/>
-      <line num="151" count="6" type="stmt"/>
-      <line num="160" count="6" type="stmt"/>
-      <line num="169" count="6" type="stmt"/>
-      <line num="184" count="6" type="stmt"/>
-      <line num="193" count="0" type="stmt"/>
-      <line num="206" count="39" type="stmt"/>
+      <line num="125" count="0" type="stmt"/>
+      <line num="129" count="0" type="stmt"/>
+      <line num="130" count="0" type="stmt"/>
+      <line num="134" count="39" type="stmt"/>
+      <line num="135" count="0" type="stmt"/>
+      <line num="138" count="39" type="stmt"/>
+      <line num="139" count="0" type="stmt"/>
+      <line num="142" count="39" type="stmt"/>
+      <line num="143" count="39" type="stmt"/>
+      <line num="153" count="6" type="stmt"/>
+      <line num="162" count="6" type="stmt"/>
+      <line num="171" count="6" type="stmt"/>
+      <line num="186" count="6" type="stmt"/>
+      <line num="195" count="0" type="stmt"/>
+      <line num="208" count="39" type="stmt"/>
     </file>
-    <file name="frontpage.jsx" path="/home/peltlaur/Asiakirjat/klusteri-website/frontend/src/pages/frontpage.jsx">
+    <file name="frontpage.jsx" path="/Users/adarautiainen/Documents/klusteri-website/frontend/src/pages/frontpage.jsx">
       <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
       <line num="4" count="1" type="stmt"/>
       <line num="5" count="1" type="stmt"/>
     </file>
-    <file name="loginpage.jsx" path="/home/peltlaur/Asiakirjat/klusteri-website/frontend/src/pages/loginpage.jsx">
+    <file name="loginpage.jsx" path="/Users/adarautiainen/Documents/klusteri-website/frontend/src/pages/loginpage.jsx">
       <metrics statements="36" coveredstatements="28" conditionals="12" coveredconditionals="8" methods="10" coveredmethods="8"/>
       <line num="7" count="2" type="stmt"/>
       <line num="8" count="8" type="stmt"/>
@@ -131,7 +133,7 @@
       <line num="92" count="2" type="stmt"/>
       <line num="102" count="2" type="stmt"/>
     </file>
-    <file name="ownkeys.jsx" path="/home/peltlaur/Asiakirjat/klusteri-website/frontend/src/pages/ownkeys.jsx">
+    <file name="ownkeys.jsx" path="/Users/adarautiainen/Documents/klusteri-website/frontend/src/pages/ownkeys.jsx">
       <metrics statements="5" coveredstatements="5" conditionals="4" coveredconditionals="4" methods="2" coveredmethods="2"/>
       <line num="4" count="1" type="stmt"/>
       <line num="5" count="2" type="stmt"/>
@@ -139,7 +141,7 @@
       <line num="8" count="2" type="stmt"/>
       <line num="11" count="2" type="stmt"/>
     </file>
-    <file name="ownpage.jsx" path="/home/peltlaur/Asiakirjat/klusteri-website/frontend/src/pages/ownpage.jsx">
+    <file name="ownpage.jsx" path="/Users/adarautiainen/Documents/klusteri-website/frontend/src/pages/ownpage.jsx">
       <metrics statements="164" coveredstatements="56" conditionals="56" coveredconditionals="16" methods="67" coveredmethods="9"/>
       <line num="7" count="1" type="stmt"/>
       <line num="8" count="5" type="stmt"/>
@@ -306,17 +308,17 @@
       <line num="440" count="0" type="stmt"/>
       <line num="444" count="5" type="stmt"/>
     </file>
-    <file name="privacypolicy.jsx" path="/home/peltlaur/Asiakirjat/klusteri-website/frontend/src/pages/privacypolicy.jsx">
+    <file name="privacypolicy.jsx" path="/Users/adarautiainen/Documents/klusteri-website/frontend/src/pages/privacypolicy.jsx">
       <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
       <line num="4" count="1" type="stmt"/>
       <line num="5" count="1" type="stmt"/>
     </file>
-    <file name="reservations.jsx" path="/home/peltlaur/Asiakirjat/klusteri-website/frontend/src/pages/reservations.jsx">
+    <file name="reservations.jsx" path="/Users/adarautiainen/Documents/klusteri-website/frontend/src/pages/reservations.jsx">
       <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
       <line num="4" count="1" type="stmt"/>
       <line num="5" count="1" type="stmt"/>
     </file>
-    <file name="rules_instructions.jsx" path="/home/peltlaur/Asiakirjat/klusteri-website/frontend/src/pages/rules_instructions.jsx">
+    <file name="rules_instructions.jsx" path="/Users/adarautiainen/Documents/klusteri-website/frontend/src/pages/rules_instructions.jsx">
       <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
       <line num="4" count="1" type="stmt"/>
       <line num="5" count="1" type="stmt"/>
