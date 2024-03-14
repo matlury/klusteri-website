@@ -776,36 +776,6 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["late"], False)
-
-        # test logout on the same day
-        logout_time2 = current_time.replace(hour=23, minute=0)
-        login_time2 = logout_time
-        login_time2 = login_time.replace(hour=19, minute=15)
-
-        # first create an ykv
-        ykv_created = self.client.post(
-            "http://localhost:8000/api/ykv/create_responsibility",
-            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={
-                "username": "matti",
-                "email": "matti@hotmail.com",
-                "responsible_for": "kutsutut vieraat",
-                "login_time": login_time.strftime("%Y-%m-%d %H:%M")
-            },
-            format="json",
-        )
-
-        # before 7.15 logout
-        ykv_id = ykv_created.data['id']
-        response = self.client.put(
-            f"http://localhost:8000/api/ykv/update_responsibility/{ykv_id}/",
-            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"logout_time": logout_time.strftime("%Y-%m-%d %H:%M")},
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["late"], False)
     
     def test_ykv_late_logout(self):
         """An authorized user can update ykv"""
