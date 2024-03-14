@@ -1,3 +1,6 @@
+
+![matlu](https://github.com/matlury/klusteri-website/assets/56686737/b9311516-5702-4d1b-a4c9-7d7b8b71f159)
+
 # Klusterin nettisivut
 
 ![workflow badge](https://github.com/matlury/klusteri-website/workflows/CI/badge.svg)
