@@ -3,6 +3,7 @@ from rest_framework.serializers import ValidationError
 from rest_framework.test import APIClient
 from rest_framework import status
 from ilotalo.models import User, Organization, Event
+from datetime import datetime, timedelta
 
 """
 These tests are related to the API between frontend and backend
@@ -366,7 +367,7 @@ class TestDjangoAPI(TestCase):
     def test_creating_organization(self):
         """Only LeppisPJ can create a new organization"""
 
-        # create an organization as LeppisPJ
+        # create an organization as LeppisPJ with wrong email
         response = self.client.post(
             "http://localhost:8000/api/organizations/create",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
@@ -381,6 +382,7 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+        # with correct email
         response = self.client.post(
             "http://localhost:8000/api/organizations/create",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
@@ -740,9 +742,15 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["responsible_for"], "tietyt vieraat")
-    
+  
     def test_ykv_logout(self):
         """An authorized user can update ykv"""
+
+        # test logout on the next day 
+        current_time = datetime.now()
+        logout_time = current_time.replace(hour=7, minute=0)
+        login_time = logout_time - timedelta(days=1)
+        login_time = login_time.replace(hour=19, minute=15)
 
         # first create an ykv
         ykv_created = self.client.post(
@@ -752,7 +760,7 @@ class TestDjangoAPI(TestCase):
                 "username": "matti",
                 "email": "matti@hotmail.com",
                 "responsible_for": "kutsutut vieraat",
-                "login_time": "2024-03-05 18:00"
+                "login_time": login_time.strftime("%Y-%m-%d %H:%M")
             },
             format="json",
         )
@@ -762,7 +770,7 @@ class TestDjangoAPI(TestCase):
         response = self.client.put(
             f"http://localhost:8000/api/ykv/update_responsibility/{ykv_id}/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"logout_time": "2024-03-05 23:00"},
+            data={"logout_time": logout_time.strftime("%Y-%m-%d %H:%M")},
             format="json",
         )
 
@@ -772,6 +780,11 @@ class TestDjangoAPI(TestCase):
     def test_ykv_late_logout(self):
         """An authorized user can update ykv"""
 
+        current_time = datetime.now()
+        logout_time = current_time.replace(hour=7, minute=30)
+        login_time = logout_time - timedelta(days=1)
+        login_time = login_time.replace(hour=19, minute=15)
+
         # first create an ykv
         ykv_created = self.client.post(
             "http://localhost:8000/api/ykv/create_responsibility",
@@ -780,7 +793,7 @@ class TestDjangoAPI(TestCase):
                 "username": "matti",
                 "email": "matti@hotmail.com",
                 "responsible_for": "kutsutut vieraat",
-                "login_time": "2024-03-12 20:00"
+                "login_time": login_time.strftime("%Y-%m-%d %H:%M")
             },
             format="json",
         )
@@ -790,7 +803,7 @@ class TestDjangoAPI(TestCase):
         response = self.client.put(
             f"http://localhost:8000/api/ykv/update_responsibility/{ykv_id}/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"logout_time": "2024-03-13 08:30"},
+            data={"logout_time": logout_time.strftime("%Y-%m-%d %H:%M")},
             format="json",
         )
 
@@ -868,3 +881,98 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(ykv_created.data["responsible_for"], "kutsutut vieraat")
     
+    def test_update_organization(self):
+        """An authorized user can update organization"""
+
+        # first create an organization to update it
+        organization_created = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "name": "Matrix Ry",
+                "email": "matrix_ry@gmail.com",
+                "homepage": "matrix-ry.fi",
+                "size": 1,
+            },
+            format="json",
+        )
+
+        # update the homepage
+        org_id = organization_created.data['id']
+        response = self.client.put(
+            f"http://localhost:8000/api/organizations/update_organization/{org_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"homepage": "matrix.fi"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["homepage"], "matrix.fi")
+    
+    def test_update_organization_invalid(self):
+        """An authorized user can update organization"""
+
+        # first create an organization to update it
+        organization_created = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "name": "Matrix Ry",
+                "email": "matrix_ry@gmail.com",
+                "homepage": "matrix-ry.fi",
+                "size": 1,
+            },
+            format="json",
+        )
+
+        # update the homepage with invalid parameter
+        org_id = organization_created.data['id']
+        response = self.client.put(
+            f"http://localhost:8000/api/organizations/update_organization/{org_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"homepage": ""},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(organization_created.data["homepage"], "matrix-ry.fi")
+    
+    def test_update_with_nonexistentorganization(self):
+        """An authorized user can update organization"""
+
+        # update hompage with organization that doesn't exist
+        response = self.client.put(
+            f"http://localhost:8000/api/organizations/update_organization/2/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"homepage": "matrix.fi"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_update_organization_role5(self):
+        """An authorized user can update organization"""
+
+       # first create an organization to update it
+        organization_created = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "name": "Matrix Ry",
+                "email": "matrix_ry@gmail.com",
+                "homepage": "matrix-ry.fi",
+                "size": 1,
+            },
+            format="json",
+        )
+        # try to update the homepage with role 5 user
+        org_id = organization_created.data['id']
+        response = self.client.put(
+            f"http://localhost:8000/api/organizations/update_organization/{org_id}/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={"homepage": "matrix.fi"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(organization_created.data["homepage"], "matrix-ry.fi")

@@ -164,6 +164,38 @@ class RemoveOrganizationView(APIView):
         organization_to_remove.delete()
 
         return Response(f"Organization {organization_to_remove.name} successfully removed", status=status.HTTP_200_OK)
+
+class UpdateOrganizationView(APIView):
+    """View for updating an Organization object at <baseurl>/api/organizations/update_organization/<int:pk>/"""
+
+    # IsAuthenticated will deny access if request has no access token
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, pk=None):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ
+        ]:
+            return Response(
+                "You can't edit organizations",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            organization_to_update = Organization.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            return Response("Organization not found", status=status.HTTP_404_NOT_FOUND)
+
+        organization = OrganizationSerializer(
+            instance=organization_to_update, data=request.data, partial=True
+        )
+
+        if organization.is_valid():
+            organization.save()
+            return Response(organization.data, status=status.HTTP_200_OK)
+        return Response(organization.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class EventView(viewsets.ModelViewSet):
     """
@@ -344,7 +376,7 @@ class UpdateNightResponsibilityView(APIView):
                 request.data["late"] = False
 
             request.data["present"] = False
-
+            
         responsibility = NightResponsibilitySerializer(
             instance=responsibility_to_update, data=request.data, partial=True
         )
