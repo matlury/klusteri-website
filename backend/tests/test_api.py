@@ -1,4 +1,4 @@
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from rest_framework.serializers import ValidationError
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -970,7 +970,7 @@ class TestDjangoAPI(TestCase):
     def test_update_with_nonexistentorganization(self):
         """An authorized user can update organization"""
 
-        # update hompeage with organization that doesn't exist
+        # update hompage with organization that doesn't exist
         response = self.client.put(
             f"http://localhost:8000/api/organizations/update_organization/2/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
