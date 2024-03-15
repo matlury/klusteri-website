@@ -6,11 +6,15 @@ import { Modal, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../index.css';
 import { useStateContext } from "../context/ContextProvider.jsx";
+import axios from 'axios'; 
 
 const localizer = momentLocalizer(moment);
 
 const MyCalendar = () => {
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState(() => {
+    const storedEvents = localStorage.getItem('events');
+    return storedEvents ? JSON.parse(storedEvents) : [];
+  });
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [eventDetails, setEventDetails] = useState({
@@ -24,15 +28,19 @@ const MyCalendar = () => {
     end: '',
   });
   const [showModal, setShowModal] = useState(false);
-  const { user } = useStateContext(); // Lisätty user-tila kirjautumistarkistusta varten
+  const { user } = useStateContext(); 
+
+  useEffect(() => {
+    localStorage.setItem('events', JSON.stringify(events));
+  }, [events]);
 
   const handleSelectSlot = ({ start, end }) => {
     if (user) {
       setSelectedSlot({ start, end });
       setEventDetails({
         ...eventDetails,
-        start,
-        end,
+        start: moment(start).toISOString(), 
+        end: moment(end).toISOString(), 
       });
       setShowModal(true);
     } else {
@@ -52,7 +60,7 @@ const MyCalendar = () => {
 
   const handleAddEvent = () => {
     const { title, organizer, description, responsible, isOpen, room, start, end } = eventDetails;
-    if (title && organizer && description && responsible && (isOpen === 'avoin' || isOpen === 'suljettu') && room) {
+    if (title && organizer && description && responsible && (isOpen === 'avoin' || isOpen === 'suljettu') && room && start && end) {
       const newEvent = {
         start,
         end,
@@ -64,6 +72,16 @@ const MyCalendar = () => {
         room,
       };
       setEvents([...events, newEvent]);
+
+      axios.post('/create_event', newEvent)
+        .then(response => {
+          console.log('Tapahtuma tallennettu:', response.data);
+          
+        })
+        .catch(error => {
+          console.error('Virhe tapahtuman tallentamisessa:', error);
+        });
+
       setShowModal(false);
       setEventDetails({
         title: '',
