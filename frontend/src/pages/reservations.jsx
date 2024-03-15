@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -34,19 +34,24 @@ const MyCalendar = () => {
     localStorage.setItem('events', JSON.stringify(events));
   }, [events]);
 
+  const startRef = useRef(null);
+  const endRef = useRef(null);
+
   const handleSelectSlot = ({ start, end }) => {
     if (user) {
       setSelectedSlot({ start, end });
-      setEventDetails({
-        ...eventDetails,
-        start: moment(start).toISOString(), 
-        end: moment(end).toISOString(), 
-      });
       setShowModal(true);
     } else {
       alert('Sinun täytyy kirjautua sisään lisätäksesi tapahtuman.');
     }
   };
+
+  useEffect(() => {
+    if (showModal && selectedSlot) {
+      startRef.current.value = moment(selectedSlot.start).format('YYYY-MM-DDTHH:mm');
+      endRef.current.value = moment(selectedSlot.end).format('YYYY-MM-DDTHH:mm');
+    }
+  }, [showModal, selectedSlot]);
 
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);
@@ -76,7 +81,6 @@ const MyCalendar = () => {
       axios.post('/create_event', newEvent)
         .then(response => {
           console.log('Tapahtuma tallennettu:', response.data);
-          
         })
         .catch(error => {
           console.error('Virhe tapahtuman tallentamisessa:', error);
@@ -134,8 +138,8 @@ const MyCalendar = () => {
           {!selectedEvent && (
             <div>
               <p>Valitun ajanjakson tiedot:</p>
-              <p>Alkaa: <input type="datetime-local" name="start" value={eventDetails.start} onChange={handleInputChange} /></p>
-              <p>Päättyy: <input type="datetime-local" name="end" value={eventDetails.end} onChange={handleInputChange} /></p>
+              <p>Alkaa: <input type="datetime-local" name="start" ref={startRef} onChange={handleInputChange} /></p>
+              <p>Päättyy: <input type="datetime-local" name="end" ref={endRef} onChange={handleInputChange} /></p>
               <input
                 type="text"
                 name="title"
