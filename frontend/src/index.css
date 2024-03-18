@@ -181,6 +181,16 @@ ul {
   cursor: pointer;
 }
 
+.ykv {
+  border: solid;
+  border-radius: .5em;
+  padding: .5em;
+  padding-right: 2em;
+  margin-top: .5em;
+  margin-left: 0;
+  width: 40vw;
+}
+
 input[type="checkbox"] {
   width: 1em;
   height: 1rem;
