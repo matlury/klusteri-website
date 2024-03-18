@@ -9,19 +9,28 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn)
     const [responsibility, setResbonsibility] = useState('')
     const [email, setEmail] = useState('')
+    const [allResponsibilities, setAllResponsibilities] = useState([])
     const [ownResponsibilities, setOwnResponsibilities] = useState([])
+    const [loggedUser, setLoggedUser] = useState(null)
 
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
 
     useEffect(() => {
         setIsLoggedIn(propIsLoggedIn)
-        const loggedUser = JSON.parse(localStorage.getItem('loggedUser'))
         if (propIsLoggedIn) {
+            const loggedUser = JSON.parse(localStorage.getItem('loggedUser'))
+            console.log(loggedUser)
             setEmail(loggedUser.email)
-            getResponsibility()
+            setLoggedUser(loggedUser)
         }
       }, [propIsLoggedIn])
+    
+    useEffect(() => {
+        if (isLoggedIn) {
+          getResponsibility()
+        }
+    }, [isLoggedIn])
 
     const ykvForm = () => (
         <form>
@@ -109,16 +118,19 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
     }
 
     function checkIfLoggedIn() {
-        if (ownResponsibilities.length === 0) {
+        if (allResponsibilities.length === 0) {
             return false
         }
         return ownResponsibilities.some(resp => resp.present === true)
     }
 
     const getResponsibility = () => {
-        axiosClient.get(`listobjects/nightresponsibilities/?email=${email}`)
+        console.log(email)
+        axiosClient.get(`listobjects/nightresponsibilities/`)
             .then(response => {
-                setOwnResponsibilities(response.data)
+                setAllResponsibilities(response.data)
+                const filteredResponsibilities = response.data.filter(item => item.email === email)
+                setOwnResponsibilities(filteredResponsibilities)
             })
             .catch(error => {
                 console.error('Error fetching responsibilities', error)
@@ -126,12 +138,34 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
         
     }
 
-    const responsibilityPage = () => (
+    const responsibilities = () => (
+        <div>
+            <h2>Kaikki vastuut</h2>
+            <ul style={{ listStyleType: 'none', padding:0}}>
+                {allResponsibilities.slice().reverse().map(resp => (
+                    <li className='ykv' key={resp.id}>
+                        Vastuuhenkilö: {resp.username}, {resp.email} <br />
+                        Vastuussa henkilöistä: {resp.responsible_for} <br />
+                        YKV-sisäänkirjaus klo: {resp.login_time} <br />
+                        YKV-uloskirjaus klo: {resp.logout_time}
+                        {resp.present && 
+                        <button onClick={() => handleYkvLogout(resp.id)} className='login-button' type='button'>
+                        YKV-uloskirjaus
+                        </button>
+                        }
+                    <br /><br />
+                    </li>
+                ))}
+            </ul>
+        </div>
+    )
+
+    const ownYkvList = () => (
         <div>
             <h2>Omat vastuut</h2>
             <ul style={{ listStyleType: 'none', padding:0}}>
                 {ownResponsibilities.slice().reverse().map(resp => (
-                    <li key={resp.id}> 
+                    <li className='ykv' key={resp.id}> 
                         Vastuussa henkilöistä: {resp.responsible_for} <br />
                         YKV-sisäänkirjaus klo: {resp.login_time} <br />
                         YKV-uloskirjaus klo: {resp.logout_time}
@@ -156,7 +190,8 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
                     {success && <p style={{ color: 'green' }}>{success}</p>}
                     {checkIfLoggedIn() && <p>Tee YKV-uloskirjaus ottaaksesi uuden vastuun</p>}
                     {!checkIfLoggedIn() && ykvForm()}
-                    {responsibilityPage()}
+                    {!(loggedUser.role === 1 || loggedUser.role === 5) && ownYkvList()}
+                    {loggedUser.role === 1 && responsibilities()}
                 </div>
             )}
 
