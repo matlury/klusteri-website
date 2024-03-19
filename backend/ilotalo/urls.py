@@ -11,6 +11,7 @@ from .views import (
     UpdateNightResponsibilityView,
     CreateNightResponsibilityView,
     UpdateOrganizationView,
+    LogoutNightResponsibilityView,
     AddUserOrganizationView,
 )
 
@@ -27,6 +28,7 @@ urlpatterns = [
     path("update_event/<int:pk>/", UpdateEventView.as_view()),
     path("create_responsibility", CreateNightResponsibilityView.as_view()),
     path("update_responsibility/<int:pk>/", UpdateNightResponsibilityView.as_view()),
+    path("logout_responsibility/<int:pk>/", LogoutNightResponsibilityView.as_view()),
     path("update_organization/<int:pk>/", UpdateOrganizationView.as_view()),
     path("add_user_organization", AddUserOrganizationView.as_view())
 ]
