@@ -362,20 +362,56 @@ class UpdateNightResponsibilityView(APIView):
             responsibility_to_update = NightResponsibility.objects.get(id=pk)
         except ObjectDoesNotExist:
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
+            
+        responsibility = NightResponsibilitySerializer(
+            instance=responsibility_to_update, data=request.data, partial=True
+        )
+
+        if responsibility.is_valid():
+            responsibility.save()
+            return Response(responsibility.data, status=status.HTTP_200_OK)
+        return Response(responsibility.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class LogoutNightResponsibilityView(APIView):
+    """View for logout for NightResponsibility object at <baseurl>/api/ykv/logout_responsibility/<responsibility.id>/"""
+
+    # IsAuthenticated will deny access if request has no access token
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, pk=None):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ,
+            MUOKKAUS,
+            AVAIMELLINEN
+        ]:
+            return Response(
+                "You can't edit this",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            responsibility_to_update = NightResponsibility.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            return Response("Not found", status=status.HTTP_404_NOT_FOUND)
+
+        logout_time = request.data.get("logout_time")
+        if not logout_time:
+            return Response("Logout time not provided", status=status.HTTP_400_BAD_REQUEST)
 
         # Check if logout is later than 7.15
-        get_logout = request.data.get("logout_time")
-        if get_logout:
-            limit = datetime.now().replace(hour=7, minute=15)
-            datetime_format = "%Y-%m-%d %H:%M"
-            logout_time = datetime.strptime(request.data["logout_time"], datetime_format)
+        limit = datetime.now().replace(hour=7, minute=15)
+        datetime_format = "%Y-%m-%d %H:%M"
+        logout_time = datetime.strptime(request.data["logout_time"], datetime_format)
 
-            if logout_time > limit:
-                request.data["late"] = True
-            else:
-                request.data["late"] = False
+        if logout_time > limit:
+            request.data["late"] = True
+        else:
+            request.data["late"] = False
 
-            request.data["present"] = False
+        request.data["present"] = False
             
         responsibility = NightResponsibilitySerializer(
             instance=responsibility_to_update, data=request.data, partial=True
