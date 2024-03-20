@@ -1,6 +1,7 @@
 import '../index.css'
 import React, { useState, useEffect } from 'react'
 import axiosClient from '../axios.js'
+import Popup from '../context/Popup.jsx'
 
 const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn)
@@ -14,6 +15,9 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
 
+    const [buttonPopup, setButtonPopup] = useState(false)
+    const [idToLogout, setIdToLogout] = useState([])
+
     // effect hooks keep the information of the logged user up to date
     useEffect(() => {
         setIsLoggedIn(propIsLoggedIn)
@@ -22,12 +26,14 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
             console.log(loggedUser)
             setEmail(loggedUser.email)
             setLoggedUser(loggedUser)
+            getActiveResponsibilities()
         }
       }, [propIsLoggedIn])
     
     useEffect(() => {
         if (isLoggedIn) {
           getResponsibility()
+          getActiveResponsibilities()
         }
     }, [isLoggedIn])
 
@@ -92,21 +98,24 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
     }
 
     // handles the end of taking responsibility
-    const handleYkvLogout = (id) => {
-        const logoutTime = getCurrentDateTime()
-        axiosClient.put(`ykv/logout_responsibility/${id}/`, {logout_time: logoutTime})
-            .then(response => {
-                console.log('Ykv-uloskirjaus onnistui', response.data)
-                setSuccess('YKV-uloskirjaus onnistui')
-                setTimeout(() => setSuccess(''), 5000)
-                getResponsibility()
-            })
-            .catch(error => {
-                setError('YKV-uloskirjaus epäonnistui')
-                setTimeout(() => setError(''), 5000)
-                console.error('Ykv-uloskirjaus epäonnistui', error)
-            })
-        }
+    const handleYkvLogout = () => {
+        setButtonPopup(true)
+
+        //const logoutTime = getCurrentDateTime()
+
+        //axiosClient.put(`ykv/logout_responsibility/${id}/`, {logout_time: logoutTime})
+        //    .then(response => {
+        //        console.log('Ykv-uloskirjaus onnistui', response.data)
+        //        setSuccess('YKV-uloskirjaus onnistui')
+        //        setTimeout(() => setSuccess(''), 5000)
+        //        getResponsibility()
+        //    })
+        //    .catch(error => {
+        //        setError('YKV-uloskirjaus epäonnistui')
+        //        setTimeout(() => setError(''), 5000)
+        //        console.error('Ykv-uloskirjaus epäonnistui', error)
+        //    })
+    }
 
     // creates the current timestamp
     function getCurrentDateTime() {
@@ -143,19 +152,18 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
         
     }
 
-    const getActiveResponsibilities = () => {
-        console.log(email)
+    const getActiveResponsibilities = () => (
         axiosClient.get(`listobjects/nightresponsibilities/`)
             .then(response => {
                 setAllResponsibilities(response.data)
-                const activeResponsibilities = response.data.filter(item => item.active === true)
-                setActiveResponsibilities(filteredResponsibilities)
+                const active = response.data.filter(item => item.present === true)
+                setActiveResponsibilites(active)
             })
             .catch(error => {
                 console.error('Error fetching responsibilities', error)
             })
         
-    }
+    )
 
     // all of the responsibilities (only visible to leppis PJ)
     const responsibilities = () => (
@@ -168,11 +176,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
                         Vastuussa henkilöistä: {resp.responsible_for} <br />
                         YKV-sisäänkirjaus klo: {resp.login_time} <br />
                         YKV-uloskirjaus klo: {resp.logout_time}
-                        {resp.present && 
-                        <button onClick={() => handleYkvLogout(resp.id)} className='login-button' type='button'>
-                        YKV-uloskirjaus
-                        </button>
-                        }
                     <br /><br />
                     </li>
                 ))}
@@ -190,11 +193,28 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
                         Vastuussa henkilöistä: {resp.responsible_for} <br />
                         YKV-sisäänkirjaus klo: {resp.login_time} <br />
                         YKV-uloskirjaus klo: {resp.logout_time}
-                        {resp.present && 
-                        <button onClick={() => handleYkvLogout(resp.id)} className='login-button' type='button'>
-                        YKV-uloskirjaus
-                        </button>
-                        }
+                    <br /><br />
+                    </li>
+                ))}
+            </ul>
+        </div>
+    )
+
+    const logout_function = () => (
+        <div>
+            <button onClick={() => handleYkvLogout()} className='login-button' type='button'>
+                YKV-uloskirjaus
+            </button>
+            {buttonPopup && (
+                <Popup trigger={buttonPopup} setTrigger={setButtonPopup} active={activeResponsibilites} setIdToLogout={setIdToLogout}/>
+            )}
+            <h2>Kaikki aktiiviset: </h2>
+            <ul style={{ listStyleType: 'none', padding:0}}>
+                {activeResponsibilites.slice().reverse().map(resp => (
+                    <li className='ykv-active' key={resp.id}>
+                        Vastuuhenkilö: {resp.username}, {resp.email} <br />
+                        Vastuussa henkilöistä: {resp.responsible_for} <br />
+                        YKV-sisäänkirjaus klo: {resp.login_time} <br />
                     <br /><br />
                     </li>
                 ))}
@@ -209,7 +229,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
                 <div id='leftleft_content'>
                     {error && <p style={{ color: 'red' }}>{error}</p>}
                     {success && <p style={{ color: 'green' }}>{success}</p>}
-                    {checkIfLoggedIn() && <p>Tee YKV-uloskirjaus ottaaksesi uuden vastuun</p>}
+                    {checkIfLoggedIn() && logout_function()}
                     {!checkIfLoggedIn() && ykvForm()}
                     {!(loggedUser.role === 1 || loggedUser.role === 5) && ownYkvList()}
                     {loggedUser.role === 1 && responsibilities()}
