@@ -1,13 +1,10 @@
 import '../index.css'
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import axiosClient from '../axios.js'
-
-const API_URL = process.env.API_URL
 
 const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn)
-    const [responsibility, setResbonsibility] = useState('')
+    const [responsibility, setResponsibility] = useState('')
     const [email, setEmail] = useState('')
     const [allResponsibilities, setAllResponsibilities] = useState([])
     const [ownResponsibilities, setOwnResponsibilities] = useState([])
@@ -16,6 +13,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
 
+    // effect hooks keep the information of the logged user up to date
     useEffect(() => {
         setIsLoggedIn(propIsLoggedIn)
         if (propIsLoggedIn) {
@@ -32,6 +30,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
         }
     }, [isLoggedIn])
 
+    // the form that creates the responsibility by clicking the "Ota vastuu" button
     const ykvForm = () => (
         <form>
             <div>
@@ -40,7 +39,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
                     id="responsibility"
                     type="responsibility"
                     value={responsibility}
-                    onChange={(e) => setResbonsibility(e.target.value)}
+                    onChange={(e) => setResponsibility(e.target.value)}
                 />
             </div>
             <br />
@@ -50,6 +49,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
         </form>
     )
 
+    // this function handles the event of taking responsibility (check above)
     const handleYkvLogin = (event) => {
         event.preventDefault()
         
@@ -90,6 +90,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
         }
     }
 
+    // handles the end of taking responsibility
     const handleYkvLogout = (id) => {
         const logoutTime = getCurrentDateTime()
         axiosClient.put(`ykv/update_responsibility/${id}/`, {logout_time: logoutTime})
@@ -106,6 +107,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
             })
         }
 
+    // creates the current timestamp
     function getCurrentDateTime() {
         let currentDate = new Date()
         let day = String(currentDate.getDate()).padStart(2, '0')
@@ -117,6 +119,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
         return `${year}-${month}-${day} ${hours}:${minutes}`
     }
 
+    // function that checks if the user logged in (if there are no responsibilities, the user cant be logged in either)
     function checkIfLoggedIn() {
         if (allResponsibilities.length === 0) {
             return false
@@ -124,6 +127,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
         return ownResponsibilities.some(resp => resp.present === true)
     }
 
+    // fetches all of the responsibilities and the ones that the logged user has done
     const getResponsibility = () => {
         console.log(email)
         axiosClient.get(`listobjects/nightresponsibilities/`)
@@ -138,6 +142,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
         
     }
 
+    // all of the responsibilities (only visible to leppis PJ)
     const responsibilities = () => (
         <div>
             <h2>Kaikki vastuut</h2>
@@ -160,6 +165,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
         </div>
     )
 
+    // shows all of the responsibilites taken by the current user
     const ownYkvList = () => (
         <div>
             <h2>Omat vastuut</h2>
