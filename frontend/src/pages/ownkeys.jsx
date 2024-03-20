@@ -8,6 +8,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
     const [email, setEmail] = useState('')
     const [allResponsibilities, setAllResponsibilities] = useState([])
     const [ownResponsibilities, setOwnResponsibilities] = useState([])
+    const [activeResponsibilites, setActiveResponsibilites] = useState([])
     const [loggedUser, setLoggedUser] = useState(null)
 
     const [error, setError] = useState('')
@@ -93,7 +94,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
     // handles the end of taking responsibility
     const handleYkvLogout = (id) => {
         const logoutTime = getCurrentDateTime()
-        axiosClient.put(`ykv/update_responsibility/${id}/`, {logout_time: logoutTime})
+        axiosClient.put(`ykv/logout_responsibility/${id}/`, {logout_time: logoutTime})
             .then(response => {
                 console.log('Ykv-uloskirjaus onnistui', response.data)
                 setSuccess('YKV-uloskirjaus onnistui')
@@ -135,6 +136,20 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
                 setAllResponsibilities(response.data)
                 const filteredResponsibilities = response.data.filter(item => item.email === email)
                 setOwnResponsibilities(filteredResponsibilities)
+            })
+            .catch(error => {
+                console.error('Error fetching responsibilities', error)
+            })
+        
+    }
+
+    const getActiveResponsibilities = () => {
+        console.log(email)
+        axiosClient.get(`listobjects/nightresponsibilities/`)
+            .then(response => {
+                setAllResponsibilities(response.data)
+                const activeResponsibilities = response.data.filter(item => item.active === true)
+                setActiveResponsibilities(filteredResponsibilities)
             })
             .catch(error => {
                 console.error('Error fetching responsibilities', error)
