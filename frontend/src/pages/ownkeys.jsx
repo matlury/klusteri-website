@@ -156,34 +156,43 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
     const responsibilities = () => (
         <div>
             <h2>Kaikki vastuut</h2>
-            <ul style={{ listStyleType: 'none', padding:0}}>
-                {allResponsibilities.slice().reverse().map(resp => (
-                    <li className='ykv' key={resp.id}>
-                        Vastuuhenkilö: {resp.username}, {resp.email} <br />
-                        Vastuussa henkilöistä: {resp.responsible_for} <br />
-                        YKV-sisäänkirjaus klo: {resp.login_time} <br />
-                        YKV-uloskirjaus klo: {resp.logout_time}
-                    <br /><br />
-                    </li>
-                ))}
-            </ul>
+            <div style={{ maxHeight: '500px', overflow: 'auto', border: '3px solid black', borderRadius: '10px', padding: '10px' }}>
+                <ul style={{ listStyleType: 'none', padding: 0 }}>
+                    {allResponsibilities.slice().reverse().map(resp => (
+                        <li
+                            className='ykv'
+                            key={resp.id}
+                            style={{ backgroundColor: resp.present ? 'rgb(169, 245, 98)' : 'transparent' }}
+                        >
+                            Vastuuhenkilö: {resp.username}, {resp.email} <br />
+                            Vastuussa henkilöistä: {resp.responsible_for} <br />
+                            YKV-sisäänkirjaus klo: {resp.login_time} <br />
+                            YKV-uloskirjaus klo: {resp.logout_time}
+                            <br /><br />
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
-    )
+    );
+    
 
     // shows all of the responsibilites taken by the current user
     const ownYkvList = () => (
         <div>
             <h2>Omat vastuut</h2>
-            <ul style={{ listStyleType: 'none', padding:0}}>
-                {ownResponsibilities.slice().reverse().map(resp => (
-                    <li className='ykv' key={resp.id}> 
-                        Vastuussa henkilöistä: {resp.responsible_for} <br />
-                        YKV-sisäänkirjaus klo: {resp.login_time} <br />
-                        YKV-uloskirjaus klo: {resp.logout_time}
-                    <br /><br />
-                    </li>
-                ))}
-            </ul>
+            <div style={{ maxHeight: '500px', overflow: 'auto', border: '3px solid black', borderRadius: '10px', padding: '10px' }}>
+                <ul style={{ listStyleType: 'none', padding:0}}>
+                    {ownResponsibilities.slice().reverse().map(resp => (
+                        <li className='ykv' key={resp.id}> 
+                            Vastuussa henkilöistä: {resp.responsible_for} <br />
+                            YKV-sisäänkirjaus klo: {resp.login_time} <br />
+                            YKV-uloskirjaus klo: {resp.logout_time}
+                        <br /><br />
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
     )
 
@@ -201,6 +210,8 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
                 setSuccess('YKV-uloskirjaus onnistui')
                 setTimeout(() => setSuccess(''), 5000)
                 getResponsibility()
+                ownYkvList()
+                getActiveResponsibilities()
             })
             .catch(error => {
                 setError('YKV-uloskirjaus epäonnistui')
