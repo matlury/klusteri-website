@@ -13,7 +13,7 @@ More info: https://www.django-rest-framework.org/api-guide/serializers/
 
 
 class UserSerializer(serializers.ModelSerializer):
-    organization = serializers.PrimaryKeyRelatedField(many=True, queryset=Organization.objects.all())
+    organization = serializers.PrimaryKeyRelatedField(many=True, queryset=Organization.objects.all(), required=False)
 
     class Meta:
         model = User
