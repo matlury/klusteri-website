@@ -1,44 +1,65 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import '../index.css'
 
 function Popup(props) {
-    console.log(props)
-    const [idToLogout, setIdToLogout] = useState([])
-    const [id, setId] = useState('')
+    const [selectedResponsibilities, setSelectedResponsibilities] = useState([]);
+    const [selectAllChecked, setSelectAllChecked] = useState(false)
 
-    const handleCheckboxChange = (event) => {
-        console.log("tapahtuma:", event)
-        if (idToLogout.length === 0) {
-            setIdToLogout(idToLogout.concat(event))
-            console.log("lisättiin", idToLogout)
-            return
-        } else if (idToLogout.some(x => x === event)) {
-            index = idToLogout.indexOf(event)
-            setIdToLogout(idToLogout.splice(index, 1))
-            console.log("poistettiin", idToLogout)
-            return
+    useEffect(() => {
+        console.log(selectedResponsibilities)
+    }, [selectedResponsibilities])
+
+    // handles the checkbox change
+    const handleCheckboxChange = (id) => {
+        setSelectedResponsibilities(prevState => {
+            if (prevState.includes(id)) {
+                return prevState.filter(responsibilityId => responsibilityId !== id)
+            } else {
+                return [...prevState, id]
+            }
+        })
+    }
+
+    // handles the select-all button click (selects/unselects every active YKV-login)
+    const handleSelectAll = () => {
+        if (selectAllChecked) {
+            setSelectedResponsibilities([])
+        } else {
+            const allIds = props.active.map(resp => resp.id)
+            setSelectedResponsibilities(allIds)
         }
-        setIdToLogout(idToLogout.concat(event))
-        console.log("lisättiin 2", idToLogout)
+        setSelectAllChecked(prevState => !prevState)
+    }
+    
+
+    // returns the selected id:s for logout and closes the popup window
+    const handleSubmit = () => {
+        const confirm = window.confirm('Oletko varma, että haluat kirjata ulos valitut henkilöt?')
+        if (confirm) {
+            props.onSubmit(selectedResponsibilities)
+            props.setTrigger(false)
+        }
     }
 
     return (props.trigger) ? (
         <div className="popup">
             <div className="popup-inner">
-                <h2>Kaikki vastuut</h2>
+                <h2>Valitse aktiiviset YKV-kirjaukset</h2>
                 <ul style={{ listStyleType: 'none', padding:0}}>
                     {props.active.slice().reverse().map(resp => (
                         <li className='ykv2' key={resp.id}>
                             Vastuuhenkilö: {resp.username}, {resp.email}    
                             <input
                             type="checkbox"
-                            value={resp.id}
-                            onChange={(event) => handleCheckboxChange(event.target.value)}
+                            checked={selectedResponsibilities.includes(resp.id)}
+                            onChange={() => handleCheckboxChange(resp.id)}
                         />
                         </li>
                     ))}
+                     </ul>
+                    <button className="grey-button" onClick={handleSelectAll}>Select All</button>  
                     <button className="close-btn" onClick={() => props.setTrigger(false)}>close</button>
-                </ul>
+                    <button className="grey-button" onClick={handleSubmit} style={{ marginLeft: '10px' }}>Submit</button>
             </div>
         </div>
     ) : ""
