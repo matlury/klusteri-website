@@ -37,6 +37,20 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
         }
     }, [isLoggedIn])
 
+    // creates the current timestamp
+    function getCurrentDateTime() {
+        let currentDate = new Date()
+        let day = String(currentDate.getDate()).padStart(2, '0')
+        let month = String(currentDate.getMonth() + 1).padStart(2, '0')
+        let year = String(currentDate.getFullYear())
+        let hours = String(currentDate.getHours()).padStart(2, '0')
+        let minutes = String(currentDate.getMinutes()).padStart(2, '0')
+
+        return `${year}-${month}-${day} ${hours}:${minutes}`
+    }
+
+    // THE FOLLOWING FUNCTIONS HANDLES TAKING THE YKV-RESPONSIBILITIES
+
     // the form that creates the responsibility by clicking the "Ota vastuu" button
     const ykvForm = () => (
         <form>
@@ -85,6 +99,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
                     setSuccess('YKV-sisäänkirjaus onnistui')
                     setTimeout(() => setSuccess(''), 5000)
                     getResponsibility()
+                    getActiveResponsibilities()
                 })
                 .catch(error => {
                     setError("YKV-sisäänkirjaus epäonnistui")
@@ -97,38 +112,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
         }
     }
 
-    // handles the end of taking responsibility
-    const handleYkvLogout = () => {
-        setButtonPopup(true)
-
-        //const logoutTime = getCurrentDateTime()
-
-        //axiosClient.put(`ykv/logout_responsibility/${id}/`, {logout_time: logoutTime})
-        //    .then(response => {
-        //        console.log('Ykv-uloskirjaus onnistui', response.data)
-        //        setSuccess('YKV-uloskirjaus onnistui')
-        //        setTimeout(() => setSuccess(''), 5000)
-        //        getResponsibility()
-        //    })
-        //    .catch(error => {
-        //        setError('YKV-uloskirjaus epäonnistui')
-        //        setTimeout(() => setError(''), 5000)
-        //        console.error('Ykv-uloskirjaus epäonnistui', error)
-        //    })
-    }
-
-    // creates the current timestamp
-    function getCurrentDateTime() {
-        let currentDate = new Date()
-        let day = String(currentDate.getDate()).padStart(2, '0')
-        let month = String(currentDate.getMonth() + 1).padStart(2, '0')
-        let year = String(currentDate.getFullYear())
-        let hours = String(currentDate.getHours()).padStart(2, '0')
-        let minutes = String(currentDate.getMinutes()).padStart(2, '0')
-
-        return `${year}-${month}-${day} ${hours}:${minutes}`
-    }
-
     // function that checks if the user logged in (if there are no responsibilities, the user cant be logged in either)
     function checkIfLoggedIn() {
         if (allResponsibilities.length === 0) {
@@ -136,6 +119,10 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
         }
         return ownResponsibilities.some(resp => resp.present === true)
     }
+
+
+    // THE FOLLOWING FUNCTIONS RENDER SPECIFIC YKV-RESPONSIBILITIES 
+
 
     // fetches all of the responsibilities and the ones that the logged user has done
     const getResponsibility = () => {
@@ -200,13 +187,36 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
         </div>
     )
 
+
+    // THE FOLLOWING FUNCTIONS HANDLE THE YKV-LOGOUT
+
+    // handles the end of taking responsibility
+    const handleYkvLogout = (selectedIds) => {
+        setButtonPopup(true)
+
+        selectedIds.forEach(id => 
+            axiosClient.put(`ykv/logout_responsibility/${id}/`, {logout_time: getCurrentDateTime()})
+            .then(response => {
+                console.log('Ykv-uloskirjaus onnistui', response.data)
+                setSuccess('YKV-uloskirjaus onnistui')
+                setTimeout(() => setSuccess(''), 5000)
+                getResponsibility()
+            })
+            .catch(error => {
+                setError('YKV-uloskirjaus epäonnistui')
+                setTimeout(() => setError(''), 5000)
+                console.error('Ykv-uloskirjaus epäonnistui', error)
+            })
+        )
+    }
+
     const logout_function = () => (
         <div>
-            <button onClick={() => handleYkvLogout()} className='login-button' type='button'>
+            <button onClick={() => handleYkvLogout(idToLogout)} className='login-button' type='button'>
                 YKV-uloskirjaus
             </button>
             {buttonPopup && (
-                <Popup trigger={buttonPopup} setTrigger={setButtonPopup} active={activeResponsibilites} setIdToLogout={setIdToLogout}/>
+                <Popup trigger={buttonPopup} setTrigger={setButtonPopup} active={activeResponsibilites} setIdToLogout={setIdToLogout} onSubmit={handleYkvLogout}/>
             )}
             <h2>Kaikki aktiiviset: </h2>
             <ul style={{ listStyleType: 'none', padding:0}}>

@@ -149,6 +149,17 @@ ul {
   cursor: pointer;
 }
 
+.grey-button {
+  background-color: #b3b7bb;
+  text-decoration: white;
+  color: #fff;
+  padding: 8px 8px;
+  font-size: 16px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
 .create-user-button {
   background-color: #f1ca4b;
   color: #fff;
