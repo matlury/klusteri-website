@@ -75,6 +75,39 @@ class TestDjangoAPI(TestCase):
         self.leppispj = response.data
         self.user_count = 2
 
+
+        # Create a mock Muokkaus user for testing
+        muokkaus_data = self.data = {
+            "username": "Muokkaus",
+            "password": "vahvaSalasana1234",
+            "email": "muokkaus@gmail.com",
+            "telegram": "muokkaus",
+            "role": 3,
+        }
+
+        self.client.post(
+            "http://localhost:8000/api/users/register",
+            data=muokkaus_data,
+            format="json",
+        )
+
+        response = self.client.post(
+            "http://localhost:8000/api/token/",
+            data={"email": "muokkaus@gmail.com", "password": "vahvaSalasana1234"},
+            format="json",
+        )
+        self.muokkaus_access_token = response.data["access"]
+        self.muokkaus_refresh_token = response.data["refresh"]
+
+        response = self.client.get(
+            "http://localhost:8000/api/users/userinfo",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+        )
+
+        self.muokkaus = response.data
+        self.muokkaus_user = self.muokkaus
+        self.user_count = 3
+
     def test_creating_user(self):
         """A new user can be created if the parameters are valid"""
 
@@ -659,6 +692,14 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     
+        # try delete event that doesn't exist
+        response = self.client.delete(
+            f"http://localhost:8000/api/events/delete_event/10/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
     def test_creating_ykv(self):
         """Only role < 5 can create a new ykv (night responsibility)"""
 
@@ -1082,3 +1123,160 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(organization_created.data["homepage"], "matrix-ry.fi")
+    
+    def test_updating_organization_role3(self):
+        """An authorized user can update organization"""
+
+        # first create an organization to update it
+        organization_created = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "name": "Matrix Ry",
+                "email": "matrix_ry@gmail.com",
+                "homepage": "matrix-ry.fi",
+                "size": 1,
+            },
+            format="json",
+        )
+
+        # add user to created organization
+        user = User.objects.get(email="muokkaus@gmail.com")
+        organization = Organization.objects.get(id=organization_created.data["id"])
+        user.organization.add(organization)
+
+        # update the homepage with role3 user
+        org_id = organization_created.data['id']
+        response = self.client.put(
+            f"http://localhost:8000/api/organizations/update_organization/{org_id}/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data={"homepage": "matrix.fi"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["homepage"], "matrix.fi")
+    
+    def test_updating_organization_role3_invalid(self):
+        """An authorized user can update organization"""
+
+        # first create an organization to update it
+        organization_created = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "name": "Matrix Ry",
+                "email": "matrix_ry@gmail.com",
+                "homepage": "matrix-ry.fi",
+                "size": 1,
+            },
+            format="json",
+        )
+
+        # try update the homepage of organization that user isn't member of
+        org_id = organization_created.data['id']
+        response = self.client.put(
+            f"http://localhost:8000/api/organizations/update_organization/{org_id}/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data={"homepage": "matrix.fi"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(organization_created.data["homepage"], "matrix-ry.fi")
+    
+    def test_add_user_organization(self):
+        """An authorized user can add member to organization"""
+
+        # first create an organization to add member to it
+        organization_created = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "name": "Matrix Ry",
+                "email": "matrix_ry@gmail.com",
+                "homepage": "matrix-ry.fi",
+                "size": 1,
+            },
+            format="json",
+        )
+
+        # add user to created organization
+        org_id = organization_created.data['id']
+        response = self.client.post(
+            "http://localhost:8000/api/organizations/add_user_organization",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"user_id": self.muokkaus_user["id"], "organization_id": org_id},
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        muokkaus_user = User.objects.get(id=self.muokkaus_user['id'])
+        self.assertTrue(muokkaus_user.organization.filter(id=org_id).exists())
+    
+    def test_add_user_organization_role5(self):
+        """An authorized user can add member to organization"""
+
+        # first create an organization to add member to it
+        organization_created = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "name": "Matrix Ry",
+                "email": "matrix_ry@gmail.com",
+                "homepage": "matrix-ry.fi",
+                "size": 1,
+            },
+            format="json",
+        )
+
+        # try to add user to created organization with role5 user
+        org_id = organization_created.data['id']
+        response = self.client.post(
+            "http://localhost:8000/api/organizations/add_user_organization",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={"user_id": self.muokkaus_user["id"], "organization_id": org_id},
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    def test_add_user_organization_invalid_user(self):
+        """An authorized user can add member to organization"""
+
+        # first create an organization to add member to it
+        organization_created = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "name": "Matrix Ry",
+                "email": "matrix_ry@gmail.com",
+                "homepage": "matrix-ry.fi",
+                "size": 1,
+            },
+            format="json",
+        )
+
+        # try to add non-existent user to created organization
+        org_id = organization_created.data['id']
+        response = self.client.post(
+            "http://localhost:8000/api/organizations/add_user_organization",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"user_id": 5, "organization_id": org_id},
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_add_user_organization_invalid_org(self):
+        """An authorized user can add member to organization"""
+
+        # try to add user to non-existent organization
+        response = self.client.post(
+            "http://localhost:8000/api/organizations/add_user_organization",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"user_id": self.muokkaus_user["id"], "organization_id": 10},
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

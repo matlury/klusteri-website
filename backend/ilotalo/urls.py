@@ -29,7 +29,7 @@ urlpatterns = [
     path("create_responsibility", CreateNightResponsibilityView.as_view()),
     path("update_responsibility/<int:pk>/", UpdateNightResponsibilityView.as_view()),
     path("update_organization/<int:pk>/", UpdateOrganizationView.as_view()),
-    path("add_user_organization", AddUserOrganizationView.as_view())
+    path("add_user_organization", AddUserOrganizationView.as_view()),
     path("logout_responsibility/<int:pk>/", LogoutNightResponsibilityView.as_view()),
     path("update_organization/<int:pk>/", UpdateOrganizationView.as_view())
 ]
