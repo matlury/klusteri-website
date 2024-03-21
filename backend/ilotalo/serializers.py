@@ -13,9 +13,11 @@ More info: https://www.django-rest-framework.org/api-guide/serializers/
 
 
 class UserSerializer(serializers.ModelSerializer):
+    organization = serializers.PrimaryKeyRelatedField(many=True, queryset=Organization.objects.all())
+
     class Meta:
         model = User
-        fields = ("id", "username", "password", "email", "telegram", "role")
+        fields = ("id", "username", "password", "email", "telegram", "role", "organization")
 
     def validate_telegram(self, tgname):
         """Checks if a telegram name is taken"""
@@ -51,7 +53,6 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
 
-
 class UserUpdateSerializer(serializers.ModelSerializer):
     """
     Serializer for updating a user
@@ -69,7 +70,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             if duplicate.exists():
                 raise serializers.ValidationError("This telegram name is taken")
         return tgname
-
 
 class UserNoPasswordSerializer(serializers.ModelSerializer):
     """
