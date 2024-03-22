@@ -11,6 +11,14 @@ from django.contrib.auth.models import (
 from datetime import datetime
 
 
+class Organization(models.Model):
+    """Model for student organizations"""
+
+    name = models.CharField(max_length=50, default="", unique=True)
+    email = models.EmailField(max_length=100, default="", unique=True)
+    homepage = models.CharField(max_length=100, default="")
+    size = models.IntegerField(default=0)
+
 class UserAccountManager(BaseUserManager):
     """
     Custom manager for creating users.
@@ -40,7 +48,6 @@ class UserAccountManager(BaseUserManager):
 
         return user
 
-
 class User(AbstractBaseUser, PermissionsMixin):
     """
     The custom User model.
@@ -59,22 +66,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     role = models.IntegerField(default=5)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    # many-to-many relationship links User model and Organization model
+    organization = models.ManyToManyField(Organization, related_name="organization")
 
     objects = UserAccountManager()
 
     # USERNAME_FIELD defines the unique identifier of a User object. It can be i.e. username or email
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "password", "role"]
-
-
-class Organization(models.Model):
-    """Model for student organizations"""
-
-    name = models.CharField(max_length=50, default="", unique=True)
-    email = models.EmailField(max_length=100, default="", unique=True)
-    homepage = models.CharField(max_length=100, default="")
-    size = models.IntegerField(default=0)
-
 
 class Event(models.Model):
     """

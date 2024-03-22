@@ -166,7 +166,11 @@ class RemoveOrganizationView(APIView):
         return Response(f"Organization {organization_to_remove.name} successfully removed", status=status.HTTP_200_OK)
 
 class UpdateOrganizationView(APIView):
-    """View for updating an Organization object at <baseurl>/api/organizations/update_organization/<int:pk>/"""
+    """
+    View for updating an Organization object at <baseurl>/api/organizations/update_organization/<int:pk>/
+    LeppisPJ and Leppisvarapj (role 1, 2) can edit all organizations, Muokkaus user (role 3) can only edit
+    organizations it is member of, other users can't edit organizations.
+    """
 
     # IsAuthenticated will deny access if request has no access token
     permission_classes = [permissions.IsAuthenticated]
@@ -174,18 +178,33 @@ class UpdateOrganizationView(APIView):
     def put(self, request, pk=None):
         user = UserSerializer(request.user)
 
-        if user.data["role"] not in [
-            LEPPISPJ,
-            LEPPISVARAPJ
-        ]:
+        if user.data["role"] in [LEPPISPJ, LEPPISVARAPJ]:
+            return self.update_organization(request, pk)
+        elif user.data["role"] == MUOKKAUS:
+            organization = self.get_organization(pk)
+            if organization and organization in request.user.organization.all():
+                return self.update_organization(request, pk)
+            else:
+                return Response(
+                    "You can't edit an organization you are not a member of",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        else:
             return Response(
                 "You can't edit organizations",
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
+    
+    def get_organization(self, pk):
         try:
-            organization_to_update = Organization.objects.get(id=pk)
+            return Organization.objects.get(id=pk)
         except ObjectDoesNotExist:
+            return None
+    
+    def update_organization(self, request, pk):
+        organization_to_update = self.get_organization(pk)
+
+        if not organization_to_update:
             return Response("Organization not found", status=status.HTTP_404_NOT_FOUND)
 
         organization = OrganizationSerializer(
@@ -196,7 +215,41 @@ class UpdateOrganizationView(APIView):
             organization.save()
             return Response(organization.data, status=status.HTTP_200_OK)
         return Response(organization.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class AddUserOrganizationView(APIView):
+    """
+    View for adding User to an Organization <baseurl>/api/organizations/add_user_organization
+    Only Leppispj and Leppisvarapj can add users to organizations for now, data needed to add user
+    to organization: user id and organization id
+    """
     
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ
+        ]:
+            return Response(
+                "You can't add members to organizations",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        user_id = request.data.get('user_id')
+        organization_id = request.data.get('organization_id')
+        try:
+            user = User.objects.get(pk=user_id)
+            organization = Organization.objects.get(pk=organization_id)
+        except User.DoesNotExist:
+            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+        except Organization.DoesNotExist:
+            return Response("Organization not found", status=status.HTTP_404_NOT_FOUND)
+        
+        user.organization.add(organization)
+        return Response("User added to organization successfully", status=status.HTTP_201_CREATED)
+
 class EventView(viewsets.ModelViewSet):
     """
     Displays a list of all Event objects at <baseurl>/events/
