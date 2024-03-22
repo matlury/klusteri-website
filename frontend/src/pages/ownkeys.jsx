@@ -31,22 +31,49 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
         setIsLoggedIn(propIsLoggedIn)
         if (propIsLoggedIn) {
             const loggedUser = JSON.parse(localStorage.getItem('loggedUser'))
-            console.log(loggedUser)
             setEmail(loggedUser.email)
             setLoggedUser(loggedUser)
             getActiveResponsibilities()
-            getAllUsersWithKeys()
-            console.log("avaimelliset", allUsersWithKeys)
         }
       }, [propIsLoggedIn])
     
     useEffect(() => {
-        console.log("selected for YKV:", selectedForYKV)
         if (isLoggedIn) {
           getResponsibility()
           getActiveResponsibilities()
         }
     }, [isLoggedIn, selectedForYKV])
+
+    // fetch each user with keys if someone is logged in 
+    useEffect(() => {
+        function getAllUsersWithKeys() {
+            axios.get(`${API_URL}/api/listobjects/users/`)
+                .then(response => {
+                    const allUsers = response.data
+                    const filteredUsers = allUsers.filter(user => checkUser(user))
+                    setAllUsersWithKeys(filteredUsers)
+            })
+        }
+        if (loggedUser) {
+            getAllUsersWithKeys()
+        }
+    }, [loggedUser, API_URL])
+
+    // check if a user is valid for making an YKV-login
+    const checkUser = (user) => {
+        if (user.role === 5) {
+            return false
+        }
+        if (user.id === loggedUser.id) {
+            return false
+        }
+        // check if a user already has an active YKV
+        const alreadyLoggedIn = allResponsibilities.filter(resp => resp.email === user.email && resp.present)
+        if (alreadyLoggedIn.length !== 0) {
+            return false
+        }
+        return true
+    }  
 
     // creates the current timestamp
     function getCurrentDateTime() {
@@ -60,14 +87,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
         return `${year}-${month}-${day} ${hours}:${minutes}`
     }
 
-    function getAllUsersWithKeys() {
-        axios.get(`${API_URL}/api/listobjects/users/`)
-            .then(response => {
-                const allUsers = response.data
-                const filteredUsers = allUsers.filter(user => user.role !== 5 && user.email !== email)
-                setAllUsersWithKeys(filteredUsers)
-            })
-    }
 
     // THE FOLLOWING FUNCTIONS HANDLES TAKING THE YKV-RESPONSIBILITIES
 
@@ -153,7 +172,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
             if (confirm) {
                 axiosClient.post(`/ykv/create_responsibility`, responsibilityObject)
                 .then(response => {
-                    console.log(response.data)
                     console.log('Läpi meni')
                     setSuccess('YKV-sisäänkirjaus onnistui')
                     setTimeout(() => setSuccess(''), 5000)
@@ -186,7 +204,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
 
     // fetches all of the responsibilities and the ones that the logged user has done
     const getResponsibility = () => {
-        console.log(email)
         axiosClient.get(`listobjects/nightresponsibilities/`)
             .then(response => {
                 setAllResponsibilities(response.data)
@@ -266,7 +283,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
         selectedIds.forEach(id => 
             axiosClient.put(`ykv/logout_responsibility/${id}/`, {logout_time: getCurrentDateTime()})
             .then(response => {
-                console.log('Ykv-uloskirjaus onnistui', response.data)
                 setSuccess('YKV-uloskirjaus onnistui')
                 setTimeout(() => setSuccess(''), 5000)
                 getResponsibility()
