@@ -325,9 +325,11 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         const existingOrganizations = response.data
         if (existingOrganizations.some(org => org.name === organization_name)) {
           setError('Nimi on jo käytössä')
+          setTimeout(() => setError(''), 5000)
         }
         if (existingOrganizations.some(org => org.email === organization_email)) {
           setError('Sähköposti on jo käytössä.')
+          setTimeout(() => setError(''), 5000)
         }
         else {
           const organizationObject = { name: organization_name, email: organization_email, homepage: organization_homepage, size: organization_size }

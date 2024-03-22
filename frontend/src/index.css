@@ -149,6 +149,17 @@ ul {
   cursor: pointer;
 }
 
+.grey-button {
+  background-color: #b3b7bb;
+  text-decoration: white;
+  color: #fff;
+  padding: 8px 8px;
+  font-size: 16px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
 .create-user-button {
   background-color: #f1ca4b;
   color: #fff;
@@ -179,6 +190,37 @@ ul {
   border: none;
   border-radius: 20px;
   cursor: pointer;
+}
+
+.ykv {
+  border: solid;
+  border-radius: .5em;
+  padding: .5em;
+  padding-right: 2em;
+  margin-top: .5em;
+  margin-left: 0;
+  width: 40vw;
+}
+
+.ykv-active {
+  border: solid;
+  border-radius: .5em;
+  padding: .5em;
+  padding-right: 2em;
+  margin-top: .5em;
+  margin-left: 0;
+  width: 40vw;
+  background-color: rgb(169, 245, 98)
+}
+
+.ykv2 {
+  border: solid;
+  border-radius: .5em;
+  padding: .5em;
+  padding-right: 2em;
+  margin-top: .5em;
+  margin-left: 0;
+  width: 20vw;
 }
 
 input[type="checkbox"] {
@@ -226,4 +268,35 @@ input[type="username"] {
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 20px;
+}
+
+.popup {
+  position: fixed; /* Sit on top of the page content */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+
+  background-color: rgba(0,0,0,0.2); /* Black background with opacity */
+  display: flex;
+  justify-content: center;
+  align-items: center
+}
+
+.popup-inner {
+  position: relative;
+  padding: 32px;
+  width: 100%;
+  max-width: 640px;
+  background-color: #FFF
+}
+
+.popup-inner .close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background-color: #7e7979;
+  color: #fff;
+  border-radius: .75em;
+  padding: 7px 7px
 }

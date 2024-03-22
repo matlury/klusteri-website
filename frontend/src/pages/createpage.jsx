@@ -72,7 +72,7 @@ const NewAccountPage = ({ onAccountCreated }) => {
     /*
     Check if telegram is provided and unique
     */
-    if (telegram) {
+    if (telegram) {const { user, setUser } = useStateContext()
       axios.get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`)
         .then(response => {
           const existingUsers = response.data
