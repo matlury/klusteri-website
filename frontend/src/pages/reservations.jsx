@@ -33,6 +33,8 @@ const MyCalendar = () => {
   const [showModal, setShowModal] = useState(false);
   const { user } = useStateContext(); 
 
+  const API_URL = process.env.API_URL
+
   useEffect(() => {
     localStorage.setItem('events', JSON.stringify(events));
   }, [events]);
@@ -74,7 +76,7 @@ const MyCalendar = () => {
       };
       setEvents([...events, newEvent]);
 
-      axios.post('/create_event', newEvent)
+      axios.post(`${API_URL}/api/listobjects/events/`, newEvent)
         .then(response => {
           console.log('Tapahtuma tallennettu:', response.data);
         })
