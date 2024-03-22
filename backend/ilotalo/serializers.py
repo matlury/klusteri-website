@@ -1,7 +1,7 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from rest_framework import serializers
-from .models import User, Organization
+from .models import User, Organization, Event, NightResponsibility
 
 
 """
@@ -11,10 +11,13 @@ back to complex data types.
 More info: https://www.django-rest-framework.org/api-guide/serializers/
 """
 
+
 class UserSerializer(serializers.ModelSerializer):
+    organization = serializers.PrimaryKeyRelatedField(many=True, queryset=Organization.objects.all(), required=False)
+
     class Meta:
         model = User
-        fields = ("id", "username", "password", "email", "telegram", "role")
+        fields = ("id", "username", "password", "email", "telegram", "role", "organization")
 
     def validate_telegram(self, tgname):
         """Checks if a telegram name is taken"""
@@ -49,7 +52,7 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
         return user
-    
+
 class UserUpdateSerializer(serializers.ModelSerializer):
     """
     Serializer for updating a user
@@ -58,7 +61,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("id", "username", "email", "telegram", "role")
-    
+
     def validate_telegram(self, tgname):
         """Checks if a telegram name is taken"""
         user_id = self.instance.id if self.instance else None
@@ -67,7 +70,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             if duplicate.exists():
                 raise serializers.ValidationError("This telegram name is taken")
         return tgname
-
 
 class UserNoPasswordSerializer(serializers.ModelSerializer):
     """
@@ -85,3 +87,20 @@ class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = ("id", "name", "email", "homepage", "size")
+
+class EventSerializer(serializers.ModelSerializer):
+    """Serializes an Event object as JSON"""
+
+    class Meta:
+        model = Event
+        fields = ("id", "start", "end", "room", "reservation", "description", "responsible", "open")
+
+class NightResponsibilitySerializer(serializers.ModelSerializer):
+<<<<<<< HEAD
+    """Serializes a NightResponsibility object as JSON"""
+=======
+>>>>>>> 08e3b3f (backend ykv)
+
+    class Meta:
+        model = NightResponsibility
+        fields = ("id", "username", "email", "responsible_for", "login_time", "logout_time", "present", "late")

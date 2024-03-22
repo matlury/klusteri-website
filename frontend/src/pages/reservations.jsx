@@ -4,6 +4,8 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Modal, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Modal, Button } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import '../index.css';
 import { useStateContext } from "../context/ContextProvider.jsx";
 import axios from 'axios'; 
@@ -19,6 +21,7 @@ const MyCalendar = () => {
   });
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [eventDetails, setEventDetails] = useState({
     title: '',
     organizer: '',
@@ -32,6 +35,8 @@ const MyCalendar = () => {
   const [showModal, setShowModal] = useState(false);
   const { user } = useStateContext(); 
 
+  const API_URL = process.env.API_URL
+
   useEffect(() => {
     localStorage.setItem('events', JSON.stringify(events));
   }, [events]);
@@ -40,20 +45,13 @@ const MyCalendar = () => {
   const endRef = useRef(null);
 
   const handleSelectSlot = ({ start, end }) => {
-    if (user) {
-      setSelectedSlot({ start, end });
-      setShowModal(true);
-    } else {
-      alert('Sinun täytyy kirjautua sisään lisätäksesi tapahtuman.');
-    }
+    setSelectedSlot({ start, end });
+    setEventDetails({
+      ...eventDetails,
+      start,
+      end,
+    });
   };
-
-  useEffect(() => {
-    if (showModal && selectedSlot) {
-      startRef.current.value = moment(selectedSlot.start).format('YYYY-MM-DDTHH:mm');
-      endRef.current.value = moment(selectedSlot.end).format('YYYY-MM-DDTHH:mm');
-    }
-  }, [showModal, selectedSlot]);
 
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);
@@ -111,6 +109,54 @@ const MyCalendar = () => {
   return (
     <div className="textbox">
       <h1>Varauskalenteri</h1>
+      <div>
+        {selectedSlot && (
+          <div>
+            <p>Valitun ajanjakson tiedot:</p>
+            <p>Alkaa: <input type="datetime-local" name="start" value={eventDetails.start} onChange={handleInputChange} /></p>
+            <p>Päättyy: <input type="datetime-local" name="end" value={eventDetails.end} onChange={handleInputChange} /></p>
+            <input
+              type="text"
+              name="title"
+              placeholder="Tapahtuman nimi"
+              value={eventDetails.title}
+              onChange={handleInputChange}
+            />
+            <input
+              type="text"
+              name="organizer"
+              placeholder="Järjestäjä"
+              value={eventDetails.organizer}
+              onChange={handleInputChange}
+            />
+            <input
+              type="text"
+              name="responsible"
+              placeholder="Vastuuhenkilö"
+              value={eventDetails.responsible}
+              onChange={handleInputChange}
+            />
+            <textarea
+              name="description"
+              placeholder="Tapahtuman kuvaus"
+              value={eventDetails.description}
+              onChange={handleInputChange}
+              style={{ width: '100%', height: '100px' }}
+            />
+            <select name="isOpen" value={eventDetails.isOpen} onChange={handleInputChange}>
+              <option value="avoin">Avoin</option>
+              <option value="suljettu">Suljettu</option>
+            </select>
+            <select name="room" value={eventDetails.room} onChange={handleInputChange}>
+              <option value="">Valitse huone</option>
+              <option value="Kokoushuone">Kokoushuone</option>
+              <option value="Kerhotila">Kerhotila</option>
+              <option value="Oleskelutila">Oleskelutila</option>
+            </select>
+            <button onClick={handleAddEvent}>Lisää tapahtuma</button>
+          </div>
+        )}
+      </div>
       <Calendar
         localizer={localizer}
         events={events}

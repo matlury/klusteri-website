@@ -1,3 +1,6 @@
+
+![matlu](https://github.com/matlury/klusteri-website/assets/56686737/b9311516-5702-4d1b-a4c9-7d7b8b71f159)
+
 # Klusterin nettisivut
 
 ![workflow badge](https://github.com/matlury/klusteri-website/workflows/CI/badge.svg)
@@ -12,6 +15,8 @@
 - [Sprint 1 Task Board](https://github.com/orgs/matlury/projects/4)
 - [Sprint 2 Task Board](https://github.com/orgs/matlury/projects/9)
 - [Sprint 3 Task Board](https://github.com/orgs/matlury/projects/10/views/1?layout=board&filterQuery=label%3Atask&groupedBy%5BcolumnId%5D=78602831)
+- [Sprint 4 Task Board](https://github.com/orgs/matlury/projects/12)
+- [Sprint 5 Task Board](https://github.com/orgs/matlury/projects/13)
 - [Työaikakirjanpito](https://helsinkifi-my.sharepoint.com/:x:/g/personal/lottatan_ad_helsinki_fi/EZIQBLlssnFAqYrJUHNZ14gBl33k5Y19wSDGfExXcVhacw?e=qAxWNy)
 
 ## Definition of Done
@@ -38,9 +43,12 @@ poetry install
 poetry shell
 ```
 
-Jos backendin koodia on muutettu, backend ei välttämättä käynnisty ennen kuin seuraavat komennot on ajettu
+Jos koodissa määriteltyjä tietokantatauluja on muokattu, on luotava uusi migraatio tietokantaa varten
 ```bash
 python manage.py makemigrations
+```
+Omalta laitteelta löytyvän PostgreSQL-tietokannan saa alustettua valmiiden migraatioiden mukaan seuraavalla komennolla
+```bash
 python manage.py migrate
 ```
 
@@ -114,4 +122,3 @@ Raportin muodostaminen frontendille
 ```bash
 ~klusteri-website/frontend/$ npx jest --coverage
 ```
-

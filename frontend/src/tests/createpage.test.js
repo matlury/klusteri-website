@@ -1,0 +1,148 @@
+import { render, fireEvent, waitFor } from '@testing-library/react';
+import NewAccountPage from '../../src/pages/createpage';
+import axiosClient from '../axios.js'
+
+jest.mock('../axios.js')
+
+
+describe('NewAccountPage', () => {
+  beforeEach(() => {
+    axiosClient.post.mockResolvedValue({ data: {} });
+  });
+
+  test('renders the component', () => {
+    const { getByText } = render(<NewAccountPage />);
+    expect(getByText('Luo uusi käyttäjä')).toBeTruthy();
+  });
+
+  test('displays error when fields are empty', async () => {
+    const { getByText } = render(<NewAccountPage />);
+
+    fireEvent.click(getByText('Luo käyttäjä'));
+
+    await waitFor(() => {
+      expect(getByText('Käyttäjänimi, salasana, sähköposti ja vahvista salasana ovat pakollisia kenttiä.')).toBeTruthy();
+    });
+  });
+
+  test('displays error when passwords dont match', async() => {
+    const { getByText, getByLabelText, queryByText } = render(<NewAccountPage />)
+
+    const usernameInput = getByLabelText('Käyttäjänimi:')
+    const emailInput = getByLabelText('Sähköposti:');
+    const passwordInput = getByLabelText('Salasana:')
+    const password2Input = getByLabelText('Vahvista salasana:')
+
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'password123' } })
+    fireEvent.change(password2Input, { target: { value: 'password234' } });
+    fireEvent.change(usernameInput, { target: { value: 'testuser'}})
+
+    fireEvent.click(getByText('Luo käyttäjä'))
+
+    await waitFor(() => {
+      expect(getByText('Salasanat eivät täsmää.')).toBeTruthy();
+    })
+  })
+
+  test('displays error when username is too long', async() => {
+    const { getByText, getByLabelText } = render(<NewAccountPage />)
+
+    const usernameInput = getByLabelText('Käyttäjänimi:')
+    const emailInput = getByLabelText('Sähköposti:');
+    const passwordInput = getByLabelText('Salasana:')
+    const password2Input = getByLabelText('Vahvista salasana:')
+
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'password123' } })
+    fireEvent.change(password2Input, { target: { value: 'password123' } });
+    fireEvent.change(usernameInput, { target: { value: 'testuseronliianpitkänimi123456'}})
+
+    fireEvent.click(getByText('Luo käyttäjä'))
+
+    await waitFor(() => {
+      expect(getByText('Käyttäjänimen tulee olla enintään 20 merkkiä eikä saa sisältää välilyöntejä.')).toBeTruthy();
+    })
+  })
+
+  test('displays error when password is too long', async() => {
+    const { getByText, getByLabelText } = render(<NewAccountPage />)
+
+    const usernameInput = getByLabelText('Käyttäjänimi:')
+    const emailInput = getByLabelText('Sähköposti:');
+    const passwordInput = getByLabelText('Salasana:')
+    const password2Input = getByLabelText('Vahvista salasana:')
+
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'password12345678912345' } })
+    fireEvent.change(password2Input, { target: { value: 'password12345678912345' } });
+    fireEvent.change(usernameInput, { target: { value: 'testuser'}})
+
+    fireEvent.click(getByText('Luo käyttäjä'))
+
+    await waitFor(() => {
+      expect(getByText('Salasanan tulee olla 8-20 merkkiä pitkä.')).toBeTruthy();
+    })
+  })
+
+  test('displays error when password is too short', async() => {
+    const { getByText, getByLabelText } = render(<NewAccountPage />)
+
+    const usernameInput = getByLabelText('Käyttäjänimi:')
+    const emailInput = getByLabelText('Sähköposti:');
+    const passwordInput = getByLabelText('Salasana:')
+    const password2Input = getByLabelText('Vahvista salasana:')
+
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'pass12' } })
+    fireEvent.change(password2Input, { target: { value: 'pass12' } });
+    fireEvent.change(usernameInput, { target: { value: 'testuser'}})
+
+    fireEvent.click(getByText('Luo käyttäjä'))
+
+    await waitFor(() => {
+      expect(getByText('Salasanan tulee olla 8-20 merkkiä pitkä.')).toBeTruthy();
+    })
+  })
+
+  test('displays error when password is only numbers', async() => {
+    const { getByText, getByLabelText } = render(<NewAccountPage />)
+
+    const usernameInput = getByLabelText('Käyttäjänimi:')
+    const emailInput = getByLabelText('Sähköposti:');
+    const passwordInput = getByLabelText('Salasana:')
+    const password2Input = getByLabelText('Vahvista salasana:')
+
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: '12345678' } })
+    fireEvent.change(password2Input, { target: { value: '12345678' } });
+    fireEvent.change(usernameInput, { target: { value: 'testuser'}})
+
+    fireEvent.click(getByText('Luo käyttäjä'))
+
+    await waitFor(() => {
+      expect(getByText('Salasana ei saa sisältää pelkkiä numeroita tai kirjaimia.')).toBeTruthy();
+    })
+  })
+
+  test('displays error when password is only letters', async() => {
+    const { getByText, getByLabelText } = render(<NewAccountPage />)
+
+    const usernameInput = getByLabelText('Käyttäjänimi:')
+    const emailInput = getByLabelText('Sähköposti:');
+    const passwordInput = getByLabelText('Salasana:')
+    const password2Input = getByLabelText('Vahvista salasana:')
+
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'salasanaaaaa' } })
+    fireEvent.change(password2Input, { target: { value: 'salasanaaaaa' } });
+    fireEvent.change(usernameInput, { target: { value: 'testuser'}})
+
+    fireEvent.click(getByText('Luo käyttäjä'))
+
+    await waitFor(() => {
+      expect(getByText('Salasana ei saa sisältää pelkkiä numeroita tai kirjaimia.')).toBeTruthy();
+    })
+  })
+
+})
