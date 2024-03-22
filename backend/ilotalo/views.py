@@ -166,7 +166,11 @@ class RemoveOrganizationView(APIView):
         return Response(f"Organization {organization_to_remove.name} successfully removed", status=status.HTTP_200_OK)
 
 class UpdateOrganizationView(APIView):
-    """View for updating an Organization object at <baseurl>/api/organizations/update_organization/<int:pk>/"""
+    """
+    View for updating an Organization object at <baseurl>/api/organizations/update_organization/<int:pk>/
+    LeppisPJ and Leppisvarapj (role 1, 2) can edit all organizations, Muokkaus user (role 3) can only edit
+    organizations it is member of, other users can't edit organizations.
+    """
 
     # IsAuthenticated will deny access if request has no access token
     permission_classes = [permissions.IsAuthenticated]
@@ -213,12 +217,14 @@ class UpdateOrganizationView(APIView):
         return Response(organization.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AddUserOrganizationView(APIView):
-    """View for adding User to an Organization <baseurl>/api/organizations/add_user_organization"""
+    """
+    View for adding User to an Organization <baseurl>/api/organizations/add_user_organization
+    Only Leppispj and Leppisvarapj can add users to organizations for now, data needed to add user
+    to organization: user id and organization id
+    """
     
     permission_classes = [permissions.IsAuthenticated]
 
-    # only leppispj and leppisvarapj can add users to organizations for now, data needed to add user
-    # to organization: user id and organization id
     def post(self, request):
         user = UserSerializer(request.user)
 

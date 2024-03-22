@@ -66,7 +66,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     role = models.IntegerField(default=5)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-
+    # many-to-many relationship links User model and Organization model
     organization = models.ManyToManyField(Organization, related_name="organization")
 
     objects = UserAccountManager()
