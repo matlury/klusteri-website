@@ -8,6 +8,8 @@ import '../index.css';
 import { useStateContext } from "../context/ContextProvider.jsx";
 import axios from 'axios'; 
 
+const API_URL = process.env.API_URL
+
 const localizer = momentLocalizer(moment);
 
 const MyCalendar = () => {
@@ -78,7 +80,7 @@ const MyCalendar = () => {
       };
       setEvents([...events, newEvent]);
 
-      axios.post('/create_event', newEvent)
+      axios.post(`${API_URL}/api/listobjects/events/`, newEvent)
         .then(response => {
           console.log('Tapahtuma tallennettu:', response.data);
         })
