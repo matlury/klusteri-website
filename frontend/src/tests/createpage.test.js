@@ -25,6 +25,7 @@ describe('NewAccountPage', () => {
     });
   });
 
+
   test('displays error when passwords dont match', async() => {
     const { getByText, getByLabelText, queryByText } = render(<NewAccountPage />)
 

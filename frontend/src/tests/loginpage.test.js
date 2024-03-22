@@ -5,6 +5,7 @@ import LoginPage from '../pages/loginpage';
 import axiosClient from '../axios.js'
 import { setUser } from "../context/ContextProvider.jsx"
 
+
 jest.mock('../axios')
 
 test('renders login form', () => {
@@ -86,5 +87,5 @@ test('logging in with valid credentials works', async () => {
     expect(localStorage.getItem('loggedUser')).toEqual(JSON.stringify(mockUserData));
     expect(localStorage.getItem('isLoggedIn')).toEqual('true');
     expect(queryByText('Sähköposti tai salasana virheellinen!')).not.toBeInTheDocument();
-  });
+  })
 })

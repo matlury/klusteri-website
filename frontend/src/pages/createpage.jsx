@@ -14,11 +14,6 @@ const NewAccountPage = ({ onAccountCreated }) => {
   const [error, setError] = useState('')
   const [userCreated, setUserCreated] = useState(false)
 
-<<<<<<< HEAD
-  const API_URL = process.env.API_URL
-=======
-  const API_URL = import.meta.env.API_URL
->>>>>>> 8702fcb (kovat keinot käyttöön)
   const API_URL = process.env.API_URL
   
   const handleCreateAccount = () => {
