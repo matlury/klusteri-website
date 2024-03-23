@@ -68,6 +68,20 @@ const MyCalendar = () => {
   const handleAddEvent = () => {
     const { title, organizer, description, responsible, isOpen, room, start, end } = eventDetails;
     if (title && organizer && description && responsible && (isOpen === 'avoin' || isOpen === 'suljettu') && room && start && end) {
+      
+      const isRoomOccupied = events.some(event => {
+        return event.room === room && (
+          (moment(start).isSameOrAfter(event.start) && moment(start).isBefore(event.end)) ||
+          (moment(end).isSameOrAfter(event.start) && moment(end).isBefore(event.end)) ||
+          (moment(start).isBefore(event.start) && moment(end).isSameOrAfter(event.end))
+        );
+      });
+
+      if (isRoomOccupied) {
+        alert('Huone on jo varattu valitulle ajankohdalle.');
+        return;
+      }
+
       const newEvent = {
         start,
         end,
@@ -120,7 +134,10 @@ const MyCalendar = () => {
         selectable
         onSelectSlot={handleSelectSlot}
         onSelectEvent={handleSelectEvent}
+        firstDay={1}
       />
+
+      
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>{selectedEvent ? selectedEvent.title : 'Lisää tapahtuma'}</Modal.Title>
@@ -162,40 +179,41 @@ const MyCalendar = () => {
                 placeholder="Vastuuhenkilö"
                 value={eventDetails.responsible}
                 onChange={handleInputChange}
-              />
-              <textarea
-                name="description"
-                placeholder="Tapahtuman kuvaus"
-                value={eventDetails.description}
-                onChange={handleInputChange}
-                style={{ width: '100%', height: '100px' }}
-              />
-              <select name="isOpen" value={eventDetails.isOpen} onChange={handleInputChange}>
-                <option value="avoin">Avoin tapahtuma</option>
-                <option value="suljettu">Vain jäsenille</option>
-              </select>
-              <select name="room" value={eventDetails.room} onChange={handleInputChange}>
-                <option value="Kokoushuone">Kokoushuone</option>
-                <option value="Kerhotila">Kerhotila</option>
-                <option value="Oleskelutila">Oleskelutila</option>
-                <option value="ChristinaRegina">ChristinaRegina</option>
-              </select>
-            </div>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Sulje
-          </Button>
-          {!selectedEvent && (
-            <Button variant="primary" onClick={handleAddEvent}>
-              Tallenna
+                />
+                <textarea
+                  name="description"
+                  placeholder="Tapahtuman kuvaus"
+                  value={eventDetails.description}
+                  onChange={handleInputChange}
+                  style={{ width: '100%', height: '100px' }}
+                />
+                <select name="isOpen" value={eventDetails.isOpen} onChange={handleInputChange}>
+                  <option value="avoin">Avoin tapahtuma</option>
+                  <option value="suljettu">Vain jäsenille</option>
+                </select>
+                <select name="room" value={eventDetails.room} onChange={handleInputChange}>
+                  <option value="Kokoushuone">Kokoushuone</option>
+                  <option value="Kerhotila">Kerhotila</option>
+                  <option value="Oleskelutila">Oleskelutila</option>
+                  <option value="ChristinaRegina">ChristinaRegina</option>
+                </select>
+              </div>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseModal}>
+              Sulje
             </Button>
-          )}
-        </Modal.Footer>
-      </Modal>
-    </div>
-  );
-};
-
-export default MyCalendar;
+            {!selectedEvent && (
+              <Button variant="primary" onClick={handleAddEvent}>
+                Tallenna
+              </Button>
+            )}
+          </Modal.Footer>
+        </Modal>
+      </div>
+    );
+  };
+  
+  export default MyCalendar;
+  
