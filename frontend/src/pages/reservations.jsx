@@ -10,6 +10,12 @@ import axios from 'axios';
 
 const API_URL = process.env.API_URL
 
+moment.updateLocale('fi', {
+  week: {
+    dow: 1, 
+  },
+});
+
 const localizer = momentLocalizer(moment);
 
 const MyCalendar = () => {
@@ -29,6 +35,7 @@ const MyCalendar = () => {
     start: '',
     end: '',
   });
+  
   const [showModal, setShowModal] = useState(false);
   const { user } = useStateContext(); 
 
