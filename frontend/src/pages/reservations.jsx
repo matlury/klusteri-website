@@ -33,7 +33,7 @@ const MyCalendar = () => {
     organizer: '',
     description: '',
     responsible: '',
-    isOpen: 'avoin',
+    isOpen: '',
     room: '',
     start: '',
     end: '',
@@ -118,7 +118,7 @@ const MyCalendar = () => {
         organizer: '',
         description: '',
         responsible: '',
-        isOpen: 'avoin',
+        isOpen: '',
         room: '',
         start: '',
         end: '',
@@ -209,12 +209,12 @@ const MyCalendar = () => {
                   style={{ width: '100%', height: '100px' }}
                 />
                 <select name="isOpen" value={eventDetails.isOpen} onChange={handleInputChange}>
-                <option value="avoin">Valitse avoimuus</option>
+                <option value="tyhjä">Valitse avoimuus</option>
                   <option value="avoin">Avoin tapahtuma</option>
                   <option value="suljettu">Vain jäsenille</option>
                 </select>
                 <select name="room" value={eventDetails.room} onChange={handleInputChange}>
-                <option value="avoin">Valitse huone</option>
+                <option value="tyhjä">Valitse huone</option>
                   <option value="Kokoushuone">Kokoushuone</option>
                   <option value="Kerhotila">Kerhotila</option>
                   <option value="Oleskelutila">Oleskelutila</option>
