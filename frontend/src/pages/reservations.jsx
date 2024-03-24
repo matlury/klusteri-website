@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
+import 'moment/locale/fi';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Modal, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -17,6 +18,8 @@ moment.updateLocale('fi', {
 });
 
 const localizer = momentLocalizer(moment);
+
+moment.locale('fi');
 
 const MyCalendar = () => {
   const [events, setEvents] = useState(() => {
@@ -142,8 +145,19 @@ const MyCalendar = () => {
         onSelectSlot={handleSelectSlot}
         onSelectEvent={handleSelectEvent}
         firstDay={1}
+        eventPropGetter={(event) => ({
+          style: {
+            backgroundColor: event.isOpen === 'avoin' ? '#4caf50' : '#F08080', 
+            borderRadius: '5px',
+            border: 'none',
+            color: '#fff',
+            padding: '5px',
+            margin: '0 3px',
+            cursor: 'pointer',
+          },
+        })}
       />
-
+      
       
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
@@ -195,10 +209,12 @@ const MyCalendar = () => {
                   style={{ width: '100%', height: '100px' }}
                 />
                 <select name="isOpen" value={eventDetails.isOpen} onChange={handleInputChange}>
+                <option value="avoin">Valitse avoimuus</option>
                   <option value="avoin">Avoin tapahtuma</option>
                   <option value="suljettu">Vain jäsenille</option>
                 </select>
                 <select name="room" value={eventDetails.room} onChange={handleInputChange}>
+                <option value="avoin">Valitse huone</option>
                   <option value="Kokoushuone">Kokoushuone</option>
                   <option value="Kerhotila">Kerhotila</option>
                   <option value="Oleskelutila">Oleskelutila</option>
