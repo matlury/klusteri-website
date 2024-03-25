@@ -1,6 +1,7 @@
 import '../index.css'
 import React, { useState, useEffect } from 'react'
 import axiosClient from '../axios.js'
+import axios from 'axios'
 import Popup from '../context/Popup.jsx'
 
 const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
@@ -10,13 +11,20 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
     const [allResponsibilities, setAllResponsibilities] = useState([])
     const [ownResponsibilities, setOwnResponsibilities] = useState([])
     const [activeResponsibilites, setActiveResponsibilites] = useState([])
+
     const [loggedUser, setLoggedUser] = useState(null)
+    const [allUsersWithKeys, setAllUsersWithKeys] = useState([])
 
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
 
     const [buttonPopup, setButtonPopup] = useState(false)
     const [idToLogout, setIdToLogout] = useState([])
+
+    const [selectedForYKV, setSelectedForYKV] = useState([]);
+    const [selectAllChecked, setSelectAllChecked] = useState(false)
+
+    const API_URL = process.env.API_URL
 
     // effect hooks keep the information of the logged user up to date
     useEffect(() => {
@@ -27,15 +35,18 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
             setEmail(loggedUser.email)
             setLoggedUser(loggedUser)
             getActiveResponsibilities()
+            getAllUsersWithKeys()
+            console.log("avaimelliset", allUsersWithKeys)
         }
       }, [propIsLoggedIn])
     
     useEffect(() => {
+        console.log("selected for YKV:", selectedForYKV)
         if (isLoggedIn) {
           getResponsibility()
           getActiveResponsibilities()
         }
-    }, [isLoggedIn])
+    }, [isLoggedIn, selectedForYKV])
 
     // creates the current timestamp
     function getCurrentDateTime() {
@@ -49,7 +60,27 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
         return `${year}-${month}-${day} ${hours}:${minutes}`
     }
 
+    function getAllUsersWithKeys() {
+        axios.get(`${API_URL}/api/listobjects/users/`)
+            .then(response => {
+                const allUsers = response.data
+                const filteredUsers = allUsers.filter(user => user.role !== 5 && user.email !== email)
+                setAllUsersWithKeys(filteredUsers)
+            })
+    }
+
     // THE FOLLOWING FUNCTIONS HANDLES TAKING THE YKV-RESPONSIBILITIES
+
+    // handles the checkbox change
+    const handleCheckboxChange = (user) => {
+        setSelectedForYKV(prevState => {
+            if (prevState.includes(user)) {
+                return prevState.filter(x => x !== user)
+            } else {
+                return [...prevState, user]
+            }
+        })
+    }
 
     // the form that creates the responsibility by clicking the "Ota vastuu" button
     const ykvForm = () => (
@@ -62,6 +93,24 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
                     value={responsibility}
                     onChange={(e) => setResponsibility(e.target.value)}
                 />
+            </div>
+            <br />
+            Kirjaa sisään muita henkilöitä
+            <br />
+            <br />
+            <div style={{ maxHeight: '75px', overflow: 'auto', border: '3px solid black', borderRadius: '10px', paddingLeft: '10px', width: '45vw'}}>
+                <ul style={{ listStyleType: 'none', padding:0}}>
+                    {allUsersWithKeys.map(user => (
+                        <li key={user.id}>
+                            {user.username}, {user.email}    
+                            <input
+                            type="checkbox"
+                            checked={selectedForYKV.includes(user)}
+                            onChange={() => handleCheckboxChange(user)}
+                        />
+                        </li>
+                    ))}
+                </ul>
             </div>
             <br />
             <button onClick={handleYkvLogin} className='create-user-button' type='button'>
@@ -86,10 +135,20 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
             login_time: loginTime
         }
 
-        confirmYKV()
+        confirmYKV(responsibilityObject)
 
-        function confirmYKV() {
-            const confirm = window.confirm(`Otan vastuun henkilöistä: ${responsibility}\nAlkaen kello: ${loginTime}`)
+        selectedForYKV.map(user => {
+            const responsibilityObject = {
+                username: user.username,
+                email: user.email,
+                responsible_for: responsibility,
+                login_time: loginTime
+            }
+            confirmYKV(responsibilityObject)
+        })
+
+        function confirmYKV(responsibilityObject) {
+            const confirm = window.confirm(`Henkilö ${responsibilityObject.username}\nottaa vastuun henkilöistä: ${responsibility}\nAlkaen kello: ${loginTime}`)
             
             if (confirm) {
                 axiosClient.post(`/ykv/create_responsibility`, responsibilityObject)
@@ -110,6 +169,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
                 console.log("YKV peruttu")
             }
         }
+        setSelectedForYKV([])
     }
 
     // function that checks if the user logged in (if there are no responsibilities, the user cant be logged in either)
