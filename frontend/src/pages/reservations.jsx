@@ -37,6 +37,7 @@ const MyCalendar = () => {
     room: '',
     start: '',
     end: '',
+    id: '',
   });
   
   const [showModal, setShowModal] = useState(false);
@@ -76,8 +77,8 @@ const MyCalendar = () => {
   };
 
   const handleAddEvent = () => {
-    const { title, organizer, description, responsible, isOpen, room, start, end } = eventDetails;
-    if (title && organizer && description && responsible && (isOpen === 'avoin' || isOpen === 'suljettu') && room && start && end) {
+    const { title, organizer, description, responsible, isOpen, room, start, end, id } = eventDetails;
+    if (title && organizer && description && responsible && (isOpen === 'avoin' || isOpen === 'suljettu') && room && start && end && id) {
       
       const isRoomOccupied = events.some(event => {
         return event.room === room && (
@@ -101,17 +102,19 @@ const MyCalendar = () => {
         responsible,
         isOpen,
         room,
+        id,
       };
-      setEvents([...events, newEvent]);
 
       axios.post(`${API_URL}/api/listobjects/events/`, newEvent)
         .then(response => {
           console.log('Tapahtuma tallennettu:', response.data);
+          newEvent.id = response.data.id;
         })
         .catch(error => {
           console.error('Virhe tapahtuman tallentamisessa:', error);
         });
 
+      setEvents([...events, newEvent]);
       setShowModal(false);
       setEventDetails({
         title: '',
@@ -122,9 +125,26 @@ const MyCalendar = () => {
         room: '',
         start: '',
         end: '',
+        id: '',
       });
     } else {
       alert('Täytä kaikki tiedot ennen tapahtuman lisäämistä.');
+    }
+  };
+
+  const handleDeleteEvent = (eventId) => {
+    console.log(selectedEvent)
+    if (eventId) {
+      axios.delete(`${API_URL}/api/events/delete_event/${eventId}/`)
+        .then(response => {
+          console.log('Tapahtuma poistettu:', response.data);
+          setEvents(events.filter(event => event.id !== eventId));
+        })
+        .catch(error => {
+          console.error('Virhe tapahtuman poistamisessa:', error);
+        });
+    } else {
+    
     }
   };
 
@@ -224,6 +244,11 @@ const MyCalendar = () => {
             )}
           </Modal.Body>
           <Modal.Footer>
+            {selectedEvent && (
+              <Button variant="danger" onClick={() => handleDeleteEvent(selectedEvent.id)}>
+                Poista tapahtuma
+              </Button>
+            )}
             <Button variant="secondary" onClick={handleCloseModal}>
               Sulje
             </Button>
