@@ -4,15 +4,15 @@ import axiosClient from '../axios.js'
 import axios from 'axios'
 import Popup from '../context/Popup.jsx'
 
-const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
+const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn)
     const [responsibility, setResponsibility] = useState('')
     const [email, setEmail] = useState('')
+    const [loggedUser, setLoggedUser] = useState(user)
     const [allResponsibilities, setAllResponsibilities] = useState([])
     const [ownResponsibilities, setOwnResponsibilities] = useState([])
     const [activeResponsibilites, setActiveResponsibilites] = useState([])
 
-    const [loggedUser, setLoggedUser] = useState(null)
     const [allUsersWithKeys, setAllUsersWithKeys] = useState([])
 
     const [error, setError] = useState('')
@@ -32,8 +32,8 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
         if (propIsLoggedIn) {
             const loggedUser = JSON.parse(localStorage.getItem('loggedUser'))
             setEmail(loggedUser.email)
-            setLoggedUser(loggedUser)
             getActiveResponsibilities()
+            setLoggedUser(loggedUser)
         }
       }, [propIsLoggedIn])
     
@@ -44,20 +44,24 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn }) => {
         }
     }, [isLoggedIn, selectedForYKV])
 
-    // fetch each user with keys if someone is logged in 
+    // fetch each user with keys if someone is logged in
     useEffect(() => {
-        function getAllUsersWithKeys() {
-            axios.get(`${API_URL}/api/listobjects/users/`)
-                .then(response => {
-                    const allUsers = response.data
-                    const filteredUsers = allUsers.filter(user => checkUser(user))
-                    setAllUsersWithKeys(filteredUsers)
-            })
-        }
+        console.log(loggedUser);
         if (loggedUser) {
-            getAllUsersWithKeys()
+            const fetchAllUsersWithKeys = async () => {
+                try {
+                    const response = await axios.get(`${API_URL}/api/listobjects/users/`);
+                    const allUsers = response.data;
+                    const filteredUsers = allUsers.filter(user => checkUser(user));
+                    setAllUsersWithKeys(filteredUsers);
+                } catch (error) {
+                    console.error('Error fetching users with keys', error);
+                }
+            };
+            fetchAllUsersWithKeys();
         }
-    }, [loggedUser, API_URL])
+    }, [loggedUser]);
+    
 
     // check if a user is valid for making an YKV-login
     const checkUser = (user) => {
