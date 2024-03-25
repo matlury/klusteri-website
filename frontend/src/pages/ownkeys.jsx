@@ -21,7 +21,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     const [idToLogout, setIdToLogout] = useState([])
 
     const [selectedForYKV, setSelectedForYKV] = useState([]);
-    const [selectAllChecked, setSelectAllChecked] = useState(false)
 
     const API_URL = process.env.API_URL
 
@@ -43,8 +42,9 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
         }
     }, [isLoggedIn, selectedForYKV])
 
+
+    // Fetch all users with keys when the component mounts or when 'loggedUser' changes
     useEffect(() => {
-        // Fetch all users with keys when the component mounts or when 'loggedUser' changes
         if (loggedUser) {
             getActiveResponsibilities()
             fetchAllUsersWithKeys()
@@ -167,7 +167,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
             const responsibilityObject = {
                 username: user.username,
                 email: user.email,
-                responsible_for: responsibility,
+                responsible_for: responsibility + `, kirjauksen tekijä: ${loggedUser.username}`,
                 login_time: loginTime
             }
             confirmYKV(responsibilityObject)
@@ -308,12 +308,12 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
 
     const logout_function = () => (
         <div>
-            <button onClick={() => handleYkvLogout(idToLogout)} className='login-button' type='button'>
-                YKV-uloskirjaus
-            </button>
+            <button onClick={() => handleYkvLogout(idToLogout)} className='login-button' type='button'> YKV-uloskirjaus </button>
+            <button onClick={() => handleYkvEdit()} style={{ marginLeft: '20px' }} className='create-user-button' type='button'> Muokkaa omaa YKV-kirjausta </button>
             {buttonPopup && (
                 <Popup trigger={buttonPopup} setTrigger={setButtonPopup} active={activeResponsibilites} setIdToLogout={setIdToLogout} onSubmit={handleYkvLogout}/>
             )}
+            <p></p>
             <h2>Kaikki aktiiviset: </h2>
             <ul style={{ listStyleType: 'none', padding:0}}>
                 {activeResponsibilites.slice().reverse().map(resp => (
@@ -321,12 +321,22 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
                         Vastuuhenkilö: {resp.username}, {resp.email} <br />
                         Vastuussa henkilöistä: {resp.responsible_for} <br />
                         YKV-sisäänkirjaus klo: {resp.login_time} <br />
+                        <br></br>
+                        {resp.username === loggedUser.username && (
+                        <button onClick={() => handleYkvEdit()} style={{ marginLeft: '20px' }} className='login-button' type='button'> Muokkaa omaa YKV-kirjausta </button>
+                    )}
                     <br /><br />
                     </li>
                 ))}
             </ul>
         </div>
     )
+
+    // THE FOLLOWING FUNCTIONS HANDLE THE YKV-LOGIN EDITS
+
+    const handleYkvEdit = () => {
+        console.log('tähän toimintoja')
+    }
 
     return (
         <div id='left_content'>
