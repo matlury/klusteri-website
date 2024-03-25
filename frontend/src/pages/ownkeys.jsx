@@ -12,7 +12,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     const [allResponsibilities, setAllResponsibilities] = useState([])
     const [ownResponsibilities, setOwnResponsibilities] = useState([])
     const [activeResponsibilites, setActiveResponsibilites] = useState([])
-
     const [allUsersWithKeys, setAllUsersWithKeys] = useState([])
 
     const [error, setError] = useState('')
@@ -44,23 +43,25 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
         }
     }, [isLoggedIn, selectedForYKV])
 
-    // fetch each user with keys if someone is logged in
     useEffect(() => {
-        console.log(loggedUser);
+        // Fetch all users with keys when the component mounts or when 'loggedUser' changes
         if (loggedUser) {
-            const fetchAllUsersWithKeys = async () => {
-                try {
-                    const response = await axios.get(`${API_URL}/api/listobjects/users/`);
-                    const allUsers = response.data;
-                    const filteredUsers = allUsers.filter(user => checkUser(user));
-                    setAllUsersWithKeys(filteredUsers);
-                } catch (error) {
-                    console.error('Error fetching users with keys', error);
-                }
-            };
-            fetchAllUsersWithKeys();
+            getActiveResponsibilities()
+            fetchAllUsersWithKeys()
         }
     }, [loggedUser]);
+
+    // fetch each user with keys if someone is logged in
+    const fetchAllUsersWithKeys = async () => {
+        try {
+            const response = await axios.get(`${API_URL}/api/listobjects/users/`);
+            const allUsers = response.data;
+            const filteredUsers = allUsers.filter(user => checkUser(user));
+            setAllUsersWithKeys(filteredUsers);
+        } catch (error) {
+            console.error('Error fetching users with keys', error);
+        }
+    }
     
 
     // check if a user is valid for making an YKV-login
@@ -72,8 +73,10 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
             return false
         }
         // check if a user already has an active YKV
-        const alreadyLoggedIn = allResponsibilities.filter(resp => resp.email === user.email && resp.present)
-        if (alreadyLoggedIn.length !== 0) {
+        if (activeResponsibilites.length === 0) {
+            return true
+        }
+        if (activeResponsibilites.includes(user)) {
             return false
         }
         return true
@@ -226,6 +229,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
                 setAllResponsibilities(response.data)
                 const active = response.data.filter(item => item.present === true)
                 setActiveResponsibilites(active)
+                console.log(active)
             })
             .catch(error => {
                 console.error('Error fetching responsibilities', error)
@@ -292,6 +296,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
                 getResponsibility()
                 ownYkvList()
                 getActiveResponsibilities()
+                fetchAllUsersWithKeys()
             })
             .catch(error => {
                 setError('YKV-uloskirjaus epäonnistui')
