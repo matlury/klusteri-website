@@ -68,12 +68,38 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     # many-to-many relationship links User model and Organization model
     organization = models.ManyToManyField(Organization, related_name="organization")
-
+    keys = models.JSONField(default=dict)
+    
     objects = UserAccountManager()
 
     # USERNAME_FIELD defines the unique identifier of a User object. It can be i.e. username or email
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "password", "role"]
+
+    def has_key_for_organization(self, organization_name):
+        """
+        Tarkista, onko käyttäjällä avain tiettyyn järjestöön.
+
+        Parameters:
+            organization_name (str): Järjestön nimi
+
+        Returns:
+            bool: True, jos käyttäjällä on avain järjestöön, muuten False
+        """
+        return self.keys.get(organization_name, False)
+
+    def keys_for_organizations(self):
+        """
+        Palauttaa dictionaryn, jossa avaimina ovat järjestöt ja arvoina boolean-arvot sen perusteella,
+        onko käyttäjällä avain kyseiseen järjestöön vai ei.
+
+        Returns:
+            dict: Järjestöt, joihin käyttäjällä on avain, ja niiden tila (True / False)
+        """
+        organizations = {}
+        for organization in Organization.objects.all():
+            organizations[organization.name] = self.has_key_for_organization(organization.name)
+        return {k: v for k, v in organizations.items() if v}
 
 class Event(models.Model):
     """
