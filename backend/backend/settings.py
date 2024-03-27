@@ -99,7 +99,6 @@ DATABASES = {
 }
 """
 
-
 DATABASES = {
     "default": {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -123,6 +122,17 @@ if os.environ.get('GITHUB_WORKFLOW'):
         }
     }
 
+if os.environ.get('CYPRESS'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv("CYPRESS_DB_NAME"),
+            'USER': os.getenv("TEST_DB_USER"),
+            'PASSWORD': os.getenv("TEST_DB_PASSWORD"),
+            'HOST': os.getenv("TEST_DB_HOST"), 
+            'PORT': os.getenv("TEST_DB_PORT"),
+        }
+    }
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
