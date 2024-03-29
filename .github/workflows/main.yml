@@ -43,8 +43,8 @@ jobs:
       - name: Start backend
         run: |
           cd backend
-          python manage.py runserver
-          
+          poetry run python manage.py runserver
+
       - name: Run Cypress tests
         uses: cypress-io/github-action@v3
         with:
