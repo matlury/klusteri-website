@@ -38,10 +38,19 @@ jobs:
         run: poetry run python manage.py migrate
       - name: Run tests
         working-directory: ./backend
-        env:
-          EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
-          EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
         run: poetry run coverage run --branch -m pytest
+
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v3
+        run: |
+          cd backend
+          python manage.py runserver
+        with:
+          project: ./frontend
+          browser: chrome
+          build: npm run build
+          start: npm run dev
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
