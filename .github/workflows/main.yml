@@ -54,8 +54,8 @@ jobs:
 
       - name: Run Cypress tests
         uses: cypress-io/github-action@v3
-        working-directory: ./frontend
         with:
+          working-directory: ./frontend
           project: ./frontend
           browser: chrome
           build: npm run build
