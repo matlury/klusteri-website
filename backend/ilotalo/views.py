@@ -14,6 +14,7 @@ from .serializers import (
 from .models import User, Organization, Event, NightResponsibility
 from .config import Role
 from datetime import datetime
+import os
 
 LEPPISPJ = Role.LEPPISPJ.value
 LEPPISVARAPJ = Role.LEPPISVARAPJ.value
@@ -475,3 +476,17 @@ class LogoutNightResponsibilityView(APIView):
             return Response(responsibility.data, status=status.HTTP_200_OK)
         return Response(responsibility.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class ResetDatabaseView(APIView):
+    """View for resetting a database during Cypress tests"""
+
+    def post(self, request):
+
+        if os.getenv("CYPRESS") not in ["True"]:
+            return Response(
+                "This endpoint is for Cypress tests only",
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        User.objects.all().delete()
+
+        return Response("Resetting database successful", status=status.HTTP_200_OK)

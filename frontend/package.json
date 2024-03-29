@@ -63,7 +63,6 @@
     "preview": "vite preview",
     "start": "react-scripts start",
     "test": "jest --coverage",
-    "cypress:open": "cross-env CYPRESS=test cypress open",
-    "start:test": "cd ../backend/ && python manage.py migrate && cd ../frontend/ && vite"
+    "cypress": "cypress open"
   }
 }

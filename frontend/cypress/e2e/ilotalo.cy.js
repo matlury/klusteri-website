@@ -1,6 +1,7 @@
 describe('Frontpage', () => {
   beforeEach(function() {
     cy.visit('http://localhost:5173')
+    cy.request('POST', 'http://localhost:8000/api/testing/reset')
   })
 
   it('frontpage can be accessed', function() {
