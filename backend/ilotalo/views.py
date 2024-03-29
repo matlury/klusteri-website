@@ -485,7 +485,7 @@ class ResetDatabaseView(APIView):
         Post requests are only accepted if the CYPRESS env.variable is "True"
         or if a Github workflow is running
         """
-        if os.getenv("CYPRESS") in ["True"] or os.environ.get('GITHUB_WORKFLOW'):
+        if os.getenv("CYPRESS") in ["True"] or os.environ.get("GITHUB_WORKFLOW"):
             User.objects.all().delete()
 
             return Response("Resetting database successful", status=status.HTTP_200_OK)

@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
+      #Start a postgres container for test runs
       postgres:
         image: postgres:latest
         env:
@@ -47,6 +48,7 @@ jobs:
         working-directory: ./backend
         run: poetry run coverage run --branch -m pytest
 
+      #Cypress tests require backend to be running
       - name: Start backend
         run: |
           cd backend
@@ -60,8 +62,6 @@ jobs:
           browser: chrome
           build: npm run build
           start: npm run dev
-        env:
-          CYPRESS: "True"
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
