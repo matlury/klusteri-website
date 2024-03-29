@@ -40,11 +40,13 @@ jobs:
         working-directory: ./backend
         run: poetry run coverage run --branch -m pytest
 
-      - uses: cypress-io/github-action@v3
-      - name: Run Cypress tests
+      - name: Start backend
         run: |
           cd backend
           python manage.py runserver
+          
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v3
         with:
           project: ./frontend
           browser: chrome
