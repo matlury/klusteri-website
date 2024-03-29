@@ -16,6 +16,7 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+print("cypress equals", os.environ.get("CYPRESS"))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -102,7 +103,7 @@ DATABASES = {
 DATABASES = {
     "default": {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv("TEST_DB_NAME"), 
+        'NAME': os.getenv("CYPRESS_DB_NAME") if os.getenv("CYPRESS") in ["True"] else os.getenv("TEST_DB_NAME"), 
         'USER': os.getenv("TEST_DB_USER"),
         'PASSWORD': os.getenv("TEST_DB_PASSWORD"),
         'HOST': os.getenv("TEST_DB_HOST"), 
@@ -119,18 +120,6 @@ if os.environ.get('GITHUB_WORKFLOW'):
            'PASSWORD': 'postgres',
            'HOST': '127.0.0.1',
            'PORT': '5432',
-        }
-    }
-
-if os.environ.get('CYPRESS'):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv("CYPRESS_DB_NAME"),
-            'USER': os.getenv("TEST_DB_USER"),
-            'PASSWORD': os.getenv("TEST_DB_PASSWORD"),
-            'HOST': os.getenv("TEST_DB_HOST"), 
-            'PORT': os.getenv("TEST_DB_PORT"),
         }
     }
 
