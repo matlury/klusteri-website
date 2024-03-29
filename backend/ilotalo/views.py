@@ -481,12 +481,16 @@ class ResetDatabaseView(APIView):
 
     def post(self, request):
 
-        if os.getenv("CYPRESS") not in ["True"]:
-            return Response(
-                "This endpoint is for Cypress tests only",
-                status=status.HTTP_403_FORBIDDEN
-            )
+        """
+        Post requests are only accepted if the CYPRESS env.variable is "True"
+        or if a Github workflow is running
+        """
+        if os.getenv("CYPRESS") in ["True"] or os.environ.get('GITHUB_WORKFLOW'):
+            User.objects.all().delete()
 
-        User.objects.all().delete()
-
-        return Response("Resetting database successful", status=status.HTTP_200_OK)
+            return Response("Resetting database successful", status=status.HTTP_200_OK)
+        
+        return Response(
+            "This endpoint is for Cypress tests only",
+            status=status.HTTP_403_FORBIDDEN
+        )
