@@ -53,6 +53,7 @@ jobs:
           poetry run python manage.py runserver &
 
       - name: Run Cypress tests
+        working-directory: ./frontend
         uses: cypress-io/github-action@v3
         with:
           project: ./frontend
