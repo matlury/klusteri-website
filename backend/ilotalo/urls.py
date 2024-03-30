@@ -13,6 +13,7 @@ from .views import (
     UpdateOrganizationView,
     AddUserOrganizationView,
     LogoutNightResponsibilityView,
+    ResetDatabaseView
 )
 
 """Define URL endpoints for the ilotalo app"""
@@ -31,5 +32,6 @@ urlpatterns = [
     path("update_organization/<int:pk>/", UpdateOrganizationView.as_view()),
     path("add_user_organization", AddUserOrganizationView.as_view()),
     path("logout_responsibility/<int:pk>/", LogoutNightResponsibilityView.as_view()),
-    path("update_organization/<int:pk>/", UpdateOrganizationView.as_view())
+    path("update_organization/<int:pk>/", UpdateOrganizationView.as_view()),
+    path("reset", ResetDatabaseView.as_view())
 ]
