@@ -37,7 +37,8 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "klusteri-website-db-test-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi",
     "klusteri-website-back-matlury-test.apps.ocp-prod-0.k8s.it.helsinki.fi",
-    "klusteri-website-front-matlury-test.apps.ocp-prod-0.k8s.it.helsinki.fi"
+    "klusteri-website-front-matlury-test.apps.ocp-prod-0.k8s.it.helsinki.fi",
+    "klusteri-website-matlury-test.apps.ocp-prod-0.k8s.it.helsinki.fi"
 ]
 
 

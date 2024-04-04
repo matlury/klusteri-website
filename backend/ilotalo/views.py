@@ -103,20 +103,62 @@ class UpdateUserView(APIView):
             Id of the User object to be updated
         """
 
-        try:
-            user_to_update = User.objects.get(id=pk)
-        except ObjectDoesNotExist:
-            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+        # All users can edit their own information
+        if int(pk) == request.user.id:
+            try:
+                user_to_update = User.objects.get(id=pk)
+            except ObjectDoesNotExist:
+                return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+            
+            user_serializer = UserUpdateSerializer(
+                instance=user_to_update, data=request.data, partial=True
+            )
 
-        user = UserUpdateSerializer(
-            instance=user_to_update, data=request.data, partial=True
-        )
+            if user_serializer.is_valid():
+                user_serializer.save()
+                return Response(user_serializer.data, status=status.HTTP_200_OK)
+            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = UserSerializer(request.user)
 
-        if user.is_valid():
-            user.save()
-            return Response(user.data, status=status.HTTP_200_OK)
-        return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Leppispj and Leppisvarapj can only edit users that have role muokkaus
+        if user.data["role"] in [LEPPISPJ, LEPPISVARAPJ]:
+            try:
+                user_to_update = User.objects.get(id=pk)
+            except ObjectDoesNotExist:
+                return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+            
+            if user_to_update.role == MUOKKAUS:
+                user = UserUpdateSerializer(
+                    instance=user_to_update, data=request.data, partial=True
+                )
+                if user.is_valid():
+                    user.save()
+                    return Response(user.data, status=status.HTTP_200_OK)
+                return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response("You are not allowed to edit this user", status=status.HTTP_400_BAD_REQUEST)
+        
+        # Muokkaus users can only edit users that have role avaimellinen
+        elif user.data["role"] == MUOKKAUS:
+            try:
+                user_to_update = User.objects.get(id=pk)
+            except ObjectDoesNotExist:
+                return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+            
+            if user_to_update.role == AVAIMELLINEN:
+                user = UserUpdateSerializer(
+                    instance=user_to_update, data=request.data, partial=True
+                )
+                if user.is_valid():
+                    user.save()
+                    return Response(user.data, status=status.HTTP_200_OK)
+                return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response("You are not allowed to edit this user", status=status.HTTP_400_BAD_REQUEST)
 
+        else:
+            return Response("You are not allowed to edit users", status=status.HTTP_400_BAD_REQUEST)
 
 class CreateOrganizationView(APIView):
     """View for creating a new organization <baseurl>/api/organizations/create"""

@@ -73,8 +73,6 @@ class TestDjangoAPI(TestCase):
         )
 
         self.leppispj = response.data
-        self.user_count = 2
-
 
         # Create a mock Muokkaus user for testing
         muokkaus_data = self.data = {
@@ -106,7 +104,38 @@ class TestDjangoAPI(TestCase):
 
         self.muokkaus = response.data
         self.muokkaus_user = self.muokkaus
-        self.user_count = 3
+
+        # Create a mock Avaimellinen user for testing
+        avaimellinen_data = self.data = {
+            "username": "Avaimellinen",
+            "password": "vahvaSalasana1234",
+            "email": "avaimellinen@gmail.com",
+            "telegram": "avaimellinen",
+            "role": 4,
+        }
+
+        self.client.post(
+            "http://localhost:8000/api/users/register",
+            data=avaimellinen_data,
+            format="json",
+        )
+
+        response = self.client.post(
+            "http://localhost:8000/api/token/",
+            data={"email": "avaimellinen@gmail.com", "password": "vahvaSalasana1234"},
+            format="json",
+        )
+        self.avaimellinen_access_token = response.data["access"]
+        self.avaimellinen_refresh_token = response.data["refresh"]
+
+        response = self.client.get(
+            "http://localhost:8000/api/users/userinfo",
+            headers={"Authorization": f"Bearer {self.avaimellinen_access_token}"},
+        )
+
+        self.avaimellinen = response.data
+        self.avaimellinen_user = self.muokkaus
+        self.user_count = 4
 
     def test_creating_user(self):
         """A new user can be created if the parameters are valid"""
@@ -385,7 +414,7 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.data["telegram"], "")
 
     def test_updating_non_existent_user(self):
-        """Backend responds with 404 if a user is not found when updating information"""
+        """Backend responds with 400 if a user is not found when updating information"""
 
         # update the telegram name
         response = self.client.put(
@@ -395,7 +424,121 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    def test_updating_as_leppispj(self):
+        """LeppisPJ can update muokkaus users"""
+
+        user_id = User.objects.all()[2].id
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{user_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"telegram": "newtg"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["telegram"], "newtg")
+    
+    def test_updating_invalid_as_leppispj(self):
+        """LeppisPJ can update muokkaus users"""
+
+        # try to update role tavallinen as leppispj
+        user_id = User.objects.all()[0].id
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{user_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"telegram": "newtg"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(self.user["telegram"], "klussentg")
+    
+    def test_updating_as_muokkaus(self):
+        """Muokkaus users can update avaimellinen users"""
+
+        user_id = User.objects.all()[3].id
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{user_id}/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data={"telegram": "newtg"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["telegram"], "newtg")
+    
+    def test_updating_invalid_as_muokkaus(self):
+        """Muokkaus users can update avaimellinen users"""
+
+        # try to update leppispj as muokkaus user
+        user_id = User.objects.all()[1].id
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{user_id}/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data={"telegram": "newtg"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(self.leppispj["telegram"], "tgleppispj")
+    
+    def test_updating_notfound_muokkaus(self):
+        """Muokkaus users can update avaimellinen users"""
+
+        # try to update user that doesn't exist
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/10/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data={"telegram": "newtg"},
+            format="json",
+        )
+
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_updating_notfound_leppispj(self):
+        """LeppisPJ can update muokkaus users"""
+
+        # try to update user that doesn't exist
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/10/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"telegram": "newtg"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_updating_invalid_tg_as_muokkaus(self):
+        """Muokkaus users can update avaimellinen users"""
+
+        # try to update telegram with already owned name
+        user_id = User.objects.all()[3].id
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{user_id}/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data={"telegram": "klussentg"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(self.avaimellinen["telegram"], "avaimellinen")
+    
+    def test_updating_invalid_tg_as_leppispj(self):
+        """LeppisPJ can update muokkaus users"""
+
+        # try to update telegram with already owned name
+        user_id = User.objects.all()[2].id
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{user_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"telegram": "klussentg"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(self.muokkaus["telegram"], "muokkaus")
 
     def test_creating_organization(self):
         """Only LeppisPJ can create a new organization"""
