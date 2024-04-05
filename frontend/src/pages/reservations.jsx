@@ -78,7 +78,7 @@ const MyCalendar = () => {
   };
 
   const handleAddEvent = () => {
-    const { title, organizer, description, responsible, isOpen, room, start, end } = eventDetails;
+    const { title, organizer, description, responsible, isOpen, room, start, end, id } = eventDetails;
     const startDate = moment(start);
     const endDate = moment(end);
     const duration = moment.duration(endDate.diff(startDate)).asHours();
