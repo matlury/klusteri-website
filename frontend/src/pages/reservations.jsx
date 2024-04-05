@@ -77,6 +77,15 @@ const MyCalendar = () => {
 
   const handleAddEvent = () => {
     const { title, organizer, description, responsible, isOpen, room, start, end } = eventDetails;
+    const startDate = moment(start);
+    const endDate = moment(end);
+    const duration = moment.duration(endDate.diff(startDate)).asHours();
+
+    if (duration > 24) {
+      alert('Varauksen kesto ei saa olla yli 24 tuntia.');
+      return;
+    }
+
     if (title && organizer && description && responsible && (isOpen === 'avoin' || isOpen === 'suljettu') && room && start && end) {
       
       const isRoomOccupied = events.some(event => {
@@ -164,22 +173,13 @@ const MyCalendar = () => {
           <Modal.Title>{selectedEvent ? selectedEvent.title : 'Lisää tapahtuma'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {selectedEvent && (
-            <>
-              <p>Alkaa: {moment(selectedEvent.start).format('YYYY-MM-DD HH:mm')}</p>
-              <p>Päättyy: {moment(selectedEvent.end).format('YYYY-MM-DD HH:mm')}</p>
-              <p>Järjestäjä: {selectedEvent.organizer}</p>
-              <p>Vastuuhenkilö: {selectedEvent.responsible}</p>
-              <p>Kuvaus: {selectedEvent.description}</p>
-              <p>Tila: {selectedEvent.isOpen}</p>
-              <p>Huone: {selectedEvent.room}</p>
-            </>
-          )}
           {!selectedEvent && (
             <div>
-              <p>Valitun ajanjakson tiedot:</p>
+              <p>Varauksen tiedot:</p>
+              <p style={{ color: 'grey' }}>Voit tehdä maksimissaan 24h varauksen.</p>
               <p>Alkaa: <input type="datetime-local" name="start" ref={startRef} onChange={handleInputChange} /></p>
               <p>Päättyy: <input type="datetime-local" name="end" ref={endRef} onChange={handleInputChange} /></p>
+              <p style={{ color: 'red' }}>Huomiothan yökäyttösäännöt klo 00-08.</p>
               <input
                 type="text"
                 name="title"
@@ -200,43 +200,42 @@ const MyCalendar = () => {
                 placeholder="Vastuuhenkilö"
                 value={eventDetails.responsible}
                 onChange={handleInputChange}
-                />
-                <textarea
-                  name="description"
-                  placeholder="Tapahtuman kuvaus"
-                  value={eventDetails.description}
-                  onChange={handleInputChange}
-                  style={{ width: '100%', height: '100px' }}
-                />
-                <select name="isOpen" value={eventDetails.isOpen} onChange={handleInputChange}>
+              />
+              <textarea
+                name="description"
+                placeholder="Tapahtuman kuvaus"
+                value={eventDetails.description}
+                onChange={handleInputChange}
+                style={{ width: '100%', height: '100px' }}
+              />
+              <select name="isOpen" value={eventDetails.isOpen} onChange={handleInputChange}>
                 <option value="tyhjä">Valitse avoimuus</option>
-                  <option value="avoin">Avoin tapahtuma</option>
-                  <option value="suljettu">Vain jäsenille</option>
-                </select>
-                <select name="room" value={eventDetails.room} onChange={handleInputChange}>
+                <option value="avoin">Avoin tapahtuma</option>
+                <option value="suljettu">Vain jäsenille</option>
+              </select>
+              <select name="room" value={eventDetails.room} onChange={handleInputChange}>
                 <option value="tyhjä">Valitse huone</option>
-                  <option value="Kokoushuone">Kokoushuone</option>
-                  <option value="Kerhotila">Kerhotila</option>
-                  <option value="Oleskelutila">Oleskelutila</option>
-                  <option value="ChristinaRegina">ChristinaRegina</option>
-                </select>
-              </div>
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
-              Sulje
+                <option value="Kokoushuone">Kokoushuone</option>
+                <option value="Kerhotila">Kerhotila</option>
+                <option value="Oleskelutila">Oleskelutila</option>
+                <option value="ChristinaRegina">ChristinaRegina</option>
+              </select>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Sulje
+          </Button>
+          {!selectedEvent && (
+            <Button variant="primary" onClick={handleAddEvent}>
+              Tallenna
             </Button>
-            {!selectedEvent && (
-              <Button variant="primary" onClick={handleAddEvent}>
-                Tallenna
-              </Button>
-            )}
-          </Modal.Footer>
-        </Modal>
-      </div>
-    );
-  };
-  
-  export default MyCalendar;
-  
+          )}
+        </Modal.Footer>
+      </Modal>
+    </div>
+  );
+};
+
+export default MyCalendar;
