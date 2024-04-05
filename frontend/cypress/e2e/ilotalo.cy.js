@@ -1,11 +1,10 @@
 describe('Frontpage', () => {
 
   beforeEach(function() {
-    cy.visit('http://localhost:5173')
-
     //Reset the testing database
     cy.request('POST', 'http://localhost:8000/api/testing/reset')
   
+    cy.visit('http://localhost:5173')
   })
 
   it('frontpage can be accessed', function() {
@@ -42,6 +41,9 @@ describe('Frontpage', () => {
     cy.get('#emailInput').type('testuser@gmail.com')
     cy.get('#telegramInput').type('testtg')
     cy.contains('Luo käyttäjä').click()
+    
+    cy.wait(500)
+    cy.contains('Etusivu').click()
 
     cy.get('#email').type('testuser@gmail.com')
     cy.get('#password').type('salasana123')
