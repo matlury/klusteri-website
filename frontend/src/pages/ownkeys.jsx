@@ -365,7 +365,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
                     {error && <p style={{ color: 'red' }}>{error}</p>}
                     {success && <p style={{ color: 'green' }}>{success}</p>}
                     {checkIfLoggedIn() && logout_function()}
-                    {!checkIfLoggedIn() && ykvForm()}
+                    {!checkIfLoggedIn() && user.role !== 5 && ykvForm()}
                     {!(loggedUser.role === 1 || loggedUser.role === 5) && ownYkvList()}
                     {loggedUser.role === 1 && responsibilities()}
                 </div>
