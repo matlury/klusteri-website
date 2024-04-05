@@ -14,7 +14,7 @@ class TestDjangoAPI(TestCase):
     def setUp(self):
         self.client = APIClient()
 
-        # Create a mock normal user for testing
+        # Create a mock Tavallinen user for testing
         self.data = {
             "username": "klusse",
             "password": "vahvaSalasana1234",
@@ -23,11 +23,12 @@ class TestDjangoAPI(TestCase):
             "role": 5,
         }
 
-        self.client.post(
+        response = self.client.post(
             "http://localhost:8000/api/users/register",
             data=self.data,
             format="json",
         )
+        self.tavallinen_id = response.data["id"]
 
         response = self.client.post(
             "http://localhost:8000/api/token/",
@@ -53,11 +54,13 @@ class TestDjangoAPI(TestCase):
             "role": 1,
         }
 
-        self.client.post(
+        response = self.client.post(
             "http://localhost:8000/api/users/register",
             data=leppispj_data,
             format="json",
         )
+
+        self.leppis_id = response.data["id"]
 
         response = self.client.post(
             "http://localhost:8000/api/token/",
@@ -83,11 +86,13 @@ class TestDjangoAPI(TestCase):
             "role": 3,
         }
 
-        self.client.post(
+        response = self.client.post(
             "http://localhost:8000/api/users/register",
             data=muokkaus_data,
             format="json",
         )
+
+        self.muokkaus_id = response.data["id"]
 
         response = self.client.post(
             "http://localhost:8000/api/token/",
@@ -114,11 +119,13 @@ class TestDjangoAPI(TestCase):
             "role": 4,
         }
 
-        self.client.post(
+        response = self.client.post(
             "http://localhost:8000/api/users/register",
             data=avaimellinen_data,
             format="json",
         )
+
+        self.avaimellinen_id = response.data["id"]
 
         response = self.client.post(
             "http://localhost:8000/api/token/",
@@ -427,7 +434,7 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     
     def test_updating_as_leppispj(self):
-        """LeppisPJ can update muokkaus users"""
+        """LeppisPJ can update all users"""
 
         user_id = User.objects.all()[2].id
         response = self.client.put(
@@ -440,23 +447,76 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["telegram"], "newtg")
     
-    def test_updating_invalid_as_leppispj(self):
-        """LeppisPJ can update muokkaus users"""
+    def test_updating_as_muokkaus_tavallinen(self):
+        """Muokkaus users can update role 4 and 5 users if they belong to same organization"""
 
-        # try to update role tavallinen as leppispj
+        # First add the users to same organization
+        organization_created = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "name": "Matrix Ry",
+                "email": "matrix_ry@gmail.com",
+                "homepage": "matrix-ry.fi",
+                "size": 1,
+            },
+            format="json",
+        )
+
+        org_id = organization_created.data['id']
+        self.client.post(
+            "http://localhost:8000/api/organizations/add_user_organization",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"user_id": self.tavallinen_id, "organization_id":org_id},
+            format="json",
+        )
+        self.client.post(
+            "http://localhost:8000/api/organizations/add_user_organization",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"user_id": self.muokkaus_id, "organization_id": org_id},
+            format="json",
+        )
+
         user_id = User.objects.all()[0].id
         response = self.client.put(
             f"http://localhost:8000/api/users/update/{user_id}/",
-            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
             data={"telegram": "newtg"},
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(self.user["telegram"], "klussentg")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["telegram"], "newtg")
     
-    def test_updating_as_muokkaus(self):
-        """Muokkaus users can update avaimellinen users"""
+    def test_updating_as_muokkaus_avaimellinen(self):
+        """Muokkaus users can update role 4 and 5 users if they belong to same organization"""
+
+        # First add the users to same organization
+        organization_created = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "name": "Matrix Ry",
+                "email": "matrix_ry@gmail.com",
+                "homepage": "matrix-ry.fi",
+                "size": 1,
+            },
+            format="json",
+        )
+
+        org_id = organization_created.data['id']
+        self.client.post(
+            "http://localhost:8000/api/organizations/add_user_organization",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"user_id": self.avaimellinen_id, "organization_id":org_id},
+            format="json",
+        )
+        self.client.post(
+            "http://localhost:8000/api/organizations/add_user_organization",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"user_id": self.muokkaus_id, "organization_id": org_id},
+            format="json",
+        )
 
         user_id = User.objects.all()[3].id
         response = self.client.put(
@@ -469,10 +529,37 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["telegram"], "newtg")
     
-    def test_updating_invalid_as_muokkaus(self):
-        """Muokkaus users can update avaimellinen users"""
+    def test_updating_as_muokkaus_invalid_user(self):
+        """Muokkaus users can update role 4 and 5 users if they belong to same organization"""
 
-        # try to update leppispj as muokkaus user
+        # First add the users to same organization
+        organization_created = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "name": "Matrix Ry",
+                "email": "matrix_ry@gmail.com",
+                "homepage": "matrix-ry.fi",
+                "size": 1,
+            },
+            format="json",
+        )
+
+        org_id = organization_created.data['id']
+        self.client.post(
+            "http://localhost:8000/api/organizations/add_user_organization",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"user_id": self.leppis_id, "organization_id":org_id},
+            format="json",
+        )
+        self.client.post(
+            "http://localhost:8000/api/organizations/add_user_organization",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"user_id": self.muokkaus_id, "organization_id": org_id},
+            format="json",
+        )
+
+        # try to update leppispj instead of avaimellinen
         user_id = User.objects.all()[1].id
         response = self.client.put(
             f"http://localhost:8000/api/users/update/{user_id}/",
@@ -482,10 +569,62 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(self.leppispj["telegram"], "tgleppispj")
+    
+    def test_updating_different_organization_as_muokkaus(self):
+        """Muokkaus users can update role 4 and 5 users if they belong to same organization"""
+
+        # First add the users to different organizations
+        organization_created = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "name": "Matrix Ry",
+                "email": "matrix_ry@gmail.com",
+                "homepage": "matrix-ry.fi",
+                "size": 1,
+            },
+            format="json",
+        )
+        org_id = organization_created.data['id']
+
+        organization_created2 = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "name": "TKO-ÄLY",
+                "email": "tkoaly@gmail.com",
+                "homepage": "tkoaly.fi",
+                "size": 1,
+            },
+            format="json",
+        )
+        org_id2 = organization_created2.data['id']
+
+        self.client.post(
+            "http://localhost:8000/api/organizations/add_user_organization",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"user_id": self.tavallinen_id, "organization_id":org_id},
+            format="json",
+        )
+        self.client.post(
+            "http://localhost:8000/api/organizations/add_user_organization",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"user_id": self.muokkaus_id, "organization_id": org_id2},
+            format="json",
+        )
+
+        user_id = User.objects.all()[0].id
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{user_id}/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data={"telegram": "newtg"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     
     def test_updating_notfound_muokkaus(self):
-        """Muokkaus users can update avaimellinen users"""
+        """Muokkaus users can update role 4 and 5 users if they belong to same organization"""
 
         # try to update user that doesn't exist
         response = self.client.put(
@@ -498,7 +637,7 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
     
     def test_updating_notfound_leppispj(self):
-        """LeppisPJ can update muokkaus users"""
+        """LeppisPJ can update all users"""
 
         # try to update user that doesn't exist
         response = self.client.put(
@@ -511,7 +650,7 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
     
     def test_updating_invalid_tg_as_muokkaus(self):
-        """Muokkaus users can update avaimellinen users"""
+        """Muokkaus users can update role 4 and 5 users if they belong to same organization"""
 
         # try to update telegram with already owned name
         user_id = User.objects.all()[3].id
@@ -526,7 +665,7 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(self.avaimellinen["telegram"], "avaimellinen")
     
     def test_updating_invalid_tg_as_leppispj(self):
-        """LeppisPJ can update muokkaus users"""
+        """LeppisPJ can update all users"""
 
         # try to update telegram with already owned name
         user_id = User.objects.all()[2].id
