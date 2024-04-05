@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../index.css';
 import { useStateContext } from "../context/ContextProvider.jsx";
 import axios from 'axios'; 
+import axiosClient from '../axios.js';
 
 const API_URL = process.env.API_URL
 
@@ -37,6 +38,7 @@ const MyCalendar = () => {
     room: '',
     start: '',
     end: '',
+    id: '',
   });
   
   const [showModal, setShowModal] = useState(false);
@@ -80,7 +82,6 @@ const MyCalendar = () => {
     const startDate = moment(start);
     const endDate = moment(end);
     const duration = moment.duration(endDate.diff(startDate)).asHours();
-
     if (duration > 24) {
       alert('Varauksen kesto ei saa olla yli 24 tuntia.');
       return;
@@ -109,30 +110,48 @@ const MyCalendar = () => {
         responsible,
         isOpen,
         room,
+        id,
       };
-      setEvents([...events, newEvent]);
 
-      axios.post(`${API_URL}/api/listobjects/events/`, newEvent)
+      axiosClient.post(`listobjects/events/`, newEvent)
         .then(response => {
           console.log('Tapahtuma tallennettu:', response.data);
+          const updatedEvent = { ...newEvent, id: response.data.id };
+          setEvents([...events, updatedEvent]);
+          setShowModal(false);
+          setEventDetails({
+            title: '',
+            organizer: '',
+            description: '',
+            responsible: '',
+            isOpen: '',
+            room: '',
+            start: '',
+            end: '',
+            id: '',
+          });
         })
         .catch(error => {
           console.error('Virhe tapahtuman tallentamisessa:', error);
         });
-
-      setShowModal(false);
-      setEventDetails({
-        title: '',
-        organizer: '',
-        description: '',
-        responsible: '',
-        isOpen: '',
-        room: '',
-        start: '',
-        end: '',
-      });
     } else {
       alert('Täytä kaikki tiedot ennen tapahtuman lisäämistä.');
+    }
+  };
+
+  const handleDeleteEvent = (eventId) => {
+    console.log(selectedEvent)
+    if (eventId) {
+      axiosClient.delete(`events/delete_event/${eventId}/`)
+        .then(response => {
+          console.log('Tapahtuma poistettu:', response.data);
+          setEvents(events.filter(event => event.id !== eventId));
+        })
+        .catch(error => {
+          console.error('Virhe tapahtuman poistamisessa:', error);
+        });
+    } else {
+      console.log('ei oo id:tä')
     }
   };
 
@@ -234,6 +253,11 @@ const MyCalendar = () => {
             )}
           </Modal.Body>
           <Modal.Footer>
+            {selectedEvent && (
+              <Button variant="danger" onClick={() => handleDeleteEvent(selectedEvent.id)}>
+                Poista tapahtuma
+              </Button>
+            )}
             <Button variant="secondary" onClick={handleCloseModal}>
               Sulje
             </Button>
