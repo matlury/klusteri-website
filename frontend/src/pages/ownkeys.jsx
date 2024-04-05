@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import axiosClient from '../axios.js'
 import axios from 'axios'
 import Popup from '../context/Popup.jsx'
+import EditPopup from '../context/EditPopup.jsx'
 
 const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn)
@@ -20,6 +21,9 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     const [buttonPopup, setButtonPopup] = useState(false)
     const [idToLogout, setIdToLogout] = useState([])
 
+    const [editButtonPopup, setEditButtonPopup] = useState(false)
+    const [respToEdit, setRespToEdit] = useState('')
+
     const [selectedForYKV, setSelectedForYKV] = useState([]);
 
     const API_URL = process.env.API_URL
@@ -30,7 +34,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
         if (propIsLoggedIn) {
             const loggedUser = JSON.parse(localStorage.getItem('loggedUser'))
             setEmail(loggedUser.email)
-            getActiveResponsibilities()
             setLoggedUser(loggedUser)
         }
       }, [propIsLoggedIn])
@@ -58,6 +61,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
             const allUsers = response.data;
             const filteredUsers = allUsers.filter(user => checkUser(user));
             setAllUsersWithKeys(filteredUsers);
+            console.log('avaimellliset', allUsersWithKeys)
         } catch (error) {
             console.error('Error fetching users with keys', error);
         }
@@ -73,10 +77,8 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
             return false
         }
         // check if a user already has an active YKV
-        if (activeResponsibilites.length === 0) {
-            return true
-        }
-        if (activeResponsibilites.includes(user)) {
+        const alreadyLoggedIn = allResponsibilities.filter(resp => resp.email === user.email && resp.present)
+        if (alreadyLoggedIn.length !== 0){
             return false
         }
         return true
@@ -229,7 +231,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
                 setAllResponsibilities(response.data)
                 const active = response.data.filter(item => item.present === true)
                 setActiveResponsibilites(active)
-                console.log(active)
             })
             .catch(error => {
                 console.error('Error fetching responsibilities', error)
@@ -309,7 +310,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     const logout_function = () => (
         <div>
             <button onClick={() => handleYkvLogout(idToLogout)} className='login-button' type='button'> YKV-uloskirjaus </button>
-            <button onClick={() => handleYkvEdit()} style={{ marginLeft: '20px' }} className='create-user-button' type='button'> Muokkaa omaa YKV-kirjausta </button>
             {buttonPopup && (
                 <Popup trigger={buttonPopup} setTrigger={setButtonPopup} active={activeResponsibilites} setIdToLogout={setIdToLogout} onSubmit={handleYkvLogout}/>
             )}
@@ -323,9 +323,14 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
                         YKV-sisäänkirjaus klo: {resp.login_time} <br />
                         <br></br>
                         {resp.username === loggedUser.username && (
-                        <button onClick={() => handleYkvEdit()} style={{ marginLeft: '20px' }} className='login-button' type='button'> Muokkaa omaa YKV-kirjausta </button>
+                <>
+                    <button onClick={() => setEditButtonPopup(true)} style={{ marginLeft: '20px' }} className='login-button' type='button'> Muokkaa omaa YKV-kirjausta </button>
+                    {editButtonPopup && (
+                        <EditPopup trigger={editButtonPopup} resp={resp} setTrigger={setEditButtonPopup} setRespToEdit={setRespToEdit} onSubmit={handleYkvEdit} />
                     )}
-                    <br /><br />
+                </>
+            )}
+            <br /><br />
                     </li>
                 ))}
             </ul>
@@ -334,8 +339,22 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
 
     // THE FOLLOWING FUNCTIONS HANDLE THE YKV-LOGIN EDITS
 
-    const handleYkvEdit = () => {
-        console.log('tähän toimintoja')
+    const handleYkvEdit = (respId, respToEdit) => {
+        console.log('resptoedit', respToEdit)
+
+        axiosClient.put(`ykv/update_responsibility/${respId}/`, respToEdit)
+            .then(response => {
+                setSuccess('YKV-muokkaus onnistui')
+                setTimeout(() => setSuccess(''), 5000)
+                getResponsibility()
+                ownYkvList()
+                getActiveResponsibilities()
+            })
+            .catch(error => {
+                setError('YKV-muokkaus epäonnistui')
+                setTimeout(() => setError(''), 5000)
+                console.error('Ykv-muokkaus epäonnistui', error)
+            })
     }
 
     return (
