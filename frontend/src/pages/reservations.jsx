@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../index.css';
 import { useStateContext } from "../context/ContextProvider.jsx";
 import axios from 'axios'; 
+import axiosClient from '../axios.js';
 
 const API_URL = process.env.API_URL
 
@@ -105,30 +106,27 @@ const MyCalendar = () => {
         id,
       };
 
-      console.log(newEvent)
-
       axios.post(`${API_URL}/api/listobjects/events/`, newEvent)
         .then(response => {
           console.log('Tapahtuma tallennettu:', response.data);
-          newEvent.id = response.data.id;
+          const updatedEvent = { ...newEvent, id: response.data.id };
+          setEvents([...events, updatedEvent]);
+          setShowModal(false);
+          setEventDetails({
+            title: '',
+            organizer: '',
+            description: '',
+            responsible: '',
+            isOpen: '',
+            room: '',
+            start: '',
+            end: '',
+            id: '',
+          });
         })
         .catch(error => {
           console.error('Virhe tapahtuman tallentamisessa:', error);
         });
-
-      setEvents([...events, newEvent]);
-      setShowModal(false);
-      setEventDetails({
-        title: '',
-        organizer: '',
-        description: '',
-        responsible: '',
-        isOpen: '',
-        room: '',
-        start: '',
-        end: '',
-        id: '',
-      });
     } else {
       alert('Täytä kaikki tiedot ennen tapahtuman lisäämistä.');
     }
@@ -137,7 +135,7 @@ const MyCalendar = () => {
   const handleDeleteEvent = (eventId) => {
     console.log(selectedEvent)
     if (eventId) {
-      axios.delete(`${API_URL}/api/events/delete_event/${eventId}/`)
+      axiosClient.delete(`${API_URL}/api/events/delete_event/${eventId}/`)
         .then(response => {
           console.log('Tapahtuma poistettu:', response.data);
           setEvents(events.filter(event => event.id !== eventId));
@@ -146,7 +144,7 @@ const MyCalendar = () => {
           console.error('Virhe tapahtuman poistamisessa:', error);
         });
     } else {
-    
+      console.log('poisto ei toimi')
     }
   };
 
