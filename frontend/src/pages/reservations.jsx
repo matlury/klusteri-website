@@ -106,7 +106,7 @@ const MyCalendar = () => {
         id,
       };
 
-      axios.post(`${API_URL}/api/listobjects/events/`, newEvent)
+      axiosClient.post(`listobjects/events/`, newEvent)
         .then(response => {
           console.log('Tapahtuma tallennettu:', response.data);
           const updatedEvent = { ...newEvent, id: response.data.id };
@@ -135,7 +135,7 @@ const MyCalendar = () => {
   const handleDeleteEvent = (eventId) => {
     console.log(selectedEvent)
     if (eventId) {
-      axiosClient.delete(`${API_URL}/api/events/delete_event/${eventId}/`)
+      axiosClient.delete(`events/delete_event/${eventId}/`)
         .then(response => {
           console.log('Tapahtuma poistettu:', response.data);
           setEvents(events.filter(event => event.id !== eventId));
@@ -144,7 +144,7 @@ const MyCalendar = () => {
           console.error('Virhe tapahtuman poistamisessa:', error);
         });
     } else {
-      console.log('poisto ei toimi')
+      console.log('ei oo id:tä')
     }
   };
 
