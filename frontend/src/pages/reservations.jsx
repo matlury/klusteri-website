@@ -78,7 +78,14 @@ const MyCalendar = () => {
   };
 
   const handleAddEvent = () => {
-    const { title, organizer, description, responsible, isOpen, room, start, end, id } = eventDetails;
+    const { title, organizer, description, responsible, isOpen, room, start, end } = eventDetails;
+    const startDate = moment(start);
+    const endDate = moment(end);
+    const duration = moment.duration(endDate.diff(startDate)).asHours();
+    if (duration > 24) {
+      alert('Varauksen kesto ei saa olla yli 24 tuntia.');
+      return;
+    }
     if (title && organizer && description && responsible && (isOpen === 'avoin' || isOpen === 'suljettu') && room && start && end) {
       
       const isRoomOccupied = events.some(event => {
@@ -197,9 +204,11 @@ const MyCalendar = () => {
           )}
           {!selectedEvent && (
             <div>
-              <p>Valitun ajanjakson tiedot:</p>
+              <p>Varauksen tiedot:</p>
+              <p style={{ color: 'grey' }}>Voit tehdä maksimissaan 24h varauksen.</p>
               <p>Alkaa: <input type="datetime-local" name="start" ref={startRef} onChange={handleInputChange} /></p>
               <p>Päättyy: <input type="datetime-local" name="end" ref={endRef} onChange={handleInputChange} /></p>
+              <p style={{ color: 'red' }}>Huomiothan yökäyttösäännöt klo 00-08.</p>
               <input
                 type="text"
                 name="title"
