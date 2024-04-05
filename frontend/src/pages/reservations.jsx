@@ -78,7 +78,7 @@ const MyCalendar = () => {
 
   const handleAddEvent = () => {
     const { title, organizer, description, responsible, isOpen, room, start, end, id } = eventDetails;
-    if (title && organizer && description && responsible && (isOpen === 'avoin' || isOpen === 'suljettu') && room && start && end && id) {
+    if (title && organizer && description && responsible && (isOpen === 'avoin' || isOpen === 'suljettu') && room && start && end) {
       
       const isRoomOccupied = events.some(event => {
         return event.room === room && (
@@ -104,6 +104,8 @@ const MyCalendar = () => {
         room,
         id,
       };
+
+      console.log(newEvent)
 
       axios.post(`${API_URL}/api/listobjects/events/`, newEvent)
         .then(response => {
