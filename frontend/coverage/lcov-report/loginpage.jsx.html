@@ -176,7 +176,8 @@
 <a name='L111'></a><a href='#L111'>111</a>
 <a name='L112'></a><a href='#L112'>112</a>
 <a name='L113'></a><a href='#L113'>113</a>
-<a name='L114'></a><a href='#L114'>114</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -267,17 +268,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -292,8 +294,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useState, useEffect } from 'react'
 import '../index.css'
 import NewAccountPage from './createpage'
-import axiosClient from "../axios.js"
-import { useStateContext } from "../context/ContextProvider.jsx"
+import axiosClient from '../axios.js'
+import { useStateContext } from '../context/ContextProvider.jsx'
 &nbsp;
 const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) =&gt; {
   const [email, setEmail] = useState('')
@@ -369,32 +371,32 @@ const handleLogin = event =&gt; {
 <span class="branch-0 cbranch-no" title="branch not covered" >        &lt;NewAccountPage /&gt;</span>
       ) : user ? (
 <span class="branch-0 cbranch-no" title="branch not covered" >        &lt;&gt;</span>
-          &lt;p&gt;Hei {user.username}!&lt;/p&gt;
-          &lt;button className="logout-button" onClick={handleLogout}&gt;Kirjaudu ulos&lt;/button&gt;
+          &lt;h5&gt;Hei {user.username}!&lt;/h5&gt;
+          &lt;button className='logout-button' onClick={handleLogout}&gt;Kirjaudu ulos&lt;/button&gt;
         &lt;/&gt;
       ) : (
         &lt;form&gt;
-          &lt;div className="form-group"&gt;
-            &lt;label htmlFor="email"&gt;Sähköposti:&lt;/label&gt;
+          &lt;h3&gt;Sisään kirjautuminen&lt;/h3&gt;
+          &lt;div className='form-group'&gt;
+            &lt;label htmlFor='email'&gt;Sähköposti:&lt;/label&gt;
             &lt;input
-              id="email"
-              className="form-control"
+              id='email'
+              type='email'
               value={email}
               onChange={(e) =&gt; setEmail(e.target.value)}
             /&gt;
           &lt;/div&gt;
-          &lt;div className="form-group"&gt;
-            &lt;label htmlFor="password"&gt;Salasana:&lt;/label&gt;
+          &lt;div className='form-group'&gt;
+            &lt;label htmlFor='password'&gt;Salasana:&lt;/label&gt;
             &lt;input
-              id="password"
-              className="form-control"
-              type="password"
+              id='password'
+              type='password'
               value={password}
               onChange={(e) =&gt; setPassword(e.target.value)}
             /&gt;
           &lt;/div&gt;
-          &lt;button className="login-button" type="submit" onClick={handleLogin}&gt;Kirjaudu sisään&lt;/button&gt;
-          &lt;button className="create-user-button" type="button" onClick={handleCreateUser}&gt;Luo uusi käyttäjä&lt;/button&gt;
+          &lt;button className='login-button' type='submit' onClick={handleLogin}&gt;Kirjaudu sisään&lt;/button&gt;
+          &lt;button className='create-user-button' type='button' onClick={handleCreateUser}&gt;Luo uusi käyttäjä&lt;/button&gt;
           {error &amp;&amp; &lt;div style={{ color: 'red' }}&gt;{error}&lt;/div&gt;}
         &lt;/form&gt;
       )}
@@ -402,14 +404,15 @@ const handleLogin = event =&gt; {
   )
 }
 &nbsp;
-export default LoginPage</pre></td></tr></table></pre>
+export default LoginPage
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-03-26T18:55:44.130Z
+                at 2024-04-05T18:51:52.321Z
             </div>
         <script src="prettify.js"></script>
         <script>
