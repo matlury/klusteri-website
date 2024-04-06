@@ -16,6 +16,7 @@ import OwnKeys from './pages/ownkeys';
 const App = () => {
   const [showLoginPage, setShowLoginPage] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [loggedUser, setLoggedUser] = useState(JSON.parse(localStorage.getItem('loggedUser')) || null)
 
   // Checks whether a user is logged in
   useEffect(() => {
@@ -103,7 +104,7 @@ const App = () => {
               <Route path="/yhteystiedot" element={<Contacts />} />
               <Route path="/saannot_ja_ohjeet" element={<Rules_and_Instructions />} />
               <Route path="/varaukset" element={<Reservations />} />
-              <Route path="/omat_avaimet" element={<OwnKeys isLoggedIn={isLoggedIn}/>} />
+              <Route path="/omat_avaimet" element={<OwnKeys isLoggedIn={isLoggedIn} loggedUser={loggedUser}/>} />
             </Routes>
           </div>
           <div className='right_content'>

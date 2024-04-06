@@ -1,8 +1,6 @@
 #blackscreen {
   background-color: #000000;
   padding: 30px;
-  border-top-left-radius: 9px;
-  border-top-right-radius: 9px;
 }
 
 #leftLogo {
@@ -21,8 +19,6 @@
   flex-wrap: wrap;
   position: sticky;
   color: #FFFFFF;
-  border-bottom-left-radius: 9px;
-  border-bottom-right-radius: 9px;
 }
 
 #ContentBlock {
@@ -110,7 +106,7 @@ ul {
 }
 
 .form-container {
-  width: 600px;
+  width: 400px;
   margin: 0 auto;
 }
 
