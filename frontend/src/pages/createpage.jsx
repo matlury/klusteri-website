@@ -97,21 +97,6 @@ const NewAccountPage = ({ onAccountCreated }) => {
     /*
     Send request to server to check if email is already in use
     */
-    const orgList = {
-      "HYK": false,
-      "Limes": false,
-      "MaO": false,
-      "Matrix": false,
-      "Meridiaani": false,
-      "Mesta": false,
-      "Moodi": false,
-      "Resonanssi": false,
-      "Spektrum": false,
-      "Synop": false,
-      "TKO-äly": false,
-      "Vasara": false,
-      "Integralis": false
-    }
 
     axios.get(`${API_URL}/api/listobjects/users/?email=${email}`)
       .then(response => {
@@ -121,7 +106,7 @@ const NewAccountPage = ({ onAccountCreated }) => {
         if (existingUsers.some(user => user.email === email)) {
           setError('Sähköposti on jo käytössä.')
         } else {
-          const userObject = { username, password, email, telegram, role: 5, keys: orgList}
+          const userObject = { username, password, email, telegram, role: 5, keys: null}
           axios.post(`${API_URL}/api/users/register`, userObject)
             .then(response => {
               console.log(response)
