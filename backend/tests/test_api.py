@@ -21,6 +21,10 @@ class TestDjangoAPI(TestCase):
             "email": "klusse.osoite@gmail.com",
             "telegram": "klussentg",
             "role": 5,
+            "keys": {
+                "TKO-äly": False,
+                "Matrix": False
+            }
         }
 
         self.client.post(
@@ -51,6 +55,10 @@ class TestDjangoAPI(TestCase):
             "email": "leppispj@gmail.com",
             "telegram": "tgleppispj",
             "role": 1,
+            "keys": {
+                "TKO-äly": True,
+                "Matrix": True
+            }
         }
 
         self.client.post(
@@ -83,6 +91,10 @@ class TestDjangoAPI(TestCase):
             "email": "muokkaus@gmail.com",
             "telegram": "muokkaus",
             "role": 3,
+            "keys": {
+                "TKO-äly": False,
+                "Matrix": True
+            }
         }
 
         self.client.post(
@@ -119,6 +131,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "domustg",
                 "role": 5,
+                "keys": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                }
             },
             format="json",
         )
@@ -139,6 +155,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "",
                 "role": 5,
+                "keys": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                }
             },
             format="json",
         )
@@ -151,6 +171,10 @@ class TestDjangoAPI(TestCase):
                 "email": "gaudium.regina@gmail.com",
                 "telegram": "",
                 "role": 5,
+                "keys": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                }
             },
             format="json",
         )
@@ -169,6 +193,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "domustg",
                 "role": 5,
+                "keys": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                }
             },
             format="json",
         )
@@ -186,6 +214,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "domustg",
                 "role": 5,
+                "keys": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                }
             },
             format="json",
         )
@@ -214,6 +246,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "klussentg",
                 "role": 5,
+                "keys": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                }
             },
             format="json",
         )
@@ -305,6 +341,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "tguser",
                 "role": 5,
+                "keys": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                }
             },
             format="json",
         )
@@ -344,6 +384,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "tguser",
                 "role": 5,
+                "keys": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                }
             },
             format="json",
         )
