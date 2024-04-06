@@ -47,7 +47,7 @@ const NewAccountPage = ({ onAccountCreated }) => {
     Check that the email is valid
     */
     if (!/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email)) {
-        setError("Viheellinen sähköposti osoite.")
+        setError('Viheellinen sähköposti osoite.')
         return
     }
 
@@ -116,13 +116,13 @@ const NewAccountPage = ({ onAccountCreated }) => {
 
               // Set timeout to hide success message after 5 seconds
               setTimeout(() => {
-                setUserCreated(false);
-              }, 5000);
+                setUserCreated(false)
+              }, 5000)
             })
             .catch(error => {
-              console.error('Error creating account:', error);
-              setError('Virhe luotaessa käyttäjää.');
-            });
+              console.error('Error creating account:', error)
+              setError('Virhe luotaessa käyttäjää.')
+            })
           setShowLoginPage(true)
         }
       })
@@ -141,73 +141,73 @@ const NewAccountPage = ({ onAccountCreated }) => {
   }
 
   const createForm = () => (
-    <form className="form-container">
-      <h2>Luo uusi käyttäjä</h2>
+    <form className='form-container'>
+      <h3>Luo uusi käyttäjä</h3>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      <div className="input-fields">
+      <div className='input-fields'>
         <div>
-        <label htmlFor="usernameInput">Käyttäjänimi:</label>
+        <label htmlFor='usernameInput'>Käyttäjänimi:</label>
           <input
-            id="usernameInput"
-            type="text"
+            id='usernameInput'
+            type='text'
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
         </div>
         <div>
-        <label htmlFor="passwordInput">Salasana:</label>
+        <label htmlFor='passwordInput'>Salasana:</label>
           <input
-            id="passwordInput"
+            id='passwordInput'
             type={showPasswords ? 'text' : 'password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
         <div>
-        <label htmlFor="confirmPasswordInput">Vahvista salasana:</label>
+        <label htmlFor='confirmPasswordInput'>Vahvista salasana:</label>
           <input
-            id="confirmPasswordInput"
+            id='confirmPasswordInput'
             type={showPasswords ? 'text' : 'password'}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
           <input
-            type="checkbox"
+            type='checkbox'
             checked={showPasswords}
             onChange={toggleShowPasswords}
           />
           Näytä salasana
         </div>
         <div>
-        <label htmlFor="emailInput">Sähköposti:</label>
+        <label htmlFor='emailInput'>Sähköposti:</label>
           <input
-            id="emailInput"
-            type="email"
+            id='emailInput'
+            type='email'
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div>
-        <label htmlFor="telegramInput">Telegram (valinnainen):</label>
+        <label htmlFor='telegramInput'>Telegram (valinnainen):</label>
           <input
-            id="telegramInput"
-            type="text"
+            id='telegramInput'
+            type='text'
             value={telegram}
             onChange={(e) => setTelegram(e.target.value)}
           />
         </div>
       </div>
-      <button className="login-button" type="button" onClick={handleBackToLogin}>
+      <button className='login-button' type='button' onClick={handleBackToLogin}>
         Takaisin
       </button>
-      <button className="create-user-button" type="button" onClick={handleCreateAccount}>
+      <button className='create-user-button' type='button' onClick={handleCreateAccount}>
         Luo käyttäjä
       </button>
     </form>
   )
 
   return (
-    <div id="right_content">{showLoginPage ? <LoginPage /> : createForm()}
+    <div id='right_content'>{showLoginPage ? <LoginPage /> : createForm()}
       {userCreated && <p style={{ color: 'green' }}>Käyttäjä luotu onnistuneesti!</p>}
     </div>
   )

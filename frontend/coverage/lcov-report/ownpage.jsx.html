@@ -527,7 +527,10 @@
 <a name='L462'></a><a href='#L462'>462</a>
 <a name='L463'></a><a href='#L463'>463</a>
 <a name='L464'></a><a href='#L464'>464</a>
-<a name='L465'></a><a href='#L465'>465</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L465'></a><a href='#L465'>465</a>
+<a name='L466'></a><a href='#L466'>466</a>
+<a name='L467'></a><a href='#L467'>467</a>
+<a name='L468'></a><a href='#L468'>468</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -794,6 +797,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -887,6 +891,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -973,6 +978,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1025,16 +1031,16 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
   const API_URL = process.env.API_URL
   // Writes down if a user is logged in
   useEffect(() =&gt; {
-    setIsLoggedIn(propIsLoggedIn);
+    setIsLoggedIn(propIsLoggedIn)
     if (propIsLoggedIn) {
-      const loggedUser = JSON.parse(localStorage.getItem('loggedUser'));
-      setUsername(loggedUser.username);
-      setEmail(loggedUser.email);
-      setTelegram(loggedUser.telegram);
-      setRole(loggedUser.role);
+      const loggedUser = JSON.parse(localStorage.getItem('loggedUser'))
+      setUsername(loggedUser.username)
+      setEmail(loggedUser.email)
+      setTelegram(loggedUser.telegram)
+      setRole(loggedUser.role)
       getOrganisations()
     }
-  }, [user || propIsLoggedIn]);
+  }, [user || propIsLoggedIn])
 &nbsp;
 &nbsp;
   // Fetches the organisations if a user is logged in
@@ -1053,8 +1059,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
       &lt;div&gt;
         Käyttäjänimi:
         &lt;input
-          id="username"
-          type="username"
+          id='username'
+          type='username'
           value={username}
           onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setUsername(e.target.value)}</span>
         /&gt;
@@ -1062,8 +1068,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
       &lt;div&gt;
         Sähköposti:
         &lt;input
-          id="email"
-          type="email"
+          id='email'
+          type='email'
           value={email}
           onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setEmail(e.target.value)}</span>
         /&gt;
@@ -1071,8 +1077,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
       &lt;div&gt;
         Telegram:
         &lt;input
-          id="telegram"
-          type="telegram"
+          id='telegram'
+          type='telegram'
           value={telegram}
           onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setTelegram(e.target.value)}</span>
         /&gt;
@@ -1091,24 +1097,24 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
         Myöntämispäivä:
       &lt;/div&gt;
       &lt;br /&gt;
-      &lt;button onClick={handleUserDetails} className="create-user-button" type="button"&gt;
+      &lt;button onClick={handleUserDetails} className='create-user-button' type='button'&gt;
         Vahvista muutokset
       &lt;/button&gt;
     &lt;/form&gt;
-  );
+  )
 &nbsp;
   // Handles the user info update when the 'Vahvista Muutokset' button is clicked and gives error messages if the new username, email or telegram are taken by some other user
   const handleUserDetails = <span class="fstat-no" title="function not covered" >(e</span>vent) =&gt; {
-<span class="cstat-no" title="statement not covered" >    event.preventDefault();</span>
+<span class="cstat-no" title="statement not covered" >    event.preventDefault()</span>
   
     const details = <span class="cstat-no" title="statement not covered" >{</span>
       username: username,
       email: email,
       telegram: telegram
-    };
+    }
   
-    const loggedUser = <span class="cstat-no" title="statement not covered" >JSON.parse(localStorage.getItem('loggedUser'));</span>
-    const user_id = <span class="cstat-no" title="statement not covered" >loggedUser.id;</span>
+    const loggedUser = <span class="cstat-no" title="statement not covered" >JSON.parse(localStorage.getItem('loggedUser'))</span>
+    const user_id = <span class="cstat-no" title="statement not covered" >loggedUser.id</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    if (!username || !email ) {</span>
 <span class="cstat-no" title="statement not covered" >      setError('Käyttäjänimi ja sähköposti ovat pakollisia kenttiä.')</span>
@@ -1138,22 +1144,22 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
     })
 &nbsp;
     function <span class="fstat-no" title="function not covered" >confirmupdate(</span>) {
-      const confirmUpdate = <span class="cstat-no" title="statement not covered" >window.confirm("Oletko varma, että haluat päivittää käyttäjätietojasi?")</span>
+      const confirmUpdate = <span class="cstat-no" title="statement not covered" >window.confirm('Oletko varma, että haluat päivittää käyttäjätietojasi?')</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      if (confirmUpdate) {</span>
 <span class="cstat-no" title="statement not covered" >        axiosClient.put(`/users/update/${user_id}/`, details)</span>
           .then(<span class="fstat-no" title="function not covered" >re</span>sponse =&gt; {
-<span class="cstat-no" title="statement not covered" >            console.log('User details updated successfully:', response.data);</span>
+<span class="cstat-no" title="statement not covered" >            console.log('User details updated successfully:', response.data)</span>
 <span class="cstat-no" title="statement not covered" >            localStorage.setItem('loggedUser', JSON.stringify(response.data))</span>
 <span class="cstat-no" title="statement not covered" >            setUser(response.data)</span>
 <span class="cstat-no" title="statement not covered" >            setSuccess('Tiedot päivitetty onnistuneesti!')</span>
 <span class="cstat-no" title="statement not covered" >            setTimeout(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setSuccess(''),</span> 5000)</span>
       })
       .catch(<span class="fstat-no" title="function not covered" >er</span>ror =&gt; {
-<span class="cstat-no" title="statement not covered" >          console.error('Error updating user details:', error);</span>
+<span class="cstat-no" title="statement not covered" >          console.error('Error updating user details:', error)</span>
         })
       } else {
-<span class="cstat-no" title="statement not covered" >        console.log("User cancelled the update.")}</span>
+<span class="cstat-no" title="statement not covered" >        console.log('User cancelled the update.')}</span>
     }
   }
 &nbsp;
@@ -1177,11 +1183,11 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
   const toggleOrgDetails = <span class="fstat-no" title="function not covered" >(o</span>rgId) =&gt; {
 <span class="cstat-no" title="statement not covered" >    setSelectedOrg(<span class="fstat-no" title="function not covered" >(p</span>revSelectedOrg) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      if (prevSelectedOrg === orgId) {</span>
-<span class="cstat-no" title="statement not covered" >        return null;</span>
+<span class="cstat-no" title="statement not covered" >        return null</span>
       }
-<span class="cstat-no" title="statement not covered" >      return orgId;</span>
-    });
-  };
+<span class="cstat-no" title="statement not covered" >      return orgId</span>
+    })
+  }
     
   // Handles the change if you click on the checkbox
   const handleCheckboxChange = <span class="fstat-no" title="function not covered" >(e</span>vent) =&gt; {
@@ -1206,15 +1212,15 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
             &lt;div&gt;
               Uusi salasana:
               &lt;input
-                id="orgPassword"
+                id='orgPassword'
                 value={orgPassword}
                 onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setNewOrgPassword(e.target.value)}</span> /&gt;
             &lt;/div&gt;
             &lt;div&gt;
               Toista uusi salasana:
               &lt;input
-                id="confirmOrgPassword"
-                type="confirmOrgPassword"
+                id='confirmOrgPassword'
+                type='confirmOrgPassword'
                 value={confirmOrgPassword}
                 onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setConfirmOrgPassword(e.target.value)}</span> /&gt;
             &lt;/div&gt;
@@ -1223,13 +1229,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
             &lt;label&gt;
               &lt;p style={{ display: 'inline-block', marginRight: '10px' }}&gt;* Nimet saa julkaista&lt;/p&gt;
               &lt;input
-                type="checkbox"
+                type='checkbox'
                 checked={isChecked}
                 onChange={handleCheckboxChange} /&gt;
             &lt;/label&gt;
           &lt;/div&gt;
           &lt;br /&gt;
-          {role === 1 &amp;&amp; &lt;button onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >handleDeleteOrganization(organization.id)}</span> className="login-button" type="button"&gt;
+          {role === 1 &amp;&amp; &lt;button onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >handleDeleteOrganization(organization.id)}</span> className='login-button' type='button'&gt;
             Poista järjestö
           &lt;/button&gt;}
         &lt;/div&gt;
@@ -1242,70 +1248,71 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
   const handleDeleteOrganization = <span class="fstat-no" title="function not covered" >(o</span>rgId) =&gt; {
 <span class="cstat-no" title="statement not covered" >    axiosClient.delete(`/organizations/remove/${orgId}/`)</span>
         .then(<span class="fstat-no" title="function not covered" >re</span>sponse =&gt; {
-<span class="cstat-no" title="statement not covered" >          console.log('Organization deleted successfully:', response.data);</span>
-<span class="cstat-no" title="statement not covered" >          getOrganisations();</span>
+<span class="cstat-no" title="statement not covered" >          console.log('Organization deleted successfully:', response.data)</span>
+<span class="cstat-no" title="statement not covered" >          getOrganisations()</span>
 <span class="cstat-no" title="statement not covered" >          setSuccess('Järjestö poistettu onnistuneesti!')</span>
 <span class="cstat-no" title="statement not covered" >            setTimeout(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setSuccess(''),</span> 5000)</span>
         })
         .catch(<span class="fstat-no" title="function not covered" >er</span>ror =&gt; {
-<span class="cstat-no" title="statement not covered" >          console.error('Error deleting organization:', error);</span>
+<span class="cstat-no" title="statement not covered" >          console.error('Error deleting organization:', error)</span>
         })
   }
 &nbsp;
   //  Organization list 
   const organisationPage = () =&gt; (
     &lt;div&gt;
+      &lt;p&gt;&lt;/p&gt;
       &lt;h2&gt;Järjestöt&lt;/h2&gt;
       &lt;ul style={{ listStyleType: 'none', padding: 0 }}&gt;
         {organisations.map(<span class="fstat-no" title="function not covered" >or</span>g =&gt; (
 <span class="cstat-no" title="statement not covered" >          &lt;li key={org.id}&gt;</span>
             {org.name}  
-            &lt;button className= "login-button" onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >toggleOrgDetails(org.id)}</span>&gt;View&lt;/button&gt;
+            &lt;button className= 'login-button' onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >toggleOrgDetails(org.id)}</span>&gt;View&lt;/button&gt;
             {renderOrganizationDetails(org.id)}
           &lt;/li&gt;
         ))}
       &lt;/ul&gt;
     &lt;/div&gt;
-  );
+  )
 &nbsp;
   // Form for organization creation
   const createOrganization = () =&gt; (
     &lt;form&gt;
-      &lt;h2&gt;Luo uusi järjestö&lt;/h2&gt;
+      &lt;h4&gt;Luo uusi järjestö&lt;/h4&gt;
         &lt;div&gt;
           Järjestön nimi:
           &lt;input
-            type="text"
-            id="name"
+            type='text'
+            id='name'
             value={organization_name}
             onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setOrganizationName(e.target.value)}</span>/&gt;
         &lt;/div&gt;
         &lt;div&gt;
           Sähköposti:
           &lt;input
-            type="text"
-            id= "email"
+            type='text'
+            id= 'email'
             value={organization_email}
             onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setOrganizationEmail(e.target.value)}</span>/&gt;
         &lt;/div&gt;
         &lt;div&gt;
           Kotisivut:
           &lt;input
-          type="text"
-          id= "homepage"
+          type='text'
+          id= 'homepage'
           value={organization_homepage}
           onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setOrganizationHomePage(e.target.value)}</span> /&gt;
         &lt;/div&gt;
         &lt;div&gt;
           Koko:
           &lt;input
-          type= "text"
-          id= "size"
+          type= 'text'
+          id= 'size'
           value={organization_size}
           onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setOrganizationSize(e.target.value)}</span>/&gt;
         &lt;/div&gt;
         &lt;br /&gt;
-      &lt;button className="create-user-button" type="button" onClick={handleCreateOrganization}&gt;
+      &lt;button className='create-user-button' type='button' onClick={handleCreateOrganization}&gt;
         Luo järjestö
       &lt;/button&gt;
     &lt;/form&gt;
@@ -1337,8 +1344,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
 &nbsp;
             })
             .catch(<span class="fstat-no" title="function not covered" >er</span>ror =&gt; {
-<span class="cstat-no" title="statement not covered" >              console.error('Error creating account:', error);</span>
-            });
+<span class="cstat-no" title="statement not covered" >              console.error('Error creating account:', error)</span>
+            })
         }
       })
       .catch(<span class="fstat-no" title="function not covered" >er</span>ror =&gt; {
@@ -1351,12 +1358,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
 &nbsp;
   const showAllUsers = () =&gt; (
     &lt;div&gt;
-      &lt;h2&gt;Käyttäjät&lt;/h2&gt;
+      &lt;p&gt;&lt;/p&gt;
+      &lt;h4&gt;Käyttäjät&lt;/h4&gt;
       &lt;ul style={{ listStyleType: 'none', padding: 0 }}&gt;
         {allUsers.map(<span class="fstat-no" title="function not covered" >us</span>er =&gt; (
 <span class="cstat-no" title="statement not covered" >          &lt;li key={user.id}&gt;</span>
-            {user.username}  
-            &lt;button className= "login-button" onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >toggleUserDetails(user.id)}</span>&gt;View&lt;/button&gt;
+            {user.username}
+            &lt;button className= 'login-button' onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >toggleUserDetails(user.id)}</span>&gt;View&lt;/button&gt;
             {renderUserDetails(user.id)}
           &lt;/li&gt;
         ))}
@@ -1379,10 +1387,10 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
   const toggleUserDetails = <span class="fstat-no" title="function not covered" >(u</span>serId) =&gt; {
 <span class="cstat-no" title="statement not covered" >    setSelectedUser(<span class="fstat-no" title="function not covered" >(p</span>revSelectedUser) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      if (prevSelectedUser === userId) {</span>
-<span class="cstat-no" title="statement not covered" >        return null;</span>
+<span class="cstat-no" title="statement not covered" >        return null</span>
       }
-<span class="cstat-no" title="statement not covered" >      return userId;</span>
-    });
+<span class="cstat-no" title="statement not covered" >      return userId</span>
+    })
   }
 &nbsp;
   const renderUserDetails = <span class="fstat-no" title="function not covered" >us</span>erId =&gt; {
@@ -1395,7 +1403,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
           &lt;p&gt;Rooli: {user.role}&lt;/p&gt;
           &lt;p&gt;Sähköposti: {user.email}&lt;/p&gt;
           &lt;br&gt;&lt;/br&gt;
-          {role === 1 &amp;&amp; &lt;button onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >handlePJChange(user.id)}</span> className="change-pj-button" type="button"&gt;
+          {role === 1 &amp;&amp; &lt;button onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >handlePJChange(user.id)}</span> className='change-pj-button' type='button'&gt;
             Siirrä PJ-oikeudet
           &lt;/button&gt;}
           &lt;p&gt;&lt;/p&gt;
@@ -1413,12 +1421,12 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
 <span class="cstat-no" title="statement not covered" >    confirmupdate()</span>
 &nbsp;
     function <span class="fstat-no" title="function not covered" >confirmupdate(</span>) {
-      const confirmUpdate = <span class="cstat-no" title="statement not covered" >window.confirm("Oletko varma, että haluat siirtää PJ-oikeudet?")</span>
+      const confirmUpdate = <span class="cstat-no" title="statement not covered" >window.confirm('Oletko varma, että haluat siirtää PJ-oikeudet?')</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      if (confirmUpdate) {</span>
 <span class="cstat-no" title="statement not covered" >        axiosClient.put(`/users/update/${selectedUserId}/`, {role: 1})</span>
           .then(<span class="fstat-no" title="function not covered" >re</span>sponse =&gt; {
-<span class="cstat-no" title="statement not covered" >            console.log('Role updated successfully:', response.data);</span>
+<span class="cstat-no" title="statement not covered" >            console.log('Role updated successfully:', response.data)</span>
       })
 <span class="cstat-no" title="statement not covered" >        axiosClient.put(`/users/update/${loggedUserId}/`, {role: 5})</span>
           .then(<span class="fstat-no" title="function not covered" >re</span>sponse =&gt; {
@@ -1429,10 +1437,10 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
 <span class="cstat-no" title="statement not covered" >            setTimeout(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setSuccess(''),</span> 5000)</span>
         })
       .catch(<span class="fstat-no" title="function not covered" >er</span>ror =&gt; {
-<span class="cstat-no" title="statement not covered" >          console.error('Error updating user details:', error);</span>
+<span class="cstat-no" title="statement not covered" >          console.error('Error updating user details:', error)</span>
         })
       } else {
-<span class="cstat-no" title="statement not covered" >        console.log("User cancelled the update.")}</span>
+<span class="cstat-no" title="statement not covered" >        console.log('User cancelled the update.')}</span>
     }
   }
 &nbsp;
@@ -1440,8 +1448,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
     &lt;div&gt;
       {!isLoggedIn &amp;&amp; &lt;p&gt;Kirjaudu sisään muokataksesi tietoja&lt;/p&gt;}
       {isLoggedIn &amp;&amp; (
-        &lt;div id="left_content"&gt;
-          &lt;div id="leftleft_content"&gt;
+        &lt;div id='left_content'&gt;
+          &lt;div id='leftleft_content'&gt;
             {error &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >&lt;p style={{ color: 'red' }}&gt;{error}&lt;/p&gt;}</span>
             {success &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >&lt;p style={{ color: 'green' }}&gt;{success}&lt;/p&gt;}</span>
             {userPage()}
@@ -1455,14 +1463,15 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) =&gt; {
   )
 }
 &nbsp;
-export default OwnPage</pre></td></tr></table></pre>
+export default OwnPage
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-03-26T18:55:44.130Z
+                at 2024-04-05T18:51:52.321Z
             </div>
         <script src="prettify.js"></script>
         <script>
