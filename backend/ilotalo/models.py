@@ -2,13 +2,13 @@
 Models define what kind of objects can be stored in the database
 """
 
+from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
     PermissionsMixin,
     BaseUserManager,
 )
-from datetime import datetime
 
 
 class Organization(models.Model):
@@ -30,16 +30,21 @@ class UserAccountManager(BaseUserManager):
         - get_by_natural_key(username): retreives a user's data using USERNAME_FIELD
     """
 
-    def create_user(self, username, password, email, telegram, role):
+    def create_user(self, username, password, email, telegram, role, keys):
         """Create a new User object"""
         email = self.normalize_email(email)
         email = email.lower()
+
+        if keys is None:
+            keys = give_keys()
+
         user = self.model(
             username=username,
             password=password,
             email=email,
             telegram=telegram,
             role=role,
+            keys=keys
         )
 
         # Hash the password and save the User object
@@ -47,6 +52,30 @@ class UserAccountManager(BaseUserManager):
         user.save()
 
         return user
+
+def give_keys():
+    """
+    Set a Users "keys" field when creating a new instance.
+    Returns a dict containing each Matlu organization.
+    """
+
+    org_list = {
+      "HYK": False,
+      "Limes": False,
+      "MaO": False,
+      "Matrix": False,
+      "Meridiaani": False,
+      "Mesta": False,
+      "Moodi": False,
+      "Resonanssi": False,
+      "Spektrum": False,
+      "Synop": False,
+      "TKO-äly": False,
+      "Vasara": False,
+      "Integralis": False
+    }
+    
+    return org_list
 
 class User(AbstractBaseUser, PermissionsMixin):
     """
@@ -68,6 +97,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     # many-to-many relationship links User model and Organization model
     organization = models.ManyToManyField(Organization, related_name="organization")
+    keys = models.JSONField(default=dict, null=True)
 
     objects = UserAccountManager()
 
