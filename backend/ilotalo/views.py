@@ -144,7 +144,7 @@ class UpdateUserView(APIView):
                 return Response("User not found", status=status.HTTP_404_NOT_FOUND)
             
             if user_to_update.role in [AVAIMELLINEN, TAVALLINEN]:
-                # Check if users belong to the same organization
+                # Check if user Muokkaus and the user being edited belong to the same organization
                 if request.user.organization.filter(id__in=user_to_update.organization.all()).exists():
                     user = UserUpdateSerializer(
                         instance=user_to_update, data=request.data, partial=True
