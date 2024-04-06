@@ -359,7 +359,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
 
     return (
         <div id='left_content'>
-            {!isLoggedIn && <p>Kirjaudu sisään muokataksesi tietoja</p>}
+            {!isLoggedIn && <h3>Kirjaudu sisään</h3>}
             {isLoggedIn && (
                 <div id='leftleft_content'>
                     {error && <p style={{ color: 'red' }}>{error}</p>}

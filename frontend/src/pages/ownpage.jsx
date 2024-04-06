@@ -3,6 +3,7 @@ import { useStateContext } from '../context/ContextProvider'
 import axios from 'axios'
 import axiosClient from '../axios.js'
 import '../index.css'
+import { FaKey } from 'react-icons/fa'
 
 const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const { user, setUser } = useStateContext()
@@ -24,6 +25,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   const [allUsers, setAllUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState(null)
+  const [selectedOrganization, setSelectedOrganization] = useState(null)
 
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn)
   const [error, setError] = useState('')
@@ -215,13 +217,14 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
               <input
                 id='orgPassword'
                 value={orgPassword}
+                type='password'
                 onChange={(e) => setNewOrgPassword(e.target.value)} />
             </div>
             <div>
               Toista uusi salasana:
               <input
                 id='confirmOrgPassword'
-                type='confirmOrgPassword'
+                type='password'
                 value={confirmOrgPassword}
                 onChange={(e) => setConfirmOrgPassword(e.target.value)} />
             </div>
@@ -445,18 +448,81 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
   }
 
+  const handleKeySubmit = (event) => {
+    event.preventDefault()
+    //Ei tee mitään vielä
+  }
+
+  const handleSelectUser = (event) => {
+    setSelectedUser(event.target.value)
+  }
+
+  const handleSelectOrganization = (event) => {
+    setSelectedOrganization(event.target.value)
+  }
+
   return (
     <div>
-      {!isLoggedIn && <p>Kirjaudu sisään muokataksesi tietoja</p>}
+      {!isLoggedIn && <h3>Kirjaudu sisään</h3>}
       {isLoggedIn && (
-        <div id='left_content'>
-          <div id='leftleft_content'>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {success && <p style={{ color: 'green' }}>{success}</p>}
-            {userPage()}
-            {organisationPage()}
-            {role === 1 && createOrganization()}
-            {role === 1 && showAllUsers()}
+        <div>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+          {success && <p style={{ color: 'green' }}>{success}</p>}
+          <div style={{ display: 'flex' }}>
+            <div id='left_content'>
+              <div id='leftleft_content'>
+                {userPage()}
+                {organisationPage()}
+                {role === 1 && createOrganization()}
+                {role === 1 && showAllUsers()}
+              </div>
+            </div>
+            {role === 1 && (
+              <div id='centered_content'>
+                <div id='content'>
+                  <h2>Avaimen luovutus</h2>
+                  <form onSubmit={handleKeySubmit}>
+                  <div style={{ height: '20px' }}></div>
+                  <div>
+                      <label htmlFor='selectedUser'>Kenelle avain luovutetaan:</label>
+                      <select
+                        id='selectedUser'
+                        name='selectedUser'
+                        value={selectedUser}
+                        onChange={handleSelectUser}
+                        className='select-box'
+                      >
+                        {allUsers.map(user => (
+                          <option key={user.id} value={user.id}>
+                            {user.username}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div style={{ height: '20px' }}></div>
+                    <div>
+                      <label htmlFor='selectedOrganization'>Minkä järjestön avain luovutetaan:</label>
+                      <select
+                        id='selectedOrganization'
+                        name='selectedOrganization'
+                        value={selectedOrganization}
+                        onChange={handleSelectOrganization}
+                        className='select-box'
+                      >
+                        <option value="organization1">Järjestö 1</option>
+                        <option value="organization2">Järjestö 2</option>
+                        <option value="organization3">Järjestö 3</option>
+                      </select>
+                    </div>
+                    <div style={{ height: '20px' }}></div>
+                    <button type='submit' className='create-user-button'>
+                      Luovuta
+                      <FaKey style={{ marginLeft: '5px' }} />
+                    </button>
+                  </form>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -6,6 +6,8 @@
 #leftLogo {
   width: 200px;
   height: 100px;
+  display: block;
+  margin: 0 auto;
 }
 
 #nav {
@@ -295,4 +297,28 @@ input[type="username"] {
   color: #fff;
   border-radius: .75em;
   padding: 7px 7px
+}
+
+#content {
+  position: relative;
+  top: 0;
+}
+
+#centered_content {
+  flex: 1; 
+  height: 300px;
+  display: block; 
+  margin-left: 90px;
+  border: 5px solid #b3b7bb;
+  border-style: solid;
+  border-radius: 9px;
+  border-width: thin ;
+}
+
+.select-box {
+  background-color: #f2f2f2;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 5px 10px;
+  width: 40%;
 }
