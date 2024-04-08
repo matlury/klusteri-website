@@ -461,6 +461,23 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     setSelectedOrganization(event.target.value)
   }
 
+  const hasPermission = async () => {
+    /*
+    Check if the logged user has permissions for something
+    This prevents harm caused by localstorage manipulation
+    */
+
+    const accessToken = localStorage.getItem('ACCESS_TOKEN')
+    const currentUser = await axios.get('api/users/userinfo', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+    .then(response => response.data)
+
+    return currentUser.role === 1
+  }
+
   return (
     <div>
       {!isLoggedIn && <h3>Kirjaudu sisään</h3>}
