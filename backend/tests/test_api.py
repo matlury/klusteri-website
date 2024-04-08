@@ -21,6 +21,10 @@ class TestDjangoAPI(TestCase):
             "email": "klusse.osoite@gmail.com",
             "telegram": "klussentg",
             "role": 5,
+            "keys": {
+                "TKO-äly": False,
+                "Matrix": False
+            }
         }
 
         response = self.client.post(
@@ -52,6 +56,7 @@ class TestDjangoAPI(TestCase):
             "email": "leppispj@gmail.com",
             "telegram": "tgleppispj",
             "role": 1,
+            "keys": None
         }
 
         response = self.client.post(
@@ -84,6 +89,10 @@ class TestDjangoAPI(TestCase):
             "email": "muokkaus@gmail.com",
             "telegram": "muokkaus",
             "role": 3,
+            "keys": {
+                "TKO-äly": False,
+                "Matrix": True
+            }
         }
 
         response = self.client.post(
@@ -144,6 +153,12 @@ class TestDjangoAPI(TestCase):
         self.avaimellinen_user = self.muokkaus
         self.user_count = 4
 
+    def test_user_has_correct_key_list(self):
+        """A new user receives a list of Matlu organizations for key management"""
+
+        self.assertEqual(len(self.leppispj["keys"]), 13)
+        self.assertEqual(list(self.leppispj["keys"].keys()).index("HYK"), 0)
+
     def test_creating_user(self):
         """A new user can be created if the parameters are valid"""
 
@@ -155,6 +170,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "domustg",
                 "role": 5,
+                "keys": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                }
             },
             format="json",
         )
@@ -175,6 +194,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "",
                 "role": 5,
+                "keys": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                }
             },
             format="json",
         )
@@ -187,6 +210,10 @@ class TestDjangoAPI(TestCase):
                 "email": "gaudium.regina@gmail.com",
                 "telegram": "",
                 "role": 5,
+                "keys": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                }
             },
             format="json",
         )
@@ -205,6 +232,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "domustg",
                 "role": 5,
+                "keys": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                }
             },
             format="json",
         )
@@ -222,6 +253,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "domustg",
                 "role": 5,
+                "keys": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                }
             },
             format="json",
         )
@@ -250,6 +285,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "klussentg",
                 "role": 5,
+                "keys": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                }
             },
             format="json",
         )
@@ -341,6 +380,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "tguser",
                 "role": 5,
+                "keys": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                }
             },
             format="json",
         )
@@ -380,6 +423,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "tguser",
                 "role": 5,
+                "keys": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                }
             },
             format="json",
         )
@@ -1238,6 +1285,23 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(ykv_created.data["responsible_for"], "kutsutut vieraat")
+
+        current_time = datetime.now()
+        logout_time = current_time.replace(hour=7, minute=0)
+
+        # attempt changing the email address to an invalid one
+        ykv_id = ykv_created.data['id']
+        response = self.client.put(
+            f"http://localhost:8000/api/ykv/logout_responsibility/{ykv_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "email": "badaddress@",
+                "logout_time": logout_time.strftime("%Y-%m-%d %H:%M")
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_ykv_notfound(self):
         # try to update ykv that don't exist
