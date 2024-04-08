@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import moment from 'moment';
-import 'moment/locale/fi';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { Modal, Button } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import '../index.css';
-import { useStateContext } from "../context/ContextProvider.jsx";
-import axios from 'axios'; 
-import axiosClient from '../axios.js';
+import React, { useState, useEffect, useRef } from 'react'
+import { Calendar, momentLocalizer } from 'react-big-calendar'
+import moment from 'moment'
+import 'moment/locale/fi'
+import 'react-big-calendar/lib/css/react-big-calendar.css'
+import { Modal, Button } from 'react-bootstrap'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import '../index.css'
+import { useStateContext } from "../context/ContextProvider.jsx"
+import axiosClient from '../axios.js'
 
 const API_URL = process.env.API_URL
 
@@ -16,19 +15,19 @@ moment.updateLocale('fi', {
   week: {
     dow: 1, 
   },
-});
+})
 
-const localizer = momentLocalizer(moment);
+const localizer = momentLocalizer(moment)
 
-moment.locale('fi');
+moment.locale('fi')
 
 const MyCalendar = () => {
   const [events, setEvents] = useState(() => {
-    const storedEvents = localStorage.getItem('events');
-    return storedEvents ? JSON.parse(storedEvents) : [];
-  });
-  const [selectedSlot, setSelectedSlot] = useState(null);
-  const [selectedEvent, setSelectedEvent] = useState(null);
+    const storedEvents = localStorage.getItem('events')
+    return storedEvents ? JSON.parse(storedEvents) : []
+  })
+  const [selectedSlot, setSelectedSlot] = useState(null)
+  const [selectedEvent, setSelectedEvent] = useState(null)
   const [eventDetails, setEventDetails] = useState({
     title: '',
     organizer: '',
@@ -39,52 +38,53 @@ const MyCalendar = () => {
     start: '',
     end: '',
     id: '',
-  });
+  })
   
-  const [showModal, setShowModal] = useState(false);
-  const { user } = useStateContext(); 
+  const [showModal, setShowModal] = useState(false)
+  const { user } = useStateContext()
 
   useEffect(() => {
-    localStorage.setItem('events', JSON.stringify(events));
-  }, [events]);
+    localStorage.setItem('events', JSON.stringify(events))
+  }, [events])
 
-  const startRef = useRef(null);
-  const endRef = useRef(null);
+  const startRef = useRef(null)
+  const endRef = useRef(null)
 
   const handleSelectSlot = ({ start, end }) => {
     if (user) {
-      setSelectedSlot({ start, end });
-      setShowModal(true);
+      setSelectedSlot({ start, end })
+      setShowModal(true)
     } else {
-      alert('Sinun täytyy kirjautua sisään lisätäksesi tapahtuman.');
+      alert('Sinun täytyy kirjautua sisään lisätäksesi tapahtuman.')
     }
-  };
+  }
 
   useEffect(() => {
     if (showModal && selectedSlot) {
-      startRef.current.value = moment(selectedSlot.start).format('YYYY-MM-DDTHH:mm');
-      endRef.current.value = moment(selectedSlot.end).format('YYYY-MM-DDTHH:mm');
+      startRef.current.value = moment(selectedSlot.start).format('YYYY-MM-DDTHH:mm')
+      endRef.current.value = moment(selectedSlot.end).format('YYYY-MM-DDTHH:mm')
     }
-  }, [showModal, selectedSlot]);
+  }, [showModal, selectedSlot])
 
   const handleSelectEvent = (event) => {
-    setSelectedEvent(event);
-    setShowModal(true);
-  };
+    setSelectedEvent(event)
+    setShowModal(true)
+  }
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setEventDetails({ ...eventDetails, [name]: value });
-  };
+    setEventDetails({ ...eventDetails, [name]: value })
+  }
 
   const handleAddEvent = () => {
     const { title, organizer, description, responsible, isOpen, room, start, end, id } = eventDetails;
     const startDate = moment(start);
     const endDate = moment(end);
     const duration = moment.duration(endDate.diff(startDate)).asHours();
+
     if (duration > 24) {
-      alert('Varauksen kesto ei saa olla yli 24 tuntia.');
-      return;
+      alert('Varauksen kesto ei voi olla yli 24 tuntia.')
+      return
     }
     if (title && organizer && description && responsible && (isOpen === 'avoin' || isOpen === 'suljettu') && room && start && end) {
       
@@ -93,12 +93,12 @@ const MyCalendar = () => {
           (moment(start).isSameOrAfter(event.start) && moment(start).isBefore(event.end)) ||
           (moment(end).isSameOrAfter(event.start) && moment(end).isBefore(event.end)) ||
           (moment(start).isBefore(event.start) && moment(end).isSameOrAfter(event.end))
-        );
-      });
+        )
+      })
 
       if (isRoomOccupied) {
-        alert('Huone on jo varattu valitulle ajankohdalle.');
-        return;
+        alert('Huone on jo varattu valitulle ajankohdalle.')
+        return
       }
 
       const newEvent = {
@@ -111,14 +111,14 @@ const MyCalendar = () => {
         isOpen,
         room,
         id,
-      };
+      }
 
       axiosClient.post(`listobjects/events/`, newEvent)
         .then(response => {
-          console.log('Tapahtuma tallennettu:', response.data);
-          const updatedEvent = { ...newEvent, id: response.data.id };
-          setEvents([...events, updatedEvent]);
-          setShowModal(false);
+          console.log('Tapahtuma tallennettu:', response.data)
+          const updatedEvent = { ...newEvent, id: response.data.id }
+          setEvents([...events, updatedEvent])
+          setShowModal(false)
           setEventDetails({
             title: '',
             organizer: '',
@@ -129,35 +129,35 @@ const MyCalendar = () => {
             start: '',
             end: '',
             id: '',
-          });
+          })
         })
         .catch(error => {
-          console.error('Virhe tapahtuman tallentamisessa:', error);
-        });
+          console.error('Virhe tapahtuman tallentamisessa:', error)
+        })
     } else {
-      alert('Täytä kaikki tiedot ennen tapahtuman lisäämistä.');
+      alert('Täytä kaikki tiedot ennen tapahtuman lisäämistä.')
     }
-  };
+  }
 
   const handleDeleteEvent = (eventId) => {
     console.log(selectedEvent)
     if (eventId) {
       axiosClient.delete(`events/delete_event/${eventId}/`)
         .then(response => {
-          console.log('Tapahtuma poistettu:', response.data);
-          setEvents(events.filter(event => event.id !== eventId));
+          console.log('Tapahtuma poistettu:', response.data)
+          setEvents(events.filter(event => event.id !== eventId))
         })
         .catch(error => {
-          console.error('Virhe tapahtuman poistamisessa:', error);
-        });
+          console.error('Virhe tapahtuman poistamisessa:', error)
+        })
     } else {
-      console.log('ei oo id:tä')
+      console.log('ei id:tä')
     }
-  };
+  }
 
   const handleCloseModal = () => {
-    setShowModal(false);
-  };
+    setShowModal(false)
+  }
 
   return (
     <div className="textbox">
@@ -185,7 +185,6 @@ const MyCalendar = () => {
         })}
       />
       
-      
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>{selectedEvent ? selectedEvent.title : 'Lisää tapahtuma'}</Modal.Title>
@@ -205,52 +204,55 @@ const MyCalendar = () => {
           {!selectedEvent && (
             <div>
               <p>Varauksen tiedot:</p>
-              <p style={{ color: 'grey' }}>Voit tehdä maksimissaan 24h varauksen.</p>
+              <p style={{ color: 'grey' }}>Voit tehdä enimmillään 24 tunnin varauksen.</p>
               <p>Alkaa: <input type="datetime-local" name="start" ref={startRef} onChange={handleInputChange} /></p>
               <p>Päättyy: <input type="datetime-local" name="end" ref={endRef} onChange={handleInputChange} /></p>
-              <p style={{ color: 'red' }}>Huomiothan yökäyttösäännöt klo 00-08.</p>
+              <p style={{ color: 'red' }}>Huomioithan yökäyttösäännöt klo 00-08.</p>
               <input
-                type="text"
                 name="title"
                 placeholder="Tapahtuman nimi"
                 value={eventDetails.title}
                 onChange={handleInputChange}
+                style={{ width: '100%', borderRadius: '5px'}}
               />
+              <p></p>
               <input
-                type="text"
                 name="organizer"
                 placeholder="Järjestäjä"
                 value={eventDetails.organizer}
                 onChange={handleInputChange}
+                style={{ width: '100%', borderRadius: '5px'}}
               />
+              <p></p>
               <input
-                type="text"
                 name="responsible"
                 placeholder="Vastuuhenkilö"
                 value={eventDetails.responsible}
                 onChange={handleInputChange}
-                />
-                <textarea
-                  name="description"
-                  placeholder="Tapahtuman kuvaus"
-                  value={eventDetails.description}
-                  onChange={handleInputChange}
-                  style={{ width: '100%', height: '100px' }}
-                />
-                <select name="isOpen" value={eventDetails.isOpen} onChange={handleInputChange}>
-                <option value="tyhjä">Valitse avoimuus</option>
-                  <option value="avoin">Avoin tapahtuma</option>
-                  <option value="suljettu">Vain jäsenille</option>
-                </select>
-                <select name="room" value={eventDetails.room} onChange={handleInputChange}>
-                <option value="tyhjä">Valitse huone</option>
-                  <option value="Kokoushuone">Kokoushuone</option>
-                  <option value="Kerhotila">Kerhotila</option>
-                  <option value="Oleskelutila">Oleskelutila</option>
-                  <option value="ChristinaRegina">ChristinaRegina</option>
-                </select>
-              </div>
-            )}
+                style={{ width: '100%', borderRadius: '5px'}}
+              />
+              <p></p>
+              <textarea
+                name="description"
+                placeholder="Tapahtuman kuvaus"
+                value={eventDetails.description}
+                onChange={handleInputChange}
+                style={{ width: '100%', height: '100px', borderRadius: '5px'}}
+              />
+              <select name="isOpen" value={eventDetails.isOpen} onChange={handleInputChange}>
+              <option value="tyhjä">Valitse avoimuus</option>
+                <option value="avoin">Avoin tapahtuma</option>
+                <option value="suljettu">Vain jäsenille</option>
+              </select>
+              <select name="room" value={eventDetails.room} onChange={handleInputChange}>
+              <option value="tyhjä">Valitse huone</option>
+                <option value="Kokoushuone">Kokoushuone</option>
+                <option value="Kerhotila">Kerhotila</option>
+                <option value="Oleskelutila">Oleskelutila</option>
+                <option value="ChristinaRegina">ChristinaRegina</option>
+              </select>
+            </div>
+          )}
           </Modal.Body>
           <Modal.Footer>
             {selectedEvent && (
@@ -269,8 +271,8 @@ const MyCalendar = () => {
           </Modal.Footer>
         </Modal>
       </div>
-    );
-  };
+    )
+  }
   
-  export default MyCalendar;
+  export default MyCalendar
   

@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50.66% </span>
+                <span class="strong">51.35% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>38/75</span>
+                <span class='fraction'>38/74</span>
             </div>
         
             
@@ -542,7 +542,7 @@ const NewAccountPage = ({ onAccountCreated }) =&gt; {
     Check that the email is valid
     */
     <span class="missing-if-branch" title="if path not taken" >I</span>if (!/^[a-zA-Z0-9.!#$%&amp;'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email)) {
-<span class="cstat-no" title="statement not covered" >        setError("Viheellinen sähköposti osoite.")</span>
+<span class="cstat-no" title="statement not covered" >        setError('Viheellinen sähköposti osoite.')</span>
 <span class="cstat-no" title="statement not covered" >        return</span>
     }
 &nbsp;
@@ -567,7 +567,7 @@ const NewAccountPage = ({ onAccountCreated }) =&gt; {
     /*
     Check if telegram is provided and unique
     */
-<span class="cstat-no" title="statement not covered" >    if (telegram) {const { user, setUser } = <span class="cstat-no" title="statement not covered" >useStateContext()</span></span>
+<span class="cstat-no" title="statement not covered" >    if (telegram) {</span>
 <span class="cstat-no" title="statement not covered" >      axios.get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`)</span>
         .then(<span class="fstat-no" title="function not covered" >re</span>sponse =&gt; {
           const existingUsers = <span class="cstat-no" title="statement not covered" >response.data</span>
@@ -610,13 +610,13 @@ const NewAccountPage = ({ onAccountCreated }) =&gt; {
 &nbsp;
               // Set timeout to hide success message after 5 seconds
 <span class="cstat-no" title="statement not covered" >              setTimeout(<span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >                setUserCreated(false);</span>
-              }, 5000);
+<span class="cstat-no" title="statement not covered" >                setUserCreated(false)</span>
+              }, 5000)
             })
             .catch(<span class="fstat-no" title="function not covered" >er</span>ror =&gt; {
-<span class="cstat-no" title="statement not covered" >              console.error('Error creating account:', error);</span>
-<span class="cstat-no" title="statement not covered" >              setError('Virhe luotaessa käyttäjää.');</span>
-            });
+<span class="cstat-no" title="statement not covered" >              console.error('Error creating account:', error)</span>
+<span class="cstat-no" title="statement not covered" >              setError('Virhe luotaessa käyttäjää.')</span>
+            })
 <span class="cstat-no" title="statement not covered" >          setShowLoginPage(true)</span>
         }
       })
@@ -635,73 +635,73 @@ const NewAccountPage = ({ onAccountCreated }) =&gt; {
   }
 &nbsp;
   const createForm = () =&gt; (
-    &lt;form className="form-container"&gt;
-      &lt;h2&gt;Luo uusi käyttäjä&lt;/h2&gt;
+    &lt;form className='form-container'&gt;
+      &lt;h3&gt;Luo uusi käyttäjä&lt;/h3&gt;
       {error &amp;&amp; &lt;p style={{ color: 'red' }}&gt;{error}&lt;/p&gt;}
-      &lt;div className="input-fields"&gt;
+      &lt;div className='input-fields'&gt;
         &lt;div&gt;
-        &lt;label htmlFor="usernameInput"&gt;Käyttäjänimi:&lt;/label&gt;
+        &lt;label htmlFor='usernameInput'&gt;Käyttäjänimi:&lt;/label&gt;
           &lt;input
-            id="usernameInput"
-            type="text"
+            id='usernameInput'
+            type='text'
             value={username}
             onChange={(e) =&gt; setUsername(e.target.value)}
           /&gt;
         &lt;/div&gt;
         &lt;div&gt;
-        &lt;label htmlFor="passwordInput"&gt;Salasana:&lt;/label&gt;
+        &lt;label htmlFor='passwordInput'&gt;Salasana:&lt;/label&gt;
           &lt;input
-            id="passwordInput"
+            id='passwordInput'
             type={showPasswords ? <span class="branch-0 cbranch-no" title="branch not covered" >'text' </span>: 'password'}
             value={password}
             onChange={(e) =&gt; setPassword(e.target.value)}
           /&gt;
         &lt;/div&gt;
         &lt;div&gt;
-        &lt;label htmlFor="confirmPasswordInput"&gt;Vahvista salasana:&lt;/label&gt;
+        &lt;label htmlFor='confirmPasswordInput'&gt;Vahvista salasana:&lt;/label&gt;
           &lt;input
-            id="confirmPasswordInput"
+            id='confirmPasswordInput'
             type={showPasswords ? <span class="branch-0 cbranch-no" title="branch not covered" >'text' </span>: 'password'}
             value={confirmPassword}
             onChange={(e) =&gt; setConfirmPassword(e.target.value)}
           /&gt;
           &lt;input
-            type="checkbox"
+            type='checkbox'
             checked={showPasswords}
             onChange={toggleShowPasswords}
           /&gt;
           Näytä salasana
         &lt;/div&gt;
         &lt;div&gt;
-        &lt;label htmlFor="emailInput"&gt;Sähköposti:&lt;/label&gt;
+        &lt;label htmlFor='emailInput'&gt;Sähköposti:&lt;/label&gt;
           &lt;input
-            id="emailInput"
-            type="email"
+            id='emailInput'
+            type='email'
             value={email}
             onChange={(e) =&gt; setEmail(e.target.value)}
           /&gt;
         &lt;/div&gt;
         &lt;div&gt;
-        &lt;label htmlFor="telegramInput"&gt;Telegram (valinnainen):&lt;/label&gt;
+        &lt;label htmlFor='telegramInput'&gt;Telegram (valinnainen):&lt;/label&gt;
           &lt;input
-            id="telegramInput"
-            type="text"
+            id='telegramInput'
+            type='text'
             value={telegram}
             onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setTelegram(e.target.value)}</span>
           /&gt;
         &lt;/div&gt;
       &lt;/div&gt;
-      &lt;button className="login-button" type="button" onClick={handleBackToLogin}&gt;
+      &lt;button className='login-button' type='button' onClick={handleBackToLogin}&gt;
         Takaisin
       &lt;/button&gt;
-      &lt;button className="create-user-button" type="button" onClick={handleCreateAccount}&gt;
+      &lt;button className='create-user-button' type='button' onClick={handleCreateAccount}&gt;
         Luo käyttäjä
       &lt;/button&gt;
     &lt;/form&gt;
   )
 &nbsp;
   return (
-    &lt;div id="right_content"&gt;{showLoginPage ? <span class="branch-0 cbranch-no" title="branch not covered" >&lt;LoginPage /&gt; </span>: createForm()}
+    &lt;div id='right_content'&gt;{showLoginPage ? <span class="branch-0 cbranch-no" title="branch not covered" >&lt;LoginPage /&gt; </span>: createForm()}
       {userCreated &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >&lt;p style={{ color: 'green' }}&gt;Käyttäjä luotu onnistuneesti!&lt;/p&gt;}</span>
     &lt;/div&gt;
   )
@@ -715,7 +715,7 @@ export default NewAccountPage
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-03-26T18:55:44.130Z
+                at 2024-04-05T18:51:52.321Z
             </div>
         <script src="prettify.js"></script>
         <script>
