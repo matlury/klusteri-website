@@ -58,7 +58,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const userPage = () => (
     <form>
       <div>
-        Käyttäjänimi:
+      Käyttäjänimi:
         <input
           id="username"
           type="username"
@@ -201,42 +201,44 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     if (selectedOrg === orgId && organization) {
       return (
         <div>
-          <p>Nimi: {organization.name}</p>
-          <p>Käyttäjätunnus: </p>
-          <p>Koko: {organization.size}</p>
-          <p>Kotisivu: {organization.homepage}</p>
+          <p>Nimi:
+            <input
+              id="organization_name"
+              type="organization_name"
+              value={organization.name}
+              onChange={(e) => setOrganizationName(e.target.value)}
+            />
+          </p>
+          <p>Koko:
+            <input
+              id="organization_size"
+              type="organization_size"
+              value={organization.size}
+              onChange={(e) => setOrganizationSize(e.target.value)}
+            />
+          </p>
+          <p>Kotisivu:
+            <input
+              id="organization_homepage"
+              type="organization_homepage"
+              value={organization.homepage}
+              onChange={(e) => setOrganizationHomePage(e.target.value)}
+            />
+          </p>
           <p>Puheenjohtaja:</p>
-          <p>Puheenjohtajan sähköposti: {organization.email}</p>
+          <p>Organisaation sähköposti:
+            <input
+              id="organization_email"
+              type="organization_email"
+              value={organization.email}
+              onChange={(e) => setOrganizationEmail(e.target.value)}
+            />
+          </p>
           <p>Klusterivastaava(t): </p>
-          <br></br>
-          <form>
-            <div>
-              Uusi salasana:
-              <input
-                id="orgPassword"
-                value={orgPassword}
-                onChange={(e) => setNewOrgPassword(e.target.value)} />
-            </div>
-            <div>
-              Toista uusi salasana:
-              <input
-                id="confirmOrgPassword"
-                type="confirmOrgPassword"
-                value={confirmOrgPassword}
-                onChange={(e) => setConfirmOrgPassword(e.target.value)} />
-            </div>
-          </form>
-          <div>
-            <label>
-              <p style={{ display: 'inline-block', marginRight: '10px' }}>* Nimet saa julkaista</p>
-              <input
-                type="checkbox"
-                checked={isChecked}
-                onChange={handleCheckboxChange} />
-            </label>
-          </div>
-          <br />
-          {role === 1 && <button onClick={() => handleDeleteOrganization(organization.id)} className="login-button" type="button">
+          <button onClick={handleUserDetails} className="create-user-button" type="button">
+            Vahvista muutokset
+          </button>
+          {(role === 1 || role == 2 || role == 3) && <button onClick={() => handleDeleteOrganization(organization.id)} className="login-button" type="button">
             Poista järjestö
           </button>}
         </div>
