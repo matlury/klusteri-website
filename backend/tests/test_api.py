@@ -126,6 +126,10 @@ class TestDjangoAPI(TestCase):
             "email": "avaimellinen@gmail.com",
             "telegram": "avaimellinen",
             "role": 4,
+            "keys": {
+                "TKO-äly": False,
+                "Matrix": False
+            }
         }
 
         response = self.client.post(
