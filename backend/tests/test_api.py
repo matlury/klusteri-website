@@ -24,7 +24,8 @@ class TestDjangoAPI(TestCase):
             "keys": {
                 "TKO-äly": False,
                 "Matrix": False
-            }
+            },
+            "rights_for_reservation": True
         }
 
         response = self.client.post(
@@ -56,7 +57,8 @@ class TestDjangoAPI(TestCase):
             "email": "leppispj@gmail.com",
             "telegram": "tgleppispj",
             "role": 1,
-            "keys": None
+            "keys": None,
+            "rights_for_reservation": True
         }
 
         response = self.client.post(
@@ -92,7 +94,8 @@ class TestDjangoAPI(TestCase):
             "keys": {
                 "TKO-äly": False,
                 "Matrix": True
-            }
+            },
+            "rights_for_reservation": True
         }
 
         response = self.client.post(
@@ -129,7 +132,8 @@ class TestDjangoAPI(TestCase):
             "keys": {
                 "TKO-äly": False,
                 "Matrix": False
-            }
+            },
+            "rights_for_reservation": True
         }
 
         response = self.client.post(
@@ -154,8 +158,47 @@ class TestDjangoAPI(TestCase):
         )
 
         self.avaimellinen = response.data
-        self.avaimellinen_user = self.muokkaus
-        self.user_count = 4
+        self.avaimellinen_user = self.avaimellinen
+
+        # Create a mock JarjestoPJ user for testing
+        jarjestopj_data = self.data = {
+            "username": "JarjestoPJ",
+            "password": "vahvaSalasana1234",
+            "email": "jarjestopj@gmail.com",
+            "telegram": "jarjestopj",
+            "role": 6,
+            "keys": {
+                "TKO-äly": False,
+                "Matrix": False
+            },
+            "rights_for_reservation": True
+        }
+
+        response = self.client.post(
+            "http://localhost:8000/api/users/register",
+            data=jarjestopj_data,
+            format="json",
+        )
+
+        self.jarjestopj_id = response.data["id"]
+
+        response = self.client.post(
+            "http://localhost:8000/api/token/",
+            data={"email": "jarjestopj@gmail.com", "password": "vahvaSalasana1234"},
+            format="json",
+        )
+        self.jarjestopj_access_token = response.data["access"]
+        self.jarjestopj_refresh_token = response.data["refresh"]
+
+        response = self.client.get(
+            "http://localhost:8000/api/users/userinfo",
+            headers={"Authorization": f"Bearer {self.jarjestopj_access_token}"},
+        )
+
+        self.jarjestopj = response.data
+        self.jarjestopj_user = self.jarjestopj
+
+        self.user_count = 5
 
     def test_user_has_correct_key_list(self):
         """A new user receives a list of Matlu organizations for key management"""
@@ -1627,6 +1670,49 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={"user_id": self.muokkaus_user["id"], "organization_id": 10},
             format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_change_rights_reservation(self):
+        """An authorized user can change the rights for reservation"""
+
+        user_id = User.objects.all()[2].id
+        response = self.client.put(
+            f"http://localhost:8000/api/users/change_rights_reservation/{user_id}/",
+            headers={"Authorization": f"Bearer {self.jarjestopj_access_token}"},
+            data={"rights_for_reservation": False},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["rights_for_reservation"], False)
+    
+    def test_change_rights_reservation_as_tavallinen(self):
+        """An authorized user can change the rights for reservation"""
+
+        # try to change the rights as tavallinen user
+        user_id = User.objects.all()[2].id
+        response = self.client.put(
+            f"http://localhost:8000/api/users/change_rights_reservation/{user_id}/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={"rights_for_reservation": False},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(self.muokkaus_user["rights_for_reservation"], True)
+    
+    
+    def test_change_rights_reservation_notfound(self):
+        """An authorized user can change the rights for reservation"""
+
+        # try to change the rights of an user that doesn't exist
+        response = self.client.put(
+            f"http://localhost:8000/api/users/change_rights_reservation/10/",
+            headers={"Authorization": f"Bearer {self.jarjestopj_access_token}"},
+            data={"rights_for_reservation": False},
+            format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
