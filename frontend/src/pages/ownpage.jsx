@@ -247,6 +247,17 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     return null
   }
 
+  const handleOrganizationDetails = (event) => {
+    event.preventDefault();
+  
+    const details = {
+      organization_name: organization_name,
+      organization_size: organization_size,
+      organization_homepage: organization_homepage,
+      organization_email: organization_email
+    };
+  }
+
   // Handles deletion of organization
   const handleDeleteOrganization = (orgId) => {
     axiosClient.delete(`/organizations/remove/${orgId}/`)
