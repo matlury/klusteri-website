@@ -242,7 +242,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             </label>
           </div>
           <br />
-          {role === 1 && <button onClick={() => handleDeleteOrganization(organization.id)} className='login-button' type='button'>
+          {hasPermission === true && <button onClick={() => handleDeleteOrganization(organization.id)} className='login-button' type='button'>
             Poista järjestö
           </button>}
         </div>
@@ -410,7 +410,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           <p>Rooli: {user.role}</p>
           <p>Sähköposti: {user.email}</p>
           <br></br>
-          {role === 1 && <button onClick={() => handlePJChange(user.id)} className='change-pj-button' type='button'>
+          {hasPermission === true && <button onClick={() => handlePJChange(user.id)} className='change-pj-button' type='button'>
             Siirrä PJ-oikeudet
           </button>}
           <p></p>
@@ -502,7 +502,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                 {hasPermission === true && showAllUsers()}
               </div>
             </div>
-            {role === 1 && (
+            {hasPermission === true && (
               <div id='centered_content'>
                 <div id='content'>
                   <h2>Avaimen luovutus</h2>
