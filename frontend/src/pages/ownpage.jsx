@@ -27,6 +27,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const [selectedUser, setSelectedUser] = useState(null)
   const [selectedOrganization, setSelectedOrganization] = useState(null)
 
+  const [hasPermission, setHasPermission] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -42,6 +43,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       setTelegram(loggedUser.telegram)
       setRole(loggedUser.role)
       getOrganisations()
+      getPermission()
     }
   }, [user || propIsLoggedIn])
 
@@ -51,6 +53,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     if (isLoggedIn) {
       getOrganisations()
       getAllUsers()
+      getPermission()
     }
   }, [isLoggedIn])
 
@@ -239,7 +242,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             </label>
           </div>
           <br />
-          {role === 1 && <button onClick={() => handleDeleteOrganization(organization.id)} className='login-button' type='button'>
+          {hasPermission === true && <button onClick={() => handleDeleteOrganization(organization.id)} className='login-button' type='button'>
             Poista järjestö
           </button>}
         </div>
@@ -362,16 +365,16 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   const showAllUsers = () => (
     <div>
-      <p></p>
+        <p></p>
       <h4>Käyttäjät</h4>
       <ul style={{ listStyleType: 'none', padding: 0 }}>
         {allUsers.map(user => (
-          <li key={user.id}>
-            {user.username}
-            <button className= 'login-button' onClick={() => toggleUserDetails(user.id)}>View</button>
-            {renderUserDetails(user.id)}
-          </li>
-        ))}
+        <li key={user.id}>
+          {user.username}
+          <button className= 'login-button' onClick={() => toggleUserDetails(user.id)}>View</button>
+          {renderUserDetails(user.id)}
+        </li>
+          ))}
       </ul>
     </div>
   )
@@ -407,7 +410,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           <p>Rooli: {user.role}</p>
           <p>Sähköposti: {user.email}</p>
           <br></br>
-          {role === 1 && <button onClick={() => handlePJChange(user.id)} className='change-pj-button' type='button'>
+          {hasPermission === true && <button onClick={() => handlePJChange(user.id)} className='change-pj-button' type='button'>
             Siirrä PJ-oikeudet
           </button>}
           <p></p>
@@ -461,6 +464,28 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     setSelectedOrganization(event.target.value)
   }
 
+  const getPermission = async () => {
+    /*
+    Check if the logged user has permissions for something
+    This prevents harm caused by localstorage manipulation
+    */
+
+    const accessToken = localStorage.getItem('ACCESS_TOKEN')
+    await axios.get(`${API_URL}/api/users/userinfo`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+    .then(response => {
+      const currentUser = response.data
+      if (currentUser.role === 1) {
+        setHasPermission(true)
+      } else {
+        setHasPermission(false)
+      }
+    })
+  }
+  
   return (
     <div>
       {!isLoggedIn && <h3>Kirjaudu sisään</h3>}
@@ -473,11 +498,11 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
               <div id='leftleft_content'>
                 {userPage()}
                 {organisationPage()}
-                {role === 1 && createOrganization()}
-                {role === 1 && showAllUsers()}
+                {hasPermission === true && createOrganization()}
+                {hasPermission === true && showAllUsers()}
               </div>
             </div>
-            {role === 1 && (
+            {hasPermission === true && (
               <div id='centered_content'>
                 <div id='content'>
                   <h2>Avaimen luovutus</h2>
