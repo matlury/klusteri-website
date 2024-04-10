@@ -319,20 +319,26 @@ class CreateEventView(APIView):
             LEPPISPJ,
             LEPPISVARAPJ,
             MUOKKAUS,
-            AVAIMELLINEN
+            AVAIMELLINEN,
+            JARJESTOPJ,
+            JARJESTOVARAPJ
         ]:
             return Response(
                 "You can't add an event",
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
+        if user.data["rights_for_reservation"] != True:
+            return Response("You don't have rights to make reservation", status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = EventSerializer(data=request.data)
+        else:
+            serializer = EventSerializer(data=request.data)
 
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        serializer.save()
+            if not serializer.is_valid():
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer.save()
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class RemoveEventView(APIView):
     """View for removing an event <baseurl>/api/events/delete_event/<event.id>/"""
@@ -522,7 +528,7 @@ class LogoutNightResponsibilityView(APIView):
         return Response(responsibility.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RightsForReservationView(APIView):
-    """View for changing the right for making events of user at <baseurl>/api/users/change_rights_reservation/<int:pk>/"""
+    """View for changing the rights for making events at <baseurl>/api/users/change_rights_reservation/<int:pk>/"""
     permission_classes = [permissions.IsAuthenticated]
 
     def put(self, request, pk=None):
@@ -530,7 +536,6 @@ class RightsForReservationView(APIView):
 
         if user.data["role"] not in [JARJESTOPJ, JARJESTOVARAPJ]:
             return Response("You can't change the rights", status=status.HTTP_400_BAD_REQUEST)
-        
         else:
             try:
                 user_to_update = User.objects.get(id=pk)

@@ -945,6 +945,30 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["room"], "Toinen huone")
     
+    def test_create_room_no_rights(self):
+        """An authorized user can update event room"""
+
+        # change the reservation rights to false
+        user = User.objects.get(id=self.leppis_id)
+        user.rights_for_reservation = False
+        user.save()
+
+        # try to create an event
+        event_created = self.client.post(
+            "http://localhost:8000/api/events/create_event",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "room": "Kattilahuone",
+                "reservation": "Varaus suunnitteluun",
+                "description": "Suunnitellaan juhlia",
+                "responsible": "Pete",
+                "open": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(event_created.status_code, status.HTTP_400_BAD_REQUEST)
+    
     def test_update_room_invalid(self):
         """An authorized user can update event room"""
 
@@ -1716,3 +1740,18 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_change_rights_reservation_invalid(self):
+        """An authorized user can change the rights for reservation"""
+
+        # try to change the rights with invalid input
+        user_id = User.objects.all()[2].id
+        response = self.client.put(
+            f"http://localhost:8000/api/users/change_rights_reservation/{user_id}/",
+            headers={"Authorization": f"Bearer {self.jarjestopj_access_token}"},
+            data={"rights_for_reservation": ""},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(self.muokkaus_user["rights_for_reservation"], True)
