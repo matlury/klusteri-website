@@ -7,3 +7,5 @@ class Role(Enum):
     MUOKKAUS = 3
     AVAIMELLINEN = 4
     TAVALLINEN = 5
+    JARJESTOPJ = 6
+    JARJESTOVARAPJ = 7
