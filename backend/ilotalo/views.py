@@ -353,12 +353,17 @@ class RemoveEventView(APIView):
             LEPPISPJ,
             LEPPISVARAPJ,
             MUOKKAUS,
-            AVAIMELLINEN
+            AVAIMELLINEN,
+            JARJESTOPJ,
+            JARJESTOVARAPJ
         ]:
             return Response(
                 "You can't remove the event",
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
+        if user.data["rights_for_reservation"] != True:
+            return Response("You don't have rights to delete reservations", status=status.HTTP_400_BAD_REQUEST)
 
         try:
             event_to_remove = Event.objects.get(id=pk)
@@ -366,7 +371,6 @@ class RemoveEventView(APIView):
             return Response(
                 "Event not found", status=status.HTTP_404_NOT_FOUND
             )
-
         event_to_remove.delete()
 
         return Response(f"Event {event_to_remove.reservation} successfully removed", status=status.HTTP_200_OK)
@@ -384,12 +388,17 @@ class UpdateEventView(APIView):
             LEPPISPJ,
             LEPPISVARAPJ,
             MUOKKAUS,
-            AVAIMELLINEN
+            AVAIMELLINEN,
+            JARJESTOPJ,
+            JARJESTOVARAPJ
         ]:
             return Response(
                 "You can't edit the event",
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
+        if user.data["rights_for_reservation"] != True:
+            return Response("You don't have rights to edit reservations", status=status.HTTP_400_BAD_REQUEST)
 
         try:
             event_to_update = Event.objects.get(id=pk)
