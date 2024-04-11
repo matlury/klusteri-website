@@ -1701,6 +1701,7 @@ class TestDjangoAPI(TestCase):
     def test_change_rights_reservation(self):
         """An authorized user can change the rights for reservation"""
 
+        # change Muokkaus user rights from true to false as Jarjestopj user
         user_id = User.objects.all()[2].id
         response = self.client.put(
             f"http://localhost:8000/api/users/change_rights_reservation/{user_id}/",
@@ -1715,7 +1716,7 @@ class TestDjangoAPI(TestCase):
     def test_change_rights_reservation_as_tavallinen(self):
         """An authorized user can change the rights for reservation"""
 
-        # try to change the rights as tavallinen user
+        # try to change the rights of Muokkaus user as Tavallinen user
         user_id = User.objects.all()[2].id
         response = self.client.put(
             f"http://localhost:8000/api/users/change_rights_reservation/{user_id}/",
