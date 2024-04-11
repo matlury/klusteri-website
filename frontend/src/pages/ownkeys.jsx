@@ -25,6 +25,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     const [respToEdit, setRespToEdit] = useState('')
 
     const [selectedForYKV, setSelectedForYKV] = useState([]);
+    const [hasPermission, setHasPermission] = useState(false)
 
     const API_URL = process.env.API_URL
 
@@ -35,6 +36,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
             const loggedUser = JSON.parse(localStorage.getItem('loggedUser'))
             setEmail(loggedUser.email)
             setLoggedUser(loggedUser)
+            getPermission()
         }
       }, [propIsLoggedIn])
     
@@ -42,6 +44,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
         if (isLoggedIn) {
           getResponsibility()
           getActiveResponsibilities()
+          getPermission()
         }
     }, [isLoggedIn, selectedForYKV])
 
@@ -53,6 +56,28 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
             fetchAllUsersWithKeys()
         }
     }, [loggedUser]);
+
+    const getPermission = async () => {
+        /*
+        Check if the logged user has permissions for something
+        This prevents harm caused by localstorage manipulation
+        */
+    
+        const accessToken = localStorage.getItem('ACCESS_TOKEN')
+        await axios.get(`${API_URL}/api/users/userinfo`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        })
+        .then(response => {
+          const currentUser = response.data
+          if (currentUser.role === 1) {
+            setHasPermission(true)
+          } else {
+            setHasPermission(false)
+          }
+        })
+      }
 
     // fetch each user with keys if someone is logged in
     const fetchAllUsersWithKeys = async () => {
@@ -359,7 +384,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
 
     return (
         <div id='left_content'>
-            {!isLoggedIn && <p>Kirjaudu sisään muokataksesi tietoja</p>}
+            {!isLoggedIn && <h3>Kirjaudu sisään</h3>}
             {isLoggedIn && (
                 <div id='leftleft_content'>
                     {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -367,7 +392,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
                     {checkIfLoggedIn() && logout_function()}
                     {!checkIfLoggedIn() && user.role !== 5 && ykvForm()}
                     {!(loggedUser.role === 1 || loggedUser.role === 5) && ownYkvList()}
-                    {loggedUser.role === 1 && responsibilities()}
+                    {hasPermission === true && responsibilities()}
                 </div>
             )}
 

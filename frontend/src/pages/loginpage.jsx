@@ -5,6 +5,7 @@ import axiosClient from "../axios.js"
 import { useStateContext } from "../context/ContextProvider.jsx"
 import CountdownTimer from './CountdownTimer'
 
+
 const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -91,27 +92,27 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
         </>
       ) : (
         <form>
-          <div className="form-group">
-            <label htmlFor="email">Sähköposti:</label>
+          <h3>Sisään kirjautuminen</h3>
+          <div className='form-group'>
+            <label htmlFor='email'>Sähköposti:</label>
             <input
-              id="email"
-              className="form-control"
+              id='email'
+              type='email'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="password">Salasana:</label>
+          <div className='form-group'>
+            <label htmlFor='password'>Salasana:</label>
             <input
-              id="password"
-              className="form-control"
-              type="password"
+              id='password'
+              type='password'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <button className="login-button" type="submit" onClick={handleLogin}>Kirjaudu sisään</button>
-          <button className="create-user-button" type="button" onClick={handleCreateUser}>Luo uusi käyttäjä</button>
+          <button className='login-button' type='submit' onClick={handleLogin}>Kirjaudu sisään</button>
+          <button className='create-user-button' type='button' onClick={handleCreateUser}>Luo uusi käyttäjä</button>
           {error && <div style={{ color: 'red' }}>{error}</div>}
         </form>
       )}
