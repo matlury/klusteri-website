@@ -945,8 +945,8 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["room"], "Toinen huone")
     
-    def test_create_room_no_rights(self):
-        """An authorized user can update event room"""
+    def test_create_event_no_rights(self):
+        """An authorized user can create an event"""
 
         # change the reservation rights to false
         user = User.objects.get(id=self.leppis_id)
@@ -1038,6 +1038,70 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(event_created.data["room"], "Kattilahuone")
+    
+    def test_update_room_no_rights(self):
+        """An authorized user can update event room"""
+
+        # first create an event to update it
+        event_created = self.client.post(
+            "http://localhost:8000/api/events/create_event",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "room": "Kattilahuone",
+                "reservation": "Varaus suunnitteluun",
+                "description": "Suunnitellaan juhlia",
+                "responsible": "Pete",
+                "open": True,
+            },
+            format="json",
+        )
+
+        # change the reservation rights to false
+        user = User.objects.get(id=self.leppis_id)
+        user.rights_for_reservation = False
+        user.save()
+
+        # try to update an event
+        event_id = event_created.data['id']
+        response = self.client.put(
+            f"http://localhost:8000/api/events/update_event/{event_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"room": "Pelihuone"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    def test_delete_event_no_rights(self):
+        """An authorized user can update event room"""
+
+        # first create an event to delete it
+        event_created = self.client.post(
+            "http://localhost:8000/api/events/create_event",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "room": "Kattilahuone",
+                "reservation": "Varaus suunnitteluun",
+                "description": "Suunnitellaan juhlia",
+                "responsible": "Pete",
+                "open": True,
+            },
+            format="json",
+        )
+
+        # change the reservation rights to false
+        user = User.objects.get(id=self.leppis_id)
+        user.rights_for_reservation = False
+        user.save()
+
+        # try to delete an event
+        event_id = event_created.data['id']
+        response = self.client.delete(
+            f"http://localhost:8000/api/events/delete_event/{event_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_deleting_event(self):
         """LeppisPJ can delete an event"""
