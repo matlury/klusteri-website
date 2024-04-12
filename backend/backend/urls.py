@@ -41,5 +41,6 @@ urlpatterns = [
     path("api/organizations/", include("ilotalo.urls")),
     path("api/events/", include("ilotalo.urls")),
     path("api/ykv/", include("ilotalo.urls")),
+    path("api/keys/", include("ilotalo.urls")),
     path("api/testing/", include("ilotalo.urls"))
 ]
