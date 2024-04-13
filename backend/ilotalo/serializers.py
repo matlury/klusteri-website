@@ -61,7 +61,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "email", "telegram", "role", "rights_for_reservation")
+        fields = ("id", "username", "email", "telegram", "role", "keys", "rights_for_reservation")
 
     def validate_telegram(self, tgname):
         """Checks if a telegram name is taken"""
