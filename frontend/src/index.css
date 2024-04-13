@@ -23,6 +23,14 @@
   color: #FFFFFF;
 }
 
+.link {
+  cursor: pointer;
+}
+
+.link:hover {
+  color: #f1ca4b;
+}
+
 #ContentBlock {
   width: 100%;
   margin: 0 auto;
@@ -306,7 +314,7 @@ input[type="username"] {
 
 #centered_content {
   flex: 1; 
-  height: 300px;
+  height: 450px;
   display: block; 
   margin-left: 90px;
   border: 5px solid #b3b7bb;
@@ -316,9 +324,9 @@ input[type="username"] {
 }
 
 .select-box {
-  background-color: #f2f2f2;
+  background-color: #ffffff;
   border: 1px solid #ccc;
   border-radius: 10px;
-  padding: 5px 10px;
+  padding: 1px 10px;
   width: 40%;
 }

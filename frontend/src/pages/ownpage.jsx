@@ -451,9 +451,38 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
   }
 
-  const handleKeySubmit = (event) => {
+  const handleKeySubmit = async (event) => {
     event.preventDefault()
-    //Ei tee mitään vielä
+  
+    if (!selectedUser || !selectedOrganization) {
+      console.error('Please select a user and an organization')
+      return
+    }
+  
+    // Display a confirmation dialog before handing over the key
+    const confirmKeyHandover = window.confirm('Oletko varma että haluat luovuttaa avaimen?')
+  
+    if (!confirmKeyHandover) {
+      return
+    }
+  
+    try {
+      const response = await axios.put(`/api/keys/hand_over_key/${selectedUser.id}/`, {
+        organization_name: selectedOrganization
+      })
+  
+      // Check the response and update the UI accordingly
+      if (response.status === 200) {
+        // Successful key handover
+        setSuccess('Avaimen luovutus onnistui!')
+      } else {
+        // Error in key handover
+        setError('ERROR')
+      }
+    } catch (error) {
+      console.error('Error in key handover:', error)
+      setError('Avaimen luovutus epäonnistui!')
+    }
   }
 
   const handleSelectUser = (event) => {
@@ -491,8 +520,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       {!isLoggedIn && <h3>Kirjaudu sisään</h3>}
       {isLoggedIn && (
         <div>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-          {success && <p style={{ color: 'green' }}>{success}</p>}
+          {error && <p style={{ color: 'red' }}>Virhe: {error}</p>}
+          {success && <p style={{ color: 'green' }}>Onnistui: {success}</p>}
           <div style={{ display: 'flex' }}>
             <div id='left_content'>
               <div id='leftleft_content'>
@@ -502,14 +531,14 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                 {hasPermission === true && showAllUsers()}
               </div>
             </div>
-            {hasPermission === true && (
-              <div id='centered_content'>
+            {(hasPermission === true )&& (
+              <div id='centered_content' style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
                 <div id='content'>
                   <h2>Avaimen luovutus</h2>
                   <form onSubmit={handleKeySubmit}>
-                  <div style={{ height: '20px' }}></div>
-                  <div>
-                      <label htmlFor='selectedUser'>Kenelle avain luovutetaan:</label>
+                    <div style={{ height: '20px' }}></div>
+                    <div>
+                      <label htmlFor='selectedUser'>Valitse vastaanottaja:</label>
                       <select
                         id='selectedUser'
                         name='selectedUser'
@@ -518,15 +547,15 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                         className='select-box'
                       >
                         {allUsers.map(user => (
-                          <option key={user.id} value={user.id}>
-                            {user.username}
+                          <option key={user.id} value={user.email}>
+                            {user.username} : {user.email}
                           </option>
                         ))}
                       </select>
                     </div>
                     <div style={{ height: '20px' }}></div>
                     <div>
-                      <label htmlFor='selectedOrganization'>Minkä järjestön avain luovutetaan:</label>
+                      <label htmlFor='selectedOrganization'>Valitse organisaatio:</label>
                       <select
                         id='selectedOrganization'
                         name='selectedOrganization'
@@ -534,15 +563,30 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                         onChange={handleSelectOrganization}
                         className='select-box'
                       >
-                        <option value="organization1">Järjestö 1</option>
-                        <option value="organization2">Järjestö 2</option>
-                        <option value="organization3">Järjestö 3</option>
+                        <option value="HYK">HYK</option>
+                        <option value="Limes">Limes</option>
+                        <option value="MaO">MaO</option>
+                        <option value="Matrix">Matrix</option>
+                        <option value="Meridiaani">Meridiaani</option>
+                        <option value="Mesta">Mesta</option>
+                        <option value="Moodi">Moodi</option>
+                        <option value="Resonanssi">Resonanssi</option>
+                        <option value="Spektrum">Spektrum</option>
+                        <option value="Synop">Synop</option>
+                        <option value="TKO-äly">TKO-äly</option>
+                        <option value="Vasara">Vasara</option>
+                        <option value="Integralis">Integralis</option>
                       </select>
                     </div>
                     <div style={{ height: '20px' }}></div>
+                    <div>
+                      Vastaanottaja: {selectedUser}
+                      <p></p>
+                      Organisaatio: {selectedOrganization}
+                    </div>
+                    <div style={{ height: '20px' }}></div>
                     <button type='submit' className='create-user-button'>
-                      Luovuta
-                      <FaKey style={{ marginLeft: '5px' }} />
+                      Luovuta <FaKey style={{ marginLeft: '5px' }} />
                     </button>
                   </form>
                 </div>

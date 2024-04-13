@@ -24,7 +24,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     const [editButtonPopup, setEditButtonPopup] = useState(false)
     const [respToEdit, setRespToEdit] = useState('')
 
-    const [selectedForYKV, setSelectedForYKV] = useState([]);
+    const [selectedForYKV, setSelectedForYKV] = useState([])
     const [hasPermission, setHasPermission] = useState(false)
 
     const API_URL = process.env.API_URL
@@ -55,7 +55,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
             getActiveResponsibilities()
             fetchAllUsersWithKeys()
         }
-    }, [loggedUser]);
+    }, [loggedUser])
 
     const getPermission = async () => {
         /*
@@ -82,13 +82,13 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     // fetch each user with keys if someone is logged in
     const fetchAllUsersWithKeys = async () => {
         try {
-            const response = await axios.get(`${API_URL}/api/listobjects/users/`);
-            const allUsers = response.data;
-            const filteredUsers = allUsers.filter(user => checkUser(user));
-            setAllUsersWithKeys(filteredUsers);
+            const response = await axios.get(`${API_URL}/api/listobjects/users/`)
+            const allUsers = response.data
+            const filteredUsers = allUsers.filter(user => checkUser(user))
+            setAllUsersWithKeys(filteredUsers)
             console.log('avaimellliset', allUsersWithKeys)
         } catch (error) {
-            console.error('Error fetching users with keys', error);
+            console.error('Error fetching users with keys', error)
         }
     }
     
@@ -285,7 +285,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
                 </ul>
             </div>
         </div>
-    );
+    )
     
 
     // shows all of the responsibilites taken by the current user
