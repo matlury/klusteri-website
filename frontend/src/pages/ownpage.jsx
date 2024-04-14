@@ -197,58 +197,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       return orgId;
     });
   };
-    
-  // Handles the change if you click on the checkbox
-  const handleCheckboxChange = (event) => {
-    setIsChecked(event.target.checked)
-  }
-  /*
-  const organizationPages = () => (
-    <form>
-      <div>
-        Nimi:
-        <input
-          id="organization_name"
-          type="organization_name"
-          value={organization.name}
-          onChange={(e) => setOrganizationName(e.target.value)}
-          />
-        <p>Koko:
-          <input
-            id="organization_size"
-            type="organization_size"
-            value={organization.size}
-            onChange={(e) => setOrganizationSize(e.target.value)}
-          />
-        </p>
-        <p>Kotisivu:
-          <input
-            id="organization_homepage"
-            type="organization_homepage"
-            value={organization.homepage}
-            onChange={(e) => setOrganizationHomePage(e.target.value)}
-          />
-        </p>
-        <p>Puheenjohtaja:</p>
-        <p>Organisaation sähköposti:
-          <input
-            id="organization_email"
-            type="organization_email"
-            value={organization.email}
-            onChange={(e) => setOrganizationEmail(e.target.value)}
-          />
-        </p>
-        <p>Klusterivastaava(t): </p>
-        <button onClick={handleOrganizationDetails} className="create-user-button" type="button">
-          Vahvista muutokset
-        </button>
-          {(role === 1 || role == 2 || role == 3) && <button onClick={() => handleDeleteOrganization(organization.id)} className="login-button" type="button">
-          Poista järjestö
-        </button>}
-      </div>
-    </form>
-  );
-  */
+
   // Shows more detailed information of the organizations and if the user has role 1, they can also delete the organization
   const renderOrganizationDetails = orgId => {
     const organization = organisations.find(org => org.id === orgId)
@@ -260,7 +209,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           <input
             id="organization_name"
             type="text"
-            value={organization.name}
+            //value={organization.name}
             //value='nimi'
             onChange={(e) => setOrganizationNewName(e.target.value)}
           />
@@ -268,7 +217,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             <input
               id="organization_size"
               type="text"
-              value={organization.size}
+              //value={organization.size}
               onChange={(e) => setOrganizationNewSize(e.target.value)}
             />
           </p>
@@ -276,7 +225,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             <input
               id="organization_homepage"
               type="text"
-              value={organization.homepage}
+              //value={organization.homepage}
               onChange={(e) => setOrganizationNewHomePage(e.target.value)}
             />
           </p>
@@ -286,7 +235,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
               id="organization_new_email"
               type="text"
               //value='testi2@gmail.com'
-              value={organization.email}
+              //value={organization.email}
               onChange={(e) => setOrganizationNewEmail(e.target.value)}
             />
           </p>
@@ -303,10 +252,10 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     return null
   }
 
-  const organizationObject2 = { name: organization_new_name, email: organization_new_email, homepage: organization_new_homepage, size: organization_new_size }
+  const newOrganizationObject = { name: organization_new_name, email: organization_new_email, homepage: organization_new_homepage, size: organization_new_size }
 
   const handleOrganizationDetails = (orgId) => {
-      axios.update_organization(`api/organizations/update_organization/10/`, organizationObject2)
+      axiosClient.put(`/organizations/update_organization/${orgId}/`, newOrganizationObject)
       //axiosClient.delete(`/organizations/remove/${orgId}/`)
         .then(response => {
           console.log('Organization created successfully!', response.data)

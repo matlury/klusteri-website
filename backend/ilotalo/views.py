@@ -174,7 +174,33 @@ class UpdateOrganizationView(APIView):
 
     # IsAuthenticated will deny access if request has no access token
     permission_classes = [permissions.IsAuthenticated]
+    '''#Tällä toimii
+    def put(self, request, pk=None):
+        """
+        Request for updating the email address
 
+        Parameters
+        ----------
+        request: dict
+            Contains the new data
+        pk (primary key): str
+            Id of the User object to be updated
+        """
+
+        try:
+            user_to_update = Organization.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+
+        user = OrganizationSerializer(
+            instance=user_to_update, data=request.data, partial=True
+        )
+        print(user)
+        if user.is_valid():
+            user.save()
+            return Response(user.data, status=status.HTTP_200_OK)
+        return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+    '''
     def put(self, request, pk=None):
         user = UserSerializer(request.user)
 
