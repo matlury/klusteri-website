@@ -11,7 +11,7 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
   const [password, setPassword] = useState('')
   const [showCreateUser, setShowCreateUser] = useState(false)
   const { user, setUser, setToken, timeLeft } = useStateContext()
-  const [error, setError] = useState('');
+  const [error, setError] = useState('')
 
 
   // Saves the logged user (if there is one)
@@ -66,11 +66,11 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
 
   // Handles the logout function and clears the countdown timer
   const handleLogout = () => {
-    localStorage.removeItem('loggedUser');
-    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('loggedUser')
+    localStorage.removeItem('isLoggedIn')
     localStorage.removeItem('countdownTime')
-    setUser(null);
-    onLogout();
+    setUser(null)
+    onLogout()
   }
 
   // renders the NewAccountPage if the showCreateUser function is true, if the user is logged in, it shows the username and logout-button
