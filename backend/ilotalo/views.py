@@ -577,3 +577,82 @@ class ResetDatabaseView(APIView):
             "This endpoint is for Cypress tests only",
             status=status.HTTP_403_FORBIDDEN
         )
+    
+class HandOverKeyView(APIView):
+    """View for handing over a Klusteri key at <baseurl>/api/keys/hand_over_key/<user.id>/"""
+
+    # IsAuthenticated will deny access if request has no access token
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, pk=None):
+        """
+        Request for handing over the key
+
+        Parameters
+        ----------
+        request: dict
+            Contains the name of the organization whose key is being handed over
+            {
+                "organization_name": "Matrix"
+            }
+
+        pk (primary key): str
+            Id of the user about to receive the key
+        """
+        organization_list = [
+            "HYK",
+            "Limes",
+            "MaO",
+            "Matrix",
+            "Meridiaani",
+            "Mesta",
+            "Moodi",
+            "Resonanssi",
+            "Spektrum",
+            "Synop",
+            "TKO-äly",
+            "Vasara",
+            "Integralis"
+        ]
+
+        user = UserSerializer(request.user)
+
+        # Make sure the person attempting the key handover is valid
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ,
+            MUOKKAUS
+        ]:
+            return Response(
+                "No permission for handing over a key",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            user_to_update = User.objects.get(id=pk)
+            organization_name = request.data["organization_name"]
+        except ObjectDoesNotExist:
+            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+        except KeyError:
+            return Response(
+                "Provide the name of the organization",
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Check if the organization's name is valid
+        if organization_name not in organization_list:
+            return Response("Organization not found", status=status.HTTP_404_NOT_FOUND)
+        
+        users_keys = user_to_update.keys
+
+        # Update the user's key list
+        users_keys[organization_name] = True
+
+        serializer = UserUpdateSerializer(
+            instance=user_to_update, data=users_keys, partial=True
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
