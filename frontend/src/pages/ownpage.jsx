@@ -13,14 +13,16 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   const [organisations, setOrganisations] = useState([])
   const [selectedOrg, setSelectedOrg] = useState(null)
-  const [orgPassword, setNewOrgPassword] = useState('')
-  const [confirmOrgPassword, setConfirmOrgPassword] = useState('')
-  const [isChecked, setIsChecked] = useState(false)
 
   const [organization_email, setOrganizationEmail] = useState('')
   const [organization_name, setOrganizationName] = useState('')
   const [organization_homepage, setOrganizationHomePage] = useState('')
   const [organization_size, setOrganizationSize] = useState('1')
+
+  const [organization_new_email, setOrganizationNewEmail] = useState('')
+  const [organization_new_name, setOrganizationNewName] = useState('')
+  const [organization_new_homepage, setOrganizationNewHomePage] = useState('')
+  const [organization_new_size, setOrganizationNewSize] = useState('1')
 
   const [allUsers, setAllUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState(null)
@@ -90,6 +92,12 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       </div>
       <div>
         Virka:
+        <input
+          id="telegram"
+          type="telegram"
+          value={telegram}
+          onChange={(e) => setTelegram(e.target.value)}
+        />
       </div>
       <div>
         Tyyppi:
@@ -194,48 +202,96 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const handleCheckboxChange = (event) => {
     setIsChecked(event.target.checked)
   }
-
+  /*
+  const organizationPages = () => (
+    <form>
+      <div>
+        Nimi:
+        <input
+          id="organization_name"
+          type="organization_name"
+          value={organization.name}
+          onChange={(e) => setOrganizationName(e.target.value)}
+          />
+        <p>Koko:
+          <input
+            id="organization_size"
+            type="organization_size"
+            value={organization.size}
+            onChange={(e) => setOrganizationSize(e.target.value)}
+          />
+        </p>
+        <p>Kotisivu:
+          <input
+            id="organization_homepage"
+            type="organization_homepage"
+            value={organization.homepage}
+            onChange={(e) => setOrganizationHomePage(e.target.value)}
+          />
+        </p>
+        <p>Puheenjohtaja:</p>
+        <p>Organisaation sähköposti:
+          <input
+            id="organization_email"
+            type="organization_email"
+            value={organization.email}
+            onChange={(e) => setOrganizationEmail(e.target.value)}
+          />
+        </p>
+        <p>Klusterivastaava(t): </p>
+        <button onClick={handleOrganizationDetails} className="create-user-button" type="button">
+          Vahvista muutokset
+        </button>
+          {(role === 1 || role == 2 || role == 3) && <button onClick={() => handleDeleteOrganization(organization.id)} className="login-button" type="button">
+          Poista järjestö
+        </button>}
+      </div>
+    </form>
+  );
+  */
   // Shows more detailed information of the organizations and if the user has role 1, they can also delete the organization
   const renderOrganizationDetails = orgId => {
     const organization = organisations.find(org => org.id === orgId)
+    
     if (selectedOrg === orgId && organization) {
       return (
         <div>
-          <p>Nimi:
-            <input
-              id="organization_name"
-              type="organization_name"
-              value={organization.name}
-              onChange={(e) => setOrganizationName(e.target.value)}
-            />
-          </p>
+          Nimi:
+          <input
+            id="organization_name"
+            type="text"
+            value={organization.name}
+            //value='nimi'
+            onChange={(e) => setOrganizationNewName(e.target.value)}
+          />
           <p>Koko:
             <input
               id="organization_size"
-              type="organization_size"
+              type="text"
               value={organization.size}
-              onChange={(e) => setOrganizationSize(e.target.value)}
+              onChange={(e) => setOrganizationNewSize(e.target.value)}
             />
           </p>
           <p>Kotisivu:
             <input
               id="organization_homepage"
-              type="organization_homepage"
+              type="text"
               value={organization.homepage}
-              onChange={(e) => setOrganizationHomePage(e.target.value)}
+              onChange={(e) => setOrganizationNewHomePage(e.target.value)}
             />
           </p>
           <p>Puheenjohtaja:</p>
           <p>Organisaation sähköposti:
             <input
-              id="organization_email"
-              type="organization_email"
+              id="organization_new_email"
+              type="text"
+              //value='testi2@gmail.com'
               value={organization.email}
-              onChange={(e) => setOrganizationEmail(e.target.value)}
+              onChange={(e) => setOrganizationNewEmail(e.target.value)}
             />
           </p>
           <p>Klusterivastaava(t): </p>
-          <button onClick={handleUserDetails} className="create-user-button" type="button">
+          <button onClick={() => handleOrganizationDetails(organization.id)} className="create-user-button" type="button">
             Vahvista muutokset
           </button>
           {(role === 1 || role == 2 || role == 3) && <button onClick={() => handleDeleteOrganization(organization.id)} className="login-button" type="button">
@@ -247,15 +303,22 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     return null
   }
 
-  const handleOrganizationDetails = (event) => {
-    event.preventDefault();
-  
-    const details = {
-      organization_name: organization_name,
-      organization_size: organization_size,
-      organization_homepage: organization_homepage,
-      organization_email: organization_email
-    };
+  const organizationObject2 = { name: organization_new_name, email: organization_new_email, homepage: organization_new_homepage, size: organization_new_size }
+
+  const handleOrganizationDetails = (orgId) => {
+      axios.update_organization(`api/organizations/update_organization/10/`, organizationObject2)
+      //axiosClient.delete(`/organizations/remove/${orgId}/`)
+        .then(response => {
+          console.log('Organization created successfully!', response.data)
+          setSuccess('Järjestö muokattu onnistuneesti!')
+          setTimeout(() => setSuccess(''), 5000)
+          getOrganisations()
+          confirmUpdate = window.confirm("Oletko varma, että haluat päivittää käyttäjätietojasi?")
+
+        })
+        .catch(error => {
+          console.error('Error creating account:', error);
+        });
   }
 
   // Handles deletion of organization
