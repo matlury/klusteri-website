@@ -467,14 +467,25 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
   
     try {
-      const response = await axios.put(`/api/keys/hand_over_key/${selectedUser.id}/`, {
-        organization_name: selectedOrganization
-      })
-  
+      const accessToken = localStorage.getItem('ACCESS_TOKEN')
+      const response = await axios.put(
+        `${API_URL}/api/keys/hand_over_key/${selectedUser}/`,
+        {
+          organization_name: selectedOrganization
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }
+      )
       // Check the response and update the UI accordingly
       if (response.status === 200) {
         // Successful key handover
         setSuccess('Avaimen luovutus onnistui!')
+        setTimeout(() => {
+          setSuccess('');
+        }, 5000);
       } else {
         // Error in key handover
         setError('ERROR')
@@ -531,7 +542,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                 {hasPermission === true && showAllUsers()}
               </div>
             </div>
-            {(hasPermission === true )&& (
+            {(hasPermission === true)&& (
               <div id='centered_content' style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
                 <div id='content'>
                   <h2>Avaimen luovutus</h2>
@@ -546,8 +557,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                         onChange={handleSelectUser}
                         className='select-box'
                       >
+                        <option value="" disabled selected hidden></option>
                         {allUsers.map(user => (
-                          <option key={user.id} value={user.email}>
+                          <option key={user.id} value={user.id}>
                             {user.username} : {user.email}
                           </option>
                         ))}
@@ -563,6 +575,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                         onChange={handleSelectOrganization}
                         className='select-box'
                       >
+                        <option value="" disabled selected hidden></option>
                         <option value="HYK">HYK</option>
                         <option value="Limes">Limes</option>
                         <option value="MaO">MaO</option>
@@ -579,11 +592,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                       </select>
                     </div>
                     <div style={{ height: '20px' }}></div>
-                    <div>
-                      Vastaanottaja: {selectedUser}
-                      <p></p>
-                      Organisaatio: {selectedOrganization}
-                    </div>
                     <div style={{ height: '20px' }}></div>
                     <button type='submit' className='create-user-button'>
                       Luovuta <FaKey style={{ marginLeft: '5px' }} />
