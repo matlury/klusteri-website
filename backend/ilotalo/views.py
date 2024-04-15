@@ -293,7 +293,7 @@ class AddUserOrganizationView(APIView):
         except Organization.DoesNotExist:
             return Response("Organization not found", status=status.HTTP_404_NOT_FOUND)
         
-        user.organization.add(organization, related_name=organization.name)
+        user.organization.add(organization)
         return Response("User added to organization successfully", status=status.HTTP_201_CREATED)
 
 class EventView(viewsets.ModelViewSet):
