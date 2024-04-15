@@ -199,20 +199,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       if (prevSelectedOrg === orgId) {
         return null
       }
-<<<<<<< HEAD
       return orgId;
     });
   };
-=======
-      return orgId
-    })
-  }
-    
-  // Handles the change if you click on the checkbox
-  const handleCheckboxChange = (event) => {
-    setIsChecked(event.target.checked)
-  }
->>>>>>> main
 
   // Shows more detailed information of the organizations and if the user has role 1, they can also delete the organization
   const renderOrganizationDetails = orgId => {
@@ -229,7 +218,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           <p>Organisaation sähköposti: {organization.email}</p>
           <p>Klusterivastaava(t): </p>
           <br></br>
-<<<<<<< HEAD
           Nimi:
           <input
             id="organization_name"
@@ -269,37 +257,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             Vahvista muutokset
           </button>
           {(role === 1 || role == 2 || role == 3) && <button onClick={() => handleDeleteOrganization(organization.id)} className="login-button" type="button">
-=======
-          <form>
-            <div>
-              Uusi salasana:
-              <input
-                id='orgPassword'
-                value={orgPassword}
-                type='password'
-                onChange={(e) => setNewOrgPassword(e.target.value)} />
-            </div>
-            <div>
-              Toista uusi salasana:
-              <input
-                id='confirmOrgPassword'
-                type='password'
-                value={confirmOrgPassword}
-                onChange={(e) => setConfirmOrgPassword(e.target.value)} />
-            </div>
-          </form>
-          <div>
-            <label>
-              <p style={{ display: 'inline-block', marginRight: '10px' }}>* Nimet saa julkaista</p>
-              <input
-                type='checkbox'
-                checked={isChecked}
-                onChange={handleCheckboxChange} />
-            </label>
-          </div>
-          <br />
-          {hasPermission === true && <button onClick={() => handleDeleteOrganization(organization.id)} className='login-button' type='button'>
->>>>>>> main
             Poista järjestö
           </button>}
         </div>
