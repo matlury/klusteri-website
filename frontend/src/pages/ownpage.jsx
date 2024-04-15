@@ -30,6 +30,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const [selectedOrganization, setSelectedOrganization] = useState(null)
 
   const [hasPermission, setHasPermission] = useState(false)
+  const [hasPermissionOrg, setHasPermissionOrg] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -201,7 +202,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const renderOrganizationDetails = orgId => {
     const organization = organisations.find(org => org.id === orgId)
     
-    if (selectedOrg === orgId && organization) {
+    if (selectedOrg === orgId && organization && hasPermissionOrg === true) {
       return (
         <div>
           <br></br>
@@ -247,10 +248,10 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             />
           </p>
           <p>Klusterivastaava(t): </p>
-          <button onClick={() => handleOrganizationDetails(organization.id)} className="create-user-button" type="button">
+          {hasPermissionOrg === true && <button onClick={() => handleOrganizationDetails(organization.id)} className="create-user-button" type="button">
             Vahvista muutokset
-          </button>
-          {(role === 1 || role == 2 || role == 3) && <button onClick={() => handleDeleteOrganization(organization.id)} className="login-button" type="button">
+          </button>}
+          {hasPermission === true && <button onClick={() => handleDeleteOrganization(organization.id)} className="login-button" type="button">
             Poista järjestö
           </button>}
         </div>
@@ -262,7 +263,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const newOrganizationObject = { name: organization_new_name, email: organization_new_email, homepage: organization_new_homepage, size: organization_new_size }
 
   const handleOrganizationDetails = (orgId) => {
-    const confirmUpdate = window.confirm("Oletko varma, että haluat päivittää käyttäjätietojasi?")
+    const confirmUpdate = window.confirm("Oletko varma, että haluat päivittää organisaatiota?")
 
     if (confirmUpdate) {
       axiosClient.put(`/organizations/update_organization/${orgId}/`, newOrganizationObject)
@@ -548,8 +549,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       const currentUser = response.data
       if (currentUser.role === 1) {
         setHasPermission(true)
+        setHasPermissionOrg(true)
+      } else if (currentUser.role == 2 || currentUser.role == 3) {
+        setHasPermissionOrg(true)
+        setHasPermission(false)
       } else {
         setHasPermission(false)
+        setHasPermissionOrg(false)
       }
     })
   }
@@ -566,6 +572,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
               <div id='leftleft_content'>
                 {userPage()}
                 {organisationPage()}
+                {hasPermissionOrg == true && renderOrganizationDetails}
                 {hasPermission === true && createOrganization()}
                 {hasPermission === true && showAllUsers()}
               </div>
