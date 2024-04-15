@@ -97,12 +97,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       </div>
       <div>
         Virka:
-        <input
-          id="telegram"
-          type="telegram"
-          value={telegram}
-          onChange={(e) => setTelegram(e.target.value)}
-        />
       </div>
       <div>
         Tyyppi:
