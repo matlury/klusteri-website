@@ -3,7 +3,8 @@ module.exports = {
   env: {
     browser: true,
     es2020: true,
-    jest: true
+    jest: true,
+    'cypress/globals': true
   },
   extends: [
     'eslint:recommended',
@@ -14,7 +15,7 @@ module.exports = {
   ignorePatterns: ['dist', '.eslintrc.cjs'],
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
   settings: { react: { version: '18.2' } },
-  plugins: ['react-refresh'],
+  plugins: ['react-refresh', 'cypress'],
   rules: {
     'react-refresh/only-export-components': [
       'warn',

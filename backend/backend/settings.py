@@ -16,6 +16,7 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+print("cypress equals", os.environ.get("CYPRESS"))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -34,7 +35,10 @@ ALLOWED_HOSTS = [
     "klusteri-website-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi",
     "localhost",
     "127.0.0.1",
-    "klusteri-website-db-test-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi"
+    "klusteri-website-db-test-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi",
+    "klusteri-website-back-matlury-test.apps.ocp-prod-0.k8s.it.helsinki.fi",
+    "klusteri-website-front-matlury-test.apps.ocp-prod-0.k8s.it.helsinki.fi",
+    "klusteri-website-matlury-test.apps.ocp-prod-0.k8s.it.helsinki.fi"
 ]
 
 
@@ -97,11 +101,10 @@ DATABASES = {
 }
 """
 
-
 DATABASES = {
     "default": {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv("TEST_DB_NAME"), 
+        'NAME': os.getenv("CYPRESS_DB_NAME") if os.getenv("CYPRESS") in ["True"] else os.getenv("TEST_DB_NAME"), 
         'USER': os.getenv("TEST_DB_USER"),
         'PASSWORD': os.getenv("TEST_DB_PASSWORD"),
         'HOST': os.getenv("TEST_DB_HOST"), 
@@ -120,7 +123,6 @@ if os.environ.get('GITHUB_WORKFLOW'):
            'PORT': '5432',
         }
     }
-
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -179,4 +181,9 @@ AUTH_USER_MODEL = "ilotalo.User"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-CORS_ORIGIN_WHITELIST = ["http://localhost:5173", "https://klusteri-website-front-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi", "http://localhost:5174"]
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "https://klusteri-website-front-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi",
+    "https://klusteri-website-front-matlury-test.apps.ocp-prod-0.k8s.it.helsinki.fi"
+]

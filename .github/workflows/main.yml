@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
+      #Start a postgres container for test runs
       postgres:
         image: postgres:latest
         env:
@@ -27,21 +28,41 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+
       - name: Install Poetry
         working-directory: ./backend
         run: pip install poetry
+
       - name: Install dependencies
-        working-directory: ./backend
-        run: poetry install
+        run: |
+          cd backend
+          poetry install
+          cd ../frontend
+          npm install
+
       - name: Make migrations
         working-directory: ./backend
         run: poetry run python manage.py migrate
+
       - name: Run tests
         working-directory: ./backend
-        env:
-          EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
-          EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
         run: poetry run coverage run --branch -m pytest
+
+      #Cypress tests require backend to be running
+      - name: Start backend
+        run: |
+          cd backend
+          poetry run python manage.py runserver &
+
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v3
+        with:
+          working-directory: ./frontend
+          project: ./
+          browser: chrome
+          build: npm run build
+          start: npm run dev
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
