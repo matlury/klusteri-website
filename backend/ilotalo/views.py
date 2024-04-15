@@ -293,7 +293,7 @@ class AddUserOrganizationView(APIView):
         except Organization.DoesNotExist:
             return Response("Organization not found", status=status.HTTP_404_NOT_FOUND)
         
-        user.organization.add(organization)
+        user.organization.add(organization, related_name=organization.name)
         return Response("User added to organization successfully", status=status.HTTP_201_CREATED)
 
 class EventView(viewsets.ModelViewSet):
@@ -639,13 +639,19 @@ class HandOverKeyView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        # Check if the request contains unwanted data
+        if (len(request.data.keys())) > 1:
+            return Response(
+                "You can only hand over a Klusteri key through this endpoint",
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         # Check if the organization's name is valid
         if organization_name not in organization_list:
             return Response("Organization not found", status=status.HTTP_404_NOT_FOUND)
         
-        users_keys = user_to_update.keys
-
         # Update the user's key list
+        users_keys = user_to_update.keys
         users_keys[organization_name] = True
 
         serializer = UserUpdateSerializer(
