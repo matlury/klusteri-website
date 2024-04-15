@@ -205,6 +205,14 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     if (selectedOrg === orgId && organization) {
       return (
         <div>
+          <br></br>
+          <p>Nimi: {organization.name}</p>
+          <p>Koko: {organization.size}</p>
+          <p>Kotisivu: {organization.homepage}</p>
+          <p>Puheenjohtaja:</p>
+          <p>Organisaation sähköposti: {organization.email}</p>
+          <p>Klusterivastaava(t): </p>
+          <br></br>
           Nimi:
           <input
             id="organization_name"
@@ -255,19 +263,21 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const newOrganizationObject = { name: organization_new_name, email: organization_new_email, homepage: organization_new_homepage, size: organization_new_size }
 
   const handleOrganizationDetails = (orgId) => {
+    const confirmUpdate = window.confirm("Oletko varma, että haluat päivittää käyttäjätietojasi?")
+
+    if (confirmUpdate) {
       axiosClient.put(`/organizations/update_organization/${orgId}/`, newOrganizationObject)
-      //axiosClient.delete(`/organizations/remove/${orgId}/`)
         .then(response => {
           console.log('Organization created successfully!', response.data)
           setSuccess('Järjestö muokattu onnistuneesti!')
           setTimeout(() => setSuccess(''), 5000)
           getOrganisations()
-          confirmUpdate = window.confirm("Oletko varma, että haluat päivittää käyttäjätietojasi?")
 
         })
         .catch(error => {
           console.error('Error creating account:', error);
         });
+    }
   }
 
   // Handles deletion of organization
