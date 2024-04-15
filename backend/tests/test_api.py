@@ -1820,3 +1820,82 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(self.muokkaus_user["rights_for_reservation"], True)
+    
+    def test_hand_over_key_valid(self):
+        """A user with permission can hand over a Klusteri key"""
+        
+        # Hand over a key to a regular user with LeppisPJ
+        user_id = User.objects.all()[0].id
+        response = self.client.put(
+            f"http://localhost:8000/api/keys/hand_over_key/{user_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"organization_name": "Matrix"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data["keys"]["Matrix"])
+    
+    def test_hand_over_key_invalid(self):
+        """Everything that can go wrong with handing over a Klusteri key"""
+
+        # Attempt handing over a key without permission
+        user_id = User.objects.all()[1].id
+        response = self.client.put(
+            f"http://localhost:8000/api/keys/hand_over_key/{user_id}/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={"organization_name": "Matrix"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, "No permission for handing over a key")
+        
+        # Attempt handing over a key to a nonexistent user
+        user_id = 2500000
+        response = self.client.put(
+            f"http://localhost:8000/api/keys/hand_over_key/{user_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"organization_name": "Matrix"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data, "User not found")
+
+        # Forget to include organization_name in the request
+        user_id = User.objects.all()[0].id
+        response = self.client.put(
+            f"http://localhost:8000/api/keys/hand_over_key/{user_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"my_name_is": "Marshall"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, "Provide the name of the organization")
+
+        # Attempt handing over a Klusteri key of a nonexistent organization
+        response = self.client.put(
+            f"http://localhost:8000/api/keys/hand_over_key/{user_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"organization_name": "RocketScientists"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data, "Organization not found")
+
+        # Attempt including additional data to the request
+        response = self.client.put(
+            f"http://localhost:8000/api/keys/hand_over_key/{user_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "organization_name": "Matrix",
+                "email": "newemail@gmail.com"
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, "You can only hand over a Klusteri key through this endpoint")
