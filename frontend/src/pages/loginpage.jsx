@@ -92,7 +92,7 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
         </>
       ) : (
         <form>
-          <h3>Sisään kirjautuminen</h3>
+          <h3>Sisäänkirjautuminen</h3>
           <div className='form-group'>
             <label htmlFor='email'>Sähköposti:</label>
             <input
