@@ -5,7 +5,7 @@ import OwnKeys from '../../src/pages/ownkeys'
 test('renders OwnKeys component when not logged in', () => {
   const { getByText } = render(<OwnKeys isLoggedIn={false}/>)
 
-  expect(getByText('Kirjaudu sisään muokataksesi tietoja')).toBeInTheDocument()
+  expect(getByText('Kirjaudu sisään')).toBeInTheDocument()
 
 })
 

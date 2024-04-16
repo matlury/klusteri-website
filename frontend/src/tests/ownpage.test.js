@@ -16,7 +16,7 @@ const user = {
 describe('OwnPage Component', () => {
     it('opens without logging in', () => {
         const { getByText } = render(<OwnPage isLoggedIn={false} />)
-        expect(getByText('Kirjaudu sisään muokataksesi tietoja')).toBeInTheDocument()
+        expect(getByText('Kirjaudu sisään')).toBeInTheDocument()
     })
 
     it('opens with role 5', () => {

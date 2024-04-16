@@ -3,7 +3,6 @@ describe('Frontpage', () => {
   beforeEach(function() {
     //Reset the testing database
     cy.request('POST', 'http://localhost:8000/api/testing/reset')
-  
     cy.visit('http://localhost:5173')
   })
 
@@ -137,6 +136,43 @@ describe('Frontpage', () => {
     cy.get('#password').type('salasana123')
     cy.contains('Kirjaudu sisään').click()
     cy.contains('Hei testuser!')
+  })
+})
+
+describe('Ownpage', () => {
+  beforeEach(function() {
+    cy.request('POST', 'http://localhost:8000/api/testing/reset')
+    cy.visit('http://localhost:5173/omat_tiedot')
+  })
+
+  it('logging in works', function() {
+    cy.on('uncaught:exception', () => {
+      return false
+    })
+
+    cy.contains('Luo uusi käyttäjä').click()
+    cy.contains('Telegram (valinnainen):')
+    cy.get('#usernameInput').type('testuser')
+    cy.get('#passwordInput').type('salasana123')
+    cy.get('#confirmPasswordInput').type('salasana123')
+    cy.get('#emailInput').type('testuser@gmail.com')
+    cy.get('#telegramInput').type('testtg')
+    cy.contains('Luo käyttäjä').click()
+
+    cy.visit('http://localhost:5173/omat_tiedot')
+    cy.wait(500)
+
+    cy.get('#email').type('testuser@gmail.com')
+    cy.get('#password').type('salasana123')
+    cy.get('.login-button').click()
+
+    cy.wait(500)
+
+    cy.contains('Hei testuser!')
+    cy.contains('Käyttäjänimi:')
+    cy.contains('Sähköposti:')
+    cy.contains('Rooli:')
+    cy.contains('Järjestöt')
   })
 })
 
