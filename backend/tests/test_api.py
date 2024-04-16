@@ -311,16 +311,73 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(User.objects.count(), self.user_count)
 
     def test_delete_user(self):
-        """A user can be deleted"""
+        """LeppisPJ or Leppisvarapj can delete user"""
+
+        # create an user
+        created_user = self.client.post(
+            "http://localhost:8000/api/users/register",
+            data={
+                "username": "christina",
+                "password": "vahvaSalasana1234",
+                "email": "regina.gaudium@gmail.com",
+                "telegram": "christina",
+                "role": 5,
+                "keys": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                }
+            },
+            format="json",
+        )
+
+        user_id = created_user.data['id']
+        response = self.client.delete(
+            f"http://localhost:8000/api/users/delete_user/{user_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+    def test_delete_user_as_tavallinen(self):
+        """LeppisPJ or Leppisvarapj can delete user"""
+
+        # create an user
+        created_user = self.client.post(
+            "http://localhost:8000/api/users/register",
+            data={
+                "username": "christina",
+                "password": "vahvaSalasana1234",
+                "email": "regina.gaudium@gmail.com",
+                "telegram": "christina",
+                "role": 5,
+                "keys": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                }
+            },
+            format="json",
+        )
+
+        # try to delete user as a Tavallinen
+        user_id = created_user.data['id']
+        response = self.client.delete(
+            f"http://localhost:8000/api/users/delete_user/{user_id}/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    def test_delete_user_notfound(self):
+        """LeppisPJ or Leppisvarapj can delete user"""
+
+        # try to delete user that doesn't exist
+        response = self.client.delete(
+            f"http://localhost:8000/api/users/delete_user/10/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         
-        # When running the entire test suite, a hard coded id in the url will cause a 404 response
-        # The following way works like intended
-        user_id = User.objects.all()[0].id
-        response = self.client.delete(f"http://localhost:8000/api/listobjects/users/{user_id}/", format="json")
-
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(User.objects.count(), self.user_count-1)
-
     def test_register_user_with_duplicate(self):
         """Creating a user fails if their telegram name is taken"""
 

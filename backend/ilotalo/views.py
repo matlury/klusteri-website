@@ -30,20 +30,21 @@ More info: https://www.django-rest-framework.org/api-guide/views/
 """
 
 
-class UserView(viewsets.ModelViewSet):
+class UserView(viewsets.ReadOnlyModelViewSet):
     """
     Displays a list of all User objects at <baseurl>/users/
-    Actions provided by ModelViewSet:
-        .list(), .retrieve(), .create(), .update(), .partial_update(), .delete()
-    Each method listed above can be overwritten for customized object management
+    Only supports list and retrieve actions (read-only)
     """
 
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
 
-class OrganizationView(viewsets.ModelViewSet):
-    """Displays a list of all Organization objects at <baseurl>/organizations/"""
+class OrganizationView(viewsets.ReadOnlyModelViewSet):
+    """
+    Displays a list of all Organization objects at <baseurl>/organizations/
+    Only supports list and retrieve actions (read-only)
+    """
 
     serializer_class = OrganizationSerializer
     queryset = Organization.objects.all()
@@ -163,6 +164,31 @@ class UpdateUserView(APIView):
         else:
             return Response("You are not allowed to edit users", status=status.HTTP_400_BAD_REQUEST)
 
+class RemoveUserView(APIView):
+    """View for removing an user <baseurl>/api/users/delete_user/<int:pk>/"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, pk):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [LEPPISPJ, LEPPISVARAPJ]:
+            return Response(
+                "You can't remove users",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            user_to_remove = User.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            return Response(
+                "User not found", status=status.HTTP_404_NOT_FOUND
+            )
+
+        user_to_remove.delete()
+
+        return Response(f"User {user_to_remove.username} successfully removed", status=status.HTTP_200_OK)
+
 class CreateOrganizationView(APIView):
     """View for creating a new organization <baseurl>/api/organizations/create"""
 
@@ -187,7 +213,7 @@ class CreateOrganizationView(APIView):
 
 
 class RemoveOrganizationView(APIView):
-    """View for creating a new organization <baseurl>/api/organizations/create"""
+    """View for removing an organization <baseurl>/api/organizations/delete_event/<int:pk>/"""
 
     permission_classes = [permissions.IsAuthenticated]
 
