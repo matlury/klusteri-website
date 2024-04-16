@@ -24,7 +24,8 @@ class TestDjangoAPI(TestCase):
             "keys": {
                 "TKO-äly": False,
                 "Matrix": False
-            }
+            },
+            "rights_for_reservation": True
         }
 
         response = self.client.post(
@@ -56,7 +57,8 @@ class TestDjangoAPI(TestCase):
             "email": "leppispj@gmail.com",
             "telegram": "tgleppispj",
             "role": 1,
-            "keys": None
+            "keys": None,
+            "rights_for_reservation": True
         }
 
         response = self.client.post(
@@ -92,7 +94,8 @@ class TestDjangoAPI(TestCase):
             "keys": {
                 "TKO-äly": False,
                 "Matrix": True
-            }
+            },
+            "rights_for_reservation": True
         }
 
         response = self.client.post(
@@ -129,7 +132,8 @@ class TestDjangoAPI(TestCase):
             "keys": {
                 "TKO-äly": False,
                 "Matrix": False
-            }
+            },
+            "rights_for_reservation": True
         }
 
         response = self.client.post(
@@ -154,8 +158,47 @@ class TestDjangoAPI(TestCase):
         )
 
         self.avaimellinen = response.data
-        self.avaimellinen_user = self.muokkaus
-        self.user_count = 4
+        self.avaimellinen_user = self.avaimellinen
+
+        # Create a mock JarjestoPJ user for testing
+        jarjestopj_data = self.data = {
+            "username": "JarjestoPJ",
+            "password": "vahvaSalasana1234",
+            "email": "jarjestopj@gmail.com",
+            "telegram": "jarjestopj",
+            "role": 6,
+            "keys": {
+                "TKO-äly": False,
+                "Matrix": False
+            },
+            "rights_for_reservation": True
+        }
+
+        response = self.client.post(
+            "http://localhost:8000/api/users/register",
+            data=jarjestopj_data,
+            format="json",
+        )
+
+        self.jarjestopj_id = response.data["id"]
+
+        response = self.client.post(
+            "http://localhost:8000/api/token/",
+            data={"email": "jarjestopj@gmail.com", "password": "vahvaSalasana1234"},
+            format="json",
+        )
+        self.jarjestopj_access_token = response.data["access"]
+        self.jarjestopj_refresh_token = response.data["refresh"]
+
+        response = self.client.get(
+            "http://localhost:8000/api/users/userinfo",
+            headers={"Authorization": f"Bearer {self.jarjestopj_access_token}"},
+        )
+
+        self.jarjestopj = response.data
+        self.jarjestopj_user = self.jarjestopj
+
+        self.user_count = 5
 
     def test_user_has_correct_key_list(self):
         """A new user receives a list of Matlu organizations for key management"""
@@ -902,6 +945,30 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["room"], "Toinen huone")
     
+    def test_create_event_no_rights(self):
+        """An authorized user can create an event"""
+
+        # change the reservation rights to false
+        user = User.objects.get(id=self.leppis_id)
+        user.rights_for_reservation = False
+        user.save()
+
+        # try to create an event
+        event_created = self.client.post(
+            "http://localhost:8000/api/events/create_event",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "room": "Kattilahuone",
+                "reservation": "Varaus suunnitteluun",
+                "description": "Suunnitellaan juhlia",
+                "responsible": "Pete",
+                "open": True,
+            },
+            format="json",
+        )
+
+        self.assertEqual(event_created.status_code, status.HTTP_400_BAD_REQUEST)
+    
     def test_update_room_invalid(self):
         """An authorized user can update event room"""
 
@@ -971,6 +1038,70 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(event_created.data["room"], "Kattilahuone")
+    
+    def test_update_room_no_rights(self):
+        """An authorized user can update event room"""
+
+        # first create an event to update it
+        event_created = self.client.post(
+            "http://localhost:8000/api/events/create_event",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "room": "Kattilahuone",
+                "reservation": "Varaus suunnitteluun",
+                "description": "Suunnitellaan juhlia",
+                "responsible": "Pete",
+                "open": True,
+            },
+            format="json",
+        )
+
+        # change the reservation rights to false
+        user = User.objects.get(id=self.leppis_id)
+        user.rights_for_reservation = False
+        user.save()
+
+        # try to update an event
+        event_id = event_created.data['id']
+        response = self.client.put(
+            f"http://localhost:8000/api/events/update_event/{event_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"room": "Pelihuone"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    def test_delete_event_no_rights(self):
+        """An authorized user can update event room"""
+
+        # first create an event to delete it
+        event_created = self.client.post(
+            "http://localhost:8000/api/events/create_event",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "room": "Kattilahuone",
+                "reservation": "Varaus suunnitteluun",
+                "description": "Suunnitellaan juhlia",
+                "responsible": "Pete",
+                "open": True,
+            },
+            format="json",
+        )
+
+        # change the reservation rights to false
+        user = User.objects.get(id=self.leppis_id)
+        user.rights_for_reservation = False
+        user.save()
+
+        # try to delete an event
+        event_id = event_created.data['id']
+        response = self.client.delete(
+            f"http://localhost:8000/api/events/delete_event/{event_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_deleting_event(self):
         """LeppisPJ can delete an event"""
@@ -1630,3 +1761,141 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_change_rights_reservation(self):
+        """An authorized user can change the rights for reservation"""
+
+        # change Muokkaus user rights from true to false as Jarjestopj user
+        user_id = User.objects.all()[2].id
+        response = self.client.put(
+            f"http://localhost:8000/api/users/change_rights_reservation/{user_id}/",
+            headers={"Authorization": f"Bearer {self.jarjestopj_access_token}"},
+            data={"rights_for_reservation": False},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["rights_for_reservation"], False)
+    
+    def test_change_rights_reservation_as_tavallinen(self):
+        """An authorized user can change the rights for reservation"""
+
+        # try to change the rights of Muokkaus user as Tavallinen user
+        user_id = User.objects.all()[2].id
+        response = self.client.put(
+            f"http://localhost:8000/api/users/change_rights_reservation/{user_id}/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={"rights_for_reservation": False},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(self.muokkaus_user["rights_for_reservation"], True)
+    
+    
+    def test_change_rights_reservation_notfound(self):
+        """An authorized user can change the rights for reservation"""
+
+        # try to change the rights of an user that doesn't exist
+        response = self.client.put(
+            f"http://localhost:8000/api/users/change_rights_reservation/10/",
+            headers={"Authorization": f"Bearer {self.jarjestopj_access_token}"},
+            data={"rights_for_reservation": False},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_change_rights_reservation_invalid(self):
+        """An authorized user can change the rights for reservation"""
+
+        # try to change the rights with invalid input
+        user_id = User.objects.all()[2].id
+        response = self.client.put(
+            f"http://localhost:8000/api/users/change_rights_reservation/{user_id}/",
+            headers={"Authorization": f"Bearer {self.jarjestopj_access_token}"},
+            data={"rights_for_reservation": ""},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(self.muokkaus_user["rights_for_reservation"], True)
+    
+    def test_hand_over_key_valid(self):
+        """A user with permission can hand over a Klusteri key"""
+        
+        # Hand over a key to a regular user with LeppisPJ
+        user_id = User.objects.all()[0].id
+        response = self.client.put(
+            f"http://localhost:8000/api/keys/hand_over_key/{user_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"organization_name": "Matrix"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data["keys"]["Matrix"])
+    
+    def test_hand_over_key_invalid(self):
+        """Everything that can go wrong with handing over a Klusteri key"""
+
+        # Attempt handing over a key without permission
+        user_id = User.objects.all()[1].id
+        response = self.client.put(
+            f"http://localhost:8000/api/keys/hand_over_key/{user_id}/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={"organization_name": "Matrix"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, "No permission for handing over a key")
+        
+        # Attempt handing over a key to a nonexistent user
+        user_id = 2500000
+        response = self.client.put(
+            f"http://localhost:8000/api/keys/hand_over_key/{user_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"organization_name": "Matrix"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data, "User not found")
+
+        # Forget to include organization_name in the request
+        user_id = User.objects.all()[0].id
+        response = self.client.put(
+            f"http://localhost:8000/api/keys/hand_over_key/{user_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"my_name_is": "Marshall"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, "Provide the name of the organization")
+
+        # Attempt handing over a Klusteri key of a nonexistent organization
+        response = self.client.put(
+            f"http://localhost:8000/api/keys/hand_over_key/{user_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"organization_name": "RocketScientists"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data, "Organization not found")
+
+        # Attempt including additional data to the request
+        response = self.client.put(
+            f"http://localhost:8000/api/keys/hand_over_key/{user_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "organization_name": "Matrix",
+                "email": "newemail@gmail.com"
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, "You can only hand over a Klusteri key through this endpoint")

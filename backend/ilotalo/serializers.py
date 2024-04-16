@@ -17,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "password", "email", "telegram", "role", "organization", "keys")
+        fields = ("id", "username", "password", "email", "telegram", "role", "organization", "keys", "rights_for_reservation")
 
     def validate_telegram(self, tgname):
         """Checks if a telegram name is taken"""
@@ -49,7 +49,7 @@ class UserSerializer(serializers.ModelSerializer):
             email=validated_data["email"],
             telegram=validated_data.get("telegram", ""),
             role=validated_data["role"],
-            keys=validated_data["keys"],
+            keys=validated_data["keys"]
         )
 
         return user
@@ -61,7 +61,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "email", "telegram", "role")
+        fields = ("id", "username", "email", "telegram", "role", "keys", "rights_for_reservation")
 
     def validate_telegram(self, tgname):
         """Checks if a telegram name is taken"""

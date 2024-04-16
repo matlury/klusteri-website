@@ -98,6 +98,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # many-to-many relationship links User model and Organization model
     organization = models.ManyToManyField(Organization, related_name="organization")
     keys = models.JSONField(default=dict, null=True)
+    rights_for_reservation = models.BooleanField(default=True)
 
     objects = UserAccountManager()
 

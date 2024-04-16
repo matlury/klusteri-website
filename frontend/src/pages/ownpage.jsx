@@ -14,14 +14,16 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   const [organisations, setOrganisations] = useState([])
   const [selectedOrg, setSelectedOrg] = useState(null)
-  const [orgPassword, setNewOrgPassword] = useState('')
-  const [confirmOrgPassword, setConfirmOrgPassword] = useState('')
-  const [isChecked, setIsChecked] = useState(false)
 
   const [organization_email, setOrganizationEmail] = useState('')
   const [organization_name, setOrganizationName] = useState('')
   const [organization_homepage, setOrganizationHomePage] = useState('')
   const [organization_size, setOrganizationSize] = useState('1')
+
+  const [organization_new_email, setOrganizationNewEmail] = useState('')
+  const [organization_new_name, setOrganizationNewName] = useState('')
+  const [organization_new_homepage, setOrganizationNewHomePage] = useState('')
+  const [organization_new_size, setOrganizationNewSize] = useState('1')
 
   const [allUsers, setAllUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState(null)
@@ -63,7 +65,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const userPage = () => (
     <form>
       <div>
-        Käyttäjänimi:
+      Käyttäjänimi:
         <input
           id='username'
           type='username'
@@ -191,64 +193,90 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       if (prevSelectedOrg === orgId) {
         return null
       }
-      return orgId
-    })
-  }
-    
-  // Handles the change if you click on the checkbox
-  const handleCheckboxChange = (event) => {
-    setIsChecked(event.target.checked)
-  }
+      return orgId;
+    });
+  };
 
   // Shows more detailed information of the organizations and if the user has role 1, they can also delete the organization
   const renderOrganizationDetails = orgId => {
     const organization = organisations.find(org => org.id === orgId)
+    
     if (selectedOrg === orgId && organization) {
       return (
         <div>
+          <br></br>
           <p>Nimi: {organization.name}</p>
-          <p>Käyttäjätunnus: </p>
           <p>Koko: {organization.size}</p>
           <p>Kotisivu: {organization.homepage}</p>
           <p>Puheenjohtaja:</p>
-          <p>Puheenjohtajan sähköposti: {organization.email}</p>
+          <p>Organisaation sähköposti: {organization.email}</p>
           <p>Klusterivastaava(t): </p>
           <br></br>
-          <form>
-            <div>
-              Uusi salasana:
-              <input
-                id='orgPassword'
-                value={orgPassword}
-                type='password'
-                onChange={(e) => setNewOrgPassword(e.target.value)} />
-            </div>
-            <div>
-              Toista uusi salasana:
-              <input
-                id='confirmOrgPassword'
-                type='password'
-                value={confirmOrgPassword}
-                onChange={(e) => setConfirmOrgPassword(e.target.value)} />
-            </div>
-          </form>
-          <div>
-            <label>
-              <p style={{ display: 'inline-block', marginRight: '10px' }}>* Nimet saa julkaista</p>
-              <input
-                type='checkbox'
-                checked={isChecked}
-                onChange={handleCheckboxChange} />
-            </label>
-          </div>
-          <br />
-          {hasPermission === true && <button onClick={() => handleDeleteOrganization(organization.id)} className='login-button' type='button'>
+          Nimi:
+          <input
+            id="organization_name"
+            type="text"
+            //value={organization.name}
+            //value='nimi'
+            onChange={(e) => setOrganizationNewName(e.target.value)}
+          />
+          <p>Koko:
+            <input
+              id="organization_size"
+              type="text"
+              //value={organization.size}
+              onChange={(e) => setOrganizationNewSize(e.target.value)}
+            />
+          </p>
+          <p>Kotisivu:
+            <input
+              id="organization_homepage"
+              type="text"
+              //value={organization.homepage}
+              onChange={(e) => setOrganizationNewHomePage(e.target.value)}
+            />
+          </p>
+          <p>Puheenjohtaja:</p>
+          <p>Organisaation sähköposti:
+            <input
+              id="organization_new_email"
+              type="text"
+              //value='testi2@gmail.com'
+              //value={organization.email}
+              onChange={(e) => setOrganizationNewEmail(e.target.value)}
+            />
+          </p>
+          <p>Klusterivastaava(t): </p>
+          <button onClick={() => handleOrganizationDetails(organization.id)} className="create-user-button" type="button">
+            Vahvista muutokset
+          </button>
+          {(role === 1 || role == 2 || role == 3) && <button onClick={() => handleDeleteOrganization(organization.id)} className="login-button" type="button">
             Poista järjestö
           </button>}
         </div>
       )
     }
     return null
+  }
+
+  const newOrganizationObject = { name: organization_new_name, email: organization_new_email, homepage: organization_new_homepage, size: organization_new_size }
+
+  const handleOrganizationDetails = (orgId) => {
+    const confirmUpdate = window.confirm("Oletko varma, että haluat päivittää käyttäjätietojasi?")
+
+    if (confirmUpdate) {
+      axiosClient.put(`/organizations/update_organization/${orgId}/`, newOrganizationObject)
+        .then(response => {
+          console.log('Organization created successfully!', response.data)
+          setSuccess('Järjestö muokattu onnistuneesti!')
+          setTimeout(() => setSuccess(''), 5000)
+          getOrganisations()
+
+        })
+        .catch(error => {
+          console.error('Error creating account:', error);
+        });
+    }
   }
 
   // Handles deletion of organization
@@ -451,9 +479,49 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
   }
 
-  const handleKeySubmit = (event) => {
+  const handleKeySubmit = async (event) => {
     event.preventDefault()
-    //Ei tee mitään vielä
+  
+    if (!selectedUser || !selectedOrganization) {
+      console.error('Please select a user and an organization')
+      return
+    }
+  
+    // Display a confirmation dialog before handing over the key
+    const confirmKeyHandover = window.confirm('Oletko varma että haluat luovuttaa avaimen?')
+  
+    if (!confirmKeyHandover) {
+      return
+    }
+  
+    try {
+      const accessToken = localStorage.getItem('ACCESS_TOKEN')
+      const response = await axios.put(
+        `${API_URL}/api/keys/hand_over_key/${selectedUser}/`,
+        {
+          organization_name: selectedOrganization
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }
+      )
+      // Check the response and update the UI accordingly
+      if (response.status === 200) {
+        // Successful key handover
+        setSuccess('Avaimen luovutus onnistui!')
+        setTimeout(() => {
+          setSuccess('');
+        }, 5000);
+      } else {
+        // Error in key handover
+        setError('ERROR')
+      }
+    } catch (error) {
+      console.error('Error in key handover:', error)
+      setError('Avaimen luovutus epäonnistui!')
+    }
   }
 
   const handleSelectUser = (event) => {
@@ -491,8 +559,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       {!isLoggedIn && <h3>Kirjaudu sisään</h3>}
       {isLoggedIn && (
         <div>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-          {success && <p style={{ color: 'green' }}>{success}</p>}
+          {error && <p style={{ color: 'red' }}>Virhe: {error}</p>}
+          {success && <p style={{ color: 'green' }}>Onnistui: {success}</p>}
           <div style={{ display: 'flex' }}>
             <div id='left_content'>
               <div id='leftleft_content'>
@@ -502,14 +570,14 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                 {hasPermission === true && showAllUsers()}
               </div>
             </div>
-            {hasPermission === true && (
-              <div id='centered_content'>
+            {(hasPermission === true)&& (
+              <div id='centered_content' style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
                 <div id='content'>
                   <h2>Avaimen luovutus</h2>
                   <form onSubmit={handleKeySubmit}>
-                  <div style={{ height: '20px' }}></div>
-                  <div>
-                      <label htmlFor='selectedUser'>Kenelle avain luovutetaan:</label>
+                    <div style={{ height: '20px' }}></div>
+                    <div>
+                      <label htmlFor='selectedUser'>Valitse vastaanottaja:</label>
                       <select
                         id='selectedUser'
                         name='selectedUser'
@@ -517,16 +585,17 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                         onChange={handleSelectUser}
                         className='select-box'
                       >
+                        <option value="" disabled selected hidden></option>
                         {allUsers.map(user => (
                           <option key={user.id} value={user.id}>
-                            {user.username}
+                            {user.username} : {user.email}
                           </option>
                         ))}
                       </select>
                     </div>
                     <div style={{ height: '20px' }}></div>
                     <div>
-                      <label htmlFor='selectedOrganization'>Minkä järjestön avain luovutetaan:</label>
+                      <label htmlFor='selectedOrganization'>Valitse organisaatio:</label>
                       <select
                         id='selectedOrganization'
                         name='selectedOrganization'
@@ -534,15 +603,26 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                         onChange={handleSelectOrganization}
                         className='select-box'
                       >
-                        <option value="organization1">Järjestö 1</option>
-                        <option value="organization2">Järjestö 2</option>
-                        <option value="organization3">Järjestö 3</option>
+                        <option value="" disabled selected hidden></option>
+                        <option value="HYK">HYK</option>
+                        <option value="Limes">Limes</option>
+                        <option value="MaO">MaO</option>
+                        <option value="Matrix">Matrix</option>
+                        <option value="Meridiaani">Meridiaani</option>
+                        <option value="Mesta">Mesta</option>
+                        <option value="Moodi">Moodi</option>
+                        <option value="Resonanssi">Resonanssi</option>
+                        <option value="Spektrum">Spektrum</option>
+                        <option value="Synop">Synop</option>
+                        <option value="TKO-äly">TKO-äly</option>
+                        <option value="Vasara">Vasara</option>
+                        <option value="Integralis">Integralis</option>
                       </select>
                     </div>
                     <div style={{ height: '20px' }}></div>
+                    <div style={{ height: '20px' }}></div>
                     <button type='submit' className='create-user-button'>
-                      Luovuta
-                      <FaKey style={{ marginLeft: '5px' }} />
+                      Luovuta <FaKey style={{ marginLeft: '5px' }} />
                     </button>
                   </form>
                 </div>

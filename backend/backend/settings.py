@@ -184,5 +184,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:5173",
     "http://localhost:5174",
-    "https://klusteri-website-front-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi"
+    "https://klusteri-website-front-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi",
+    "https://klusteri-website-front-matlury-test.apps.ocp-prod-0.k8s.it.helsinki.fi"
 ]
