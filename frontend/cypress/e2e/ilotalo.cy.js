@@ -138,7 +138,7 @@ describe('Frontpage', () => {
 describe('Ownpage', () => {
   beforeEach(function() {
     cy.request('POST', 'http://localhost:8000/api/testing/reset')
-    cy.visit('http://localhost:5173')
+    cy.visit('http://localhost:5173/omat_tiedot')
   })
 
   it('logging in works', function() {
@@ -156,11 +156,10 @@ describe('Ownpage', () => {
     cy.contains('Luo käyttäjä').click()
     
     cy.wait(500)
-    cy.contains('Omat tiedot').click()
 
     cy.get('#email').type('testuser@gmail.com')
     cy.get('#password').type('salasana123')
-    cy.contains('Kirjaudu sisään').click()
+    cy.contains('.login-button').click()
     cy.contains('Hei testuser!')
 
     cy.wait(500)
