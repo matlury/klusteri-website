@@ -59,11 +59,12 @@ const MyCalendar = () => {
   };
 
   useEffect(() => {
-    if (showModal && selectedSlot) {
+    if (showModal && selectedSlot && startRef.current && endRef.current) {
       startRef.current.value = moment(selectedSlot.start).format('YYYY-MM-DDTHH:mm');
       endRef.current.value = moment(selectedSlot.end).format('YYYY-MM-DDTHH:mm');
     }
   }, [showModal, selectedSlot]);
+  
 
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);
