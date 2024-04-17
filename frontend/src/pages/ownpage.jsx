@@ -217,15 +217,12 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           <input
             id="organization_name"
             type="text"
-            //value={organization.name}
-            //value='nimi'
             onChange={(e) => setOrganizationNewName(e.target.value)}
           />
           <p>Koko:
             <input
               id="organization_size"
               type="text"
-              //value={organization.size}
               onChange={(e) => setOrganizationNewSize(e.target.value)}
             />
           </p>
@@ -233,7 +230,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             <input
               id="organization_homepage"
               type="text"
-              //value={organization.homepage}
               onChange={(e) => setOrganizationNewHomePage(e.target.value)}
             />
           </p>
@@ -242,8 +238,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             <input
               id="organization_new_email"
               type="text"
-              //value='testi2@gmail.com'
-              //value={organization.email}
               onChange={(e) => setOrganizationNewEmail(e.target.value)}
             />
           </p>
