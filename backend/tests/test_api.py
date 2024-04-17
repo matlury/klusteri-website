@@ -1721,7 +1721,7 @@ class TestDjangoAPI(TestCase):
         """An authorized user can add member to organization"""
 
         # first create an organization to add member to it
-        organization_created = self.client.post(
+        self.client.post(
             "http://localhost:8000/api/organizations/create",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
@@ -1734,9 +1734,8 @@ class TestDjangoAPI(TestCase):
         )
 
         # add user to created organization
-        org_id = organization_created.data['id']
         response = self.client.put(
-            f"http://localhost:8000/api/organizations/add_user_organization/{self.muokkaus_user["id"]}/",
+            f"http://localhost:8000/api/organizations/add_user_organization/{self.muokkaus_id}/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={"organization_name": "Matrix"},
             format="json"
