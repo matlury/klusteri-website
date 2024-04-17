@@ -141,8 +141,8 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
             <div>
                 Kenestä otat vastuun?
                 <input
-                    id="responsibility"
-                    type="responsibility"
+                    id='responsibility'
+                    type='responsibility'
                     value={responsibility}
                     onChange={(e) => setResponsibility(e.target.value)}
                 />
@@ -157,7 +157,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
                         <li key={user.id}>
                             {user.username}, {user.email}    
                             <input
-                            type="checkbox"
+                            type='checkbox'
                             checked={selectedForYKV.includes(user)}
                             onChange={() => handleCheckboxChange(user)}
                         />
@@ -213,12 +213,12 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
                     getActiveResponsibilities()
                 })
                 .catch(error => {
-                    setError("YKV-sisäänkirjaus epäonnistui")
+                    setError('YKV-sisäänkirjaus epäonnistui')
                     setTimeout(() => setError(''), 5000)
                     console.error('Pyyntö ei menny läpi', error)
                 })
             } else {
-                console.log("YKV peruttu")
+                console.log('YKV peruttu')
             }
         }
         setSelectedForYKV([])

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import '../index.css'
 import NewAccountPage from './createpage'
-import axiosClient from "../axios.js"
-import { useStateContext } from "../context/ContextProvider.jsx"
+import axiosClient from '../axios.js'
+import { useStateContext } from '../context/ContextProvider.jsx'
 import CountdownTimer from './CountdownTimer'
 
 
@@ -78,13 +78,13 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
   // starts the countdown timer for automatic logout
 
   return (
-    <div id="right_content">
+    <div id='right_content'>
       {showCreateUser ? (
         <NewAccountPage />
       ) : user ? (
         <>
           <p>Hei {user.username}!</p>
-          <button className="logout-button" onClick={handleLogout}>Kirjaudu ulos</button>
+          <button className='logout-button' onClick={handleLogout}>Kirjaudu ulos</button>
           <br/>
           <br/>
           <p>Automaattinen uloskirjaus:</p>

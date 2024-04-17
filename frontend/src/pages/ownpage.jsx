@@ -199,9 +199,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       if (prevSelectedOrg === orgId) {
         return null
       }
-      return orgId;
-    });
-  };
+      return orgId
+    })
+  }
 
   // Shows more detailed information of the organizations and if the user has role 1, they can also delete the organization
   const renderOrganizationDetails = orgId => {
@@ -212,23 +212,23 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         <div>
           Nimi:
           <input
-            id="organization_name"
-            type="text"
+            id='organization_name'
+            type='text'
             value={organization_new_name}
             onChange={(e) => setOrganizationNewName(e.target.value)}
           />
           <p>Koko:
             <input
-              id="organization_size"
-              type="text"
+              id='organization_size'
+              type='text'
               value={organization_new_size}
               onChange={(e) => setOrganizationNewSize(e.target.value)}
             />
           </p>
           <p>Kotisivu:
             <input
-              id="organization_homepage"
-              type="text"
+              id='organization_homepage'
+              type='text'
               value={organization_new_homepage}
               onChange={(e) => setOrganizationNewHomePage(e.target.value)}
             />
@@ -236,17 +236,17 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           <p>Puheenjohtaja:</p>
           <p>Organisaation sähköposti:
             <input
-              id="organization_new_email"
-              type="text"
+              id='organization_new_email'
+              type='text'
               value={organization_new_email}
               onChange={(e) => setOrganizationNewEmail(e.target.value)}
             />
           </p>
           <p>Klusterivastaava(t): </p>
-          {hasPermissionOrg === true && <button onClick={() => handleOrganizationDetails(organization.id)} className="create-user-button" type="button">
+          {hasPermissionOrg === true && <button onClick={() => handleOrganizationDetails(organization.id)} className='create-user-button' type='button'>
             Vahvista muutokset
           </button>}
-          {hasPermission === true && <button onClick={() => handleDeleteOrganization(organization.id)} className="login-button" type="button">
+          {hasPermission === true && <button onClick={() => handleDeleteOrganization(organization.id)} className='login-button' type='button'>
             Poista järjestö
           </button>}
         </div>
@@ -258,7 +258,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const newOrganizationObject = { name: organization_new_name, email: organization_new_email, homepage: organization_new_homepage, size: organization_new_size }
 
   const handleOrganizationDetails = (orgId) => {
-    const confirmUpdate = window.confirm("Oletko varma, että haluat päivittää organisaatiota?")
+    const confirmUpdate = window.confirm('Oletko varma, että haluat päivittää organisaatiota?')
 
     if (confirmUpdate) {
       axiosClient.put(`/organizations/update_organization/${orgId}/`, newOrganizationObject)
@@ -270,8 +270,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
         })
         .catch(error => {
-          console.error('Error creating account:', error);
-        });
+          console.error('Error creating account:', error)
+        })
     }
   }
 
@@ -508,8 +508,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         // Successful key handover
         setSuccess('Avaimen luovutus onnistui!')
         setTimeout(() => {
-          setSuccess('');
-        }, 5000);
+          setSuccess('')
+        }, 5000)
       } else {
         // Error in key handover
         setError('ERROR')
@@ -587,7 +587,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                         onChange={handleSelectUser}
                         className='select-box'
                       >
-                        <option value="" disabled selected hidden></option>
+                        <option value='' disabled selected hidden></option>
                         {allUsers.map(user => (
                           <option key={user.id} value={user.id}>
                             {user.username} : {user.email}
@@ -605,20 +605,20 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                         onChange={handleSelectOrganization}
                         className='select-box'
                       >
-                        <option value="" disabled selected hidden></option>
-                        <option value="HYK">HYK</option>
-                        <option value="Limes">Limes</option>
-                        <option value="MaO">MaO</option>
-                        <option value="Matrix">Matrix</option>
-                        <option value="Meridiaani">Meridiaani</option>
-                        <option value="Mesta">Mesta</option>
-                        <option value="Moodi">Moodi</option>
-                        <option value="Resonanssi">Resonanssi</option>
-                        <option value="Spektrum">Spektrum</option>
-                        <option value="Synop">Synop</option>
-                        <option value="TKO-äly">TKO-äly</option>
-                        <option value="Vasara">Vasara</option>
-                        <option value="Integralis">Integralis</option>
+                        <option value='' disabled selected hidden></option>
+                        <option value='HYK'>HYK</option>
+                        <option value='Limes'>Limes</option>
+                        <option value='MaO'>MaO</option>
+                        <option value='Matrix'>Matrix</option>
+                        <option value='Meridiaani'>Meridiaani</option>
+                        <option value='Mesta'>Mesta</option>
+                        <option value='Moodi'>Moodi</option>
+                        <option value='Resonanssi'>Resonanssi</option>
+                        <option value='Spektrum'>Spektrum</option>
+                        <option value='Synop'>Synop</option>
+                        <option value='TKO-äly'>TKO-äly</option>
+                        <option value='Vasara'>Vasara</option>
+                        <option value='Integralis'>Integralis</option>
                       </select>
                     </div>
                     <div style={{ height: '20px' }}></div>
