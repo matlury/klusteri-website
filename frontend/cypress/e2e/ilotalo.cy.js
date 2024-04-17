@@ -156,7 +156,7 @@ describe('Ownpage', () => {
     cy.contains('Luo käyttäjä').click()
     
     cy.wait(500)
-    cy.contains('Etusivu').click()
+    cy.contains('Omat tiedot').click()
 
     cy.get('#email').type('testuser@gmail.com')
     cy.get('#password').type('salasana123')
