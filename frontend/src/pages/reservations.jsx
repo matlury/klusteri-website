@@ -141,9 +141,27 @@ const MyCalendar = () => {
     setShowModal(false);
   };
 
+  const handleAddNewEventClick = () => {
+    setSelectedSlot(null); 
+    setShowModal(true);
+    setEventDetails({  
+      title: '',
+      organizer: '',
+      description: '',
+      responsible: '',
+      isOpen: '',
+      room: '',
+      start: '',
+      end: '',
+    });
+  };
+
   return (
     <div className="textbox">
       <h1>Varauskalenteri</h1>
+      <div className="add-event-button">
+      <Button variant="primary" onClick={handleAddNewEventClick} style={{ backgroundColor: 'gray', borderColor: 'gray' }}>Lisää uusi tapahtuma</Button>
+      </div>
       <Calendar
         localizer={localizer}
         events={events}
@@ -166,7 +184,6 @@ const MyCalendar = () => {
           },
         })}
       />
-      
       
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
@@ -211,43 +228,42 @@ const MyCalendar = () => {
                 placeholder="Vastuuhenkilö"
                 value={eventDetails.responsible}
                 onChange={handleInputChange}
-                />
-                <textarea
-                  name="description"
-                  placeholder="Tapahtuman kuvaus"
-                  value={eventDetails.description}
-                  onChange={handleInputChange}
-                  style={{ width: '100%', height: '100px' }}
-                />
-                <select name="isOpen" value={eventDetails.isOpen} onChange={handleInputChange}>
+              />
+              <textarea
+                name="description"
+                placeholder="Tapahtuman kuvaus"
+                value={eventDetails.description}
+                onChange={handleInputChange}
+                style={{ width: '100%', height: '100px' }}
+              />
+              <select name="isOpen" value={eventDetails.isOpen} onChange={handleInputChange}>
                 <option value="tyhjä">Valitse avoimuus</option>
-                  <option value="avoin">Avoin tapahtuma</option>
-                  <option value="suljettu">Vain jäsenille</option>
-                </select>
-                <select name="room" value={eventDetails.room} onChange={handleInputChange}>
+                <option value="avoin">Avoin tapahtuma</option>
+                <option value="suljettu">Vain jäsenille</option>
+              </select>
+              <select name="room" value={eventDetails.room} onChange={handleInputChange}>
                 <option value="tyhjä">Valitse huone</option>
-                  <option value="Kokoushuone">Kokoushuone</option>
-                  <option value="Kerhotila">Kerhotila</option>
-                  <option value="Oleskelutila">Oleskelutila</option>
-                  <option value="ChristinaRegina">ChristinaRegina</option>
-                </select>
-              </div>
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
-              Sulje
+                <option value="Kokoushuone">Kokoushuone</option>
+                <option value="Kerhotila">Kerhotila</option>
+                <option value="Oleskelutila">Oleskelutila</option>
+                <option value="ChristinaRegina">ChristinaRegina</option>
+              </select>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Sulje
+          </Button>
+          {!selectedEvent && (
+            <Button variant="primary" onClick={handleAddEvent}>
+              Tallenna
             </Button>
-            {!selectedEvent && (
-              <Button variant="primary" onClick={handleAddEvent}>
-                Tallenna
-              </Button>
-            )}
-          </Modal.Footer>
-        </Modal>
-      </div>
-    );
-  };
-  
-  export default MyCalendar;
-  
+          )}
+        </Modal.Footer>
+      </Modal>
+    </div>
+  );
+};
+
+export default MyCalendar;
