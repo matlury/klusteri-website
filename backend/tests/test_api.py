@@ -1762,9 +1762,8 @@ class TestDjangoAPI(TestCase):
         )
 
         # try to add user to created organization with role5 user
-        org_id = organization_created.data['id']
         response = self.client.put(
-            f"http://localhost:8000/api/organizations/add_user_organization/{self.muokkaus_user["id"]}/",
+            f"http://localhost:8000/api/organizations/add_user_organization/{self.muokkaus_id}/",
             headers={"Authorization": f"Bearer {self.access_token}"},
             data={"organization_name": "Matrix"},
             format="json"
