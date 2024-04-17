@@ -146,25 +146,29 @@ describe('Ownpage', () => {
       return false
     })
 
-    cy.contains('Luo uusi käyttäjä').click()
-    cy.contains('Telegram (valinnainen):')
-    cy.get('#usernameInput').type('testuser')
-    cy.get('#passwordInput').type('salasana123')
-    cy.get('#confirmPasswordInput').type('salasana123')
-    cy.get('#emailInput').type('testuser@gmail.com')
-    cy.get('#telegramInput').type('testtg')
-    cy.contains('Luo käyttäjä').click()
+    const body = {
+      'username': 'leppis',
+      'password': 'salasana123',
+      'email' : 'pj@gmail.com',
+      'telegram': 'pjtg',
+      'role': 1,
+      'keys': null
+    }
 
-    cy.visit('http://localhost:5173/omat_tiedot')
-    cy.wait(500)
+    cy.request('POST', 'http://localhost:8000/api/users/register', body).then(
+      (response) => {
+        expect(response.body).to.have.property('username', 'leppis')
+      }
+    )
 
-    cy.get('#email').type('testuser@gmail.com')
+    cy.wait(1000)
+
+    cy.get('#email').type('pj@gmail.com')
     cy.get('#password').type('salasana123')
     cy.get('.login-button').click()
 
     cy.wait(500)
-
-    cy.contains('Hei testuser!')
+    cy.contains('Hei leppis!')
     cy.contains('Käyttäjänimi:')
     cy.contains('Sähköposti:')
     cy.contains('Rooli:')
@@ -243,6 +247,9 @@ describe('Ownkeys', () => {
     cy.wait(500)
     cy.contains('Hei leppis!')
     cy.contains('Omat avaimet').click()
+
+    cy.get('#responsibility').type('fuksit')
+    cy.contains('Ota vastuu').click()
 
     cy.contains('YKV-uloskirjaus').click()
     cy.contains('Select All').click()
