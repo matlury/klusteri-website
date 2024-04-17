@@ -570,6 +570,9 @@ class ResetDatabaseView(APIView):
         """
         if os.getenv("CYPRESS") in ["True"] or os.environ.get("GITHUB_WORKFLOW"):
             User.objects.all().delete()
+            Organization.objects.all().delete()
+            NightResponsibility.objects.all().delete()
+            Event.objects.all().delete()
 
             return Response("Resetting database successful", status=status.HTTP_200_OK)
         
