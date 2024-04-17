@@ -30,13 +30,15 @@ class UserAccountManager(BaseUserManager):
         - get_by_natural_key(username): retreives a user's data using USERNAME_FIELD
     """
 
-    def create_user(self, username, password, email, telegram, role, keys):
+    def create_user(self, username, password, email, telegram, role, organization, keys):
         """Create a new User object"""
         email = self.normalize_email(email)
         email = email.lower()
 
         if keys is None:
-            keys = give_keys()
+            keys = give_organization_dict()
+        if organization is None:
+            organization = give_organization_dict()
 
         user = self.model(
             username=username,
@@ -44,6 +46,7 @@ class UserAccountManager(BaseUserManager):
             email=email,
             telegram=telegram,
             role=role,
+            organization=organization,
             keys=keys
         )
 
@@ -53,9 +56,9 @@ class UserAccountManager(BaseUserManager):
 
         return user
 
-def give_keys():
+def give_organization_dict():
     """
-    Set a Users "keys" field when creating a new instance.
+    Set a Users "keys" and "organization" fields when creating a new instance.
     Returns a dict containing each Matlu organization.
     """
 
@@ -95,8 +98,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     role = models.IntegerField(default=5)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    # many-to-many relationship links User model and Organization model
-    organization = models.ManyToManyField(Organization, related_name="organization")
+    organization = models.JSONField(default=dict, null=True)
     keys = models.JSONField(default=dict, null=True)
     rights_for_reservation = models.BooleanField(default=True)
 

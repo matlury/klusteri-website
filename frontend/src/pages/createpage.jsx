@@ -106,7 +106,7 @@ const NewAccountPage = ({ onAccountCreated }) => {
         if (existingUsers.some(user => user.email === email)) {
           setError('Sähköposti on jo käytössä.')
         } else {
-          const userObject = { username, password, email, telegram, role: 5, keys: null}
+          const userObject = { username, password, email, telegram, role: 5, organization: null, keys: null}
           axios.post(`${API_URL}/api/users/register`, userObject)
             .then(response => {
               console.log(response)
