@@ -113,10 +113,6 @@ describe('Frontpage', () => {
 
   it('a user can log in', function() {
     cy.on('uncaught:exception', () => {
-      /*
-      Returning false here prevents the test from failing 
-      due to "<function name> is not a function"
-      */
       return false
     })
 
@@ -142,7 +138,7 @@ describe('Frontpage', () => {
 describe('Ownpage', () => {
   beforeEach(function() {
     cy.request('POST', 'http://localhost:8000/api/testing/reset')
-    cy.visit('http://localhost:5173/omat_tiedot')
+    cy.visit('http://localhost:5173')
   })
 
   it('logging in works', function() {
@@ -176,5 +172,83 @@ describe('Ownpage', () => {
   })
 })
 
+describe('Ownkeys', () => {
+  beforeEach(function() {
+    cy.request('POST', 'http://localhost:8000/api/testing/reset')
+    cy.visit('http://localhost:5173')
+  })
+
+  it('logging in works', function() {
+    cy.on('uncaught:exception', () => {
+      return false
+    })
+
+    const body = {
+      'username': 'leppis',
+      'password': 'salasana123',
+      'email' : 'pj@gmail.com',
+      'telegram': 'pjtg',
+      'role': 1,
+      'keys': null
+    }
+
+    cy.request('POST', 'http://localhost:8000/api/users/register', body).then(
+      (response) => {
+        expect(response.body).to.have.property('username', 'leppis')
+      }
+    )
+
+    cy.wait(1000)
+
+    cy.get('#email').type('pj@gmail.com')
+    cy.get('#password').type('salasana123')
+    cy.get('.login-button').click()
+
+    cy.wait(500)
+    cy.contains('Hei leppis!')
+    cy.contains('Omat avaimet').click()
+
+    cy.get('#responsibility').type('fuksit')
+    cy.contains('Ota vastuu').click()
+  
+    cy.contains('Vastuuhenkilö: leppis, pj@gmail.com')
+    cy.contains('Vastuussa henkilöistä: fuksit')
+  })
+
+  it('YKV-logout works', function() {
+    cy.on('uncaught:exception', () => {
+      return false
+    })
+
+    const body = {
+      'username': 'leppis',
+      'password': 'salasana123',
+      'email' : 'pj@gmail.com',
+      'telegram': 'pjtg',
+      'role': 1,
+      'keys': null
+    }
+
+    cy.request('POST', 'http://localhost:8000/api/users/register', body).then(
+      (response) => {
+        expect(response.body).to.have.property('username', 'leppis')
+      }
+    )
+
+    cy.wait(1000)
+    cy.get('#email').type('pj@gmail.com')
+    cy.get('#password').type('salasana123')
+    cy.get('.login-button').click()
+
+    cy.wait(500)
+    cy.contains('Hei leppis!')
+    cy.contains('Omat avaimet').click()
+
+    cy.contains('YKV-uloskirjaus').click()
+    cy.contains('Select All').click()
+    cy.contains('Submit').click()
+    cy.contains('YKV-uloskirjaus onnistui')
+  })
+})
 
 Cypress.on

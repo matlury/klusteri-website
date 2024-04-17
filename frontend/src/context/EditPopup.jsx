@@ -28,7 +28,7 @@ function EditPopup(props) {
     return (props.trigger) ? (
         <div className="popup">
             <div className="popup-inner">
-                <h2>Kenestä otat vastuun?</h2>
+            <label htmlFor='responsibilityedit'>Kenestä otat vastuun?</label>
                 <input
                     id= {props.resp.id}
                     type="responsibility"

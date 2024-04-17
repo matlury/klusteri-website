@@ -5,6 +5,6 @@ import Reservations from '../../src/pages/reservations'
 test('renders Reservations component', () => {
   const { getByText } = render(<Reservations />)
 
-  expect(getByText('Sivua rakennetaan vielä! :)')).toBeInTheDocument()
+  expect(getByText('Varauskalenteri')).toBeInTheDocument()
 
 })
