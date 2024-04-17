@@ -190,6 +190,11 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   // Shows the information of organizations after clicking the view-button
   const toggleOrgDetails = (orgId) => {
+    const organization = organisations.find(org => org.id === orgId)
+    setOrganizationNewName(organization.name)
+    setOrganizationNewEmail(organization.email)
+    setOrganizationNewHomePage(organization.homepage)
+    setOrganizationNewSize(organization.size)
     setSelectedOrg((prevSelectedOrg) => {
       if (prevSelectedOrg === orgId) {
         return null
@@ -205,24 +210,18 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     if (selectedOrg === orgId && organization && hasPermissionOrg === true) {
       return (
         <div>
-          <br></br>
-          <p>Nimi: {organization.name}</p>
-          <p>Koko: {organization.size}</p>
-          <p>Kotisivu: {organization.homepage}</p>
-          <p>Puheenjohtaja:</p>
-          <p>Organisaation sähköposti: {organization.email}</p>
-          <p>Klusterivastaava(t): </p>
-          <br></br>
           Nimi:
           <input
             id="organization_name"
             type="text"
+            value={organization_new_name}
             onChange={(e) => setOrganizationNewName(e.target.value)}
           />
           <p>Koko:
             <input
               id="organization_size"
               type="text"
+              value={organization_new_size}
               onChange={(e) => setOrganizationNewSize(e.target.value)}
             />
           </p>
@@ -230,6 +229,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             <input
               id="organization_homepage"
               type="text"
+              value={organization_new_homepage}
               onChange={(e) => setOrganizationNewHomePage(e.target.value)}
             />
           </p>
@@ -238,6 +238,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             <input
               id="organization_new_email"
               type="text"
+              value={organization_new_email}
               onChange={(e) => setOrganizationNewEmail(e.target.value)}
             />
           </p>
