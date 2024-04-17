@@ -263,7 +263,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   const handleOrganizationDetails = (orgId) => {
     const confirmUpdate = window.confirm("Oletko varma, että haluat päivittää käyttäjätietojasi?")
-
+    
     if (confirmUpdate) {
       axiosClient.put(`/organizations/update_organization/${orgId}/`, newOrganizationObject)
         .then(response => {

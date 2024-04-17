@@ -147,7 +147,7 @@ class UpdateUserView(APIView):
             
             if user_to_update.role in [AVAIMELLINEN, TAVALLINEN]:
                 # Check if user Muokkaus and the user being edited belong to the same organization
-                if request.user.organization.filter(id__in=user_to_update.organization.all()).exists():
+                if belongs_to_same_org(request.user, user_to_update):
                     user = UserUpdateSerializer(
                         instance=user_to_update, data=request.data, partial=True
                     )
@@ -162,6 +162,13 @@ class UpdateUserView(APIView):
 
         else:
             return Response("You are not allowed to edit users", status=status.HTTP_400_BAD_REQUEST)
+        
+def belongs_to_same_org(user, user_to_update):
+    """Check if two users are members of the same organization"""
+    for key, value in user.organization.items():
+        if value and user_to_update.organization[key]:
+            return True
+    return False
 
 class CreateOrganizationView(APIView):
     """View for creating a new organization <baseurl>/api/organizations/create"""
@@ -228,7 +235,7 @@ class UpdateOrganizationView(APIView):
             return self.update_organization(request, pk)
         elif user.data["role"] == MUOKKAUS:
             organization = self.get_organization(pk)
-            if organization and organization in request.user.organization.all():
+            if organization and request.user.organization[organization.name]:
                 return self.update_organization(request, pk)
             else:
                 return Response(
@@ -264,14 +271,44 @@ class UpdateOrganizationView(APIView):
 
 class AddUserOrganizationView(APIView):
     """
-    View for adding User to an Organization <baseurl>/api/organizations/add_user_organization
+    View for adding a User to an Organization at <baseurl>/api/organizations/add_user_organization/<user.id>/
     Only Leppispj and Leppisvarapj can add users to organizations for now, data needed to add user
     to organization: user id and organization id
     """
     
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request):
+    def put(self, request, pk=None):
+        """
+        Request for adding a user to an organization
+
+        Parameters
+        ----------
+        request: dict
+            Contains the name of the organization in which the user will be added
+            {
+                "organization_name": "Matrix"
+            }
+
+        pk (primary key): str
+            Id of the user about to be added to the organization
+        """
+        organization_list = [
+            "HYK",
+            "Limes",
+            "MaO",
+            "Matrix",
+            "Meridiaani",
+            "Mesta",
+            "Moodi",
+            "Resonanssi",
+            "Spektrum",
+            "Synop",
+            "TKO-äly",
+            "Vasara",
+            "Integralis"
+        ]
+
         user = UserSerializer(request.user)
 
         if user.data["role"] not in [
@@ -283,18 +320,40 @@ class AddUserOrganizationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         
-        user_id = request.data.get('user_id')
-        organization_id = request.data.get('organization_id')
         try:
-            user = User.objects.get(pk=user_id)
-            organization = Organization.objects.get(pk=organization_id)
-        except User.DoesNotExist:
+            user_to_update = User.objects.get(id=pk)
+            organization_name = request.data["organization_name"]
+        except ObjectDoesNotExist:
             return Response("User not found", status=status.HTTP_404_NOT_FOUND)
-        except Organization.DoesNotExist:
+        except KeyError:
+            return Response(
+                "Provide the name of the organization",
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Check if the request contains unwanted data
+        if (len(request.data.keys())) > 1:
+            return Response(
+                "You can only add a user to an organization through this endpoint",
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Check if the organization's name is valid
+        if organization_name not in organization_list:
             return Response("Organization not found", status=status.HTTP_404_NOT_FOUND)
         
-        user.organization.add(organization)
-        return Response("User added to organization successfully", status=status.HTTP_201_CREATED)
+        # Update the user's key list
+        users_organizations = user_to_update.organization
+        users_organizations[organization_name] = True
+
+        serializer = UserUpdateSerializer(
+            instance=user_to_update, data=users_organizations, partial=True
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class EventView(viewsets.ModelViewSet):
     """

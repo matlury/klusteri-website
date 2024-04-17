@@ -13,8 +13,6 @@ More info: https://www.django-rest-framework.org/api-guide/serializers/
 
 
 class UserSerializer(serializers.ModelSerializer):
-    organization = serializers.PrimaryKeyRelatedField(many=True, queryset=Organization.objects.all(), required=False)
-
     class Meta:
         model = User
         fields = ("id", "username", "password", "email", "telegram", "role", "organization", "keys", "rights_for_reservation")
@@ -49,6 +47,7 @@ class UserSerializer(serializers.ModelSerializer):
             email=validated_data["email"],
             telegram=validated_data.get("telegram", ""),
             role=validated_data["role"],
+            organization=validated_data["organization"],
             keys=validated_data["keys"]
         )
 
@@ -61,7 +60,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "email", "telegram", "role", "keys", "rights_for_reservation")
+        fields = ("id", "username", "email", "telegram", "role", "organization", "keys", "rights_for_reservation")
 
     def validate_telegram(self, tgname):
         """Checks if a telegram name is taken"""
