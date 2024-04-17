@@ -159,9 +159,27 @@ const MyCalendar = () => {
     setShowModal(false)
   }
 
+  const handleAddNewEventClick = () => {
+    setSelectedSlot(null); 
+    setShowModal(true);
+    setEventDetails({  
+      title: '',
+      organizer: '',
+      description: '',
+      responsible: '',
+      isOpen: '',
+      room: '',
+      start: '',
+      end: '',
+    });
+  };
+
   return (
     <div className="textbox">
       <h1>Varauskalenteri</h1>
+      <div className="add-event-button">
+      <Button variant="primary" onClick={handleAddNewEventClick} style={{ backgroundColor: 'gray', borderColor: 'gray' }}>Lisää uusi tapahtuma</Button>
+      </div>
       <Calendar
         localizer={localizer}
         events={events}
@@ -229,9 +247,11 @@ const MyCalendar = () => {
                 placeholder="Vastuuhenkilö"
                 value={eventDetails.responsible}
                 onChange={handleInputChange}
+
                 style={{ width: '100%', borderRadius: '5px'}}
               />
               <p></p>
+
               <textarea
                 name="description"
                 placeholder="Tapahtuman kuvaus"
@@ -275,4 +295,3 @@ const MyCalendar = () => {
   }
   
   export default MyCalendar
-  
