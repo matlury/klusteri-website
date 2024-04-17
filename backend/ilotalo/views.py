@@ -14,12 +14,15 @@ from .serializers import (
 from .models import User, Organization, Event, NightResponsibility
 from .config import Role
 from datetime import datetime
+import os
 
 LEPPISPJ = Role.LEPPISPJ.value
 LEPPISVARAPJ = Role.LEPPISVARAPJ.value
 MUOKKAUS = Role.MUOKKAUS.value
 AVAIMELLINEN = Role.AVAIMELLINEN.value
 TAVALLINEN = Role.TAVALLINEN.value
+JARJESTOPJ = Role.JARJESTOPJ.value
+JARJESTOVARAPJ = Role.JARJESTOVARAPJ.value
 
 """
 Views receive web requests and return web responses.
@@ -102,20 +105,63 @@ class UpdateUserView(APIView):
             Id of the User object to be updated
         """
 
-        try:
-            user_to_update = User.objects.get(id=pk)
-        except ObjectDoesNotExist:
-            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+        # All users can edit their own information
+        if int(pk) == request.user.id:
+            try:
+                user_to_update = User.objects.get(id=pk)
+            except ObjectDoesNotExist:
+                return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+            
+            user_serializer = UserUpdateSerializer(
+                instance=user_to_update, data=request.data, partial=True
+            )
 
-        user = UserUpdateSerializer(
-            instance=user_to_update, data=request.data, partial=True
-        )
+            if user_serializer.is_valid():
+                user_serializer.save()
+                return Response(user_serializer.data, status=status.HTTP_200_OK)
+            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = UserSerializer(request.user)
 
-        if user.is_valid():
-            user.save()
-            return Response(user.data, status=status.HTTP_200_OK)
-        return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Leppispj and Leppisvarapj can edit all users
+        if user.data["role"] in [LEPPISPJ, LEPPISVARAPJ]:
+            try:
+                user_to_update = User.objects.get(id=pk)
+            except ObjectDoesNotExist:
+                return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+            
+            user = UserUpdateSerializer(
+                instance=user_to_update, data=request.data, partial=True
+            )
+            if user.is_valid():
+                user.save()
+                return Response(user.data, status=status.HTTP_200_OK)
+            return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Muokkaus users can only edit users that have role 4 or 5 and belong to the same organization
+        elif user.data["role"] == MUOKKAUS:
+            try:
+                user_to_update = User.objects.get(id=pk)
+            except ObjectDoesNotExist:
+                return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+            
+            if user_to_update.role in [AVAIMELLINEN, TAVALLINEN]:
+                # Check if user Muokkaus and the user being edited belong to the same organization
+                if request.user.organization.filter(id__in=user_to_update.organization.all()).exists():
+                    user = UserUpdateSerializer(
+                        instance=user_to_update, data=request.data, partial=True
+                    )
+                    if user.is_valid():
+                        user.save()
+                        return Response(user.data, status=status.HTTP_200_OK)
+                    return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    return Response("You are not allowed to edit users from other organizations", status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response("You are not allowed to edit this user", status=status.HTTP_400_BAD_REQUEST)
 
+        else:
+            return Response("You are not allowed to edit users", status=status.HTTP_400_BAD_REQUEST)
 
 class CreateOrganizationView(APIView):
     """View for creating a new organization <baseurl>/api/organizations/create"""
@@ -273,20 +319,26 @@ class CreateEventView(APIView):
             LEPPISPJ,
             LEPPISVARAPJ,
             MUOKKAUS,
-            AVAIMELLINEN
+            AVAIMELLINEN,
+            JARJESTOPJ,
+            JARJESTOVARAPJ
         ]:
             return Response(
                 "You can't add an event",
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
+        if user.data["rights_for_reservation"] != True:
+            return Response("You don't have rights to make reservation", status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = EventSerializer(data=request.data)
+        else:
+            serializer = EventSerializer(data=request.data)
 
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        serializer.save()
+            if not serializer.is_valid():
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer.save()
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class RemoveEventView(APIView):
     """View for removing an event <baseurl>/api/events/delete_event/<event.id>/"""
@@ -301,12 +353,17 @@ class RemoveEventView(APIView):
             LEPPISPJ,
             LEPPISVARAPJ,
             MUOKKAUS,
-            AVAIMELLINEN
+            AVAIMELLINEN,
+            JARJESTOPJ,
+            JARJESTOVARAPJ
         ]:
             return Response(
                 "You can't remove the event",
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
+        if user.data["rights_for_reservation"] != True:
+            return Response("You don't have rights to delete reservations", status=status.HTTP_400_BAD_REQUEST)
 
         try:
             event_to_remove = Event.objects.get(id=pk)
@@ -314,7 +371,6 @@ class RemoveEventView(APIView):
             return Response(
                 "Event not found", status=status.HTTP_404_NOT_FOUND
             )
-
         event_to_remove.delete()
 
         return Response(f"Event {event_to_remove.reservation} successfully removed", status=status.HTTP_200_OK)
@@ -332,12 +388,17 @@ class UpdateEventView(APIView):
             LEPPISPJ,
             LEPPISVARAPJ,
             MUOKKAUS,
-            AVAIMELLINEN
+            AVAIMELLINEN,
+            JARJESTOPJ,
+            JARJESTOVARAPJ
         ]:
             return Response(
                 "You can't edit the event",
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
+        if user.data["rights_for_reservation"] != True:
+            return Response("You don't have rights to edit reservations", status=status.HTTP_400_BAD_REQUEST)
 
         try:
             event_to_update = Event.objects.get(id=pk)
@@ -475,3 +536,132 @@ class LogoutNightResponsibilityView(APIView):
             return Response(responsibility.data, status=status.HTTP_200_OK)
         return Response(responsibility.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class RightsForReservationView(APIView):
+    """View for changing the rights for making events at <baseurl>/api/users/change_rights_reservation/<int:pk>/"""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, pk=None):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [JARJESTOPJ, JARJESTOVARAPJ]:
+            return Response("You can't change the rights", status=status.HTTP_400_BAD_REQUEST)
+        else:
+            try:
+                user_to_update = User.objects.get(id=pk)
+            except User.DoesNotExist:
+                return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+
+            user_serializer = UserUpdateSerializer(
+                instance=user_to_update, data=request.data, partial=True
+            )
+            if user_serializer.is_valid():
+                user_serializer.save()
+                return Response(user_serializer.data, status=status.HTTP_200_OK)
+            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ResetDatabaseView(APIView):
+    """View for resetting a database during Cypress tests"""
+
+    def post(self, request):
+
+        """
+        Post requests are only accepted if the CYPRESS env.variable is "True"
+        or if a Github workflow is running
+        """
+        if os.getenv("CYPRESS") in ["True"] or os.environ.get("GITHUB_WORKFLOW"):
+            User.objects.all().delete()
+            Organization.objects.all().delete()
+            NightResponsibility.objects.all().delete()
+            Event.objects.all().delete()
+
+            return Response("Resetting database successful", status=status.HTTP_200_OK)
+        
+        return Response(
+            "This endpoint is for Cypress tests only",
+            status=status.HTTP_403_FORBIDDEN
+        )
+    
+class HandOverKeyView(APIView):
+    """View for handing over a Klusteri key at <baseurl>/api/keys/hand_over_key/<user.id>/"""
+
+    # IsAuthenticated will deny access if request has no access token
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, pk=None):
+        """
+        Request for handing over the key
+
+        Parameters
+        ----------
+        request: dict
+            Contains the name of the organization whose key is being handed over
+            {
+                "organization_name": "Matrix"
+            }
+
+        pk (primary key): str
+            Id of the user about to receive the key
+        """
+        organization_list = [
+            "HYK",
+            "Limes",
+            "MaO",
+            "Matrix",
+            "Meridiaani",
+            "Mesta",
+            "Moodi",
+            "Resonanssi",
+            "Spektrum",
+            "Synop",
+            "TKO-äly",
+            "Vasara",
+            "Integralis"
+        ]
+
+        user = UserSerializer(request.user)
+
+        # Make sure the person attempting the key handover is valid
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ,
+            MUOKKAUS
+        ]:
+            return Response(
+                "No permission for handing over a key",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            user_to_update = User.objects.get(id=pk)
+            organization_name = request.data["organization_name"]
+        except ObjectDoesNotExist:
+            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+        except KeyError:
+            return Response(
+                "Provide the name of the organization",
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Check if the request contains unwanted data
+        if (len(request.data.keys())) > 1:
+            return Response(
+                "You can only hand over a Klusteri key through this endpoint",
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Check if the organization's name is valid
+        if organization_name not in organization_list:
+            return Response("Organization not found", status=status.HTTP_404_NOT_FOUND)
+        
+        # Update the user's key list
+        users_keys = user_to_update.keys
+        users_keys[organization_name] = True
+
+        serializer = UserUpdateSerializer(
+            instance=user_to_update, data=users_keys, partial=True
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

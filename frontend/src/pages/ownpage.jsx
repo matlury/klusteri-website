@@ -3,6 +3,7 @@ import { useStateContext } from '../context/ContextProvider'
 import axios from 'axios'
 import axiosClient from '../axios.js'
 import '../index.css'
+import { FaKey } from 'react-icons/fa'
 
 const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const { user, setUser } = useStateContext()
@@ -13,18 +14,23 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   const [organisations, setOrganisations] = useState([])
   const [selectedOrg, setSelectedOrg] = useState(null)
-  const [orgPassword, setNewOrgPassword] = useState('')
-  const [confirmOrgPassword, setConfirmOrgPassword] = useState('')
-  const [isChecked, setIsChecked] = useState(false)
 
   const [organization_email, setOrganizationEmail] = useState('')
   const [organization_name, setOrganizationName] = useState('')
   const [organization_homepage, setOrganizationHomePage] = useState('')
   const [organization_size, setOrganizationSize] = useState('1')
 
+  const [organization_new_email, setOrganizationNewEmail] = useState('')
+  const [organization_new_name, setOrganizationNewName] = useState('')
+  const [organization_new_homepage, setOrganizationNewHomePage] = useState('')
+  const [organization_new_size, setOrganizationNewSize] = useState('1')
+
   const [allUsers, setAllUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState(null)
+  const [selectedOrganization, setSelectedOrganization] = useState(null)
 
+  const [hasPermission, setHasPermission] = useState(false)
+  const [hasPermissionOrg, setHasPermissionOrg] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -32,16 +38,17 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const API_URL = process.env.API_URL
   // Writes down if a user is logged in
   useEffect(() => {
-    setIsLoggedIn(propIsLoggedIn);
+    setIsLoggedIn(propIsLoggedIn)
     if (propIsLoggedIn) {
-      const loggedUser = JSON.parse(localStorage.getItem('loggedUser'));
-      setUsername(loggedUser.username);
-      setEmail(loggedUser.email);
-      setTelegram(loggedUser.telegram);
-      setRole(loggedUser.role);
+      const loggedUser = JSON.parse(localStorage.getItem('loggedUser'))
+      setUsername(loggedUser.username)
+      setEmail(loggedUser.email)
+      setTelegram(loggedUser.telegram)
+      setRole(loggedUser.role)
       getOrganisations()
+      getPermission()
     }
-  }, [user || propIsLoggedIn]);
+  }, [user || propIsLoggedIn])
 
 
   // Fetches the organisations if a user is logged in
@@ -49,6 +56,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     if (isLoggedIn) {
       getOrganisations()
       getAllUsers()
+      getPermission()
     }
   }, [isLoggedIn])
 
@@ -58,10 +66,10 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const userPage = () => (
     <form>
       <div>
-        Käyttäjänimi:
+      Käyttäjänimi:
         <input
-          id="username"
-          type="username"
+          id='username'
+          type='username'
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
@@ -69,8 +77,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       <div>
         Sähköposti:
         <input
-          id="email"
-          type="email"
+          id='email'
+          type='email'
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -78,8 +86,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       <div>
         Telegram:
         <input
-          id="telegram"
-          type="telegram"
+          id='telegram'
+          type='telegram'
           value={telegram}
           onChange={(e) => setTelegram(e.target.value)}
         />
@@ -98,24 +106,24 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         Myöntämispäivä:
       </div>
       <br />
-      <button onClick={handleUserDetails} className="create-user-button" type="button">
+      <button onClick={handleUserDetails} className='create-user-button' type='button'>
         Vahvista muutokset
       </button>
     </form>
-  );
+  )
 
   // Handles the user info update when the 'Vahvista Muutokset' button is clicked and gives error messages if the new username, email or telegram are taken by some other user
   const handleUserDetails = (event) => {
-    event.preventDefault();
+    event.preventDefault()
   
     const details = {
       username: username,
       email: email,
       telegram: telegram
-    };
+    }
   
-    const loggedUser = JSON.parse(localStorage.getItem('loggedUser'));
-    const user_id = loggedUser.id;
+    const loggedUser = JSON.parse(localStorage.getItem('loggedUser'))
+    const user_id = loggedUser.id
 
     if (!username || !email ) {
       setError('Käyttäjänimi ja sähköposti ovat pakollisia kenttiä.')
@@ -145,22 +153,22 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     })
 
     function confirmupdate() {
-      const confirmUpdate = window.confirm("Oletko varma, että haluat päivittää käyttäjätietojasi?")
+      const confirmUpdate = window.confirm('Oletko varma, että haluat päivittää käyttäjätietojasi?')
 
       if (confirmUpdate) {
         axiosClient.put(`/users/update/${user_id}/`, details)
           .then(response => {
-            console.log('User details updated successfully:', response.data);
+            console.log('User details updated successfully:', response.data)
             localStorage.setItem('loggedUser', JSON.stringify(response.data))
             setUser(response.data)
             setSuccess('Tiedot päivitetty onnistuneesti!')
             setTimeout(() => setSuccess(''), 5000)
       })
       .catch(error => {
-          console.error('Error updating user details:', error);
+          console.error('Error updating user details:', error)
         })
       } else {
-        console.log("User cancelled the update.")}
+        console.log('User cancelled the update.')}
     }
   }
 
@@ -182,61 +190,63 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   // Shows the information of organizations after clicking the view-button
   const toggleOrgDetails = (orgId) => {
+    const organization = organisations.find(org => org.id === orgId)
+    setOrganizationNewName(organization.name)
+    setOrganizationNewEmail(organization.email)
+    setOrganizationNewHomePage(organization.homepage)
+    setOrganizationNewSize(organization.size)
     setSelectedOrg((prevSelectedOrg) => {
       if (prevSelectedOrg === orgId) {
-        return null;
+        return null
       }
       return orgId;
     });
   };
-    
-  // Handles the change if you click on the checkbox
-  const handleCheckboxChange = (event) => {
-    setIsChecked(event.target.checked)
-  }
 
   // Shows more detailed information of the organizations and if the user has role 1, they can also delete the organization
   const renderOrganizationDetails = orgId => {
     const organization = organisations.find(org => org.id === orgId)
-    if (selectedOrg === orgId && organization) {
+    
+    if (selectedOrg === orgId && organization && hasPermissionOrg === true) {
       return (
         <div>
-          <p>Nimi: {organization.name}</p>
-          <p>Käyttäjätunnus: </p>
-          <p>Koko: {organization.size}</p>
-          <p>Kotisivu: {organization.homepage}</p>
+          Nimi:
+          <input
+            id="organization_name"
+            type="text"
+            value={organization_new_name}
+            onChange={(e) => setOrganizationNewName(e.target.value)}
+          />
+          <p>Koko:
+            <input
+              id="organization_size"
+              type="text"
+              value={organization_new_size}
+              onChange={(e) => setOrganizationNewSize(e.target.value)}
+            />
+          </p>
+          <p>Kotisivu:
+            <input
+              id="organization_homepage"
+              type="text"
+              value={organization_new_homepage}
+              onChange={(e) => setOrganizationNewHomePage(e.target.value)}
+            />
+          </p>
           <p>Puheenjohtaja:</p>
-          <p>Puheenjohtajan sähköposti: {organization.email}</p>
+          <p>Organisaation sähköposti:
+            <input
+              id="organization_new_email"
+              type="text"
+              value={organization_new_email}
+              onChange={(e) => setOrganizationNewEmail(e.target.value)}
+            />
+          </p>
           <p>Klusterivastaava(t): </p>
-          <br></br>
-          <form>
-            <div>
-              Uusi salasana:
-              <input
-                id="orgPassword"
-                value={orgPassword}
-                onChange={(e) => setNewOrgPassword(e.target.value)} />
-            </div>
-            <div>
-              Toista uusi salasana:
-              <input
-                id="confirmOrgPassword"
-                type="confirmOrgPassword"
-                value={confirmOrgPassword}
-                onChange={(e) => setConfirmOrgPassword(e.target.value)} />
-            </div>
-          </form>
-          <div>
-            <label>
-              <p style={{ display: 'inline-block', marginRight: '10px' }}>* Nimet saa julkaista</p>
-              <input
-                type="checkbox"
-                checked={isChecked}
-                onChange={handleCheckboxChange} />
-            </label>
-          </div>
-          <br />
-          {role === 1 && <button onClick={() => handleDeleteOrganization(organization.id)} className="login-button" type="button">
+          {hasPermissionOrg === true && <button onClick={() => handleOrganizationDetails(organization.id)} className="create-user-button" type="button">
+            Vahvista muutokset
+          </button>}
+          {hasPermission === true && <button onClick={() => handleDeleteOrganization(organization.id)} className="login-button" type="button">
             Poista järjestö
           </button>}
         </div>
@@ -245,74 +255,95 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     return null
   }
 
+  const newOrganizationObject = { name: organization_new_name, email: organization_new_email, homepage: organization_new_homepage, size: organization_new_size }
+
+  const handleOrganizationDetails = (orgId) => {
+    const confirmUpdate = window.confirm("Oletko varma, että haluat päivittää organisaatiota?")
+
+    if (confirmUpdate) {
+      axiosClient.put(`/organizations/update_organization/${orgId}/`, newOrganizationObject)
+        .then(response => {
+          console.log('Organization created successfully!', response.data)
+          setSuccess('Järjestö muokattu onnistuneesti!')
+          setTimeout(() => setSuccess(''), 5000)
+          getOrganisations()
+
+        })
+        .catch(error => {
+          console.error('Error creating account:', error);
+        });
+    }
+  }
+
   // Handles deletion of organization
   const handleDeleteOrganization = (orgId) => {
     axiosClient.delete(`/organizations/remove/${orgId}/`)
         .then(response => {
-          console.log('Organization deleted successfully:', response.data);
-          getOrganisations();
+          console.log('Organization deleted successfully:', response.data)
+          getOrganisations()
           setSuccess('Järjestö poistettu onnistuneesti!')
             setTimeout(() => setSuccess(''), 5000)
         })
         .catch(error => {
-          console.error('Error deleting organization:', error);
+          console.error('Error deleting organization:', error)
         })
   }
 
   //  Organization list 
   const organisationPage = () => (
     <div>
+      <p></p>
       <h2>Järjestöt</h2>
       <ul style={{ listStyleType: 'none', padding: 0 }}>
         {organisations.map(org => (
           <li key={org.id}>
             {org.name}  
-            <button className= "login-button" onClick={() => toggleOrgDetails(org.id)}>View</button>
+            <button className= 'login-button' onClick={() => toggleOrgDetails(org.id)}>View</button>
             {renderOrganizationDetails(org.id)}
           </li>
         ))}
       </ul>
     </div>
-  );
+  )
 
   // Form for organization creation
   const createOrganization = () => (
     <form>
-      <h2>Luo uusi järjestö</h2>
+      <h4>Luo uusi järjestö</h4>
         <div>
           Järjestön nimi:
           <input
-            type="text"
-            id="name"
+            type='text'
+            id='name'
             value={organization_name}
             onChange={(e) => setOrganizationName(e.target.value)}/>
         </div>
         <div>
           Sähköposti:
           <input
-            type="text"
-            id= "email"
+            type='text'
+            id= 'email'
             value={organization_email}
             onChange={(e) => setOrganizationEmail(e.target.value)}/>
         </div>
         <div>
           Kotisivut:
           <input
-          type="text"
-          id= "homepage"
+          type='text'
+          id= 'homepage'
           value={organization_homepage}
           onChange={(e) => setOrganizationHomePage(e.target.value)} />
         </div>
         <div>
           Koko:
           <input
-          type= "text"
-          id= "size"
+          type= 'text'
+          id= 'size'
           value={organization_size}
           onChange={(e) => setOrganizationSize(e.target.value)}/>
         </div>
         <br />
-      <button className="create-user-button" type="button" onClick={handleCreateOrganization}>
+      <button className='create-user-button' type='button' onClick={handleCreateOrganization}>
         Luo järjestö
       </button>
     </form>
@@ -344,8 +375,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
             })
             .catch(error => {
-              console.error('Error creating account:', error);
-            });
+              console.error('Error creating account:', error)
+            })
         }
       })
       .catch(error => {
@@ -358,15 +389,16 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   const showAllUsers = () => (
     <div>
-      <h2>Käyttäjät</h2>
+        <p></p>
+      <h4>Käyttäjät</h4>
       <ul style={{ listStyleType: 'none', padding: 0 }}>
         {allUsers.map(user => (
-          <li key={user.id}>
-            {user.username}  
-            <button className= "login-button" onClick={() => toggleUserDetails(user.id)}>View</button>
-            {renderUserDetails(user.id)}
-          </li>
-        ))}
+        <li key={user.id}>
+          {user.username}
+          <button className= 'login-button' onClick={() => toggleUserDetails(user.id)}>View</button>
+          {renderUserDetails(user.id)}
+        </li>
+          ))}
       </ul>
     </div>
   )
@@ -386,10 +418,10 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const toggleUserDetails = (userId) => {
     setSelectedUser((prevSelectedUser) => {
       if (prevSelectedUser === userId) {
-        return null;
+        return null
       }
-      return userId;
-    });
+      return userId
+    })
   }
 
   const renderUserDetails = userId => {
@@ -402,7 +434,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           <p>Rooli: {user.role}</p>
           <p>Sähköposti: {user.email}</p>
           <br></br>
-          {role === 1 && <button onClick={() => handlePJChange(user.id)} className="change-pj-button" type="button">
+          {hasPermission === true && <button onClick={() => handlePJChange(user.id)} className='change-pj-button' type='button'>
             Siirrä PJ-oikeudet
           </button>}
           <p></p>
@@ -420,12 +452,12 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     confirmupdate()
 
     function confirmupdate() {
-      const confirmUpdate = window.confirm("Oletko varma, että haluat siirtää PJ-oikeudet?")
+      const confirmUpdate = window.confirm('Oletko varma, että haluat siirtää PJ-oikeudet?')
 
       if (confirmUpdate) {
         axiosClient.put(`/users/update/${selectedUserId}/`, {role: 1})
           .then(response => {
-            console.log('Role updated successfully:', response.data);
+            console.log('Role updated successfully:', response.data)
       })
         axiosClient.put(`/users/update/${loggedUserId}/`, {role: 5})
           .then(response => {
@@ -436,25 +468,168 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             setTimeout(() => setSuccess(''), 5000)
         })
       .catch(error => {
-          console.error('Error updating user details:', error);
+          console.error('Error updating user details:', error)
         })
       } else {
-        console.log("User cancelled the update.")}
+        console.log('User cancelled the update.')}
     }
   }
 
+  const handleKeySubmit = async (event) => {
+    event.preventDefault()
+  
+    if (!selectedUser || !selectedOrganization) {
+      console.error('Please select a user and an organization')
+      return
+    }
+  
+    // Display a confirmation dialog before handing over the key
+    const confirmKeyHandover = window.confirm('Oletko varma että haluat luovuttaa avaimen?')
+  
+    if (!confirmKeyHandover) {
+      return
+    }
+  
+    try {
+      const accessToken = localStorage.getItem('ACCESS_TOKEN')
+      const response = await axios.put(
+        `${API_URL}/api/keys/hand_over_key/${selectedUser}/`,
+        {
+          organization_name: selectedOrganization
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }
+      )
+      // Check the response and update the UI accordingly
+      if (response.status === 200) {
+        // Successful key handover
+        setSuccess('Avaimen luovutus onnistui!')
+        setTimeout(() => {
+          setSuccess('');
+        }, 5000);
+      } else {
+        // Error in key handover
+        setError('ERROR')
+      }
+    } catch (error) {
+      console.error('Error in key handover:', error)
+      setError('Avaimen luovutus epäonnistui!')
+    }
+  }
+
+  const handleSelectUser = (event) => {
+    setSelectedUser(event.target.value)
+  }
+
+  const handleSelectOrganization = (event) => {
+    setSelectedOrganization(event.target.value)
+  }
+
+  const getPermission = async () => {
+    /*
+    Check if the logged user has permissions for something
+    This prevents harm caused by localstorage manipulation
+    */
+
+    const accessToken = localStorage.getItem('ACCESS_TOKEN')
+    await axios.get(`${API_URL}/api/users/userinfo`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+    .then(response => {
+      const currentUser = response.data
+      if (currentUser.role === 1) {
+        setHasPermission(true)
+        setHasPermissionOrg(true)
+      } else if (currentUser.role == 2 || currentUser.role == 3) {
+        setHasPermissionOrg(true)
+        setHasPermission(false)
+      } else {
+        setHasPermission(false)
+        setHasPermissionOrg(false)
+      }
+    })
+  }
+  
   return (
     <div>
-      {!isLoggedIn && <p>Kirjaudu sisään muokataksesi tietoja</p>}
+      {!isLoggedIn && <h3>Kirjaudu sisään</h3>}
       {isLoggedIn && (
-        <div id="left_content">
-          <div id="leftleft_content">
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {success && <p style={{ color: 'green' }}>{success}</p>}
-            {userPage()}
-            {organisationPage()}
-            {role === 1 && createOrganization()}
-            {role === 1 && showAllUsers()}
+        <div>
+          {error && <p style={{ color: 'red' }}>Virhe: {error}</p>}
+          {success && <p style={{ color: 'green' }}>Onnistui: {success}</p>}
+          <div style={{ display: 'flex' }}>
+            <div id='left_content'>
+              <div id='leftleft_content'>
+                {userPage()}
+                {organisationPage()}
+                {hasPermissionOrg == true && renderOrganizationDetails}
+                {hasPermission === true && createOrganization()}
+                {hasPermission === true && showAllUsers()}
+              </div>
+            </div>
+            {(hasPermission === true)&& (
+              <div id='centered_content' style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
+                <div id='content'>
+                  <h2>Avaimen luovutus</h2>
+                  <form onSubmit={handleKeySubmit}>
+                    <div style={{ height: '20px' }}></div>
+                    <div>
+                      <label htmlFor='selectedUser'>Valitse vastaanottaja:</label>
+                      <select
+                        id='selectedUser'
+                        name='selectedUser'
+                        value={selectedUser}
+                        onChange={handleSelectUser}
+                        className='select-box'
+                      >
+                        <option value="" disabled selected hidden></option>
+                        {allUsers.map(user => (
+                          <option key={user.id} value={user.id}>
+                            {user.username} : {user.email}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div style={{ height: '20px' }}></div>
+                    <div>
+                      <label htmlFor='selectedOrganization'>Valitse organisaatio:</label>
+                      <select
+                        id='selectedOrganization'
+                        name='selectedOrganization'
+                        value={selectedOrganization}
+                        onChange={handleSelectOrganization}
+                        className='select-box'
+                      >
+                        <option value="" disabled selected hidden></option>
+                        <option value="HYK">HYK</option>
+                        <option value="Limes">Limes</option>
+                        <option value="MaO">MaO</option>
+                        <option value="Matrix">Matrix</option>
+                        <option value="Meridiaani">Meridiaani</option>
+                        <option value="Mesta">Mesta</option>
+                        <option value="Moodi">Moodi</option>
+                        <option value="Resonanssi">Resonanssi</option>
+                        <option value="Spektrum">Spektrum</option>
+                        <option value="Synop">Synop</option>
+                        <option value="TKO-äly">TKO-äly</option>
+                        <option value="Vasara">Vasara</option>
+                        <option value="Integralis">Integralis</option>
+                      </select>
+                    </div>
+                    <div style={{ height: '20px' }}></div>
+                    <div style={{ height: '20px' }}></div>
+                    <button type='submit' className='create-user-button'>
+                      Luovuta <FaKey style={{ marginLeft: '5px' }} />
+                    </button>
+                  </form>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

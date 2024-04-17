@@ -3,13 +3,16 @@ import '../index.css'
 import NewAccountPage from './createpage'
 import axiosClient from "../axios.js"
 import { useStateContext } from "../context/ContextProvider.jsx"
+import CountdownTimer from './CountdownTimer'
+
 
 const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showCreateUser, setShowCreateUser] = useState(false)
-  const { user, setUser, setToken } = useStateContext()
-  const [error, setError] = useState('');
+  const { user, setUser, setToken, timeLeft } = useStateContext()
+  const [error, setError] = useState('')
+
 
   // Saves the logged user (if there is one)
   useEffect(() => {
@@ -25,14 +28,14 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
     onCreateNewUser()
   }
 
-// Handles the login function
-const handleLogin = event => {
-  event.preventDefault()
+  // Handles the login function
+  const handleLogin = event => {
+    event.preventDefault()
 
-  const credentials = {
-    email: email,
-    password: password
-  }
+    const credentials = {
+      email: email,
+      password: password
+    }
 
   // Checks if the credentials match using tokens, and if the user is authenticated it saves the logged user to local storage
   axiosClient.post('/token/', credentials)
@@ -59,18 +62,20 @@ const handleLogin = event => {
         setError('Sähköposti tai salasana virheellinen!')
       }
     })
-}
+  }
 
-  // Handles the logout function
+  // Handles the logout function and clears the countdown timer
   const handleLogout = () => {
     localStorage.removeItem('loggedUser')
     localStorage.removeItem('isLoggedIn')
+    localStorage.removeItem('countdownTime')
     setUser(null)
     onLogout()
   }
 
   // renders the NewAccountPage if the showCreateUser function is true, if the user is logged in, it shows the username and logout-button
   // if the user is not logged nor in the create new user page, it shows the loginpage
+  // starts the countdown timer for automatic logout
 
   return (
     <div id="right_content">
@@ -80,30 +85,34 @@ const handleLogin = event => {
         <>
           <p>Hei {user.username}!</p>
           <button className="logout-button" onClick={handleLogout}>Kirjaudu ulos</button>
+          <br/>
+          <br/>
+          <p>Automaattinen uloskirjaus:</p>
+          <CountdownTimer initialTime={timeLeft} onExpire={handleLogout} />
         </>
       ) : (
         <form>
-          <div className="form-group">
-            <label htmlFor="email">Sähköposti:</label>
+          <h3>Sisäänkirjautuminen</h3>
+          <div className='form-group'>
+            <label htmlFor='email'>Sähköposti:</label>
             <input
-              id="email"
-              className="form-control"
+              id='email'
+              type='email'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="password">Salasana:</label>
+          <div className='form-group'>
+            <label htmlFor='password'>Salasana:</label>
             <input
-              id="password"
-              className="form-control"
-              type="password"
+              id='password'
+              type='password'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <button className="login-button" type="submit" onClick={handleLogin}>Kirjaudu sisään</button>
-          <button className="create-user-button" type="button" onClick={handleCreateUser}>Luo uusi käyttäjä</button>
+          <button className='login-button' type='submit' onClick={handleLogin}>Kirjaudu sisään</button>
+          <button className='create-user-button' type='button' onClick={handleCreateUser}>Luo uusi käyttäjä</button>
           {error && <div style={{ color: 'red' }}>{error}</div>}
         </form>
       )}
