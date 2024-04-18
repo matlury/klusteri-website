@@ -3,34 +3,47 @@ import React, { useState } from 'react';
 const Rules_and_Instructions = () => {
     const [showRules, setShowRules] = useState(false);
     const [showCleaningRules, setShowCleaningRules] = useState(false);
+    const [showSafetyRules, setShowSafetyRules] = useState(false); 
 
     const handleClick = () => {
         setShowRules(true);
         setShowCleaningRules(false);
+        setShowSafetyRules(false);
     };
 
     const handleShowCleaningRules = () => {
         setShowRules(false);
         setShowCleaningRules(true);
+        setShowSafetyRules(false);
+    };
+
+    const handleShowSafetyRules = () => {
+        setShowRules(false);
+        setShowCleaningRules(false);
+        setShowSafetyRules(true); 
     };
 
     const handleClose = () => {
         setShowRules(false);
         setShowCleaningRules(false);
+        setShowSafetyRules(false);
     };
 
     return (
         <div className='textbox'>
             <h1 style={{ color: '#333', borderBottom: '2px solid #333', paddingBottom: '10px' }}>Säännöt ja ohjeet </h1>
-            {showRules || showCleaningRules ? (
-                <button onClick={handleClose}>Sulje säännöt</button>
+            {showRules || showCleaningRules || showSafetyRules? (
+                <button onClick={handleClose}>Sulje</button>
             ) : (
                 <div>
-                    <button onClick={handleClick}>Näytä käyttösäännöt</button>
-                    <br />
-                    <br />
-                    <button onClick={handleShowCleaningRules}>Näytä siivoussäännöt</button>
-                </div>
+                <button onClick={handleClick}>Klusterin käyttösäännöt</button>
+                <br />
+                <br />
+                <button onClick={handleShowCleaningRules}>Siivoussäännöt</button>
+                <br />
+                <br />
+                <button onClick={handleShowSafetyRules}>Matlu-klusterin turvallisen tilan periaatteet</button> 
+            </div>
             )}
             {showRules && (
                 <div className='rules'>
@@ -452,6 +465,64 @@ const Rules_and_Instructions = () => {
                             <li>- Roskien vienti jätehuoneeseen (energia, bio, paperi, pahvi, metalli, seka. Jätehuone löytyy kun kävelet ulos talosta ja kierrät nurkan taa myötäpäivää.)</li>
                             <li>- Ilmoita, jos siivousvälineissä on puutteita (leppis-list@helsinki.fi)</li>
                             <li>- Ilmoita, jos klusteri saastainen (leppis-list@helsinki.fi)</li>
+                        </ul>
+                    </div>
+                </div>
+            )}
+
+                {showSafetyRules && (
+                <div className='safety-rules'>
+                    <h2 style={{ color: '#555', marginTop: '30px' }}>Turvallisen tilan periaatteet</h2>
+                    <div>
+                        <h3 style={{ color: 'red', fontSize: '1.2em' }}>Hätätilanteessa soita yleiseen hätänumeroon 112.</h3>
+                    </div>
+                    <div>
+                        <h3>Kunnioita toisia ja heidän omaa tilaa sekä koskemattomuutta</h3>
+                        <p>
+                            Pidä huolta ilmapiiristä kunnioittamalla muita ihmisiä. Älä syrji, ahdistele, kiusaa, painosta tai käy käsiksi. Älä tee oletuksia toisen identiteetistä, sukupuolesta, terveydentilasta tai seksuaalisesta suuntautumisesta tai siitä, mistä he ovat kotoisin.
+                            <br />
+                            <br />
+                            Älä koskettele muita ilman heidän lupaansa. Muista, ettet voi tietää ihmisen rajoja ellet kysy. Minkäänlaista seksuaalista häirintää sen eri muodoin ei hyväksytä. 
+                            <br />
+                            <br />
+                            Minkäänlaista häiritsevää, seksististä, rasistista, homo- tai transfobista, loukkaavaa tai väkivaltaista tai puhetta tai käytöstä ei hyväksytä. Muista, että vaikka jokin on sinusta esimerkiksi hauskaa tai vitsikästä, se voi jostain toisesta tuntua epämiellyttävältä tai ahdistavalta.
+                            <br />
+                            <br />
+                            Mikäli koet itse tai havaitset muiden harjoittamaa häirintää, mene väliin tai ilmoita asiasta vastuuhenkilöille. Raportoi väkivaltaisesta käytöksestä tai vakavasta häirinnästä välittömästi eteenpäin tapahtumajärjestäjälle, vastuuhenkilölle, häirintäyhdyshenkilöille tai Leppätalokomitean puheenjohtajalle.
+                            <br />
+                            <br />
+                            Vastuuhenkilö on kuka tahansa klusterin kulkuluvallinen henkilö. Klo 00-07 on olemassa erityisessä yökäyttövastuussa olevia henkilöitä, jotka voit selvittää kysymällä. Jos itse vastuuhenkilö on osa ongelmaa, ota yhteyttä toiseen vastuuhenkilöön tai tarvittaessa Leppätalokomitean puheenjohtajaan. 
+
+                        </p>
+                    </div>
+                    <div>
+                        <h3>Välitä ja pidä huolta</h3>
+                        <p>
+                            Pidä huolta itsestäsi. Älä saata itseäsi tarkoituksella sellaiseen tilaan, ettet pystyisi esimerkiksi pääsemään kotiin millä tahansa hetkellä. Jos et jostain syystä pysty huolehtimaan itsestäsi, pyydäthän rohkeasti apua.
+                            <br />
+                            <br />
+                            Pidä huolta muista. Jos huomaat, ettei joku pysty pitämään huolta itsestään, älä jätä häntä heitteille. Mikäli joku pyytää sinulta apua, auta parhaasi mukaan. Huolehdi, että hän saa apua esimerkiksi ilmoittamalla asiasta vastuuhenkilöille. 
+                        </p>
+                    </div>
+                    <div>
+                        <h3>Kommunikoi</h3>
+                        <p>
+                            Olemalla avoin ja ystävällinen, luot ympäristöä, jossa kommunikoiminen on helpompaa. Jos jokin ei ole mukavaa, sanothan siitä. Mikäli omasta käytöksestäsi huomautetaan, otathan palautteen vastaan rakentavasti. Käytöksestäsi huomauttavat eivät loukkaa sinua ihmisenä, vaan auttavat sinua kehittymään. Jokaisella on jotain opittavaa, vahingossa törppöilystä selviää usein ymmärtäväisyydellä ja anteeksipyynnöllä. 
+                        </p>
+                    </div>
+                    <div>
+                        <h3>Yhteystietoja:</h3>
+                        <ul>
+                            <li>Leppätalokomitean puheenjohtaja Vili Järvinen, vilijarvinen2311 (at) gmail.com</li>
+                            <li>Matlun häirintäyhdyshenkilöt (hairinta@matlu.fi):
+                                <ul>
+                                    <li>Niclas Forsman, etunimi.sukunimi@helsinki.fi</li>
+                                    <li>Jenna Vahtera, etunimi.sukunimi@helsinki.fi</li>
+                                    <li>Anna Monni, etunimi.sukunimi@helsinki.fi</li>
+                                    <li>Markus Holopainen, etunimi.x.sukunimi@helsinki.fi</li>
+                                </ul>
+                            </li>
+                            <li>Leppätalokomitean sähköpostilista, leppis-list@helsinki.fi</li>
                         </ul>
                     </div>
                 </div>
