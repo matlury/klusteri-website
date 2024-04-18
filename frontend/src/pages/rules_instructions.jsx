@@ -2,22 +2,35 @@ import React, { useState } from 'react';
 
 const Rules_and_Instructions = () => {
     const [showRules, setShowRules] = useState(false);
+    const [showCleaningRules, setShowCleaningRules] = useState(false);
 
     const handleClick = () => {
         setShowRules(true);
+        setShowCleaningRules(false);
+    };
+
+    const handleShowCleaningRules = () => {
+        setShowRules(false);
+        setShowCleaningRules(true);
     };
 
     const handleClose = () => {
         setShowRules(false);
+        setShowCleaningRules(false);
     };
 
     return (
         <div className='textbox'>
             <h1 style={{ color: '#333', borderBottom: '2px solid #333', paddingBottom: '10px' }}>Säännöt ja ohjeet </h1>
-            {showRules ? (
+            {showRules || showCleaningRules ? (
                 <button onClick={handleClose}>Sulje säännöt</button>
             ) : (
-                <button onClick={handleClick}>Näytä käyttösäännöt</button>
+                <div>
+                    <button onClick={handleClick}>Näytä käyttösäännöt</button>
+                    <br />
+                    <br />
+                    <button onClick={handleShowCleaningRules}>Näytä siivoussäännöt</button>
+                </div>
             )}
             {showRules && (
                 <div className='rules'>
@@ -398,6 +411,48 @@ const Rules_and_Instructions = () => {
                             Henkilökohtaisten käyttöoikeuksien rajoittamisesta vakavissa väärinkäytös- 
                             tai laiminlyöntitapauksissa päättää Leppätalokomitea.
                         </p>
+                    </div>
+                </div>
+            )}
+        {showCleaningRules && (
+                <div className='cleaning-rules'>
+                    <h2 style={{ color: '#555', marginTop: '30px' }}>Siivoussäännöt</h2>
+                    <div>
+                        <h3>Tapahtuman jälkeinen siivous</h3>
+                        <ul>
+                            <li>- Huonekalut paikoilleen</li>
+                            <li>- Sälä paikoilleen</li>
+                            <li>- Astioiden tiskaus & keittiön tasojen pyyhintä</li>
+                            <li>- Tölkkien ja pullojen keruu</li>
+                            <li>- Keräysastioiden tyhjennys</li>
+                            <li>- Tarvittaessa lattioiden lakaisu</li>
+                            <li>- Mahdollisten kurajälkien poispesu</li>
+                            <li>- Mahdollisten tahmalaikkujen pyyhintä pöydiltä</li>
+                            <li>- Klusterin ulkopuolinen aula ja ulko-oven edusta (roskat, tumpit, pullot…)</li>
+                            <li>- Ilmoita, jos siivousvälineissä on puutteita (leppis-list@helsinki.fi)</li>
+                            <li>- Klusterin yleisilme SIISTI</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Viikkosiivouksen tshek-lista</h3>
+                        <ul>
+                            <li>- Siivoa sekä yleistila, kerhohuone että kokoushuone</li>
+                            <li>- Sälä pois sieltä minne ei kuulu (mutta eihän semmoista ole, eihän?)</li>
+                            <li>- Tölkkien ja pullojen keruu (tölkit ei sekajätteen sekaan vaan metallikeräykseen)</li>
+                            <li>- Lattioiden imurointi/lakaisu (imuroi myös matot ja niiden aluset)</li>
+                            <li>- Lattioiden pesu (ota moppi, ämpäri, vettä ja pesuainetta, MYÖS SOHVIEN TAKAA)</li>
+                            <li>- Pöytien pyyhintä</li>
+                            <li>- Likatahrat, runsaat käpälän jäljet tms pois seinistä ja ovista</li>
+                            <li>- Tiskaus & keittiön siivous (paitsi eihän tiskiä ole, kun jengi on ne ite hoitanu)</li>
+                            <li>- Vessat (pönttöjen pesu, lattioiden lakaisu & pesu, peilin pyyhintä, lavuaarin puhdistus, roskisten tyhjennys, paperin täyttö)</li>
+                            <li>- Kuramattojen pudistelu</li>
+                            <li>- Puhdista sohvat tarpeen vaatiessa</li>
+                            <li>- Tarpeen mukaan myös klusterin ulkopuolisen aulan ja ulko-oven edustan siivous</li>
+                            <li>- Rättien pesu ja asiallisesti kuivumaan jättö</li>
+                            <li>- Roskien vienti jätehuoneeseen (energia, bio, paperi, pahvi, metalli, seka. Jätehuone löytyy kun kävelet ulos talosta ja kierrät nurkan taa myötäpäivää.)</li>
+                            <li>- Ilmoita, jos siivousvälineissä on puutteita (leppis-list@helsinki.fi)</li>
+                            <li>- Ilmoita, jos klusteri saastainen (leppis-list@helsinki.fi)</li>
+                        </ul>
                     </div>
                 </div>
             )}
