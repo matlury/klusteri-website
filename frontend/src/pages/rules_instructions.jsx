@@ -214,6 +214,74 @@ const Rules_and_Instructions = () => {
                             avustajakoiria.
                         </p>
                     </div>
+                    <div className="rule-section">
+                    <h3>Hallinto ja päätöksenteko</h3>
+                        <h3>15§ Leppätalokomitea</h3>
+                        <p>
+                            Klusteria hallinnoi Leppätalokomitea, jossa on yksi edustaja
+                            jokaisesta järjestöstä. Järjestö voi nimittää myös varaedustajan. Järjestö 
+                            voi vaihtaa edustajiansa ilmoittamalla tästä komitean puheenjohtajalle.
+
+                        </p>
+                    </div>
+                    <div className="rule-section">
+                        <h3>16§ Leppätalokomitean puheenjohtaja</h3>
+                        <p>
+                            Leppätalokomitean puheenjohtajana toimii Matlun edustaja.
+                            Puheenjohtaja toimii klusterin yhteyshenkilönä HYYn suuntaan ja vastaa
+                            avainhallinnosta. Leppätalokomitea voi valita nimettyjen edustajien joukosta
+                            varapuheenjohtajan, joka hoitaa puheenjohtajan tehtäviä tämän ollessa
+                            estyneenä.
+                        </p>
+                    </div>
+                    <div className="rule-section">
+                        <h3>17§ Leppätalokomitean kokoukset</h3>
+                        <p>
+                            Leppätalokomitea kokoontuu puheenjohtajan tai hänen estyneenä
+                            ollessaan varapuheenjohtajan kutsusta tai kun vähintään kolme komitean
+                            jäsenjärjestöä sitä vaatii. Leppätalokomitean kokoukset ovat
+                            päätösvaltaisia, kun puheenjohtaja tai varapuheenjohtaja sekä yhteensä
+                            vähintään neljä muuta komitean jäsentä ovat paikalla. Kokouskutsu tulee 
+                            lähettää vähintään viisi vuorokautta ennen kokouksen alkua.
+
+                            Äänestyksen mennessä tasan ratkaisee kokouksen puheenjohtajan kanta,
+                            henkilövaaleissa ja suljetussa lippuäänestyksessä kuitenkin arpa.
+                            Leppätalokomitean kokoukset ovat avoimia kaikille järjestöjen
+                            jäsenille ellei komitea erityisistä syistä muuta päätä. Kokouksista
+                            pidetään päätöspöytäkirjaa.
+
+                        </p>
+                    </div>
+                    <div className="rule-section">
+                        <h3>18§ Leppätalokomitean puheenjohtaja</h3>
+                        <p>
+                            Leppätalokomitean puheenjohtajana toimii Matlun edustaja.
+                            Puheenjohtaja toimii klusterin yhteyshenkilönä HYYn suuntaan ja vastaa
+                            avainhallinnosta. Leppätalokomitea voi valita nimettyjen edustajien joukosta
+                            varapuheenjohtajan, joka hoitaa puheenjohtajan tehtäviä tämän ollessa
+                            estyneenä.
+                        </p>
+                    </div>
+                    <div className="rule-section">
+                        <h3>16§ Leppätalokomitean puheenjohtaja</h3>
+                        <p>
+                            Leppätalokomitean puheenjohtajana toimii Matlun edustaja.
+                            Puheenjohtaja toimii klusterin yhteyshenkilönä HYYn suuntaan ja vastaa
+                            avainhallinnosta. Leppätalokomitea voi valita nimettyjen edustajien joukosta
+                            varapuheenjohtajan, joka hoitaa puheenjohtajan tehtäviä tämän ollessa
+                            estyneenä.
+                        </p>
+                    </div>
+                    <div className="rule-section">
+                        <h3>16§ Leppätalokomitean puheenjohtaja</h3>
+                        <p>
+                            Leppätalokomitean puheenjohtajana toimii Matlun edustaja.
+                            Puheenjohtaja toimii klusterin yhteyshenkilönä HYYn suuntaan ja vastaa
+                            avainhallinnosta. Leppätalokomitea voi valita nimettyjen edustajien joukosta
+                            varapuheenjohtajan, joka hoitaa puheenjohtajan tehtäviä tämän ollessa
+                            estyneenä.
+                        </p>
+                    </div>
                 </div>
             )}
         </div>

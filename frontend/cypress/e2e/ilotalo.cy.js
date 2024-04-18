@@ -21,7 +21,7 @@ describe('Frontpage', () => {
   it('rules and instructions can be accessed', function() {
     cy.contains('span.link', 'Säännöt ja ohjeet').click()
     cy.url().should('include', '/saannot_ja_ohjeet')
-    cy.contains('Sivua rakennetaan vielä! :)')
+    cy.contains('Säännöt ja ohjeet')
   })
 
   it('privacy policy can be accessed', function() {
