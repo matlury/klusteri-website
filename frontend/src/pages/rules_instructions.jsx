@@ -13,7 +13,7 @@ const Rules_and_Instructions = () => {
 
     return (
         <div className='textbox'>
-            <h1>Säännöt ja ohjeet </h1>
+            <h1 style={{ color: '#333', borderBottom: '2px solid #333', paddingBottom: '10px' }}>Säännöt ja ohjeet </h1>
             {showRules ? (
                 <button onClick={handleClose}>Sulje säännöt</button>
             ) : (
@@ -21,7 +21,7 @@ const Rules_and_Instructions = () => {
             )}
             {showRules && (
                 <div className='rules'>
-                    <h2>Matlu-klusterin käyttösäännöt</h2>
+                    <h2 style={{ color: '#555', marginTop: '30px' }}>Matlu-klusterin käyttösäännöt</h2>
                     <div className="rule-section">
                         <h3>1§ Määräysala</h3>
                         <p>
@@ -62,7 +62,7 @@ const Rules_and_Instructions = () => {
                         </p>
                     </div>
                     <div className="rule-section">
-                        <h3>Tilat ja niiden käyttö</h3>
+                    <h2 style={{ color: '#555', marginTop: '30px' }}>Tilat ja niiden käyttö</h2>
                         <h3>5§ Klusterin käyttäjät</h3>
                         <p>
                             Klusteri on tarkoitettu kaikille järjestöjen jäsenille. Klusteria
@@ -215,7 +215,7 @@ const Rules_and_Instructions = () => {
                         </p>
                     </div>
                     <div className="rule-section">
-                    <h3>Hallinto ja päätöksenteko</h3>
+                    <h2 style={{ color: '#555', marginTop: '30px' }}>Hallitus ja päätöksenteko</h2>
                         <h3>15§ Leppätalokomitea</h3>
                         <p>
                             Klusteria hallinnoi Leppätalokomitea, jossa on yksi edustaja
@@ -253,33 +253,150 @@ const Rules_and_Instructions = () => {
                         </p>
                     </div>
                     <div className="rule-section">
-                        <h3>18§ Leppätalokomitean puheenjohtaja</h3>
+                        <h3>18§ Klusterikokous</h3>
                         <p>
-                            Leppätalokomitean puheenjohtajana toimii Matlun edustaja.
-                            Puheenjohtaja toimii klusterin yhteyshenkilönä HYYn suuntaan ja vastaa
-                            avainhallinnosta. Leppätalokomitea voi valita nimettyjen edustajien joukosta
-                            varapuheenjohtajan, joka hoitaa puheenjohtajan tehtäviä tämän ollessa
-                            estyneenä.
+                            Merkittävissä klusteria koskevissa asioissa päätösvaltaa käyttää
+                            klusterikokous. Kokouksessa kullakin järjestöllä on käytettävissä yksi
+                            ääni, jota käyttää järjestön hallituksen valtuuttama edustaja tai
+                            hänen varaedustajansa. Varaedustaja käyttää äänioikeuttaan, mikäli
+                            varsinainen edustaja on poissa tai on muutoin estynyt käyttämään
+                            äänioikeuttaan.
+
+                            Edustajilla tulee olla järjestön antama valtakirja
+                            edustusoikeudestaan. Äänestyksen mennessä tasan ratkaisee
+                            puheenjohtajan kanta, henkilövaaleissa ja suljetussa
+                            lippuäänestyksessä kuitenkin arpa. Klusterikokouksissa on puhe- ja
+                            läsnäolo-oikeus kaikilla järjestöjen jäsenillä. Kokouksista pidetään
+                            päätöspöytäkirjaa.
                         </p>
                     </div>
                     <div className="rule-section">
-                        <h3>16§ Leppätalokomitean puheenjohtaja</h3>
+                        <h3>19§ Klusterikokouksissa päätettävät asiat</h3>
                         <p>
-                            Leppätalokomitean puheenjohtajana toimii Matlun edustaja.
-                            Puheenjohtaja toimii klusterin yhteyshenkilönä HYYn suuntaan ja vastaa
-                            avainhallinnosta. Leppätalokomitea voi valita nimettyjen edustajien joukosta
-                            varapuheenjohtajan, joka hoitaa puheenjohtajan tehtäviä tämän ollessa
-                            estyneenä.
+                            Klusterikokoukset kutsuu koolle Leppätalokomitea. Kokouskutsu on
+                            lähetettävä järjestöille viimeistään kolme viikkoa ennen kokousta.
+                            Käyttösääntöjen muuttaminen ja muut erityisen merkittävät asiat on
+                            mainittava kokouskutsussa, muut asiat viimeistään viikkoa ennen
+                            kokousta toimitettavalla esityslistalla.
+
+                            Klusterikokous voi kuitenkin 3/4 enemmistöllä päättää, että asia
+                            käsitellään kiireellisenä, vaikka sitä ei ole esityslistalla. Asiaa,
+                            josta on mainittava kokouskutsussa, ei voi käsitellä kiireellisenä.
+                            Klusterikokouksella on oikeus ottaa päätettäväkseen
+                            Leppätalokomitealle kuuluva asia sekä muuttaa Leppätalokomitean
+                            päätöksiä.
                         </p>
                     </div>
                     <div className="rule-section">
-                        <h3>16§ Leppätalokomitean puheenjohtaja</h3>
+                        <h3>20§ Klusterin ylläpito ja irtaimisto</h3>
                         <p>
-                            Leppätalokomitean puheenjohtajana toimii Matlun edustaja.
-                            Puheenjohtaja toimii klusterin yhteyshenkilönä HYYn suuntaan ja vastaa
-                            avainhallinnosta. Leppätalokomitea voi valita nimettyjen edustajien joukosta
-                            varapuheenjohtajan, joka hoitaa puheenjohtajan tehtäviä tämän ollessa
-                            estyneenä.
+                            Matlu vastaa klusterin ylläpidosta ja juoksevista kuluista.
+                            Järjestöjen odotetaan osallistuvan kustannuksiin suhteessa
+                            käyttäjämääriinsä. Klusterille yhteisillä varoilla hankittu irtaimisto
+                            on Matlun omaisuutta.
+                        </p>
+                    </div>
+                    <div className="rule-section">
+                    <h2 style={{ color: '#555', marginTop: '30px' }}>Avaimet ja lukitukset</h2>
+                        <h3>21§ Avainhallinto</h3>
+                        <p>
+                            Klusterin avainrekisteriä ylläpitää Leppätalokomitean puheenjohtaja.
+                            Leppätalokomitealla on oikeus ottaa avain pois väärinkäytöksiin
+                            syyllistyneeltä henkilöltä.
+
+                        </p>
+                    </div>
+                    <div className="rule-section">
+                        <h3>22§ Klusterin kulkuluvat</h3>
+                        <p>
+                            Järjestö voi perustellusta syystä myöntää kulkuluvan klusterille jäsenelleen 
+                            ilmoittamalla tästä HYYlle ja Leppätalokomitean puheenjohtajalle. Kulkuluvan 
+                            myöntämisestä henkilölle, jonka kulkulupa on otettu pois väärinkäytösten takia,
+                            päättää Leppätalokomitea. Järjestö voi ottaa nimissään olevan
+                            kulkuluvan pois ilmoittamalla tästä Leppätalokomitean
+                            puheenjohtajalle.
+                        </p>
+                    </div>
+                    <div className="rule-section">
+                        <h3>23§ Sisätilojen avaimet</h3>
+                        <p>
+                            Jokaisella järjestöllä on oikeus riittävään määrään avaimia kokoushuoneeseen ja
+                            kerhotilaan sekä varastoihin. Avaimet ovat aina yksittäisen
+                            henkilön nimissä, mutta niitä voidaan säilyttää lukitussa kaapissa tai
+                            muussa riittävän turvallisessa tilassa järjestön virkailijoiden
+                            saatavilla.
+                        </p>
+                    </div>
+                    <div className="rule-section">
+                        <h3>24§ Vastuu klusterin käytöstä</h3>
+                        <p>
+                            Klusteria käytettäessä jollain läsnäolijalla on oltava tilan käyttöön oikeuttava 
+                            kulkulupa. Jokainen kulkuluvallinen vastaa klusterilla omasta sekä vastuullaan 
+                            olevien henkilöiden toiminnasta. Jokainen kulkulupa on sekä kulkuluvan haltijan 
+                            että luvan myöntäneen järjestön vastuulla.
+
+                        </p>
+                    </div>
+                    <div className="rule-section">
+                        <h3>25§ Klusterin ulko-ovet</h3>
+                        <p>
+                            Klusterin uloskäynnit pidetään lukittuna. Rakennuksen muihin tiloihin ei saa
+                            mennä ilman lupaa.
+
+                        </p>
+                    </div>
+                    <div className="rule-section">
+                    <h2 style={{ color: '#555', marginTop: '30px' }}>Siisteys ja siivoaminen</h2>
+                        <h3>26§ Kengätön tila</h3>
+                        <p>
+                            Ulkokengät tulee jättää eteiseen. Jos ulkokenkiä joudutaan
+                            poikkeuksellisesti käyttämään klusterilla esimerkiksi tavaroita
+                            kuljetettaessa, tulee lattiat siivota välittömästi tämän jälkeen.
+
+                        </p>
+                    </div>
+                    <div className="rule-section">
+                        <h3>27§ Klusterin siisteys</h3>
+                        <p>
+                            Jokaisen käyttäjän tulee siivota jälkensä viimeistään poistuessaan.
+                            Varauksen päättyessä sekä viimeisten käyttäjien poistuessa
+                            varaamattomista tiloista tulee käytetyt tilat siivota vähintään yhtä
+                            hyvään kuntoon kuin saavuttaessa.
+
+                        </p>
+                    </div>
+                    <div className="rule-section">
+                        <h3>28§ Klusterin siivoaminen</h3>
+                        <p>
+                            Klusteri siivotaan viikoittain. Leppätalokomitea jakaa siivousvuorot ja 
+                            tarvittaessa velvoittaa järjestöt myös muunlaiseen siivoukseen. 
+                            Siivousvälineiden hankinnan koordinoi Matlun klusterivastaava. 
+
+                        </p>
+                    </div>
+                    <div className="rule-section">
+                    <h2 style={{ color: '#555', marginTop: '30px' }}>Väärinkäytökset ja laiminlyönti</h2>
+                        <h3>29§ Vahinkojen hyvittäminen</h3>
+                        <p>
+                            Järjestöt hyvittävät väärinkäytökset ja laiminlyönnit toimimalla
+                            klusterin yhteiseksi hyväksi Leppätalokomitean päättämällä tavalla. Järjestöt 
+                            ovat vastuussa Matlun omistamassa irtaimistossa ilmenevistä vahingoista, 
+                            jotka eivät ole aiheutuneet normaalista kulumisesta.
+                            ssa.
+
+                        </p>
+                    </div>
+                    <div className="rule-section">
+                        <h3>30§ Käyttöoikeuksien rajoittaminen</h3>
+                        <p>
+                            Jos väärinkäytös tai laiminlyönti on vakava tai järjestö syyllistyy
+                            sellaiseen toistuvasti, voi Leppätalokomitean kokous päättää järjestön
+                            käyttöoikeuksien rajoittamisesta määräajaksi. Järjestö ei saa
+                            osallistua päätöksentekoon sen käyttöoikeuksien rajoittamisesta, mutta
+                            sillä on oikeus tulla kuulluksi.
+
+                            Henkilökohtaisten käyttöoikeuksien rajoittamisesta vakavissa väärinkäytös- 
+                            tai laiminlyöntitapauksissa päättää Leppätalokomitea.
                         </p>
                     </div>
                 </div>
