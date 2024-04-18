@@ -3,7 +3,7 @@ import '../index.css'
 import NewAccountPage from './createpage'
 import axiosClient from '../axios.js'
 import { useStateContext } from '../context/ContextProvider.jsx'
-import CountdownTimer from './CountdownTimer'
+import CountdownTimer from '../context/CountdownTimer.jsx'
 
 
 const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {

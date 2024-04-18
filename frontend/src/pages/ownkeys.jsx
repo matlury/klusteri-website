@@ -139,7 +139,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     const ykvForm = () => (
         <form>
             <div>
-                Kenestä otat vastuun?
+                <label htmlFor='responsibility'>Kenestä otat vastuun?</label>
                 <input
                     id='responsibility'
                     type='responsibility'
