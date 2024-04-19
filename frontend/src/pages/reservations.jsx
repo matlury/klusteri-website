@@ -6,7 +6,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { Modal, Button } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '../index.css'
-import { useStateContext } from "../context/ContextProvider.jsx"
+import { useStateContext } from '../context/ContextProvider.jsx'
 import axiosClient from '../axios.js'
 
 const API_URL = process.env.API_URL
@@ -72,15 +72,15 @@ const MyCalendar = () => {
   }
 
   const handleInputChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value } = event.target
     setEventDetails({ ...eventDetails, [name]: value })
   }
 
   const handleAddEvent = () => {
-    const { title, organizer, description, responsible, isOpen, room, start, end, id } = eventDetails;
-    const startDate = moment(start);
-    const endDate = moment(end);
-    const duration = moment.duration(endDate.diff(startDate)).asHours();
+    const { title, organizer, description, responsible, isOpen, room, start, end, id } = eventDetails
+    const startDate = moment(start)
+    const endDate = moment(end)
+    const duration = moment.duration(endDate.diff(startDate)).asHours()
 
     if (duration > 24) {
       alert('Varauksen kesto ei voi olla yli 24 tuntia.')
@@ -159,14 +159,32 @@ const MyCalendar = () => {
     setShowModal(false)
   }
 
+  const handleAddNewEventClick = () => {
+    setSelectedSlot(null)
+    setShowModal(true)
+    setEventDetails({  
+      title: '',
+      organizer: '',
+      description: '',
+      responsible: '',
+      isOpen: '',
+      room: '',
+      start: '',
+      end: '',
+    })
+  }
+
   return (
-    <div className="textbox">
+    <div className='textbox'>
       <h1>Varauskalenteri</h1>
+      <div className='add-event-button'>
+      <Button variant='primary' onClick={handleAddNewEventClick} style={{ backgroundColor: 'gray', borderColor: 'gray' }}>Lisää uusi tapahtuma</Button>
+      </div>
       <Calendar
         localizer={localizer}
         events={events}
-        startAccessor="start"
-        endAccessor="end"
+        startAccessor='start'
+        endAccessor='end'
         style={{ height: 500 }}
         selectable
         onSelectSlot={handleSelectSlot}
@@ -205,66 +223,68 @@ const MyCalendar = () => {
             <div>
               <p>Varauksen tiedot:</p>
               <p style={{ color: 'grey' }}>Voit tehdä enimmillään 24 tunnin varauksen.</p>
-              <p>Alkaa: <input type="datetime-local" name="start" ref={startRef} onChange={handleInputChange} /></p>
-              <p>Päättyy: <input type="datetime-local" name="end" ref={endRef} onChange={handleInputChange} /></p>
+              <p>Alkaa: <input type='datetime-local' name='start' ref={startRef} onChange={handleInputChange} /></p>
+              <p>Päättyy: <input type='datetime-local' name='end' ref={endRef} onChange={handleInputChange} /></p>
               <p style={{ color: 'red' }}>Huomioithan yökäyttösäännöt klo 00-08.</p>
               <input
-                name="title"
-                placeholder="Tapahtuman nimi"
+                name='title'
+                placeholder='Tapahtuman nimi'
                 value={eventDetails.title}
                 onChange={handleInputChange}
                 style={{ width: '100%', borderRadius: '5px'}}
               />
               <p></p>
               <input
-                name="organizer"
-                placeholder="Järjestäjä"
+                name='organizer'
+                placeholder='Järjestäjä'
                 value={eventDetails.organizer}
                 onChange={handleInputChange}
                 style={{ width: '100%', borderRadius: '5px'}}
               />
               <p></p>
               <input
-                name="responsible"
-                placeholder="Vastuuhenkilö"
+                name='responsible'
+                placeholder='Vastuuhenkilö'
                 value={eventDetails.responsible}
                 onChange={handleInputChange}
+
                 style={{ width: '100%', borderRadius: '5px'}}
               />
               <p></p>
+
               <textarea
-                name="description"
-                placeholder="Tapahtuman kuvaus"
+                name='description'
+                placeholder='Tapahtuman kuvaus'
                 value={eventDetails.description}
                 onChange={handleInputChange}
                 style={{ width: '100%', height: '100px', borderRadius: '5px'}}
               />
-              <select name="isOpen" value={eventDetails.isOpen} onChange={handleInputChange}>
-              <option value="tyhjä">Valitse avoimuus</option>
-                <option value="avoin">Avoin tapahtuma</option>
-                <option value="suljettu">Vain jäsenille</option>
+              <select name='isOpen' value={eventDetails.isOpen} onChange={handleInputChange}>
+              <option value='tyhjä'>Valitse avoimuus</option>
+                <option value='avoin'>Avoin tapahtuma</option>
+                <option value='suljettu'>Vain jäsenille</option>
               </select>
-              <select name="room" value={eventDetails.room} onChange={handleInputChange}>
-              <option value="tyhjä">Valitse huone</option>
-                <option value="Kokoushuone">Kokoushuone</option>
-                <option value="Kerhotila">Kerhotila</option>
-                <option value="Oleskelutila">Oleskelutila</option>
-                <option value="ChristinaRegina">ChristinaRegina</option>
+              <select name='room' value={eventDetails.room} onChange={handleInputChange}>
+              <option value='tyhjä'>Valitse huone</option>
+                <option value='Kokoushuone'>Kokoushuone</option>
+                <option value='Kerhotila'>Kerhotila</option>
+                <option value='Oleskelutila'>Oleskelutila</option>
+                <option value='ChristinaRegina'>ChristinaRegina</option>
               </select>
             </div>
           )}
           </Modal.Body>
           <Modal.Footer>
             {selectedEvent && (
-              <Button variant="danger" onClick={() => handleDeleteEvent(selectedEvent.id)}>
+              <Button variant='danger' onClick={() => handleDeleteEvent(selectedEvent.id)}>
                 Poista tapahtuma
               </Button>
             )}
-            <Button variant="secondary" onClick={handleCloseModal}>
+            <Button variant='secondary' onClick={handleCloseModal}>
               Sulje
             </Button>
             {!selectedEvent && (
-              <Button variant="primary" onClick={handleAddEvent}>
+              <Button variant='primary' onClick={handleAddEvent}>
                 Tallenna
               </Button>
             )}
@@ -275,4 +295,3 @@ const MyCalendar = () => {
   }
   
   export default MyCalendar
-  
