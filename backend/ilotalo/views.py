@@ -322,12 +322,10 @@ class AddUserOrganizationView(APIView):
         user.organization.add(organization)
         return Response("User added to organization successfully", status=status.HTTP_201_CREATED)
 
-class EventView(viewsets.ModelViewSet):
+class EventView(viewsets.ReadOnlyModelViewSet):
     """
     Displays a list of all Event objects at <baseurl>/events/
-    Actions provided by ModelViewSet:
-        .list(), .retrieve(), .create(), .update(), .partial_update(), .delete()
-    Each method listed above can be overwritten for customized object management
+    Only supports list and retrieve actions (read-only)
     """
 
     serializer_class = EventSerializer
@@ -440,12 +438,10 @@ class UpdateEventView(APIView):
             return Response(event.data, status=status.HTTP_200_OK)
         return Response(event.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class NightResponsibilityView(viewsets.ModelViewSet):
+class NightResponsibilityView(viewsets.ReadOnlyModelViewSet):
     """
     Displays a list of all NightResponsibility objects at <baseurl>/ykv/
-    Actions provided by ModelViewSet:
-        .list(), .retrieve(), .create(), .update(), .partial_update(), .delete()
-    Each method listed above can be overwritten for customized object management
+    Only supports list and retrieve actions (read-only)
     """
 
     serializer_class = NightResponsibilitySerializer
