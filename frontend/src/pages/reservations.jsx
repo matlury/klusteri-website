@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import '../index.css'
 import { useStateContext } from '../context/ContextProvider.jsx'
 import axiosClient from '../axios.js'
+import axios from 'axios'
 
 const API_URL = process.env.API_URL
 
@@ -22,10 +23,7 @@ const localizer = momentLocalizer(moment)
 moment.locale('fi')
 
 const MyCalendar = () => {
-  const [events, setEvents] = useState(() => {
-    const storedEvents = localStorage.getItem('events')
-    return storedEvents ? JSON.parse(storedEvents) : []
-  })
+  const [events, setEvents] = useState([])
   const [selectedSlot, setSelectedSlot] = useState(null)
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [eventDetails, setEventDetails] = useState({
@@ -40,35 +38,48 @@ const MyCalendar = () => {
     id: '',
   })
   
-  const [showModal, setShowModal] = useState(false)
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showInfoModal, setShowInfoModal] = useState(false)
   const { user } = useStateContext()
 
   useEffect(() => {
-    localStorage.setItem('events', JSON.stringify(events))
-  }, [events])
+    getEvents()
+  }, [])
 
   const startRef = useRef(null)
   const endRef = useRef(null)
 
+  const getEvents = () => {
+    axios
+      .get(`${API_URL}/api/listobjects/events/`)
+      .then(response => {
+        const events = response.data
+        setEvents(events)
+      })
+      .catch(error => {
+        console.error('Virhe tapahtumien hakemisessa:', error)
+      })
+  }
+
   const handleSelectSlot = ({ start, end }) => {
     if (user) {
       setSelectedSlot({ start, end })
-      setShowModal(true)
+      setShowCreateModal(true)
     } else {
       alert('Sinun täytyy kirjautua sisään lisätäksesi tapahtuman.')
     }
   }
 
   useEffect(() => {
-    if (showModal && selectedSlot) {
+    if (showCreateModal && selectedSlot) {
       startRef.current.value = moment(selectedSlot.start).format('YYYY-MM-DDTHH:mm')
       endRef.current.value = moment(selectedSlot.end).format('YYYY-MM-DDTHH:mm')
     }
-  }, [showModal, selectedSlot])
+  }, [showCreateModal, selectedSlot])
 
   const handleSelectEvent = (event) => {
     setSelectedEvent(event)
-    setShowModal(true)
+    setShowInfoModal(true)
   }
 
   const handleInputChange = (event) => {
@@ -118,7 +129,7 @@ const MyCalendar = () => {
           console.log('Tapahtuma tallennettu:', response.data)
           const updatedEvent = { ...newEvent, id: response.data.id }
           setEvents([...events, updatedEvent])
-          setShowModal(false)
+          setShowCreateModal(false)
           setEventDetails({
             title: '',
             organizer: '',
@@ -156,12 +167,13 @@ const MyCalendar = () => {
   }
 
   const handleCloseModal = () => {
-    setShowModal(false)
+    setShowCreateModal(false)
+    setShowInfoModal(false)
   }
 
   const handleAddNewEventClick = () => {
-    setSelectedSlot(null)
-    setShowModal(true)
+    setSelectedSlot(null); 
+    setShowCreateModal(true);
     setEventDetails({  
       title: '',
       organizer: '',
@@ -203,24 +215,12 @@ const MyCalendar = () => {
         })}
       />
       
-      <Modal show={showModal} onHide={handleCloseModal}>
+      <Modal show={showCreateModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
-          <Modal.Title>{selectedEvent ? selectedEvent.title : 'Lisää tapahtuma'}</Modal.Title>
+          <Modal.Title>{'Lisää tapahtuma'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {selectedEvent && (
-            <>
-              <p>Alkaa: {moment(selectedEvent.start).format('YYYY-MM-DD HH:mm')}</p>
-              <p>Päättyy: {moment(selectedEvent.end).format('YYYY-MM-DD HH:mm')}</p>
-              <p>Järjestäjä: {selectedEvent.organizer}</p>
-              <p>Vastuuhenkilö: {selectedEvent.responsible}</p>
-              <p>Kuvaus: {selectedEvent.description}</p>
-              <p>Tila: {selectedEvent.isOpen}</p>
-              <p>Huone: {selectedEvent.room}</p>
-            </>
-          )}
-          {!selectedEvent && (
-            <div>
+          <div>
               <p>Varauksen tiedot:</p>
               <p style={{ color: 'grey' }}>Voit tehdä enimmillään 24 tunnin varauksen.</p>
               <p>Alkaa: <input type='datetime-local' name='start' ref={startRef} onChange={handleInputChange} /></p>
@@ -271,23 +271,42 @@ const MyCalendar = () => {
                 <option value='Oleskelutila'>Oleskelutila</option>
                 <option value='ChristinaRegina'>ChristinaRegina</option>
               </select>
-            </div>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Sulje
+          </Button>
+          <Button variant="primary" onClick={handleAddEvent}>
+            Tallenna
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showInfoModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>{selectedEvent ? selectedEvent.title : ''}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedEvent && (
+            <>
+              <p>Alkaa: {moment(selectedEvent.start).format('YYYY-MM-DD HH:mm')}</p>
+              <p>Päättyy: {moment(selectedEvent.end).format('YYYY-MM-DD HH:mm')}</p>
+              <p>Järjestäjä: {selectedEvent.organizer}</p>
+              <p>Vastuuhenkilö: {selectedEvent.responsible}</p>
+              <p>Kuvaus: {selectedEvent.description}</p>
+              <p>Tila: {selectedEvent.isOpen}</p>
+              <p>Huone: {selectedEvent.room}</p>
+            </>
           )}
           </Modal.Body>
           <Modal.Footer>
-            {selectedEvent && (
-              <Button variant='danger' onClick={() => handleDeleteEvent(selectedEvent.id)}>
-                Poista tapahtuma
-              </Button>
-            )}
-            <Button variant='secondary' onClick={handleCloseModal}>
+            <Button variant="danger" onClick={() => handleDeleteEvent(selectedEvent.id)}>
+              Poista tapahtuma
+            </Button>
+            <Button variant="secondary" onClick={handleCloseModal}>
               Sulje
             </Button>
-            {!selectedEvent && (
-              <Button variant='primary' onClick={handleAddEvent}>
-                Tallenna
-              </Button>
-            )}
           </Modal.Footer>
         </Modal>
       </div>
