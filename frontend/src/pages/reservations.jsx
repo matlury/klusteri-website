@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import '../index.css'
 import { useStateContext } from '../context/ContextProvider.jsx'
 import axiosClient from '../axios.js'
+import axios from 'axios'
 
 const API_URL = process.env.API_URL
 
@@ -22,10 +23,7 @@ const localizer = momentLocalizer(moment)
 moment.locale('fi')
 
 const MyCalendar = () => {
-  const [events, setEvents] = useState(() => {
-    const storedEvents = localStorage.getItem('events')
-    return storedEvents ? JSON.parse(storedEvents) : []
-  })
+  const [events, setEvents] = useState([])
   const [selectedSlot, setSelectedSlot] = useState(null)
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [eventDetails, setEventDetails] = useState({
@@ -45,11 +43,23 @@ const MyCalendar = () => {
   const { user } = useStateContext()
 
   useEffect(() => {
-    localStorage.setItem('events', JSON.stringify(events))
-  }, [events])
+    getEvents()
+  }, [])
 
   const startRef = useRef(null)
   const endRef = useRef(null)
+
+  const getEvents = () => {
+    axios
+      .get(`${API_URL}/api/listobjects/events/`)
+      .then(response => {
+        const events = response.data
+        setEvents(events)
+      })
+      .catch(error => {
+        console.error('Virhe tapahtumien hakemisessa:', error)
+      })
+  }
 
   const handleSelectSlot = ({ start, end }) => {
     if (user) {
