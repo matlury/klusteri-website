@@ -12,6 +12,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const [telegram, setTelegram] = useState('')
   const [role, setRole] = useState('5')
 
+  // user_new* variables for updating someone else's information
+  const [userNewUsername, setUserNewUsername] = useState('')
+  const [userNewEmail, setUserNewEmail] = useState('')
+  const [userNewTelegram, setUserNewTelegram] = useState('')
+  const [userNewRole, setUserNewRole] = useState(null)
+  const [userCurrentOrganizations,  setUserCurrentOrganizations] = useState([])
+
   const [organisations, setOrganisations] = useState([])
   const [selectedOrg, setSelectedOrg] = useState(null)
 
@@ -416,6 +423,16 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   }
 
   const toggleUserDetails = (userId) => {
+    const showThisUser = allUsers.find(user => user.id === userId) 
+    setUserNewUsername(showThisUser.username)
+    setUserNewEmail(showThisUser.email)
+    setUserNewTelegram(showThisUser.telegram)
+    setUserNewRole(showThisUser.role)
+
+    // get a list of each organization the user is a member of
+    const orgDict = showThisUser.organization
+    setUserCurrentOrganizations(Object.keys(orgDict).filter(org =>  orgDict[org] === true))
+    
     setSelectedUser((prevSelectedUser) => {
       if (prevSelectedUser === userId) {
         return null
@@ -429,11 +446,41 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     if (selectedUser === userId && user) {
       return (
         <div>
-          <p>Käyttäjänimi: {user.username}</p>
-          <p>Telegram: {user.telegram}</p>
-          <p>Rooli: {user.role}</p>
-          <p>Sähköposti: {user.email}</p>
-          <br></br>
+          Käyttäjänimi: 
+          <input
+            id='user_new_username'
+            type='text'
+            value={userNewUsername}
+            onChange={(e) => setUserNewUsername(e.target.value)}
+          />
+          Sähköposti: 
+          <input
+            id='user_new_email'
+            type='text'
+            value={userNewEmail}
+            onChange={(e) => setUserNewEmail(e.target.value)}
+          />
+          Telegram: 
+          <input
+            id='user_new_telegram'
+            type='text'
+            value={userNewTelegram}
+            onChange={(e) => setUserNewTelegram(e.target.value)}
+          />
+          Rooli: 
+          <input
+            id='user_new_role'
+            type='text'
+            value={userNewRole}
+            onChange={(e) => setUserNewRole(e.target.value)}
+          />
+          <p>Jäsenyydet: </p>
+          <ul>
+            {userCurrentOrganizations.map((org) => (
+              <li key="">- {org}</li>
+            ))}
+          </ul>
+
           {hasPermission === true && <button onClick={() => handlePJChange(user.id)} className='change-pj-button' type='button'>
             Siirrä PJ-oikeudet
           </button>}
@@ -569,7 +616,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                 {organisationPage()}
                 {hasPermissionOrg == true && renderOrganizationDetails}
                 {hasPermission === true && createOrganization()}
-                {hasPermission === true && showAllUsers()}
+                {hasPermissionOrg === true && showAllUsers()}
               </div>
             </div>
             {(hasPermission === true)&& (
