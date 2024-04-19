@@ -12,6 +12,14 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const [telegram, setTelegram] = useState('')
   const [role, setRole] = useState('5')
 
+  // user_details* variables for viewing and updating someone else's information
+  const [userDetailsUsername, setUserDetailsUsername] = useState('')
+  const [userDetailsEmail, setuserDetailsEmail] = useState('')
+  const [userDetailsTelegram, setuserDetailsTelegram] = useState('')
+  const [userDetailsRole, setuserDetailsRole] = useState(null)
+  const [userDetailsOrganizations,  setuserDetailsOrganizations] = useState([])
+  const [userDetailsId,  setuserDetailsId] = useState('')
+
   const [organisations, setOrganisations] = useState([])
   const [selectedOrg, setSelectedOrg] = useState(null)
 
@@ -170,6 +178,45 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       } else {
         console.log('User cancelled the update.')}
     }
+  }
+
+  const handleUpdateAnotherUser = (event) => {
+    /*
+    Event handler for updating someone else's information.
+    No validation here because backend takes care of it.
+    */
+    event.preventDefault()
+
+    const confirmUpdate = window.confirm(`Oletko varma, että haluat päivittää tämän tietoja?`)
+
+    const updatedValues = {
+      username: userDetailsUsername,
+      email: userDetailsEmail,
+      telegram: userDetailsTelegram,
+      role: userDetailsRole
+    }
+
+    if (confirmUpdate) {
+      axiosClient.put(`/users/update/${userDetailsId}/`, updatedValues)
+        .then(response => {
+          console.log('User details updated successfully:', response.data)
+
+          setSuccess('Tiedot päivitetty onnistuneesti!')
+          setTimeout(() => setSuccess(''), 5000)
+          getAllUsers()
+
+          if (userDetailsEmail === email) {
+            localStorage.setItem('loggedUser', JSON.stringify(response.data))
+            setUser(response.data)
+          }
+    })
+    .catch(error => {
+        console.error('Error updating user details:', error)
+        setError('Tietojen päivittäminen epäonnistui')
+        setTimeout(() => setError(''), 5000)
+      })
+    } else {
+      console.log('User cancelled the update.')}
   }
 
 
@@ -416,6 +463,17 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   }
 
   const toggleUserDetails = (userId) => {
+    const showThisUser = allUsers.find(user => user.id === userId) 
+    setUserDetailsUsername(showThisUser.username)
+    setuserDetailsEmail(showThisUser.email)
+    setuserDetailsTelegram(showThisUser.telegram)
+    setuserDetailsRole(showThisUser.role)
+    setuserDetailsId(showThisUser.id)
+
+    // get a list of each organization the user is a member of
+    const orgDict = showThisUser.organization
+    setuserDetailsOrganizations(Object.keys(orgDict).filter(org =>  orgDict[org] === true))
+
     setSelectedUser((prevSelectedUser) => {
       if (prevSelectedUser === userId) {
         return null
@@ -429,11 +487,48 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     if (selectedUser === userId && user) {
       return (
         <div>
-          <p>Käyttäjänimi: {user.username}</p>
-          <p>Telegram: {user.telegram}</p>
-          <p>Rooli: {user.role}</p>
-          <p>Sähköposti: {user.email}</p>
-          <br></br>
+          Käyttäjänimi: 
+          <input
+            id='user_new_username'
+            type='text'
+            value={userDetailsUsername}
+            onChange={(e) => setUserDetailsUsername(e.target.value)}
+          />
+          Sähköposti: 
+          <input
+            id='user_new_email'
+            type='text'
+            value={userDetailsEmail}
+            onChange={(e) => setuserDetailsEmail(e.target.value)}
+          />
+          Telegram: 
+          <input
+            id='user_new_telegram'
+            type='text'
+            value={userDetailsTelegram}
+            onChange={(e) => setuserDetailsTelegram(e.target.value)}
+          />
+          Rooli: 
+          <input
+            id='user_new_role'
+            type='text'
+            value={userDetailsRole}
+            onChange={(e) => setuserDetailsRole(e.target.value)}
+          />
+          <p>Jäsenyydet: </p>
+          <ul>
+            {userDetailsOrganizations.map((org) => (
+              <li key={org}>- {org}</li>
+            ))}
+          </ul>
+          <br/>
+            
+          {/* display a button for saving the changes if the user has a role <= 3 */}
+          {hasPermissionOrg === true && <button onClick={handleUpdateAnotherUser}
+          className='create-user-button' type='button' style={{marginBottom:".25em"}}>
+            Vahvista muutokset
+          </button>}
+
           {hasPermission === true && <button onClick={() => handlePJChange(user.id)} className='change-pj-button' type='button'>
             Siirrä PJ-oikeudet
           </button>}
@@ -443,7 +538,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
     return null
   }
-
+  
   const handlePJChange = (userId) => {
     const selectedUserId = userId
     const loggedUser = JSON.parse(localStorage.getItem('loggedUser'))
@@ -567,9 +662,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
               <div id='leftleft_content'>
                 {userPage()}
                 {organisationPage()}
-                {hasPermissionOrg == true && renderOrganizationDetails}
+                {hasPermissionOrg === true && renderOrganizationDetails}
                 {hasPermission === true && createOrganization()}
-                {hasPermission === true && showAllUsers()}
+                {hasPermissionOrg === true && showAllUsers()}
               </div>
             </div>
             {(hasPermission === true)&& (
