@@ -21,6 +21,10 @@ class TestDjangoAPI(TestCase):
             "email": "klusse.osoite@gmail.com",
             "telegram": "klussentg",
             "role": 5,
+            "organization": {
+                "TKO-äly": False,
+                "Matrix": False
+            },
             "keys": {
                 "TKO-äly": False,
                 "Matrix": False
@@ -57,6 +61,7 @@ class TestDjangoAPI(TestCase):
             "email": "leppispj@gmail.com",
             "telegram": "tgleppispj",
             "role": 1,
+            "organization": None,
             "keys": None,
             "rights_for_reservation": True
         }
@@ -91,6 +96,10 @@ class TestDjangoAPI(TestCase):
             "email": "muokkaus@gmail.com",
             "telegram": "muokkaus",
             "role": 3,
+            "organization": {
+                "TKO-äly": False,
+                "Matrix": False
+            },
             "keys": {
                 "TKO-äly": False,
                 "Matrix": True
@@ -129,6 +138,10 @@ class TestDjangoAPI(TestCase):
             "email": "avaimellinen@gmail.com",
             "telegram": "avaimellinen",
             "role": 4,
+            "organization": {
+                "TKO-äly": False,
+                "Matrix": False
+            },
             "keys": {
                 "TKO-äly": False,
                 "Matrix": False
@@ -167,6 +180,10 @@ class TestDjangoAPI(TestCase):
             "email": "jarjestopj@gmail.com",
             "telegram": "jarjestopj",
             "role": 6,
+            "organization": {
+                "TKO-äly": False,
+                "Matrix": False
+            },
             "keys": {
                 "TKO-äly": False,
                 "Matrix": False
@@ -217,6 +234,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "domustg",
                 "role": 5,
+                "organization": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                },
                 "keys": {
                     "TKO-äly": False,
                     "Matrix": False
@@ -241,6 +262,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "",
                 "role": 5,
+                "organization": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                },
                 "keys": {
                     "TKO-äly": False,
                     "Matrix": False
@@ -257,6 +282,10 @@ class TestDjangoAPI(TestCase):
                 "email": "gaudium.regina@gmail.com",
                 "telegram": "",
                 "role": 5,
+                "organization": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                },
                 "keys": {
                     "TKO-äly": False,
                     "Matrix": False
@@ -279,6 +308,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "domustg",
                 "role": 5,
+                "organization": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                },
                 "keys": {
                     "TKO-äly": False,
                     "Matrix": False
@@ -300,6 +333,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "domustg",
                 "role": 5,
+                "organization": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                },
                 "keys": {
                     "TKO-äly": False,
                     "Matrix": False
@@ -332,6 +369,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "klussentg",
                 "role": 5,
+                "organization": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                },
                 "keys": {
                     "TKO-äly": False,
                     "Matrix": False
@@ -427,6 +468,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "tguser",
                 "role": 5,
+                "organization": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                },
                 "keys": {
                     "TKO-äly": False,
                     "Matrix": False
@@ -470,6 +515,10 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "tguser",
                 "role": 5,
+                "organization": {
+                    "TKO-äly": False,
+                    "Matrix": False
+                },
                 "keys": {
                     "TKO-äly": False,
                     "Matrix": False
@@ -545,11 +594,11 @@ class TestDjangoAPI(TestCase):
         """Muokkaus users can update role 4 and 5 users if they belong to same organization"""
 
         # First add the users to same organization
-        organization_created = self.client.post(
+        self.client.post(
             "http://localhost:8000/api/organizations/create",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "name": "Matrix Ry",
+                "name": "Matrix",
                 "email": "matrix_ry@gmail.com",
                 "homepage": "matrix-ry.fi",
                 "size": 1,
@@ -557,23 +606,21 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
-        org_id = organization_created.data['id']
-        self.client.post(
-            "http://localhost:8000/api/organizations/add_user_organization",
+        self.client.put(
+            f"http://localhost:8000/api/organizations/add_user_organization/{self.tavallinen_id}/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"user_id": self.tavallinen_id, "organization_id":org_id},
+            data={"organization_name": "Matrix"},
             format="json",
         )
-        self.client.post(
-            "http://localhost:8000/api/organizations/add_user_organization",
+        self.client.put(
+            f"http://localhost:8000/api/organizations/add_user_organization/{self.muokkaus_id}/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"user_id": self.muokkaus_id, "organization_id": org_id},
+            data={"organization_name": "Matrix"},
             format="json",
         )
 
-        user_id = User.objects.all()[0].id
         response = self.client.put(
-            f"http://localhost:8000/api/users/update/{user_id}/",
+            f"http://localhost:8000/api/users/update/{self.muokkaus_id}/",
             headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
             data={"telegram": "newtg"},
             format="json",
@@ -586,11 +633,11 @@ class TestDjangoAPI(TestCase):
         """Muokkaus users can update role 4 and 5 users if they belong to same organization"""
 
         # First add the users to same organization
-        organization_created = self.client.post(
+        self.client.post(
             "http://localhost:8000/api/organizations/create",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "name": "Matrix Ry",
+                "name": "Matrix",
                 "email": "matrix_ry@gmail.com",
                 "homepage": "matrix-ry.fi",
                 "size": 1,
@@ -598,17 +645,16 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
-        org_id = organization_created.data['id']
-        self.client.post(
-            "http://localhost:8000/api/organizations/add_user_organization",
+        self.client.put(
+            f"http://localhost:8000/api/organizations/add_user_organization/{self.avaimellinen_id}/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"user_id": self.avaimellinen_id, "organization_id":org_id},
+            data={"organization_name": "Matrix"},
             format="json",
         )
-        self.client.post(
-            "http://localhost:8000/api/organizations/add_user_organization",
+        self.client.put(
+            f"http://localhost:8000/api/organizations/add_user_organization/{self.muokkaus_id}/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"user_id": self.muokkaus_id, "organization_id": org_id},
+            data={"organization_name": "Matrix"},
             format="json",
         )
 
@@ -672,38 +718,36 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/organizations/create",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "name": "Matrix Ry",
+                "name": "Matrix",
                 "email": "matrix_ry@gmail.com",
                 "homepage": "matrix-ry.fi",
                 "size": 1,
             },
             format="json",
         )
-        org_id = organization_created.data['id']
 
         organization_created2 = self.client.post(
             "http://localhost:8000/api/organizations/create",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "name": "TKO-ÄLY",
+                "name": "TKO-äly",
                 "email": "tkoaly@gmail.com",
                 "homepage": "tkoaly.fi",
                 "size": 1,
             },
             format="json",
         )
-        org_id2 = organization_created2.data['id']
 
         self.client.post(
-            "http://localhost:8000/api/organizations/add_user_organization",
+            f"http://localhost:8000/api/organizations/add_user_organization/{self.tavallinen_id}",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"user_id": self.tavallinen_id, "organization_id":org_id},
+            data={"organization_name": "Matrix"},
             format="json",
         )
         self.client.post(
-            "http://localhost:8000/api/organizations/add_user_organization",
+            f"http://localhost:8000/api/organizations/add_user_organization/{self.muokkaus_id}",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"user_id": self.muokkaus_id, "organization_id": org_id2},
+            data={"organization_name": "TKO-äly"},
             format="json",
         )
 
@@ -1586,7 +1630,7 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/organizations/create",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "name": "Matrix Ry",
+                "name": "Matrix",
                 "email": "matrix_ry@gmail.com",
                 "homepage": "matrix-ry.fi",
                 "size": 1,
@@ -1613,7 +1657,7 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/organizations/create",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "name": "Matrix Ry",
+                "name": "Matrix",
                 "email": "matrix_ry@gmail.com",
                 "homepage": "matrix-ry.fi",
                 "size": 1,
@@ -1623,8 +1667,15 @@ class TestDjangoAPI(TestCase):
 
         # add user to created organization
         user = User.objects.get(email="muokkaus@gmail.com")
-        organization = Organization.objects.get(id=organization_created.data["id"])
-        user.organization.add(organization)
+        
+        self.client.put(
+            f"http://localhost:8000/api/organizations/add_user_organization/{user.id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "organization_name": "Matrix"
+            },
+            format="json",
+        )
 
         # update the homepage with role3 user
         org_id = organization_created.data['id']
@@ -1646,7 +1697,7 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/organizations/create",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "name": "Matrix Ry",
+                "name": "Matrix",
                 "email": "matrix_ry@gmail.com",
                 "homepage": "matrix-ry.fi",
                 "size": 1,
@@ -1670,11 +1721,11 @@ class TestDjangoAPI(TestCase):
         """An authorized user can add member to organization"""
 
         # first create an organization to add member to it
-        organization_created = self.client.post(
+        self.client.post(
             "http://localhost:8000/api/organizations/create",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "name": "Matrix Ry",
+                "name": "Matrix",
                 "email": "matrix_ry@gmail.com",
                 "homepage": "matrix-ry.fi",
                 "size": 1,
@@ -1683,17 +1734,16 @@ class TestDjangoAPI(TestCase):
         )
 
         # add user to created organization
-        org_id = organization_created.data['id']
-        response = self.client.post(
-            "http://localhost:8000/api/organizations/add_user_organization",
+        response = self.client.put(
+            f"http://localhost:8000/api/organizations/add_user_organization/{self.muokkaus_id}/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"user_id": self.muokkaus_user["id"], "organization_id": org_id},
+            data={"organization_name": "Matrix"},
             format="json"
         )
 
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         muokkaus_user = User.objects.get(id=self.muokkaus_user['id'])
-        self.assertTrue(muokkaus_user.organization.filter(id=org_id).exists())
+        self.assertTrue(muokkaus_user.organization['Matrix'])
     
     def test_add_user_organization_role5(self):
         """An authorized user can add member to organization"""
@@ -1703,7 +1753,7 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/organizations/create",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "name": "Matrix Ry",
+                "name": "Matrix",
                 "email": "matrix_ry@gmail.com",
                 "homepage": "matrix-ry.fi",
                 "size": 1,
@@ -1712,11 +1762,10 @@ class TestDjangoAPI(TestCase):
         )
 
         # try to add user to created organization with role5 user
-        org_id = organization_created.data['id']
-        response = self.client.post(
-            "http://localhost:8000/api/organizations/add_user_organization",
+        response = self.client.put(
+            f"http://localhost:8000/api/organizations/add_user_organization/{self.muokkaus_id}/",
             headers={"Authorization": f"Bearer {self.access_token}"},
-            data={"user_id": self.muokkaus_user["id"], "organization_id": org_id},
+            data={"organization_name": "Matrix"},
             format="json"
         )
 
