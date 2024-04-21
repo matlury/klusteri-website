@@ -334,9 +334,25 @@ input[type="username"] {
 .textbox_list_of_active_responsibilities {
   width: 95%;
   margin: 20px;
-  border: 1px solid #e9e9e9;
   padding: 70px;
   text-align:center;
-  border-style: solid;
-  border-width: thin ;
+}
+
+.ykvtab {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.ykvtable {
+  width: 100%;
+}
+
+.ykvtable th,
+.ykvtable td {
+  border: 1px solid #dddddd;
+  padding: 8px;
+}
+
+.ykvtable th {
+  background-color: aliceblue;
 }

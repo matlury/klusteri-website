@@ -187,21 +187,22 @@ const MyCalendar = () => {
     })
   }
 
+  const [allResponsibilities, setAllResponsibilities] = useState([])
   const [activeResponsibilities, setActiveResponsibilities] = useState([])
 
   useEffect(() => {
-    const fetchActiveResponsibilities = async () => {
+    const fetchResponsibilities = async () => {
       try {
-        const response = await axiosClient.get(`listobjects/nightresponsibilities/`)
-        const allResponsibilities = response.data
-        const activeResponsibilities = allResponsibilities.filter(item => item.present === true)
-        setActiveResponsibilities(activeResponsibilities)
+        const response = await axiosClient.get('listobjects/nightresponsibilities/')
+        setAllResponsibilities(response.data)
+        const active = response.data.filter(item => item.present === true)
+        setActiveResponsibilities(active)
       } catch (error) {
         console.error('Error fetching responsibilities', error)
       }
     }
 
-    fetchActiveResponsibilities()
+    fetchResponsibilities()
   }, [])
 
   return (
@@ -329,10 +330,31 @@ const MyCalendar = () => {
           </Modal.Footer>
         </Modal>
         <div className='textbox_list_of_active_responsibilities'>
-          <h4>Aktiiviset YKV-kirjaukset:</h4>
-          {activeResponsibilities.map(responsibility => (
-            <div key={responsibility.id}>{responsibility.name}</div>
-          ))}
+          <h4>Aktiiviset YKV-kirjaukset</h4>
+          {activeResponsibilities.length > 0 ? (
+            <div className='ykvtab'>
+              <table className='ykvtable'>
+                <thead>
+                  <tr>
+                    <th>Käyttäjänimi</th>
+                    <th>Vastuualue</th>
+                    <th>Kirjautumisaika</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {activeResponsibilities.map((responsibility, index) => (
+                    <tr key={index}>
+                      <td>{responsibility.username}</td>
+                      <td>{responsibility.responsible_for}</td>
+                      <td>{new Date(responsibility.login_time).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p>Ei aktiivisia YKV-kirjauksia</p>
+          )}
         </div>
       </div>
     )
