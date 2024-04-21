@@ -124,7 +124,7 @@ const MyCalendar = () => {
         id,
       }
 
-      axiosClient.post(`listobjects/events/`, newEvent)
+      axiosClient.post(`events/create_event`, newEvent)
         .then(response => {
           console.log('Tapahtuma tallennettu:', response.data)
           const updatedEvent = { ...newEvent, id: response.data.id }
@@ -143,7 +143,8 @@ const MyCalendar = () => {
           })
         })
         .catch(error => {
-          console.error('Virhe tapahtuman tallentamisessa:', error)
+          alert('Virhe tapahtuman tallentamisessa')
+          console.error('Virhe tapahtuman tallentamisessa', error)
         })
     } else {
       alert('Täytä kaikki tiedot ennen tapahtuman lisäämistä.')
@@ -172,8 +173,8 @@ const MyCalendar = () => {
   }
 
   const handleAddNewEventClick = () => {
-    setSelectedSlot(null); 
-    setShowCreateModal(true);
+    setSelectedSlot(null)
+    setShowCreateModal(true)
     setEventDetails({  
       title: '',
       organizer: '',
@@ -186,11 +187,30 @@ const MyCalendar = () => {
     })
   }
 
+  const [allResponsibilities, setAllResponsibilities] = useState([])
+  const [activeResponsibilities, setActiveResponsibilities] = useState([])
+
+  useEffect(() => {
+    const fetchResponsibilities = async () => {
+      try {
+        const response = await axiosClient.get('listobjects/nightresponsibilities/')
+        setAllResponsibilities(response.data)
+        const active = response.data.filter(item => item.present === true)
+        setActiveResponsibilities(active)
+      } catch (error) {
+        console.error('Error fetching responsibilities', error)
+      }
+    }
+
+    fetchResponsibilities()
+  }, [])
+
   return (
     <div className='textbox'>
       <h1>Varauskalenteri</h1>
       <div className='add-event-button'>
-      <Button variant='primary' onClick={handleAddNewEventClick} style={{ backgroundColor: 'gray', borderColor: 'gray' }}>Lisää uusi tapahtuma</Button>
+      <Button variant='primary' onClick={handleAddNewEventClick} style={{ backgroundColor: 'gray', borderColor: 'gray', padding: '7px',  margin: '10px' }}
+      >Lisää uusi tapahtuma</Button>
       </div>
       <Calendar
         localizer={localizer}
@@ -274,10 +294,10 @@ const MyCalendar = () => {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
+          <Button variant='secondary' onClick={handleCloseModal}>
             Sulje
           </Button>
-          <Button variant="primary" onClick={handleAddEvent}>
+          <Button variant='primary' onClick={handleAddEvent}>
             Tallenna
           </Button>
         </Modal.Footer>
@@ -301,14 +321,41 @@ const MyCalendar = () => {
           )}
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="danger" onClick={() => handleDeleteEvent(selectedEvent.id)}>
+            <Button variant='danger' onClick={() => handleDeleteEvent(selectedEvent.id)}>
               Poista tapahtuma
             </Button>
-            <Button variant="secondary" onClick={handleCloseModal}>
+            <Button variant='secondary' onClick={handleCloseModal}>
               Sulje
             </Button>
           </Modal.Footer>
         </Modal>
+        <div className='textbox_list_of_active_responsibilities'>
+          <h4>Aktiiviset YKV-kirjaukset</h4>
+          {activeResponsibilities.length > 0 ? (
+            <div className='ykvtab'>
+              <table className='ykvtable'>
+                <thead>
+                  <tr>
+                    <th>Käyttäjänimi</th>
+                    <th>Vastuualue</th>
+                    <th>Kirjautumisaika</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {activeResponsibilities.map((responsibility, index) => (
+                    <tr key={index}>
+                      <td>{responsibility.username}</td>
+                      <td>{responsibility.responsible_for}</td>
+                      <td>{new Date(responsibility.login_time).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p>Ei aktiivisia YKV-kirjauksia</p>
+          )}
+        </div>
       </div>
     )
   }

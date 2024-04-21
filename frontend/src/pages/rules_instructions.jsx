@@ -1,33 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
 const Rules_and_Instructions = () => {
-    const [showRules, setShowRules] = useState(false);
-    const [showCleaningRules, setShowCleaningRules] = useState(false);
-    const [showSafetyRules, setShowSafetyRules] = useState(false); 
+    const [showRules, setShowRules] = useState(false)
+    const [showCleaningRules, setShowCleaningRules] = useState(false)
+    const [showSafetyRules, setShowSafetyRules] = useState(false)
 
     const handleClick = () => {
-        setShowRules(true);
-        setShowCleaningRules(false);
-        setShowSafetyRules(false);
-    };
+        setShowRules(true)
+        setShowCleaningRules(false)
+        setShowSafetyRules(false)
+    }
 
     const handleShowCleaningRules = () => {
-        setShowRules(false);
-        setShowCleaningRules(true);
-        setShowSafetyRules(false);
-    };
+        setShowRules(false)
+        setShowCleaningRules(true)
+        setShowSafetyRules(false)
+    }
 
     const handleShowSafetyRules = () => {
-        setShowRules(false);
-        setShowCleaningRules(false);
-        setShowSafetyRules(true); 
-    };
+        setShowRules(false)
+        setShowCleaningRules(false)
+        setShowSafetyRules(true)
+    }
 
     const handleClose = () => {
-        setShowRules(false);
-        setShowCleaningRules(false);
-        setShowSafetyRules(false);
-    };
+        setShowRules(false)
+        setShowCleaningRules(false)
+        setShowSafetyRules(false)
+    }
 
     return (
         <div className='textbox'>
@@ -48,7 +48,7 @@ const Rules_and_Instructions = () => {
             {showRules && (
                 <div className='rules'>
                     <h2 style={{ color: '#555', marginTop: '30px' }}>Matlu-klusterin käyttösäännöt</h2>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>1§ Määräysala</h3>
                         <p>
                             Nämä säännöt koskevat Domus Gaudiumin klusteritila Christina Reginan
@@ -58,7 +58,7 @@ const Rules_and_Instructions = () => {
                             soveltamisesta.
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>2§ Klusterin järjestöt</h3>
                         <p>
                             Klusteria saavat käyttää järjestöt, joilla on HYYn kanssa voimassa
@@ -68,7 +68,7 @@ const Rules_and_Instructions = () => {
                             (myöhemmin Matlu).
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>3§ Sääntöjen muuttaminen</h3>
                         <p>
                             Näitä käyttösääntöjä voidaan muuttaa 3/4 enemmistöllä
@@ -76,7 +76,7 @@ const Rules_and_Instructions = () => {
                             kokouskutsussa.
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>4§ Klusterin sähköpostilistat</h3>
                         <p>
                             Klusterin käyttöön liittyy kolme sähköpostilistaa. Leppis-avaimet@helsinki.fi 
@@ -87,7 +87,7 @@ const Rules_and_Instructions = () => {
 
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                     <h2 style={{ color: '#555', marginTop: '30px' }}>Tilat ja niiden käyttö</h2>
                         <h3>5§ Klusterin käyttäjät</h3>
                         <p>
@@ -107,7 +107,7 @@ const Rules_and_Instructions = () => {
                             Alaikäisten oleskelu klusterilla on ehdottomasti kielletty.
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>6§ Kokoushuone</h3>
                         <p>
                             Kokoushuone on etupäässä kokouskäyttöön tarkoitettu tila, jonka käyttö
@@ -117,7 +117,7 @@ const Rules_and_Instructions = () => {
 
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>7§ Kerhohuone</h3>
                         <p>
                             Kerhohuone on monenlaisiin tilaisuuksiin soveltuva tila, joka on
@@ -127,7 +127,7 @@ const Rules_and_Instructions = () => {
                             varauskalenterissa.
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>8§ Oleskelutila</h3>
                         <p>
                             Oleskelutila on järjestöjen jäsenten vapaasti käytettävissä oleva
@@ -138,7 +138,7 @@ const Rules_and_Instructions = () => {
                             ilmoitusluontoinen.
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>9§ Säilytys- ja varastotilat</h3>
                         <p>
                             Jokaisella järjestöllä on oikeus kiinteään kaappiin klusterilla.
@@ -150,7 +150,7 @@ const Rules_and_Instructions = () => {
                             erillisellä ilmoituksella avainlistalle.
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>10§ Yökäyttö</h3>
                         <p>
                             Yökäytöksi lasketaan klusteritiloissa oleskelu välillä 00.00 - 07.00,
@@ -170,7 +170,7 @@ const Rules_and_Instructions = () => {
                             otsikosta tulee ilmetä yökäyttövastuun ottaminen.
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>11§ Yökäytön vastuuhenkilö</h3>
                         <p>
                             Yökäytön vastuuhenkilö on kulkuoikeudellinen henkilö, joka on klusterin 
@@ -208,7 +208,7 @@ const Rules_and_Instructions = () => {
 
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>12§ Tapahtuman järjestäminen klusterilla</h3>
                         <p>
                             Jos järjestö järjestää klusterilla tapahtuman on tästä tehtävä
@@ -216,7 +216,7 @@ const Rules_and_Instructions = () => {
 
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>13§ Käyttäytymissäännöt</h3>
                         <p>
                             Vahvojen hajusteiden käyttö tai tupakointi ei ole sallittua sisätiloissa. 
@@ -233,14 +233,14 @@ const Rules_and_Instructions = () => {
                             toiminnasta on kuitenkin lähetettävä avainlistalle viesti.
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>14§ Eläimet klusterilla</h3>
                         <p>
                             Eläinten tuominen klusterille on kielletty. Kielto ei koske opas- tai
                             avustajakoiria.
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                     <h2 style={{ color: '#555', marginTop: '30px' }}>Hallitus ja päätöksenteko</h2>
                         <h3>15§ Leppätalokomitea</h3>
                         <p>
@@ -250,7 +250,7 @@ const Rules_and_Instructions = () => {
 
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>16§ Leppätalokomitean puheenjohtaja</h3>
                         <p>
                             Leppätalokomitean puheenjohtajana toimii Matlun edustaja.
@@ -260,7 +260,7 @@ const Rules_and_Instructions = () => {
                             estyneenä.
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>17§ Leppätalokomitean kokoukset</h3>
                         <p>
                             Leppätalokomitea kokoontuu puheenjohtajan tai hänen estyneenä
@@ -278,7 +278,7 @@ const Rules_and_Instructions = () => {
 
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>18§ Klusterikokous</h3>
                         <p>
                             Merkittävissä klusteria koskevissa asioissa päätösvaltaa käyttää
@@ -296,7 +296,7 @@ const Rules_and_Instructions = () => {
                             päätöspöytäkirjaa.
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>19§ Klusterikokouksissa päätettävät asiat</h3>
                         <p>
                             Klusterikokoukset kutsuu koolle Leppätalokomitea. Kokouskutsu on
@@ -313,7 +313,7 @@ const Rules_and_Instructions = () => {
                             päätöksiä.
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>20§ Klusterin ylläpito ja irtaimisto</h3>
                         <p>
                             Matlu vastaa klusterin ylläpidosta ja juoksevista kuluista.
@@ -322,7 +322,7 @@ const Rules_and_Instructions = () => {
                             on Matlun omaisuutta.
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                     <h2 style={{ color: '#555', marginTop: '30px' }}>Avaimet ja lukitukset</h2>
                         <h3>21§ Avainhallinto</h3>
                         <p>
@@ -332,7 +332,7 @@ const Rules_and_Instructions = () => {
 
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>22§ Klusterin kulkuluvat</h3>
                         <p>
                             Järjestö voi perustellusta syystä myöntää kulkuluvan klusterille jäsenelleen 
@@ -343,7 +343,7 @@ const Rules_and_Instructions = () => {
                             puheenjohtajalle.
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>23§ Sisätilojen avaimet</h3>
                         <p>
                             Jokaisella järjestöllä on oikeus riittävään määrään avaimia kokoushuoneeseen ja
@@ -353,7 +353,7 @@ const Rules_and_Instructions = () => {
                             saatavilla.
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>24§ Vastuu klusterin käytöstä</h3>
                         <p>
                             Klusteria käytettäessä jollain läsnäolijalla on oltava tilan käyttöön oikeuttava 
@@ -363,7 +363,7 @@ const Rules_and_Instructions = () => {
 
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>25§ Klusterin ulko-ovet</h3>
                         <p>
                             Klusterin uloskäynnit pidetään lukittuna. Rakennuksen muihin tiloihin ei saa
@@ -371,7 +371,7 @@ const Rules_and_Instructions = () => {
 
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                     <h2 style={{ color: '#555', marginTop: '30px' }}>Siisteys ja siivoaminen</h2>
                         <h3>26§ Kengätön tila</h3>
                         <p>
@@ -381,7 +381,7 @@ const Rules_and_Instructions = () => {
 
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>27§ Klusterin siisteys</h3>
                         <p>
                             Jokaisen käyttäjän tulee siivota jälkensä viimeistään poistuessaan.
@@ -391,7 +391,7 @@ const Rules_and_Instructions = () => {
 
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>28§ Klusterin siivoaminen</h3>
                         <p>
                             Klusteri siivotaan viikoittain. Leppätalokomitea jakaa siivousvuorot ja 
@@ -400,7 +400,7 @@ const Rules_and_Instructions = () => {
 
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                     <h2 style={{ color: '#555', marginTop: '30px' }}>Väärinkäytökset ja laiminlyönti</h2>
                         <h3>29§ Vahinkojen hyvittäminen</h3>
                         <p>
@@ -412,7 +412,7 @@ const Rules_and_Instructions = () => {
 
                         </p>
                     </div>
-                    <div className="rule-section">
+                    <div className='rule-section'>
                         <h3>30§ Käyttöoikeuksien rajoittaminen</h3>
                         <p>
                             Jos väärinkäytös tai laiminlyönti on vakava tai järjestö syyllistyy
@@ -528,7 +528,7 @@ const Rules_and_Instructions = () => {
                 </div>
             )}
         </div>
-    );
-};
+    )
+}
 
-export default Rules_and_Instructions;
+export default Rules_and_Instructions

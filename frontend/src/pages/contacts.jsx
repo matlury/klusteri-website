@@ -10,7 +10,7 @@ const Contacts = () => {
         <div className= 'textbox'>
             <h1>Domus Gaudium</h1>
             <p>Domus Gaudium sijaitsee osoitteessa Leppäsuonkatu 11A, 00100 Helsinki.</p>
-            <a href="/christinaregina"><h1 onClick={OpenChristinaRegina}>Christina Regina</h1></a>
+            <a href='/christinaregina'><h1 onClick={OpenChristinaRegina}>Christina Regina</h1></a>
             <p>Christina Regina sijaitsee Domus Gaudiumin ensimmäisessä kerroksessa.</p>
             <h1>Klusterikännykkä</h1>
             <p>Klusterille voi soittaa numeroon 044 9556085</p>

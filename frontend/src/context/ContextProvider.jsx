@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react"
+import { createContext, useContext, useState, useEffect } from 'react'
 
 // Creates a context for managing global application state
 const StateContext = createContext({
@@ -17,8 +17,8 @@ const StateContext = createContext({
 // ContextProvider component to provide state to child components
 export const ContextProvider = ({ children }) => {
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('loggedUser')) || null)
-    const [token, setToken] = useState(localStorage.getItem('ACCESS_TOKEN') || null);
-    const [notification, setNotification] = useState(null);
+    const [token, setToken] = useState(localStorage.getItem('ACCESS_TOKEN') || null)
+    const [notification, setNotification] = useState(null)
     const [timeLeft, setTimeLeft] = useState(30 * 60)
 
     useEffect(() => {
@@ -30,15 +30,15 @@ export const ContextProvider = ({ children }) => {
       const timer = setInterval(() => {
         setTimeLeft(prevTimeLeft => {
           if (prevTimeLeft === 0) {
-            clearInterval(timer);
-            return 0;
+            clearInterval(timer)
+            return 0
           }
-          return prevTimeLeft - 1;
-        });
-      }, 1000);
+          return prevTimeLeft - 1
+        })
+      }, 1000)
 
-      return () => clearInterval(timer); // Clean up the interval on unmount
-    }, []);
+      return () => clearInterval(timer) // Clean up the interval on unmount
+    }, [])
 
     const updateToken = (token) => {
         setToken(token)
@@ -50,9 +50,9 @@ export const ContextProvider = ({ children }) => {
     }
 
     const updateNotification = (message) => {
-        setNotification(message);
+        setNotification(message)
         setTimeout(() => {
-            setNotification(null);
+            setNotification(null)
         }, 5000)
     }
 

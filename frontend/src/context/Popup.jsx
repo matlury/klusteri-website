@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import '../index.css'
 
 function Popup(props) {
-    const [selectedResponsibilities, setSelectedResponsibilities] = useState([]);
+    const [selectedResponsibilities, setSelectedResponsibilities] = useState([])
     const [selectAllChecked, setSelectAllChecked] = useState(false)
 
     useEffect(() => {
@@ -42,27 +42,27 @@ function Popup(props) {
     }
 
     return (props.trigger) ? (
-        <div className="popup">
-            <div className="popup-inner">
+        <div className='popup'>
+            <div className='popup-inner'>
                 <h2>Valitse aktiiviset YKV-kirjaukset</h2>
                 <ul style={{ listStyleType: 'none', padding:0}}>
                     {props.active.slice().reverse().map(resp => (
                         <li className='ykv2' key={resp.id}>
                             Vastuuhenkilö: {resp.username}, {resp.email}    
                             <input
-                            type="checkbox"
+                            type='checkbox'
                             checked={selectedResponsibilities.includes(resp.id)}
                             onChange={() => handleCheckboxChange(resp.id)}
                         />
                         </li>
                     ))}
                      </ul>
-                    <button className="grey-button" onClick={handleSelectAll}>Select All</button>  
-                    <button className="close-btn" onClick={() => props.setTrigger(false)}>close</button>
-                    <button className="grey-button" onClick={handleSubmit} style={{ marginLeft: '10px' }}>Submit</button>
+                    <button className='grey-button' onClick={handleSelectAll}>Select All</button>  
+                    <button className='close-btn' onClick={() => props.setTrigger(false)}>close</button>
+                    <button className='grey-button' onClick={handleSubmit} style={{ marginLeft: '10px' }}>Submit</button>
             </div>
         </div>
-    ) : ""
+    ) : ''
 }
 
 export default Popup

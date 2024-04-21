@@ -1,14 +1,13 @@
-import React from 'react';
-import '@testing-library/jest-dom';
-import { render, fireEvent, waitFor } from '@testing-library/react';
-import OwnPage from '../pages/ownpage';
+import '@testing-library/jest-dom'
+import { render} from '@testing-library/react'
+import OwnPage from '../pages/ownpage'
 
 const user = {
     username: 'example_username',
     email: 'example_email@example.com',
     telegram: 'example_telegram',
     role: 1
-  };
+  }
 
   localStorage.setItem('loggedUser', JSON.stringify(user))
   
@@ -25,7 +24,7 @@ describe('OwnPage Component', () => {
             email: 'example_email@example.com',
             telegram: 'example_telegram',
             role: 5
-          };
+          }
         
         localStorage.setItem('loggedUser', JSON.stringify(user))
         const { getByText } = render(<OwnPage isLoggedIn={true} />)
@@ -44,12 +43,12 @@ describe('OwnPage Component', () => {
             email: 'example_email@example.com',
             telegram: 'example_telegram',
             role: 1
-          };
+          }
         localStorage.setItem('loggedUser', JSON.stringify(user))
         const { getByText, queryAllByText  } = render(<OwnPage isLoggedIn={true} />)
         
         expect(getByText('Käyttäjänimi:')).toBeInTheDocument()
-        expect(queryAllByText(/Sähköposti:/).length).toBeGreaterThan(0);
+        expect(queryAllByText(/Sähköposti:/).length).toBeGreaterThan(0)
         expect(getByText('Telegram:')).toBeInTheDocument()
         expect(getByText('Rooli: 1')).toBeInTheDocument()
         expect(getByText('Tyyppi:')).toBeInTheDocument()
@@ -57,4 +56,4 @@ describe('OwnPage Component', () => {
         expect(getByText('Vahvista muutokset')).toBeInTheDocument()
         expect(getByText('Järjestöt')).toBeInTheDocument()
     })
-});
+})

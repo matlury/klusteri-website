@@ -525,7 +525,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             
           {/* display a button for saving the changes if the user has a role <= 3 */}
           {hasPermissionOrg === true && <button onClick={handleUpdateAnotherUser}
-          className='create-user-button' type='button' style={{marginBottom:".25em"}}>
+          className='create-user-button' type='button' style={{marginBottom:'.25em'}}>
             Vahvista muutokset
           </button>}
 
