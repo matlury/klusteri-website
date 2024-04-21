@@ -26,20 +26,20 @@ function EditPopup(props) {
     }
 
     return (props.trigger) ? (
-        <div className="popup">
-            <div className="popup-inner">
+        <div className='popup'>
+            <div className='popup-inner'>
                 <h2>Kenestä otat vastuun?</h2>
                 <input
                     id= {props.resp.id}
-                    type="responsibility"
+                    type='responsibility'
                     value={responsibleFor}
                     onChange={(e) => setResponsibleFor(e.target.value)}
                 /> 
-                    <button className="close-btn" onClick={() => props.setTrigger(false)}>close</button>
-                    <button className="grey-button" onClick={handleSubmit} style={{ marginLeft: '10px' }}>Vahvista muutokset</button>
+                    <button className='close-btn' onClick={() => props.setTrigger(false)}>close</button>
+                    <button className='grey-button' onClick={handleSubmit} style={{ marginLeft: '10px' }}>Vahvista muutokset</button>
             </div>
         </div>
-    ) : ""
+    ) : ''
 }
 
 export default EditPopup

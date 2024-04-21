@@ -124,7 +124,7 @@ const MyCalendar = () => {
         id,
       }
 
-      axiosClient.post(`listobjects/events/`, newEvent)
+      axiosClient.post(`events/create_event`, newEvent)
         .then(response => {
           console.log('Tapahtuma tallennettu:', response.data)
           const updatedEvent = { ...newEvent, id: response.data.id }
@@ -143,7 +143,8 @@ const MyCalendar = () => {
           })
         })
         .catch(error => {
-          console.error('Virhe tapahtuman tallentamisessa:', error)
+          alert('Virhe tapahtuman tallentamisessa')
+          console.error('Virhe tapahtuman tallentamisessa', error)
         })
     } else {
       alert('Täytä kaikki tiedot ennen tapahtuman lisäämistä.')
@@ -172,8 +173,8 @@ const MyCalendar = () => {
   }
 
   const handleAddNewEventClick = () => {
-    setSelectedSlot(null); 
-    setShowCreateModal(true);
+    setSelectedSlot(null)
+    setShowCreateModal(true)
     setEventDetails({  
       title: '',
       organizer: '',
@@ -186,11 +187,29 @@ const MyCalendar = () => {
     })
   }
 
+  const [activeResponsibilities, setActiveResponsibilities] = useState([])
+
+  useEffect(() => {
+    const fetchActiveResponsibilities = async () => {
+      try {
+        const response = await axiosClient.get(`listobjects/nightresponsibilities/`)
+        const allResponsibilities = response.data
+        const activeResponsibilities = allResponsibilities.filter(item => item.present === true)
+        setActiveResponsibilities(activeResponsibilities)
+      } catch (error) {
+        console.error('Error fetching responsibilities', error)
+      }
+    }
+
+    fetchActiveResponsibilities()
+  }, [])
+
   return (
     <div className='textbox'>
       <h1>Varauskalenteri</h1>
       <div className='add-event-button'>
-      <Button variant='primary' onClick={handleAddNewEventClick} style={{ backgroundColor: 'gray', borderColor: 'gray' }}>Lisää uusi tapahtuma</Button>
+      <Button variant='primary' onClick={handleAddNewEventClick} style={{ backgroundColor: 'gray', borderColor: 'gray', padding: '7px',  margin: '10px' }}
+      >Lisää uusi tapahtuma</Button>
       </div>
       <Calendar
         localizer={localizer}
@@ -274,10 +293,10 @@ const MyCalendar = () => {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
+          <Button variant='secondary' onClick={handleCloseModal}>
             Sulje
           </Button>
-          <Button variant="primary" onClick={handleAddEvent}>
+          <Button variant='primary' onClick={handleAddEvent}>
             Tallenna
           </Button>
         </Modal.Footer>
@@ -301,14 +320,20 @@ const MyCalendar = () => {
           )}
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="danger" onClick={() => handleDeleteEvent(selectedEvent.id)}>
+            <Button variant='danger' onClick={() => handleDeleteEvent(selectedEvent.id)}>
               Poista tapahtuma
             </Button>
-            <Button variant="secondary" onClick={handleCloseModal}>
+            <Button variant='secondary' onClick={handleCloseModal}>
               Sulje
             </Button>
           </Modal.Footer>
         </Modal>
+        <div className='textbox_list_of_active_responsibilities'>
+          <h4>Aktiiviset YKV-kirjaukset:</h4>
+          {activeResponsibilities.map(responsibility => (
+            <div key={responsibility.id}>{responsibility.name}</div>
+          ))}
+        </div>
       </div>
     )
   }
