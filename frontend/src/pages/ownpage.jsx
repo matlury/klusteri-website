@@ -412,7 +412,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         else {
           const organizationObject = { name: organization_name, email: organization_email, homepage: organization_homepage, size: organization_size }
           console.log(organizationObject)
-          axios.post(`${API_URL}/api/listobjects/organizations/`, organizationObject)
+          axiosClient.post('organizations/create', organizationObject)
             .then(response => {
               console.log(response)
               console.log('Organization created successfully!')
