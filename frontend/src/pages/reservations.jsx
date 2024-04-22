@@ -346,7 +346,7 @@ const MyCalendar = () => {
                     <tr key={index}>
                       <td>{responsibility.username}</td>
                       <td>{responsibility.responsible_for}</td>
-                      <td>{new Date(responsibility.login_time).toLocaleString()}</td>
+                      <td>{responsibility.login_time.toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
