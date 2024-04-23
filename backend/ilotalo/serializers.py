@@ -1,7 +1,7 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from rest_framework import serializers
-from .models import User, Organization, Event, NightResponsibility
+from .models import User, Organization, Event, NightResponsibility, DefectFault
 
 
 """
@@ -101,3 +101,10 @@ class NightResponsibilitySerializer(serializers.ModelSerializer):
     class Meta:
         model = NightResponsibility
         fields = ("id", "username", "email", "responsible_for", "login_time", "logout_time", "present", "late")
+
+class DefectFaultSerializer(serializers.ModelSerializer):
+    """Serializes a DefectFault object as JSON"""
+
+    class Meta:
+        model = DefectFault
+        fields = ("id", "description", "email_sent", "repaired")
