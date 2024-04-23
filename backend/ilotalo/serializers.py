@@ -17,8 +17,17 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ("id", "username", "password", "email", "telegram", "role", "organization", "keys", "rights_for_reservation")
 
+    def validate_role(self, role):
+        """Validates role when creating a new user. Limits: 1 <= role <= 7."""
+
+        if int(role) < 1:
+            raise serializers.ValidationError("Role can't be less than 1")
+        if int(role) > 7:
+            raise serializers.ValidationError("Role can't be higher than 7")
+        return role
+
     def validate_telegram(self, tgname):
-        """Checks if a telegram name is taken"""
+        """Validates telegram name when creating a new user. It must not be taken."""
         user_id = self.instance.id if self.instance else None
         if tgname:
             duplicate = User.objects.exclude(id=user_id).filter(telegram=tgname)
@@ -27,7 +36,7 @@ class UserSerializer(serializers.ModelSerializer):
         return tgname
 
     def validate(self, data):
-        """Validates password when creating a new user"""
+        """Validates password when creating a new user. We use Django's own validation function for this."""
         password = data.get("password")
 
         try:
@@ -40,7 +49,7 @@ class UserSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        """Serializes the User object as JSON"""
+        """Create the new user after data validation."""
         user = User.objects.create_user(
             username=validated_data["username"],
             password=validated_data["password"],
@@ -61,6 +70,15 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("id", "username", "email", "telegram", "role", "organization", "keys", "rights_for_reservation")
+
+    def validate_role(self, role):
+        """Validates role when updating a user. Limits: 1 <= role <= 7."""
+
+        if int(role) < 1:
+            raise serializers.ValidationError("Role can't be less than 1")
+        if int(role) > 7:
+            raise serializers.ValidationError("Role can't be higher than 7")
+        return role
 
     def validate_telegram(self, tgname):
         """Checks if a telegram name is taken"""
@@ -87,6 +105,13 @@ class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = ("id", "name", "email", "homepage", "size")
+
+    def validate_size(self, size):
+        """Validates size when creating a new organization."""
+
+        if int(size) not in [0, 1]:
+            raise serializers.ValidationError("Organization size must be 0 or 1 (small or large).")
+        return size
 
 class EventSerializer(serializers.ModelSerializer):
     """Serializes an Event object as JSON"""
