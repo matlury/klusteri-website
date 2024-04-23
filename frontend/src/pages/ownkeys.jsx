@@ -121,7 +121,19 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
         return `${year}-${month}-${day} ${hours}:${minutes}`
     }
 
+    function formatDatetime(datetimeString) {
+        let date = new Date(datetimeString)
+        
+        let hours = String(date.getHours()).padStart(2, '0')
+        let minutes = String(date.getMinutes()).padStart(2, '0')
+        
+        let day = String(date.getDate()).padStart(2, '0')
+        let month = String(date.getMonth() + 1).padStart(2, '0')
+        let year = String(date.getUTCFullYear())
+        
+        return `${hours}:${minutes} | ${day}.${month}.${year}`
 
+    }
     // THE FOLLOWING FUNCTIONS HANDLES TAKING THE YKV-RESPONSIBILITIES
 
     // handles the checkbox change
@@ -277,8 +289,8 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
                         >
                             Vastuuhenkilö: {resp.username}, {resp.email} <br />
                             Vastuussa henkilöistä: {resp.responsible_for} <br />
-                            YKV-sisäänkirjaus klo: {resp.login_time} <br />
-                            YKV-uloskirjaus klo: {resp.logout_time}
+                            YKV-sisäänkirjaus klo: {formatDatetime(resp.login_time)} <br />
+                            YKV-uloskirjaus klo: {!resp.present && formatDatetime(resp.logout_time)}
                             <br /><br />
                         </li>
                     ))}
@@ -297,8 +309,8 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
                     {ownResponsibilities.slice().reverse().map(resp => (
                         <li className='ykv' key={resp.id}> 
                             Vastuussa henkilöistä: {resp.responsible_for} <br />
-                            YKV-sisäänkirjaus klo: {resp.login_time} <br />
-                            YKV-uloskirjaus klo: {resp.logout_time}
+                            YKV-sisäänkirjaus klo: {formatDatetime(resp.login_time)} <br />
+                            YKV-uloskirjaus klo: {!resp.present && formatDatetime(resp.logout_time)}
                         <br /><br />
                         </li>
                     ))}
@@ -345,7 +357,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
                     <li className='ykv-active' key={resp.id}>
                         Vastuuhenkilö: {resp.username}, {resp.email} <br />
                         Vastuussa henkilöistä: {resp.responsible_for} <br />
-                        YKV-sisäänkirjaus klo: {resp.login_time} <br />
+                        YKV-sisäänkirjaus klo: {formatDatetime(resp.login_time)} <br />
                         <br></br>
                         {resp.username === loggedUser.username && (
                 <>
