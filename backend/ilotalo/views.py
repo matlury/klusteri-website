@@ -36,7 +36,7 @@ class UserView(viewsets.ReadOnlyModelViewSet):
     Only supports list and retrieve actions (read-only)
     """
 
-    serializer_class = UserSerializer
+    serializer_class = UserNoPasswordSerializer
     queryset = User.objects.all()
 
 
