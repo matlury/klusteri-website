@@ -821,3 +821,34 @@ class UpdateDefectFaultView(APIView):
             defect.save()
             return Response(defect.data, status=status.HTTP_200_OK)
         return Response(defect.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class RemoveDefectFaultView(APIView):
+    """View for removing a defect <baseurl>/api/defects/delete_defect/<defect.id>/"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, pk):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ,
+            MUOKKAUS,
+            AVAIMELLINEN,
+            JARJESTOPJ,
+            JARJESTOVARAPJ
+        ]:
+            return Response(
+                "You can't remove defects",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        try:
+            defect_to_remove = DefectFault.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            return Response(
+                "Defect not found", status=status.HTTP_404_NOT_FOUND
+            )
+        defect_to_remove.delete()
+
+        return Response(f"Defect {defect_to_remove.description} successfully removed", status=status.HTTP_200_OK)

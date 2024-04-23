@@ -2073,9 +2073,9 @@ class TestDjangoAPI(TestCase):
             },
             format="json",
         )
+        defect_id = created_defect.data["id"]
 
         # try to update as Tavallinen user
-        defect_id = created_defect.data["id"]
         response = self.client.put(
             f"http://localhost:8000/api/defects/update_defect/{defect_id}/",
             headers={"Authorization": f"Bearer {self.access_token}"},
@@ -2104,7 +2104,6 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         # update defect with correct information
-        defect_id = created_defect.data["id"]
         response = self.client.put(
             f"http://localhost:8000/api/defects/update_defect/{defect_id}/",
             headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
@@ -2117,7 +2116,43 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+    def test_deleting_defect(self):
+        """Defects can be deleted by roles higher than 5"""
 
-        
+        # create a defect
+        created_defect = self.client.post(
+            "http://localhost:8000/api/defects/create_defect",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data={
+                "description": "Lattia rikki",
+                "email_sent": False,
+                "repaired": False,
+            },
+            format="json",
+        )
+        defect_id = created_defect.data["id"]
 
+        # delete the defect
+        response = self.client.delete(
+            f"http://localhost:8000/api/defects/delete_defect/{defect_id}/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+        )
 
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # deleting defect fails if the user is Tavallinen
+        response = self.client.delete(
+            f"http://localhost:8000/api/defects/delete_defect/{defect_id}/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+        # try delete defect that doesn't exist
+        response = self.client.delete(
+            f"http://localhost:8000/api/defects/delete_defect/10/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
