@@ -324,7 +324,10 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   // Handles deletion of organization
   const handleDeleteOrganization = (orgId) => {
-    axiosClient.delete(`/organizations/remove/${orgId}/`)
+    const confirmUpdate = window.confirm('Oletko varma, että haluat poistaa tämän järjestön?')
+
+    if (confirmUpdate) {
+      axiosClient.delete(`/organizations/remove/${orgId}/`)
         .then(response => {
           console.log('Organization deleted successfully:', response.data)
           getOrganisations()
@@ -334,6 +337,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         .catch(error => {
           console.error('Error deleting organization:', error)
         })
+    }
   }
 
   //  Organization list 
