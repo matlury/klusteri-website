@@ -124,11 +124,11 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     function formatDatetime(datetimeString) {
         let date = new Date(datetimeString)
         
-        let hours = String(date.getHours()).padStart(2, '0')
-        let minutes = String(date.getMinutes()).padStart(2, '0')
+        let hours = String(date.getUTCHours()).padStart(2, '0')
+        let minutes = String(date.getUTCMinutes()).padStart(2, '0')
         
-        let day = String(date.getDate()).padStart(2, '0')
-        let month = String(date.getMonth() + 1).padStart(2, '0')
+        let day = String(date.getUTCDate()).padStart(2, '0')
+        let month = String(date.getUTCMonth() + 1).padStart(2, '0')
         let year = String(date.getUTCFullYear())
         
         return `${hours}:${minutes} | ${day}.${month}.${year}`
