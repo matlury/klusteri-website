@@ -10,8 +10,9 @@ from .serializers import (
     UserUpdateSerializer,
     EventSerializer,
     NightResponsibilitySerializer,
+    DefectFaultSerializer,
 )
-from .models import User, Organization, Event, NightResponsibility
+from .models import User, Organization, Event, NightResponsibility, DefectFault
 from .config import Role
 from datetime import datetime
 import os
@@ -746,3 +747,77 @@ class HandOverKeyView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class DefectFaultView(viewsets.ReadOnlyModelViewSet):
+    """
+    Displays a list of all DefectFault objects at <baseurl>/defects/
+    Only supports list and retrieve actions (read-only)
+    """
+
+    serializer_class = DefectFaultSerializer
+    queryset = DefectFault.objects.all()
+
+class CreateDefectFaultView(APIView):
+    """View for creating a new defect/fault report <baseurl>/api/defects/create_defect"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ,
+            MUOKKAUS,
+            AVAIMELLINEN,
+            JARJESTOPJ,
+            JARJESTOVARAPJ
+        ]:
+            return Response(
+                "You can't create new defect reports",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = DefectFaultSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class UpdateDefectFaultView(APIView):
+    """View for updating a DefectFault object at <baseurl>/api/defects/update_defect/<defect.id>/"""
+
+    # IsAuthenticated will deny access if request has no access token
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, pk=None):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ,
+            MUOKKAUS,
+            AVAIMELLINEN,
+            JARJESTOPJ,
+            JARJESTOVARAPJ
+        ]:
+            return Response(
+                "You can't edit defects",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            defect_to_update = DefectFault.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            return Response("Not found", status=status.HTTP_404_NOT_FOUND)
+            
+        defect = DefectFaultSerializer(
+            instance=defect_to_update, data=request.data, partial=True
+        )
+
+        if defect.is_valid():
+            defect.save()
+            return Response(defect.data, status=status.HTTP_200_OK)
+        return Response(defect.errors, status=status.HTTP_400_BAD_REQUEST)

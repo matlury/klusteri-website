@@ -2013,3 +2013,111 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data, "You can only hand over a Klusteri key through this endpoint")
+    
+    def test_creating_defect(self):
+        """Roles other than role 5 can create defects"""
+
+        # create a defect as Muokkaus with empty description
+        response = self.client.post(
+            "http://localhost:8000/api/defects/create_defect",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data={
+                "description": "",
+                "email_sent": False,
+                "repaired": False,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # with correct description
+        response = self.client.post(
+            "http://localhost:8000/api/defects/create_defect",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data={
+                "description": "Lattia rikki",
+                "email_sent": False,
+                "repaired": False,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # creating a defect fails if the user is Tavallinen user
+        response = self.client.post(
+            "http://localhost:8000/api/defects/create_defect",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={
+                "description": "Lattia rikki",
+                "email_sent": False,
+                "repaired": False,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    def test_updating_defect(self):
+        """Roles other than role 5 can create defects"""
+
+        # create a defect to edit it
+        created_defect = self.client.post(
+            "http://localhost:8000/api/defects/create_defect",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data={
+                "description": "Lattia rikki",
+                "email_sent": False,
+                "repaired": False,
+            },
+            format="json",
+        )
+
+        # try to update as Tavallinen user
+        defect_id = created_defect.data["id"]
+        response = self.client.put(
+            f"http://localhost:8000/api/defects/update_defect/{defect_id}/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={
+                "description": "Katto vuotaa",
+                "email_sent": False,
+                "repaired": False,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # try to update defect that doesn't exist
+        response = self.client.put(
+            "http://localhost:8000/api/defects/update_defect/10/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data={
+                "description": "Katto vuotaa",
+                "email_sent": False,
+                "repaired": False,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # update defect with correct information
+        defect_id = created_defect.data["id"]
+        response = self.client.put(
+            f"http://localhost:8000/api/defects/update_defect/{defect_id}/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data={
+                "description": "Katto vuotaa",
+                "email_sent": False,
+                "repaired": False,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        
+
+

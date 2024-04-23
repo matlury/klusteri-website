@@ -30,6 +30,7 @@ router.register(r"users", views.UserView, "ilotalo")
 router.register(r"organizations", views.OrganizationView, "organisaatiot")
 router.register(r"events", views.EventView, "events")
 router.register(r"nightresponsibilities", views.NightResponsibilityView, "nightresponsibilities")
+router.register(r"defects", views.DefectFaultView, "defects")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -42,5 +43,6 @@ urlpatterns = [
     path("api/events/", include("ilotalo.urls")),
     path("api/ykv/", include("ilotalo.urls")),
     path("api/keys/", include("ilotalo.urls")),
-    path("api/testing/", include("ilotalo.urls"))
+    path("api/testing/", include("ilotalo.urls")),
+    path("api/defects/", include("ilotalo.urls"))
 ]

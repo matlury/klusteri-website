@@ -16,7 +16,9 @@ from .views import (
     RightsForReservationView,
     ResetDatabaseView,
     HandOverKeyView,
-    RemoveUserView
+    RemoveUserView,
+    CreateDefectFaultView,
+    UpdateDefectFaultView,
 )
 
 """Define URL endpoints for the ilotalo app"""
@@ -39,5 +41,7 @@ urlpatterns = [
     path("change_rights_reservation/<int:pk>/", RightsForReservationView.as_view()),
     path("hand_over_key/<int:pk>/", HandOverKeyView.as_view()),
     path("reset", ResetDatabaseView.as_view()),
-    path("delete_user/<int:pk>/", RemoveUserView.as_view())
+    path("delete_user/<int:pk>/", RemoveUserView.as_view()),
+    path("create_defect", CreateDefectFaultView.as_view()),
+    path("update_defect/<int:pk>/", UpdateDefectFaultView.as_view())
 ]

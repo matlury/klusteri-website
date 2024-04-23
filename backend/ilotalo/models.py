@@ -164,4 +164,10 @@ class NightResponsibility(models.Model):
     )
     present = models.BooleanField(default=True)
     late = models.BooleanField(default=False)
-    
+
+class DefectFault(models.Model):
+    """Model for defects and faults in Klusteri."""
+
+    description = models.CharField(max_length=300, default="")
+    email_sent = models.BooleanField(default=False)
+    repaired = models.BooleanField(default=False)
