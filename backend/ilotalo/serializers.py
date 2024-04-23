@@ -78,7 +78,7 @@ class UserNoPasswordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "email", "telegram", "role")
+        fields = ("id", "username", "email", "telegram", "role", "organization", "keys", "rights_for_reservation")
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
