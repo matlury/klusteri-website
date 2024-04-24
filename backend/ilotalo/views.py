@@ -320,21 +320,6 @@ class AddUserOrganizationView(APIView):
         pk (primary key): str
             Id of the user about to be added to the organization
         """
-        organization_list = [
-            "HYK",
-            "Limes",
-            "MaO",
-            "Matrix",
-            "Meridiaani",
-            "Mesta",
-            "Moodi",
-            "Resonanssi",
-            "Spektrum",
-            "Synop",
-            "TKO-äly",
-            "Vasara",
-            "Integralis"
-        ]
 
         user = UserSerializer(request.user)
 
@@ -365,9 +350,6 @@ class AddUserOrganizationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Check if the organization's name is valid
-        if organization_name not in organization_list:
-            return Response("Organization not found", status=status.HTTP_404_NOT_FOUND)
         
         # Update the user's key list
         users_organizations = user_to_update.organization
@@ -684,21 +666,6 @@ class HandOverKeyView(APIView):
         pk (primary key): str
             Id of the user about to receive the key
         """
-        organization_list = [
-            "HYK",
-            "Limes",
-            "MaO",
-            "Matrix",
-            "Meridiaani",
-            "Mesta",
-            "Moodi",
-            "Resonanssi",
-            "Spektrum",
-            "Synop",
-            "TKO-äly",
-            "Vasara",
-            "Integralis"
-        ]
 
         user = UserSerializer(request.user)
 
@@ -730,10 +697,6 @@ class HandOverKeyView(APIView):
                 "You can only hand over a Klusteri key through this endpoint",
                 status=status.HTTP_400_BAD_REQUEST
             )
-
-        # Check if the organization's name is valid
-        if organization_name not in organization_list:
-            return Response("Organization not found", status=status.HTTP_404_NOT_FOUND)
         
         # Update the user's key list
         users_keys = user_to_update.keys

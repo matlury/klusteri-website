@@ -217,12 +217,6 @@ class TestDjangoAPI(TestCase):
 
         self.user_count = 5
 
-    def test_user_has_correct_key_list(self):
-        """A new user receives a list of Matlu organizations for key management"""
-
-        self.assertEqual(len(self.leppispj["keys"]), 13)
-        self.assertEqual(list(self.leppispj["keys"].keys()).index("HYK"), 0)
-
     def test_creating_user(self):
         """A new user can be created if the parameters are valid"""
 
@@ -1988,17 +1982,6 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data, "Provide the name of the organization")
-
-        # Attempt handing over a Klusteri key of a nonexistent organization
-        response = self.client.put(
-            f"http://localhost:8000/api/keys/hand_over_key/{user_id}/",
-            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"organization_name": "RocketScientists"},
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response.data, "Organization not found")
 
         # Attempt including additional data to the request
         response = self.client.put(

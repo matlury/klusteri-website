@@ -36,9 +36,9 @@ class UserAccountManager(BaseUserManager):
         email = email.lower()
 
         if keys is None:
-            keys = give_organization_dict()
+            keys = {}
         if organization is None:
-            organization = give_organization_dict()
+            organization = {}
 
         user = self.model(
             username=username,
@@ -56,29 +56,6 @@ class UserAccountManager(BaseUserManager):
 
         return user
 
-def give_organization_dict():
-    """
-    Set a Users "keys" and "organization" fields when creating a new instance.
-    Returns a dict containing each Matlu organization.
-    """
-
-    org_list = {
-      "HYK": False,
-      "Limes": False,
-      "MaO": False,
-      "Matrix": False,
-      "Meridiaani": False,
-      "Mesta": False,
-      "Moodi": False,
-      "Resonanssi": False,
-      "Spektrum": False,
-      "Synop": False,
-      "TKO-äly": False,
-      "Vasara": False,
-      "Integralis": False
-    }
-    
-    return org_list
 
 class User(AbstractBaseUser, PermissionsMixin):
     """
