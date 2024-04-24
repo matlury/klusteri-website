@@ -205,6 +205,20 @@ const MyCalendar = () => {
     fetchResponsibilities()
   }, [])
 
+  function formatDatetime(datetimeString) {
+    let date = new Date(datetimeString)
+    
+    let hours = String(date.getUTCHours()).padStart(2, '0')
+    let minutes = String(date.getUTCMinutes()).padStart(2, '0')
+    
+    let day = String(date.getUTCDate()).padStart(2, '0')
+    let month = String(date.getUTCMonth() + 1).padStart(2, '0')
+    let year = String(date.getUTCFullYear())
+    
+    return `${hours}:${minutes} | ${day}.${month}.${year}`
+
+  } 
+
   return (
     <div className='textbox'>
       <h1>Varauskalenteri</h1>
@@ -346,7 +360,7 @@ const MyCalendar = () => {
                     <tr key={index}>
                       <td>{responsibility.username}</td>
                       <td>{responsibility.responsible_for}</td>
-                      <td>{responsibility.login_time.toLocaleString()}</td>
+                      <td>{formatDatetime(responsibility.login_time)}</td>
                     </tr>
                   ))}
                 </tbody>
