@@ -1,6 +1,7 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
+import { getByLabelText, render, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import OwnKeys from '../../src/pages/ownkeys'
+import React from 'react';
 import axiosClient from '../axios.js'
 
 // Mock axiosClient
@@ -22,8 +23,8 @@ jest.mock('../axios', () => {
         }
       }
     }
-  }
-})
+  };
+});
 
 describe('OwnKeys Component', () => {
   it('opens without logging in', () => {
@@ -36,11 +37,14 @@ describe('OwnKeys Component', () => {
         username: 'example_username',
         email: 'example_email@example.com',
         telegram: 'example_telegram',
-        role: 1
-    }
+        role: 1,
+        keys: {},
+        organization: {},
+        rights_for_reservation: true
+    };
 
     localStorage.setItem('loggedUser', JSON.stringify(user))
-    const { getByText } = render(<OwnKeys isLoggedIn={true} loggedUser={user}/>)
+    const { getByText, getByLabelText } = render(<OwnKeys isLoggedIn={true} loggedUser={user}/>)
 
     expect(getByText('Kenestä otat vastuun?')).toBeInTheDocument()
     expect(getByText('Kirjaa sisään muita henkilöitä')).toBeInTheDocument()
@@ -51,16 +55,19 @@ describe('OwnKeys Component', () => {
       username: 'example_username',
       email: 'example_email@example.com',
       telegram: 'example_telegram',
-      role: 1
-    }
+      role: 1,
+      keys: {},
+      organization: {},
+      rights_for_reservation: true
+    };
 
     window.confirm = jest.fn(() => true);
-    localStorage.setItem('ACCESS_TOKEN', 'example_token')
+    localStorage.setItem('ACCESS_TOKEN', 'example_token');
 
     const { getByText, getByLabelText } = render(<OwnKeys isLoggedIn={true} loggedUser={user}/>)
 
     const responsibile_for = getByLabelText('Kenestä otat vastuun?')
-    fireEvent.change(responsibile_for, { target: { value: 'fuksit' } })
+    fireEvent.change(responsibile_for, { target: { value: 'fuksit' } });
 
     const respButton = getByText('Ota vastuu')
     fireEvent.click(respButton)
@@ -78,6 +85,6 @@ describe('OwnKeys Component', () => {
       expect(axiosClient.get).toHaveBeenCalledWith(
         `listobjects/nightresponsibilities/`
       )
-    })
-  })
+    });
+  });
 })
