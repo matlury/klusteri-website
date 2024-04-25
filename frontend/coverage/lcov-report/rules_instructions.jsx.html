@@ -25,28 +25,29 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">42.85% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>9/21</span>
+                <span class='fraction'>21/21</span>
+
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">63.63% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>7/11</span>
+                <span class='fraction'>11/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">20% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/5</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">42.85% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/21</span>
+                <span class='fraction'>21/21</span>
             </div>
         
             
@@ -600,35 +601,35 @@
 <a name='L535'></a><a href='#L535'>535</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1138,35 +1139,35 @@ const Rules_and_Instructions = () =&gt; {
     const [showCleaningRules, setShowCleaningRules] = useState(false)
     const [showSafetyRules, setShowSafetyRules] = useState(false)
 &nbsp;
-    const handleClick = <span class="fstat-no" title="function not covered" >()</span> =&gt; {
-<span class="cstat-no" title="statement not covered" >        setShowRules(true)</span>
-<span class="cstat-no" title="statement not covered" >        setShowCleaningRules(false)</span>
-<span class="cstat-no" title="statement not covered" >        setShowSafetyRules(false)</span>
+    const handleClick = () =&gt; {
+        setShowRules(true)
+        setShowCleaningRules(false)
+        setShowSafetyRules(false)
     }
 &nbsp;
-    const handleShowCleaningRules = <span class="fstat-no" title="function not covered" >()</span> =&gt; {
-<span class="cstat-no" title="statement not covered" >        setShowRules(false)</span>
-<span class="cstat-no" title="statement not covered" >        setShowCleaningRules(true)</span>
-<span class="cstat-no" title="statement not covered" >        setShowSafetyRules(false)</span>
+    const handleShowCleaningRules = () =&gt; {
+        setShowRules(false)
+        setShowCleaningRules(true)
+        setShowSafetyRules(false)
     }
 &nbsp;
-    const handleShowSafetyRules = <span class="fstat-no" title="function not covered" >()</span> =&gt; {
-<span class="cstat-no" title="statement not covered" >        setShowRules(false)</span>
-<span class="cstat-no" title="statement not covered" >        setShowCleaningRules(false)</span>
-<span class="cstat-no" title="statement not covered" >        setShowSafetyRules(true)</span>
+    const handleShowSafetyRules = () =&gt; {
+        setShowRules(false)
+        setShowCleaningRules(false)
+        setShowSafetyRules(true)
     }
 &nbsp;
-    const handleClose = <span class="fstat-no" title="function not covered" >()</span> =&gt; {
-<span class="cstat-no" title="statement not covered" >        setShowRules(false)</span>
-<span class="cstat-no" title="statement not covered" >        setShowCleaningRules(false)</span>
-<span class="cstat-no" title="statement not covered" >        setShowSafetyRules(false)</span>
+    const handleClose = () =&gt; {
+        setShowRules(false)
+        setShowCleaningRules(false)
+        setShowSafetyRules(false)
     }
 &nbsp;
     return (
         &lt;div className='textbox'&gt;
             &lt;h1 style={{ color: '#333', borderBottom: '2px solid #333', paddingBottom: '10px' }}&gt;Säännöt ja ohjeet &lt;/h1&gt;
             {showRules || showCleaningRules || showSafetyRules? (
-<span class="branch-0 cbranch-no" title="branch not covered" >                &lt;button onClick={handleClose}&gt;Sulje&lt;/button&gt;</span>
+                &lt;button onClick={handleClose}&gt;Sulje&lt;/button&gt;
             ) : (
                 &lt;div&gt;
                 &lt;button onClick={handleClick}&gt;Klusterin käyttösäännöt&lt;/button&gt;
@@ -1179,7 +1180,7 @@ const Rules_and_Instructions = () =&gt; {
             &lt;/div&gt;
             )}
             {showRules &amp;&amp; (
-<span class="branch-1 cbranch-no" title="branch not covered" >                &lt;div className='rules'&gt;</span>
+                &lt;div className='rules'&gt;
                     &lt;h2 style={{ color: '#555', marginTop: '30px' }}&gt;Matlu-klusterin käyttösäännöt&lt;/h2&gt;
                     &lt;div className='rule-section'&gt;
                         &lt;h3&gt;1§ Määräysala&lt;/h3&gt;
@@ -1561,7 +1562,7 @@ const Rules_and_Instructions = () =&gt; {
                 &lt;/div&gt;
             )}
         {showCleaningRules &amp;&amp; (
-<span class="branch-1 cbranch-no" title="branch not covered" >                &lt;div className='cleaning-rules'&gt;</span>
+                &lt;div className='cleaning-rules'&gt;
                     &lt;h2 style={{ color: '#555', marginTop: '30px' }}&gt;Siivoussäännöt&lt;/h2&gt;
                     &lt;div&gt;
                         &lt;h3&gt;Tapahtuman jälkeinen siivous&lt;/h3&gt;
@@ -1604,7 +1605,7 @@ const Rules_and_Instructions = () =&gt; {
             )}
 &nbsp;
                 {showSafetyRules &amp;&amp; (
-<span class="branch-1 cbranch-no" title="branch not covered" >                &lt;div className='safety-rules'&gt;</span>
+                &lt;div className='safety-rules'&gt;
                     &lt;h2 style={{ color: '#555', marginTop: '30px' }}&gt;Turvallisen tilan periaatteet&lt;/h2&gt;
                     &lt;div&gt;
                         &lt;h3 style={{ color: 'red', fontSize: '1.2em' }}&gt;Hätätilanteessa soita yleiseen hätänumeroon 112.&lt;/h3&gt;
@@ -1672,7 +1673,7 @@ export default Rules_and_Instructions
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-04-25T09:10:10.741Z
+                at 2024-04-25T10:48:28.186Z
             </div>
         <script src="prettify.js"></script>
         <script>
