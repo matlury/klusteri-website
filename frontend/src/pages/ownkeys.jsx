@@ -134,6 +134,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
         return `${hours}:${minutes} | ${day}.${month}.${year}`
 
     }
+    
     // THE FOLLOWING FUNCTIONS HANDLES TAKING THE YKV-RESPONSIBILITIES
 
     // handles the checkbox change

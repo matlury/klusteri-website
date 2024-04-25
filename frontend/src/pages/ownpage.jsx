@@ -113,6 +113,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       <div>
         Myöntämispäivä:
       </div>
+      <div>
+        Avaimet:
+      </div>
       <br />
       <button onClick={handleUserDetails} className='create-user-button' type='button'>
         Vahvista muutokset
@@ -260,14 +263,14 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           Nimi:
           <input
             id='organization_name'
-            type='text'
+            type='organ'
             value={organization_new_name}
             onChange={(e) => setOrganizationNewName(e.target.value)}
           />
           <p>Koko:
             <input
               id='organization_size'
-              type='text'
+              type='organ'
               value={organization_new_size}
               onChange={(e) => setOrganizationNewSize(e.target.value)}
             />
@@ -275,7 +278,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           <p>Kotisivu:
             <input
               id='organization_homepage'
-              type='text'
+              type='organ'
               value={organization_new_homepage}
               onChange={(e) => setOrganizationNewHomePage(e.target.value)}
             />
@@ -284,7 +287,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           <p>Organisaation sähköposti:
             <input
               id='organization_new_email'
-              type='text'
+              type='organ'
               value={organization_new_email}
               onChange={(e) => setOrganizationNewEmail(e.target.value)}
             />
@@ -672,7 +675,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
               </div>
             </div>
             {(hasPermission === true)&& (
-              <div id='centered_content' style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
+              <div id='centered_content' style={{ position: 'absolute', bottom: '170px', left: '30%', width: '30%', height: '40%', backgroundColor: '#fff', padding: '20px' }}>
                 <div id='content'>
                   <h2>Avaimen luovutus</h2>
                   <form onSubmit={handleKeySubmit}>
@@ -705,19 +708,11 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                         className='select-box'
                       >
                         <option value='' disabled selected hidden></option>
-                        <option value='HYK'>HYK</option>
-                        <option value='Limes'>Limes</option>
-                        <option value='MaO'>MaO</option>
-                        <option value='Matrix'>Matrix</option>
-                        <option value='Meridiaani'>Meridiaani</option>
-                        <option value='Mesta'>Mesta</option>
-                        <option value='Moodi'>Moodi</option>
-                        <option value='Resonanssi'>Resonanssi</option>
-                        <option value='Spektrum'>Spektrum</option>
-                        <option value='Synop'>Synop</option>
-                        <option value='TKO-äly'>TKO-äly</option>
-                        <option value='Vasara'>Vasara</option>
-                        <option value='Integralis'>Integralis</option>
+                        {organisations.map(org => (
+                          <option key={org.id} value={org.name}>
+                            {org.name}
+                          </option>
+                        ))}
                       </select>
                     </div>
                     <div style={{ height: '20px' }}></div>
