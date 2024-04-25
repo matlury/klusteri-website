@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <coverage generated="1714042108207" clover="3.2.0">
   <project timestamp="1714042108207" name="All files">
     <metrics statements="656" coveredstatements="304" conditionals="239" coveredconditionals="88" methods="218" coveredmethods="60" elements="1113" coveredelements="452" complexity="0" loc="656" ncloc="656" packages="1" files="10" classes="10"/>
     <file name="christina_regina.jsx" path="/home/lottatan/klusteri-website/frontend/src/pages/christina_regina.jsx">
+
       <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
       <line num="5" count="1" type="stmt"/>
       <line num="6" count="1" type="stmt"/>
@@ -135,6 +137,7 @@
       <line num="111" count="2" type="stmt"/>
     </file>
     <file name="ownkeys.jsx" path="/home/lottatan/klusteri-website/frontend/src/pages/ownkeys.jsx">
+
       <metrics statements="157" coveredstatements="89" conditionals="53" coveredconditionals="23" methods="55" coveredmethods="19"/>
       <line num="8" count="1" type="stmt"/>
       <line num="9" count="8" type="stmt"/>
