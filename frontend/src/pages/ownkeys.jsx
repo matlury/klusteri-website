@@ -171,7 +171,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
             Kirjaa sisään muita henkilöitä
             <br />
             <br />
-            Etsi henkilöitä käyttäjänimellä: <input value={nameFilter} onChange={handleFilterChange} type='text'/>
+            Etsi avaimellisia henkilöitä käyttäjänimellä: <input value={nameFilter} onChange={handleFilterChange} type='text'/>
             <br />
             <br />
             <div style={{ maxHeight: '200px', overflow: 'auto', border: '3px solid black', borderRadius: '10px', paddingLeft: '10px', width: '45vw'}}>
