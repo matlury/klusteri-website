@@ -15,6 +15,8 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     const [activeResponsibilites, setActiveResponsibilites] = useState([])
     const [allUsersWithKeys, setAllUsersWithKeys] = useState([])
 
+    const [nameFilter, setNameFilter] = useState('')
+
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
 
@@ -148,6 +150,11 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
         })
     }
 
+    // searches for the names based on the filter the user makes
+    const handleFilterChange = (event) => {
+        setNameFilter(event.target.value)
+    }
+    
     // the form that creates the responsibility by clicking the "Ota vastuu" button
     const ykvForm = () => (
         <form>
@@ -164,9 +171,12 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
             Kirjaa sisään muita henkilöitä
             <br />
             <br />
-            <div style={{ maxHeight: '75px', overflow: 'auto', border: '3px solid black', borderRadius: '10px', paddingLeft: '10px', width: '45vw'}}>
+            Etsi henkilöitä käyttäjänimellä: <input value={nameFilter} onChange={handleFilterChange} type='text'/>
+            <br />
+            <br />
+            <div style={{ maxHeight: '200px', overflow: 'auto', border: '3px solid black', borderRadius: '10px', paddingLeft: '10px', width: '45vw'}}>
                 <ul style={{ listStyleType: 'none', padding:0}}>
-                    {allUsersWithKeys.map(user => (
+                    {(allUsersWithKeys.filter(user => user.username.toLowerCase().includes(nameFilter.toLowerCase())).map(user => (
                         <li key={user.id}>
                             {user.username}, {user.email}    
                             <input
@@ -175,7 +185,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
                             onChange={() => handleCheckboxChange(user)}
                         />
                         </li>
-                    ))}
+                    )))}
                 </ul>
             </div>
             <br />
