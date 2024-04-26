@@ -42,6 +42,7 @@ const MyCalendar = () => {
   const [showInfoModal, setShowInfoModal] = useState(false)
   const { user } = useStateContext()
 
+  // Calls getEvents() to fetch events when starting the page
   useEffect(() => {
     getEvents()
   }, [])
@@ -49,6 +50,7 @@ const MyCalendar = () => {
   const startRef = useRef(null)
   const endRef = useRef(null)
 
+  // Gets all created events from backend
   const getEvents = () => {
     axios
       .get(`${API_URL}/api/listobjects/events/`)
@@ -61,6 +63,7 @@ const MyCalendar = () => {
       })
   }
 
+  // Opens the create new event modal if user is logged in
   const handleSelectSlot = ({ start, end }) => {
     if (user) {
       setSelectedSlot({ start, end })
@@ -70,6 +73,7 @@ const MyCalendar = () => {
     }
   }
 
+  // Sets an initial time slot based on the local time when creating a new event after clicking on a day slot in the calendar
   useEffect(() => {
     if (showCreateModal && selectedSlot) {
       startRef.current.value = moment(selectedSlot.start).format('YYYY-MM-DDTHH:mm')
@@ -77,16 +81,19 @@ const MyCalendar = () => {
     }
   }, [showCreateModal, selectedSlot])
 
+  // Handles clicking on an event, shows its information
   const handleSelectEvent = (event) => {
     setSelectedEvent(event)
     setShowInfoModal(true)
   }
 
+  // Handles input changes when creating an event
   const handleInputChange = (event) => {
     const { name, value } = event.target
     setEventDetails({ ...eventDetails, [name]: value })
   }
 
+  // Handles creating a new event
   const handleAddEvent = () => {
     const { title, organizer, description, responsible, isOpen, room, start, end, id } = eventDetails
     const startDate = moment(start)
@@ -99,6 +106,7 @@ const MyCalendar = () => {
     }
     if (title && organizer && description && responsible && (isOpen === 'avoin' || isOpen === 'suljettu') && room && start && end) {
       
+      // Checks if the chosen room is occupied during the chosen time
       const isRoomOccupied = events.some(event => {
         return event.room === room && (
           (moment(start).isSameOrAfter(event.start) && moment(start).isBefore(event.end)) ||
@@ -124,6 +132,7 @@ const MyCalendar = () => {
         id,
       }
 
+      // Saves the event to the database through axiosClient and fetches the event id that is automatically created in the db
       axiosClient.post(`events/create_event`, newEvent)
         .then(response => {
           console.log('Tapahtuma tallennettu:', response.data)
@@ -151,6 +160,7 @@ const MyCalendar = () => {
     }
   }
 
+  // Handles deleting an event with the event id
   const handleDeleteEvent = (eventId) => {
     console.log(selectedEvent)
     if (eventId) {
@@ -172,6 +182,7 @@ const MyCalendar = () => {
     setShowInfoModal(false)
   }
 
+  // Handles clicking the 'Lisää uusi tapahtuma' button and shows the create modal
   const handleAddNewEventClick = () => {
     setSelectedSlot(null)
     setShowCreateModal(true)
@@ -190,6 +201,7 @@ const MyCalendar = () => {
   const [allResponsibilities, setAllResponsibilities] = useState([])
   const [activeResponsibilities, setActiveResponsibilities] = useState([])
 
+  // Gets current night responsibilities from the backend
   useEffect(() => {
     const fetchResponsibilities = async () => {
       try {
@@ -219,6 +231,7 @@ const MyCalendar = () => {
 
   } 
 
+  // Renders the calendar view, event modals and possible night responsibilities
   return (
     <div className='textbox'>
       <h1>Varauskalenteri</h1>
