@@ -109,6 +109,8 @@ Aja **Eslint** komennolla:
 npx eslint src
 ```
 
+Cypress-testeille löytyy ohjeet niille omasta tiedostosta dokumentaatiokansiosta!
+
 ## Codecov
 
 Codecovin testikattavuuden päivittämiseksi on muodostettava uudet testikattavuusraportit. Kun tämän jälkeen committaa ja pushaa githubiin, Codecovin näkymä päivittyy automaattisesti.  
@@ -124,3 +126,4 @@ Raportin muodostaminen frontendille
 ```bash
 ~klusteri-website/frontend/$ npx jest --coverage
 ```
+Huom! Codecov ei toistaiseksi ota huomioon cypress-testejä
