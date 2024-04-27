@@ -99,6 +99,7 @@ const MyCalendar = () => {
     const startDate = moment(start)
     const endDate = moment(end)
     const duration = moment.duration(endDate.diff(startDate)).asHours()
+    const open = isOpen === 'avoin' ? true : false
 
     if (duration > 24) {
       alert('Varauksen kesto ei voi olla yli 24 tuntia.')
@@ -127,7 +128,7 @@ const MyCalendar = () => {
         organizer,
         description,
         responsible,
-        isOpen,
+        open,
         room,
         id,
       }
@@ -251,7 +252,7 @@ const MyCalendar = () => {
         firstDay={1}
         eventPropGetter={(event) => ({
           style: {
-            backgroundColor: event.isOpen === 'avoin' ? '#4caf50' : '#F08080', 
+            backgroundColor: event.open === true ? '#4caf50' : '#F08080', 
             borderRadius: '5px',
             border: 'none',
             color: '#fff',
@@ -342,7 +343,7 @@ const MyCalendar = () => {
               <p>Järjestäjä: {selectedEvent.organizer}</p>
               <p>Vastuuhenkilö: {selectedEvent.responsible}</p>
               <p>Kuvaus: {selectedEvent.description}</p>
-              <p>Tila: {selectedEvent.isOpen}</p>
+              <p>Tila: {selectedEvent.open === true ? 'Avoin' : 'Suljettu'}</p>
               <p>Huone: {selectedEvent.room}</p>
             </>
           )}
