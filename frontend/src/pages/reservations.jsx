@@ -12,6 +12,7 @@ import axios from 'axios'
 
 const API_URL = process.env.API_URL
 
+// Set locale to Finnish and specify the first day of the week
 moment.updateLocale('fi', {
   week: {
     dow: 1, 
@@ -22,7 +23,9 @@ const localizer = momentLocalizer(moment)
 
 moment.locale('fi')
 
+// The main calendar component
 const MyCalendar = () => {
+  // State variables for event data and modals
   const [events, setEvents] = useState([])
   const [selectedSlot, setSelectedSlot] = useState(null)
   const [selectedEvent, setSelectedEvent] = useState(null)
@@ -217,6 +220,7 @@ const MyCalendar = () => {
     fetchResponsibilities()
   }, [])
 
+   // Utility function to format date-time strings in a readable format
   function formatDatetime(datetimeString) {
     let date = new Date(datetimeString)
     
