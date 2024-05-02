@@ -253,7 +253,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     })
   }
 
-  // Shows more detailed information of the organizations and if the user has role 1, they can also delete the organization
+  /* Shows more detailed information of the 
+  organizations and if the user has role 1, 
+  they can also delete the organization.
+  Also user can now update organization details
+  if they have role 1, 2 or 3
+  */
+
   const renderOrganizationDetails = orgId => {
     const organization = organisations.find(org => org.id === orgId)
     
@@ -305,23 +311,29 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     return null
   }
 
-  const newOrganizationObject = { name: organization_new_name, email: organization_new_email, homepage: organization_new_homepage, size: organization_new_size }
-
+  // Handles organization detail updates
   const handleOrganizationDetails = (orgId) => {
-    const confirmUpdate = window.confirm('Oletko varma, että haluat päivittää organisaatiota?')
+    const newOrganizationObject = { name: organization_new_name, email: organization_new_email, homepage: organization_new_homepage, size: organization_new_size }
+    if (organization_new_size == 0 || organization_new_size == 1) { 
+    
+      const confirmUpdate = window.confirm('Oletko varma, että haluat päivittää organisaatiota?')
 
-    if (confirmUpdate) {
-      axiosClient.put(`/organizations/update_organization/${orgId}/`, newOrganizationObject)
-        .then(response => {
-          console.log('Organization created successfully!', response.data)
-          setSuccess('Järjestö muokattu onnistuneesti!')
-          setTimeout(() => setSuccess(''), 5000)
-          getOrganisations()
+      if (confirmUpdate) {
+        axiosClient.put(`/organizations/update_organization/${orgId}/`, newOrganizationObject)
+          .then(response => {
+            console.log('Organization created successfully!', response.data)
+            setSuccess('Järjestö muokattu onnistuneesti!')
+            setTimeout(() => setSuccess(''), 5000)
+            getOrganisations()
 
-        })
-        .catch(error => {
-          console.error('Error creating account:', error)
-        })
+          })
+          .catch(error => {
+            console.error('Error creating account:', error)
+          })
+      }
+    } else {
+      setError('Koko täytyy olla 0 tai 1')
+      setTimeout(() => setError(''), 5000)
     }
   }
 
@@ -441,6 +453,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
 // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION FOR ALL USERS (ONLY VISIBLE FOR LEPPIS PJ)
 
+  // Shows all users
   const showAllUsers = () => (
     <div>
         <p></p>
@@ -457,6 +470,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     </div>
   )
 
+  // Gets every users data from backend
   const getAllUsers = () => {
     axios
       .get(`${API_URL}/api/listobjects/users/`)
@@ -489,6 +503,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     })
   }
 
+  // Shows user deatails if view button is pressed
   const renderUserDetails = userId => {
     const user = allUsers.find(user => user.id === userId)
     if (selectedUser === userId && user) {
@@ -546,6 +561,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     return null
   }
   
+  // Handles PJ change
   const handlePJChange = (userId) => {
     const selectedUserId = userId
     const loggedUser = JSON.parse(localStorage.getItem('loggedUser'))
@@ -577,6 +593,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
   }
 
+  // Handles key submit
   const handleKeySubmit = async (event) => {
     event.preventDefault()
   
@@ -622,10 +639,12 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
   }
 
+  // Handles select user
   const handleSelectUser = (event) => {
     setSelectedUser(event.target.value)
   }
 
+  // Handles select organization
   const handleSelectOrganization = (event) => {
     setSelectedOrganization(event.target.value)
   }
