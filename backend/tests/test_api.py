@@ -947,8 +947,9 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/events/create_event",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "room": "varasto",
-                "reservation": "varaus",
+                "room": "Kerhotila",
+                "title": "varaus",
+                "organizer": "Matrix",
                 "description": "",
                 "responsible": "Matti",
                 "open": True,
@@ -963,9 +964,10 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/events/create_event",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "room": "varasto",
-                "reservation": "varaus",
-                "description": "kahvihetki",
+                "room": "Kerhotila",
+                "title": "varaus",
+                "organizer": "Matrix",
+                "description": "Pidetään hauskaa",
                 "responsible": "Matti",
                 "open": True,
             },
@@ -980,7 +982,8 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.access_token}"},
             data={
                 "room": "varasto",
-                "reservation": "varaus",
+                "title": "varaus",
+                "organizer": "Matrix",
                 "description": "kahvihetki",
                 "responsible": "Matti",
                 "open": True,
@@ -999,7 +1002,7 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
                 "room": "Kattilahuone",
-                "reservation": "Varaus suunnitteluun",
+                "title": "Varaus suunnitteluun",
                 "description": "Suunnitellaan juhlia",
                 "responsible": "Pete",
                 "open": True,
@@ -1032,10 +1035,11 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/events/create_event",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "room": "Kattilahuone",
-                "reservation": "Varaus suunnitteluun",
-                "description": "Suunnitellaan juhlia",
-                "responsible": "Pete",
+                "room": "Kerhotila",
+                "title": "varaus",
+                "organizer": "Matrix",
+                "description": "",
+                "responsible": "Matti",
                 "open": True,
             },
             format="json",
@@ -1051,10 +1055,11 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/events/create_event",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "room": "Kattilahuone",
-                "reservation": "Varaus suunnitteluun",
-                "description": "Suunnitellaan juhlia",
-                "responsible": "Pete",
+                "room": "Kerhotila",
+                "title": "varaus",
+                "organizer": "Matrix",
+                "description": "Pidetään hauskaa",
+                "responsible": "Matti",
                 "open": True,
             },
             format="json",
@@ -1070,7 +1075,7 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(event_created.data["room"], "Kattilahuone")
+        self.assertEqual(event_created.data["room"], "Kerhotila")
 
     def test_update_with_nonexistentevent(self):
         """Attempt updating a non-existent event"""
@@ -1093,7 +1098,7 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
                 "room": "Kattilahuone",
-                "reservation": "Varaus suunnitteluun",
+                "title": "Varaus suunnitteluun",
                 "description": "Suunnitellaan juhlia",
                 "responsible": "Pete",
                 "open": True,
@@ -1120,10 +1125,11 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/events/create_event",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "room": "Kattilahuone",
-                "reservation": "Varaus suunnitteluun",
-                "description": "Suunnitellaan juhlia",
-                "responsible": "Pete",
+                "room": "Kerhotila",
+                "title": "varaus",
+                "organizer": "Matrix",
+                "description": "Pidetään hauskaa",
+                "responsible": "Matti",
                 "open": True,
             },
             format="json",
@@ -1153,10 +1159,11 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/events/create_event",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "room": "Kattilahuone",
-                "reservation": "Varaus suunnitteluun",
-                "description": "Suunnitellaan juhlia",
-                "responsible": "Pete",
+                "room": "Kerhotila",
+                "title": "varaus",
+                "organizer": "Matrix",
+                "description": "Pidetään hauskaa",
+                "responsible": "Matti",
                 "open": True,
             },
             format="json",
@@ -1184,9 +1191,10 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/events/create_event",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "room": "varasto",
-                "reservation": "varaus",
-                "description": "kahvihetki",
+                "room": "Kerhotila",
+                "title": "varaus",
+                "organizer": "Matrix",
+                "description": "Pidetään hauskaa",
                 "responsible": "Matti",
                 "open": True,
             },
@@ -1209,9 +1217,10 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/events/create_event",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "room": "varasto",
-                "reservation": "varaus",
-                "description": "kahvihetki",
+                "room": "Kerhotila",
+                "title": "varaus",
+                "organizer": "Matrix",
+                "description": "Pidetään hauskaa",
                 "responsible": "Matti",
                 "open": True,
             },

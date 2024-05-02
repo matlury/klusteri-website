@@ -118,7 +118,7 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ("id", "start", "end", "room", "reservation", "description", "responsible", "open")
+        fields = ("id", "start", "end", "title", "organizer", "description", "responsible", "open", "room")
 
 class NightResponsibilitySerializer(serializers.ModelSerializer):
     """Serializes a NightResponsibility object as JSON"""

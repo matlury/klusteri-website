@@ -223,7 +223,7 @@ class CreateOrganizationView(APIView):
 
 class RemoveOrganizationView(APIView):
     """
-    View for removing an organization <baseurl>/api/organizations/delete_event/<int:pk>/.
+    View for removing an organization <baseurl>/api/organizations/remove/<int:pk>/.
     Also removes keys and memberships from users.
     """
 
@@ -424,18 +424,19 @@ class CreateEventView(APIView):
                 "You can't add an event",
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
-        if user.data["rights_for_reservation"] != True:
-            return Response("You don't have rights to make reservation", status=status.HTTP_400_BAD_REQUEST)
 
-        else:
-            serializer = EventSerializer(data=request.data)
+        if not user.data["rights_for_reservation"]:
+            return Response(
+                "You don't have rights to make reservation",
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-            if not serializer.is_valid():
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            serializer.save()
+        serializer = EventSerializer(data=request.data)
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class RemoveEventView(APIView):
     """View for removing an event <baseurl>/api/events/delete_event/<event.id>/"""
@@ -458,9 +459,12 @@ class RemoveEventView(APIView):
                 "You can't remove the event",
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
-        if user.data["rights_for_reservation"] != True:
-            return Response("You don't have rights to delete reservations", status=status.HTTP_400_BAD_REQUEST)
+
+        if not user.data["rights_for_reservation"]:
+            return Response(
+                "You don't have rights to delete reservations",
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             event_to_remove = Event.objects.get(id=pk)
@@ -470,7 +474,10 @@ class RemoveEventView(APIView):
             )
         event_to_remove.delete()
 
-        return Response(f"Event {event_to_remove.reservation} successfully removed", status=status.HTTP_200_OK)
+        return Response(
+            f"Event {event_to_remove.title} successfully removed",
+            status=status.HTTP_200_OK
+        )
 
 class UpdateEventView(APIView):
     """View for updating an Event object at <baseurl>/api/events/update_event/<event.id>/"""
@@ -490,12 +497,15 @@ class UpdateEventView(APIView):
             JARJESTOVARAPJ
         ]:
             return Response(
-                "You can't edit the event",
+                "Users with role 5 can't edit events",
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
-        if user.data["rights_for_reservation"] != True:
-            return Response("You don't have rights to edit reservations", status=status.HTTP_400_BAD_REQUEST)
+
+        if not user.data["rights_for_reservation"]:
+            return Response(
+                "You don't have rights to edit reservations",
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             event_to_update = Event.objects.get(id=pk)
