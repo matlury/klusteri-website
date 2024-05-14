@@ -62,24 +62,26 @@ const newaccountcheck = ({
     Check if telegram is provided and unique
     */
   if (telegram) {
-    axios
-      .get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`)
-      .then((response) => {
-        const existingUsers = response.data;
-        if (existingUsers.some((user) => user.telegram === telegram)) {
-          return "Telegram on jo käytössä.";
-        } else {
-          // Proceed with account creation
-          return true;
-        }
-      })
-      .catch((error) => {
-        console.error("Error checking telegram:", error);
-        return "Virhe tarkistettaessa telegramia.";
-      });
+    return new Promise((resolve, reject) => {
+      axios
+        .get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`)
+        .then((response) => {
+          const existingUsers = response.data;
+          if (existingUsers.some((user) => user.telegram === telegram)) {
+            resolve("Telegram on jo käytössä.");
+          } else {
+            // Proceed with account creation
+            resolve(true);
+          }
+        })
+        .catch((error) => {
+          console.error("Error checking telegram:", error);
+          resolve("Virhe tarkistettaessa telegramia.");
+        });
+    });
   } else {
     // Proceed with account creation
-    return True;
+    return true;
   }
 };
 
