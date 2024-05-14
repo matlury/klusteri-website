@@ -1,9 +1,10 @@
 import "../index.css";
 import React, { useState, useEffect } from "react";
 import axiosClient from "../axios.js";
-import axios from "axios";
 import Popup from "../context/Popup.jsx";
 import EditPopup from "../context/EditPopup.jsx";
+import { getCurrentDateTime, formatDatetime } from "../utils/timehelpers.js";
+import { getPermission, fetchAllUsersWithKeys } from "../utils/keyuserhelpers.js";
 
 const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
@@ -38,7 +39,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
       const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
       setEmail(loggedUser.email);
       setLoggedUser(loggedUser);
-      getPermission();
+      getPermission({ API_URL, setHasPermission });
     }
   }, [propIsLoggedIn]);
 
@@ -46,7 +47,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     if (isLoggedIn) {
       getResponsibility();
       getActiveResponsibilities();
-      getPermission();
+      getPermission({ API_URL, setHasPermission });
     }
   }, [isLoggedIn, selectedForYKV]);
 
@@ -54,88 +55,9 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
   useEffect(() => {
     if (loggedUser) {
       getActiveResponsibilities();
-      fetchAllUsersWithKeys();
+      fetchAllUsersWithKeys({ API_URL, allUsersWithKeys, setAllUsersWithKeys, loggedUser, allResponsibilities });
     }
   }, [loggedUser]);
-
-  const getPermission = async () => {
-    /*
-        Check if the logged user has permissions for something
-        This prevents harm caused by localstorage manipulation
-        */
-
-    const accessToken = localStorage.getItem("ACCESS_TOKEN");
-    await axios
-      .get(`${API_URL}/api/users/userinfo`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((response) => {
-        const currentUser = response.data;
-        if (currentUser.role === 1) {
-          setHasPermission(true);
-        } else {
-          setHasPermission(false);
-        }
-      });
-  };
-
-  // fetch each user with keys if someone is logged in
-  const fetchAllUsersWithKeys = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/api/listobjects/users/`);
-      const allUsers = response.data;
-      const filteredUsers = allUsers.filter((user) => checkUser(user));
-      setAllUsersWithKeys(filteredUsers);
-      console.log("avaimellliset", allUsersWithKeys);
-    } catch (error) {
-      console.error("Error fetching users with keys", error);
-    }
-  };
-
-  // check if a user is valid for making an YKV-login
-  const checkUser = (user) => {
-    if (user.role === 5) {
-      return false;
-    }
-    if (user.id === loggedUser.id) {
-      return false;
-    }
-    // check if a user already has an active YKV
-    const alreadyLoggedIn = allResponsibilities.filter(
-      (resp) => resp.email === user.email && resp.present,
-    );
-    if (alreadyLoggedIn.length !== 0) {
-      return false;
-    }
-    return true;
-  };
-
-  // creates the current timestamp
-  function getCurrentDateTime() {
-    let currentDate = new Date();
-    let day = String(currentDate.getDate()).padStart(2, "0");
-    let month = String(currentDate.getMonth() + 1).padStart(2, "0");
-    let year = String(currentDate.getFullYear());
-    let hours = String(currentDate.getHours()).padStart(2, "0");
-    let minutes = String(currentDate.getMinutes()).padStart(2, "0");
-
-    return `${year}-${month}-${day} ${hours}:${minutes}`;
-  }
-
-  function formatDatetime(datetimeString) {
-    let date = new Date(datetimeString);
-
-    let hours = String(date.getUTCHours()).padStart(2, "0");
-    let minutes = String(date.getUTCMinutes()).padStart(2, "0");
-
-    let day = String(date.getUTCDate()).padStart(2, "0");
-    let month = String(date.getUTCMonth() + 1).padStart(2, "0");
-    let year = String(date.getUTCFullYear());
-
-    return `${hours}:${minutes} | ${day}.${month}.${year}`;
-  }
 
   // THE FOLLOWING FUNCTIONS HANDLES TAKING THE YKV-RESPONSIBILITIES
 
@@ -397,7 +319,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
           getResponsibility();
           ownYkvList();
           getActiveResponsibilities();
-          fetchAllUsersWithKeys();
+          fetchAllUsersWithKeys({ API_URL, allUsersWithKeys, setAllUsersWithKeys, loggedUser, allResponsibilities });
         })
         .catch((error) => {
           setError("YKV-uloskirjaus epäonnistui");
