@@ -1,49 +1,49 @@
-import { render, fireEvent, waitFor } from '@testing-library/react'
-import '@testing-library/jest-dom'
-import Reservations from '../../src/pages/reservations'
-import React from 'react';
-import axiosClient from '../axios.js'
+import { render, fireEvent, waitFor } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import Reservations from "../../src/pages/reservations";
+import React from "react";
+import axiosClient from "../axios.js";
 
 // Mock axiosClient
-jest.mock('../axios', () => {
+jest.mock("../axios", () => {
   return {
     __esModule: true,
     default: {
       get: jest.fn().mockResolvedValue({ data: {} }),
       post: jest.fn().mockResolvedValue({}),
-      put: jest.fn().mockResolvedValue({})
+      put: jest.fn().mockResolvedValue({}),
     },
     create: jest.fn(() => ({
-      post: jest.fn().mockResolvedValue({})
+      post: jest.fn().mockResolvedValue({}),
     })),
     defaults: {
       headers: {
         common: {
-          Authorization: 'Bearer example_token'
-        }
-      }
-    }
+          Authorization: "Bearer example_token",
+        },
+      },
+    },
   };
 });
 
-describe('Reservations component', () => {
-  it('renders Reservations component', () => {
-    const { getByText } = render(<Reservations />)
-    expect(getByText('Varauskalenteri')).toBeInTheDocument()
-    expect(getByText('Aktiiviset YKV-kirjaukset')).toBeInTheDocument()
-  })
+describe("Reservations component", () => {
+  it("renders Reservations component", () => {
+    const { getByText } = render(<Reservations />);
+    expect(getByText("Varauskalenteri")).toBeInTheDocument();
+    expect(getByText("Aktiiviset YKV-kirjaukset")).toBeInTheDocument();
+  });
 
-  it('renders the booking form', () => {
-    const { getByText, queryByText } = render(<Reservations />)
+  it("renders the booking form", () => {
+    const { getByText, queryByText } = render(<Reservations />);
 
-    const reservationButton = getByText('Lisää uusi tapahtuma')
-    fireEvent.click(reservationButton)
+    const reservationButton = getByText("Lisää uusi tapahtuma");
+    fireEvent.click(reservationButton);
 
-    expect(queryByText('Lisää tapahtuma')).toBeInTheDocument()
+    expect(queryByText("Lisää tapahtuma")).toBeInTheDocument();
 
-    const closeButton = getByText('Sulje')
-    fireEvent.click(closeButton)
-  })
+    const closeButton = getByText("Sulje");
+    fireEvent.click(closeButton);
+  });
 
   // it('booking with role 1', async () => {
   //   const { getByText, getByPlaceholderText, queryByText } = render(<Reservations />)
@@ -90,4 +90,4 @@ describe('Reservations component', () => {
   //     });
   //   });
   // })
-})
+});
