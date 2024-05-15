@@ -1,5 +1,5 @@
 import React from "react";
-import { formatDatetime } from "../src/utils/timehelpers";
+import { formatDatetime } from "../utils/timehelpers";
 
 const Responsibilities = ({ allResponsibilities }) => {
     return (

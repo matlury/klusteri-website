@@ -1,12 +1,12 @@
 import "../index.css";
 import React, { useState, useEffect } from "react";
 import axiosClient from "../axios.js";
-import Popup from "../context/Popup.jsx";
-import EditPopup from "../context/EditPopup.jsx";
 import { getCurrentDateTime, formatDatetime } from "../utils/timehelpers.js";
 import { getPermission, fetchAllUsersWithKeys } from "../utils/keyuserhelpers.js";
-import YkvForm from "../../components/YkvForm.jsx";
-import Responsibilities from "../../components/Responsibilities.jsx";
+import YkvForm from "../components/YkvForm.jsx";
+import Responsibilities from "../components/Responsibilities.jsx";
+import YkvLogoutFunction from "../components/YkvLogoutFunction.jsx";
+import OwnYkvList from "../components/OwnYkvList.jsx";
 
 const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
@@ -178,38 +178,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
         console.error("Error fetching responsibilities", error);
       });
 
-  // shows all of the responsibilites taken by the current user
-  const ownYkvList = () => (
-    <div>
-      <h2>Omat vastuut</h2>
-      <div
-        style={{
-          maxHeight: "500px",
-          overflow: "auto",
-          border: "3px solid black",
-          borderRadius: "10px",
-          padding: "10px",
-        }}
-      >
-        <ul style={{ listStyleType: "none", padding: 0 }}>
-          {ownResponsibilities
-            .slice()
-            .reverse()
-            .map((resp) => (
-              <li className="ykv" key={resp.id}>
-                Vastuussa henkilöistä: {resp.responsible_for} <br />
-                YKV-sisäänkirjaus klo: {formatDatetime(resp.login_time)} <br />
-                YKV-uloskirjaus klo:{" "}
-                {!resp.present && formatDatetime(resp.logout_time)}
-                <br />
-                <br />
-              </li>
-            ))}
-        </ul>
-      </div>
-    </div>
-  );
-
   // THE FOLLOWING FUNCTIONS HANDLE THE YKV-LOGOUT
 
   // handles the end of taking responsibility
@@ -225,7 +193,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
           setSuccess("YKV-uloskirjaus onnistui");
           setTimeout(() => setSuccess(""), 5000);
           getResponsibility();
-          ownYkvList();
           getActiveResponsibilities();
           fetchAllUsersWithKeys({ API_URL, allUsersWithKeys, setAllUsersWithKeys, loggedUser, allResponsibilities });
         })
@@ -236,67 +203,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
         }),
     );
   };
-
-  const logout_function = () => (
-    <div>
-      <button
-        onClick={() => handleYkvLogout(idToLogout)}
-        className="login-button"
-        type="button"
-      >
-        {" "}
-        YKV-uloskirjaus{" "}
-      </button>
-      {buttonPopup && (
-        <Popup
-          trigger={buttonPopup}
-          setTrigger={setButtonPopup}
-          active={activeResponsibilites}
-          setIdToLogout={setIdToLogout}
-          onSubmit={handleYkvLogout}
-        />
-      )}
-      <p></p>
-      <h2>Kaikki aktiiviset: </h2>
-      <ul style={{ listStyleType: "none", padding: 0 }}>
-        {activeResponsibilites
-          .slice()
-          .reverse()
-          .map((resp) => (
-            <li className="ykv-active" key={resp.id}>
-              Vastuuhenkilö: {resp.username}, {resp.email} <br />
-              Vastuussa henkilöistä: {resp.responsible_for} <br />
-              YKV-sisäänkirjaus klo: {formatDatetime(resp.login_time)} <br />
-              <br></br>
-              {resp.username === loggedUser.username && (
-                <>
-                  <button
-                    onClick={() => setEditButtonPopup(true)}
-                    style={{ marginLeft: "20px" }}
-                    className="login-button"
-                    type="button"
-                  >
-                    {" "}
-                    Muokkaa omaa YKV-kirjausta{" "}
-                  </button>
-                  {editButtonPopup && (
-                    <EditPopup
-                      trigger={editButtonPopup}
-                      resp={resp}
-                      setTrigger={setEditButtonPopup}
-                      setRespToEdit={setRespToEdit}
-                      onSubmit={handleYkvEdit}
-                    />
-                  )}
-                </>
-              )}
-              <br />
-              <br />
-            </li>
-          ))}
-      </ul>
-    </div>
-  );
 
   // THE FOLLOWING FUNCTIONS HANDLE THE YKV-LOGIN EDITS
 
@@ -309,7 +215,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
         setSuccess("YKV-muokkaus onnistui");
         setTimeout(() => setSuccess(""), 5000);
         getResponsibility();
-        ownYkvList();
         getActiveResponsibilities();
       })
       .catch((error) => {
@@ -326,10 +231,12 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
         <div id="leftleft_content">
           {error && <p style={{ color: "red" }}>{error}</p>}
           {success && <p style={{ color: "green" }}>{success}</p>}
-          {checkIfLoggedIn() && logout_function()}
+          {checkIfLoggedIn() && <YkvLogoutFunction handleYkvLogout={handleYkvLogout} idToLogout={idToLogout} buttonPopup={buttonPopup} setButtonPopup={setButtonPopup} 
+          activeResponsibilites={activeResponsibilites} setIdToLogout={setIdToLogout} loggedUser={loggedUser} setEditButtonPopup={setEditButtonPopup} editButtonPopup={editButtonPopup} 
+          setRespToEdit={setRespToEdit} handleYkvEdit={handleYkvEdit}/>}
           {!checkIfLoggedIn() && user.role !== 5 && <YkvForm esponsibility={responsibility} setResponsibility={setResponsibility} nameFilter={nameFilter} handleFilterChange={handleFilterChange}
             allUsersWithKeys={allUsersWithKeys} selectedForYKV={selectedForYKV} handleCheckboxChange={handleCheckboxChange} handleYkvLogin={handleYkvLogin} />}
-          {!(loggedUser.role === 1 || loggedUser.role === 5) && ownYkvList()}
+          {!(loggedUser.role === 1 || loggedUser.role === 5) && <OwnYkvList ownResponsibilities={ownResponsibilities}/>}
           {hasPermission === true && <Responsibilities allResponsibilities={allResponsibilities}/>}
         </div>
       )}

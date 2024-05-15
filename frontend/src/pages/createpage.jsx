@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import axios from "axios";
 import LoginPage from "./loginpage";
 import "../index.css";
 import newaccountcheck from "../utils/newaccountcheck";
-import CreateForm from "../../components/CreateForm";
+import CreateForm from "../components/CreateForm";
 import createaccount from "../utils/createaccount";
 
 const NewAccountPage = ({ onAccountCreated }) => {

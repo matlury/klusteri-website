@@ -4,7 +4,7 @@ import NewAccountPage from "./createpage";
 import { useStateContext } from "../context/ContextProvider.jsx";
 import CountdownTimer from "../context/CountdownTimer.jsx";
 import login from "../utils/login.js";
-import LoginForm from "../../components/LoginForm.jsx";
+import LoginForm from "../components/LoginForm.jsx";
 
 const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
   const [email, setEmail] = useState("");
