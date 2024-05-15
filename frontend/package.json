@@ -68,10 +68,5 @@
     "test": "jest --coverage",
     "cypress": "cypress open",
     "format": "prettier --write ."
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run format"
-    }
   }
 }
