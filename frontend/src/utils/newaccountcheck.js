@@ -62,7 +62,7 @@ const newaccountcheck = ({
     Check if telegram is provided and unique
     */
   if (telegram) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       axios
         .get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`)
         .then((response) => {

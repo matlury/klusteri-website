@@ -14,7 +14,7 @@ const createaccount = ({
     Send request to server to check if email is already in use
     */
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     axios
       .get(`${API_URL}/api/listobjects/users/?email=${email}`)
       .then((response) => {

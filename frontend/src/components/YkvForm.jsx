@@ -1,8 +1,16 @@
 import React from "react";
 
-const YkvForm = ({ responsibility, setResponsibility, nameFilter, handleFilterChange, 
-    allUsersWithKeys, selectedForYKV, handleCheckboxChange, handleYkvLogin }) => {
-    return (
+const YkvForm = ({
+  responsibility,
+  setResponsibility,
+  nameFilter,
+  handleFilterChange,
+  allUsersWithKeys,
+  selectedForYKV,
+  handleCheckboxChange,
+  handleYkvLogin,
+}) => {
+  return (
     <form>
       <div>
         <label htmlFor="responsibility">Kenestä otat vastuun?</label>
@@ -57,7 +65,7 @@ const YkvForm = ({ responsibility, setResponsibility, nameFilter, handleFilterCh
         Ota vastuu
       </button>
     </form>
-    );
+  );
 };
 
-export default YkvForm
+export default YkvForm;

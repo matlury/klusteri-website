@@ -2,7 +2,7 @@ import React from "react";
 import { formatDatetime } from "../utils/timehelpers";
 
 const Responsibilities = ({ allResponsibilities }) => {
-    return (
+  return (
     <div>
       <h2>Kaikki vastuut</h2>
       <div
@@ -40,7 +40,7 @@ const Responsibilities = ({ allResponsibilities }) => {
         </ul>
       </div>
     </div>
-    );
-  };
+  );
+};
 
-export default Responsibilities
+export default Responsibilities;

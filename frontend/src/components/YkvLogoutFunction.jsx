@@ -3,9 +3,20 @@ import { formatDatetime } from "../utils/timehelpers";
 import EditPopup from "../context/EditPopup";
 import Popup from "../context/Popup";
 
-const YkvLogoutFunction = ({ handleYkvLogout, idToLogout, buttonPopup, setButtonPopup, activeResponsibilites, 
-    setIdToLogout, loggedUser, setEditButtonPopup, editButtonPopup, setRespToEdit, handleYkvEdit }) => {
-    return (
+const YkvLogoutFunction = ({
+  handleYkvLogout,
+  idToLogout,
+  buttonPopup,
+  setButtonPopup,
+  activeResponsibilites,
+  setIdToLogout,
+  loggedUser,
+  setEditButtonPopup,
+  editButtonPopup,
+  setRespToEdit,
+  handleYkvEdit,
+}) => {
+  return (
     <div>
       <button
         onClick={() => handleYkvLogout(idToLogout)}
@@ -64,7 +75,7 @@ const YkvLogoutFunction = ({ handleYkvLogout, idToLogout, buttonPopup, setButton
           ))}
       </ul>
     </div>
-    );
-  };
+  );
+};
 
-export default YkvLogoutFunction
+export default YkvLogoutFunction;

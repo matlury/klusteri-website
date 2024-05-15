@@ -2,7 +2,10 @@ import "../index.css";
 import React, { useState, useEffect } from "react";
 import axiosClient from "../axios.js";
 import { getCurrentDateTime, formatDatetime } from "../utils/timehelpers.js";
-import { getPermission, fetchAllUsersWithKeys } from "../utils/keyuserhelpers.js";
+import {
+  getPermission,
+  fetchAllUsersWithKeys,
+} from "../utils/keyuserhelpers.js";
 import YkvForm from "../components/YkvForm.jsx";
 import Responsibilities from "../components/Responsibilities.jsx";
 import YkvLogoutFunction from "../components/YkvLogoutFunction.jsx";
@@ -58,12 +61,17 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     const fetchData = async () => {
       if (loggedUser) {
         await getActiveResponsibilities();
-        await fetchAllUsersWithKeys({ API_URL, allUsersWithKeys, setAllUsersWithKeys, loggedUser, allResponsibilities });
+        await fetchAllUsersWithKeys({
+          API_URL,
+          allUsersWithKeys,
+          setAllUsersWithKeys,
+          loggedUser,
+          allResponsibilities,
+        });
       }
     };
-  
+
     fetchData();
-  
   }, [loggedUser]);
 
   // THE FOLLOWING FUNCTIONS HANDLES TAKING THE YKV-RESPONSIBILITIES
@@ -194,7 +202,13 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
           setTimeout(() => setSuccess(""), 5000);
           getResponsibility();
           getActiveResponsibilities();
-          fetchAllUsersWithKeys({ API_URL, allUsersWithKeys, setAllUsersWithKeys, loggedUser, allResponsibilities });
+          fetchAllUsersWithKeys({
+            API_URL,
+            allUsersWithKeys,
+            setAllUsersWithKeys,
+            loggedUser,
+            allResponsibilities,
+          });
         })
         .catch((error) => {
           setError("YKV-uloskirjaus epäonnistui");
@@ -231,13 +245,39 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
         <div id="leftleft_content">
           {error && <p style={{ color: "red" }}>{error}</p>}
           {success && <p style={{ color: "green" }}>{success}</p>}
-          {checkIfLoggedIn() && <YkvLogoutFunction handleYkvLogout={handleYkvLogout} idToLogout={idToLogout} buttonPopup={buttonPopup} setButtonPopup={setButtonPopup} 
-          activeResponsibilites={activeResponsibilites} setIdToLogout={setIdToLogout} loggedUser={loggedUser} setEditButtonPopup={setEditButtonPopup} editButtonPopup={editButtonPopup} 
-          setRespToEdit={setRespToEdit} handleYkvEdit={handleYkvEdit}/>}
-          {!checkIfLoggedIn() && user.role !== 5 && <YkvForm esponsibility={responsibility} setResponsibility={setResponsibility} nameFilter={nameFilter} handleFilterChange={handleFilterChange}
-            allUsersWithKeys={allUsersWithKeys} selectedForYKV={selectedForYKV} handleCheckboxChange={handleCheckboxChange} handleYkvLogin={handleYkvLogin} />}
-          {!(loggedUser.role === 1 || loggedUser.role === 5) && <OwnYkvList ownResponsibilities={ownResponsibilities}/>}
-          {hasPermission === true && <Responsibilities allResponsibilities={allResponsibilities}/>}
+          {checkIfLoggedIn() && (
+            <YkvLogoutFunction
+              handleYkvLogout={handleYkvLogout}
+              idToLogout={idToLogout}
+              buttonPopup={buttonPopup}
+              setButtonPopup={setButtonPopup}
+              activeResponsibilites={activeResponsibilites}
+              setIdToLogout={setIdToLogout}
+              loggedUser={loggedUser}
+              setEditButtonPopup={setEditButtonPopup}
+              editButtonPopup={editButtonPopup}
+              setRespToEdit={setRespToEdit}
+              handleYkvEdit={handleYkvEdit}
+            />
+          )}
+          {!checkIfLoggedIn() && user.role !== 5 && (
+            <YkvForm
+              esponsibility={responsibility}
+              setResponsibility={setResponsibility}
+              nameFilter={nameFilter}
+              handleFilterChange={handleFilterChange}
+              allUsersWithKeys={allUsersWithKeys}
+              selectedForYKV={selectedForYKV}
+              handleCheckboxChange={handleCheckboxChange}
+              handleYkvLogin={handleYkvLogin}
+            />
+          )}
+          {!(loggedUser.role === 1 || loggedUser.role === 5) && (
+            <OwnYkvList ownResponsibilities={ownResponsibilities} />
+          )}
+          {hasPermission === true && (
+            <Responsibilities allResponsibilities={allResponsibilities} />
+          )}
         </div>
       )}
     </div>
