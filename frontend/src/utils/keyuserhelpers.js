@@ -30,7 +30,6 @@ export const fetchAllUsersWithKeys = async ({ API_URL, allUsersWithKeys, setAllU
       const allUsers = response.data;
       const filteredUsers = allUsers.filter((user) => checkUser(user, loggedUser, allResponsibilities));
       setAllUsersWithKeys(filteredUsers);
-      console.log("avaimellliset", allUsersWithKeys);
     } catch (error) {
       console.error("Error fetching users with keys", error);
     }

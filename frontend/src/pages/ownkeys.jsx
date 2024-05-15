@@ -5,6 +5,8 @@ import Popup from "../context/Popup.jsx";
 import EditPopup from "../context/EditPopup.jsx";
 import { getCurrentDateTime, formatDatetime } from "../utils/timehelpers.js";
 import { getPermission, fetchAllUsersWithKeys } from "../utils/keyuserhelpers.js";
+import YkvForm from "../../components/YkvForm.jsx";
+import Responsibilities from "../../components/Responsibilities.jsx";
 
 const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
@@ -53,10 +55,15 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
 
   // Fetch all users with keys when the component mounts or when 'loggedUser' changes
   useEffect(() => {
-    if (loggedUser) {
-      getActiveResponsibilities();
-      fetchAllUsersWithKeys({ API_URL, allUsersWithKeys, setAllUsersWithKeys, loggedUser, allResponsibilities });
-    }
+    const fetchData = async () => {
+      if (loggedUser) {
+        await getActiveResponsibilities();
+        await fetchAllUsersWithKeys({ API_URL, allUsersWithKeys, setAllUsersWithKeys, loggedUser, allResponsibilities });
+      }
+    };
+  
+    fetchData();
+  
   }, [loggedUser]);
 
   // THE FOLLOWING FUNCTIONS HANDLES TAKING THE YKV-RESPONSIBILITIES
@@ -76,64 +83,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
   const handleFilterChange = (event) => {
     setNameFilter(event.target.value);
   };
-
-  // the form that creates the responsibility by clicking the "Ota vastuu" button
-  const ykvForm = () => (
-    <form>
-      <div>
-        <label htmlFor="responsibility">Kenestä otat vastuun?</label>
-        <input
-          id="responsibility"
-          type="responsibility"
-          value={responsibility}
-          onChange={(e) => setResponsibility(e.target.value)}
-        />
-      </div>
-      <br />
-      Kirjaa sisään muita henkilöitä
-      <br />
-      <br />
-      Etsi avaimellisia henkilöitä käyttäjänimellä:{" "}
-      <input value={nameFilter} onChange={handleFilterChange} type="text" />
-      <br />
-      <br />
-      <div
-        style={{
-          maxHeight: "200px",
-          overflow: "auto",
-          border: "3px solid black",
-          borderRadius: "10px",
-          paddingLeft: "10px",
-          width: "45vw",
-        }}
-      >
-        <ul style={{ listStyleType: "none", padding: 0 }}>
-          {allUsersWithKeys
-            .filter((user) =>
-              user.username.toLowerCase().includes(nameFilter.toLowerCase()),
-            )
-            .map((user) => (
-              <li key={user.id}>
-                {user.username}, {user.email}
-                <input
-                  type="checkbox"
-                  checked={selectedForYKV.includes(user)}
-                  onChange={() => handleCheckboxChange(user)}
-                />
-              </li>
-            ))}
-        </ul>
-      </div>
-      <br />
-      <button
-        onClick={handleYkvLogin}
-        className="create-user-button"
-        type="button"
-      >
-        Ota vastuu
-      </button>
-    </form>
-  );
 
   // this function handles the event of taking responsibility (check above)
   const handleYkvLogin = (event) => {
@@ -228,47 +177,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
       .catch((error) => {
         console.error("Error fetching responsibilities", error);
       });
-
-  // all of the responsibilities (only visible to leppis PJ)
-  const responsibilities = () => (
-    <div>
-      <h2>Kaikki vastuut</h2>
-      <div
-        style={{
-          maxHeight: "500px",
-          overflow: "auto",
-          border: "3px solid black",
-          borderRadius: "10px",
-          padding: "10px",
-        }}
-      >
-        <ul style={{ listStyleType: "none", padding: 0 }}>
-          {allResponsibilities
-            .slice()
-            .reverse()
-            .map((resp) => (
-              <li
-                className="ykv"
-                key={resp.id}
-                style={{
-                  backgroundColor: resp.present
-                    ? "rgb(169, 245, 98)"
-                    : "transparent",
-                }}
-              >
-                Vastuuhenkilö: {resp.username}, {resp.email} <br />
-                Vastuussa henkilöistä: {resp.responsible_for} <br />
-                YKV-sisäänkirjaus klo: {formatDatetime(resp.login_time)} <br />
-                YKV-uloskirjaus klo:{" "}
-                {!resp.present && formatDatetime(resp.logout_time)}
-                <br />
-                <br />
-              </li>
-            ))}
-        </ul>
-      </div>
-    </div>
-  );
 
   // shows all of the responsibilites taken by the current user
   const ownYkvList = () => (
@@ -419,9 +327,10 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
           {error && <p style={{ color: "red" }}>{error}</p>}
           {success && <p style={{ color: "green" }}>{success}</p>}
           {checkIfLoggedIn() && logout_function()}
-          {!checkIfLoggedIn() && user.role !== 5 && ykvForm()}
+          {!checkIfLoggedIn() && user.role !== 5 && <YkvForm esponsibility={responsibility} setResponsibility={setResponsibility} nameFilter={nameFilter} handleFilterChange={handleFilterChange}
+            allUsersWithKeys={allUsersWithKeys} selectedForYKV={selectedForYKV} handleCheckboxChange={handleCheckboxChange} handleYkvLogin={handleYkvLogin} />}
           {!(loggedUser.role === 1 || loggedUser.role === 5) && ownYkvList()}
-          {hasPermission === true && responsibilities()}
+          {hasPermission === true && <Responsibilities allResponsibilities={allResponsibilities}/>}
         </div>
       )}
     </div>
