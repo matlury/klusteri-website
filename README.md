@@ -111,7 +111,7 @@ Aja **Eslint** komennolla:
 npx eslint src
 ```
 
-Cypress-testeille löytyy ohjeet [täältä!](https://github.com/matlury/klusteri-website/blob/main/docs/cypress.md)
+Cypress-testeille löytyy ohjeet [täältä.](https://github.com/matlury/klusteri-website/blob/main/docs/cypress.md)
 
 ## Codecov
 
