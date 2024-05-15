@@ -23,7 +23,7 @@
 
 ## Definition of Done
 
-- Task toteutettu kuten pitää.
+- Taski toteutettu kuten pitää.
 - Pylint score mahdollisimman korkea (8.00).
 - Dokumentaatio suomeksi.
 - Koodi englanniksi.
