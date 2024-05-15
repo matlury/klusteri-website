@@ -13,7 +13,7 @@ Vihree New issue -nappi vie valitsemaan joko Task tai User story templaten.
 
 ![New task](img/new_task.png)
 
-Uudelle issuelle valitaan oikeelta Assignee(t) ja Label (task tai user story). Muut valinnat ei mun mielestä ole välttämättömiä, mutta voi halutessaan lisätä esim. Milestonen eli mihin sprinttiin issue kuuluu. Projekti valikoituu automaattisesti, kun issue lisätään Product backlogiin tai Task boardille.
+Uudelle issuelle valitaan oikealta Assignee(t) ja Label (task tai user story). Muut valinnat ei mun mielestä ole välttämättömiä, mutta voi halutessaan lisätä esim. Milestonen eli mihin sprinttiin issue kuuluu. Projekti valikoituu automaattisesti, kun issue lisätään Product backlogiin tai Task boardille.
 
 Task-issuen kuvaukseen voi lisätä linkin siihen liittyvään user storyyn kirjoittamalla vain user storyn numero.
 
