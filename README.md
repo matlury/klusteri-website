@@ -129,3 +129,4 @@ Raportin muodostaminen frontendille
 ~klusteri-website/frontend/$ npx jest --coverage
 ```
 Huom! Codecov ei toistaiseksi ota huomioon cypress-testejä
+
