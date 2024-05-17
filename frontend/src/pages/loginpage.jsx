@@ -6,6 +6,8 @@ import CountdownTimer from "../context/CountdownTimer.jsx";
 import login from "../utils/login.js";
 import LoginForm from "../components/LoginForm.jsx";
 
+import { Button } from "@mui/material";
+
 const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -53,9 +55,10 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
       ) : user ? (
         <>
           <p>Hei {user.username}!</p>
-          <button className="logout-button" onClick={handleLogout}>
+          <Button variant="contained" className="logout-button" onClick={handleLogout}>
             Kirjaudu ulos
-          </button>
+          </Button>
+
           <br />
           <br />
           <p>Automaattinen uloskirjaus:</p>
