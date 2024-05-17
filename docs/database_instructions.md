@@ -13,4 +13,4 @@
 Huomioithan, että muuttujien arvojen täytyy olla lainausmerkkien sisällä.
 Huomioithan myös, että .env tiedoston täytyy olla .gitignoroituna.
 
-## Ohjeet cypress-testaukseen löytyvät omasta omasta cypress.md tiedostosta :)
+## Ohjeet cypress-testaukseen löytyvät omasta omasta cypress.md tiedostosta
