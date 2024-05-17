@@ -30,6 +30,7 @@ const ReservationsView = ({
       <h1>Varauskalenteri</h1>
       <div className="add-event-button">
         <Button
+          id="createEvent"
           variant="primary"
           onClick={handleAddNewEventClick}
           style={{
@@ -78,6 +79,7 @@ const ReservationsView = ({
             <p>
               Alkaa:{" "}
               <input
+                id="startTime"
                 type="datetime-local"
                 name="start"
                 ref={startRef}
@@ -87,6 +89,7 @@ const ReservationsView = ({
             <p>
               Päättyy:{" "}
               <input
+                id="endTime"
                 type="datetime-local"
                 name="end"
                 ref={endRef}
@@ -97,6 +100,7 @@ const ReservationsView = ({
               Huomioithan yökäyttösäännöt klo 00-08.
             </p>
             <input
+              id="eventName"
               name="title"
               placeholder="Tapahtuman nimi"
               value={eventDetails.title}
@@ -105,6 +109,7 @@ const ReservationsView = ({
             />
             <p></p>
             <input
+              id="organizerName"
               name="organizer"
               placeholder="Järjestäjä"
               value={eventDetails.organizer}
@@ -113,6 +118,7 @@ const ReservationsView = ({
             />
             <p></p>
             <input
+              id="responsibleName"
               name="responsible"
               placeholder="Vastuuhenkilö"
               value={eventDetails.responsible}
@@ -122,6 +128,7 @@ const ReservationsView = ({
             <p></p>
 
             <textarea
+              id="eventDescription"
               name="description"
               placeholder="Tapahtuman kuvaus"
               value={eventDetails.description}
@@ -129,6 +136,7 @@ const ReservationsView = ({
               style={{ width: "100%", height: "100px", borderRadius: "5px" }}
             />
             <select
+              id="eventOpen"
               name="isOpen"
               value={eventDetails.isOpen}
               onChange={handleInputChange}
@@ -138,6 +146,7 @@ const ReservationsView = ({
               <option value="suljettu">Vain jäsenille</option>
             </select>
             <select
+              id="eventRoom"
               name="room"
               value={eventDetails.room}
               onChange={handleInputChange}
@@ -154,7 +163,7 @@ const ReservationsView = ({
           <Button variant="secondary" onClick={handleCloseModal}>
             Sulje
           </Button>
-          <Button variant="primary" onClick={handleAddEvent}>
+          <Button id="confirmCreate" variant="primary" onClick={handleAddEvent}>
             Tallenna
           </Button>
         </Modal.Footer>
@@ -183,12 +192,17 @@ const ReservationsView = ({
         </Modal.Body>
         <Modal.Footer>
           <Button
+            id="deleteEvent"
             variant="danger"
             onClick={() => handleDeleteEvent(selectedEvent.id)}
           >
             Poista tapahtuma
           </Button>
-          <Button variant="secondary" onClick={handleCloseModal}>
+          <Button
+            id="closeEvent"
+            variant="secondary"
+            onClick={handleCloseModal}
+          >
             Sulje
           </Button>
         </Modal.Footer>

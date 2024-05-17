@@ -21,3 +21,17 @@ export function formatDatetime(datetimeString) {
 
   return `${hours}:${minutes} | ${day}.${month}.${year}`;
 }
+
+export function getTestTimes() {
+  let currentDate = new Date();
+  let day = String(currentDate.getDate()).padStart(2, "0");
+  let month = String(currentDate.getMonth() + 1).padStart(2, "0");
+  let year = String(currentDate.getFullYear());
+  let hours = String(currentDate.getHours()).padStart(2, "0");
+  let minutes = String(currentDate.getMinutes()).padStart(2, "0");
+
+  return [
+    `${year}-${month}-${day}T${hours}:${minutes}`,
+    `${year}-${month}-${day}T${parseInt(hours) + 2}:${minutes}`,
+  ];
+}
