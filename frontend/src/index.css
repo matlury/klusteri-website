@@ -20,7 +20,7 @@
   justify-content: space-evenly;
   flex-wrap: wrap;
   position: sticky;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .link {
@@ -38,44 +38,44 @@
 
 div.left_content {
   width: 100%;
-  border: 5px solid #FFFFFF;
+  border: 5px solid #ffffff;
   float: left;
   padding: 30px;
-  text-align:center;
+  text-align: center;
 }
 
 div.right_content {
   width: 50%;
-  border: 5px solid #FFFFFF;
+  border: 5px solid #ffffff;
   float: right;
   padding: 30px;
-  text-align:center;
+  text-align: center;
 }
 
 #leftleft_content {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  text-align:left;
+  text-align: left;
 }
 
 .textbox {
   width: 90%;
   border: 5px solid #b3b7bb;
   padding: 70px;
-  text-align:center;
+  text-align: center;
   border-style: solid;
   border-radius: 9px;
-  border-width: thin ;
+  border-width: thin;
 }
 
 .flex-container {
   display: flex;
-  justify-content: space-between
+  justify-content: space-between;
 }
 
 form #login-button {
-  padding:5px;
+  padding: 5px;
   border: none;
   text-align: center;
   width: 5em;
@@ -85,23 +85,23 @@ form #login-button {
 }
 
 form #create-button {
-  padding:5px;
+  padding: 5px;
   border: none;
   text-align: center;
   width: 5em;
   margin: auto;
   background: white;
-  border-radius: .5em;
+  border-radius: 0.5em;
 }
 
 form #edit-button {
-  padding:5px;
+  padding: 5px;
   border: none;
   text-align: center;
   width: 5em;
   margin: auto;
   background: rgb(212, 3, 3);
-  border-radius: .5em;
+  border-radius: 0.5em;
 }
 
 .link {
@@ -200,31 +200,31 @@ ul {
 
 .ykv {
   border: solid;
-  border-radius: .5em;
-  padding: .5em;
+  border-radius: 0.5em;
+  padding: 0.5em;
   padding-right: 2em;
-  margin-top: .5em;
+  margin-top: 0.5em;
   margin-left: 0;
   width: 40vw;
 }
 
 .ykv-active {
   border: solid;
-  border-radius: .5em;
-  padding: .5em;
+  border-radius: 0.5em;
+  padding: 0.5em;
   padding-right: 2em;
-  margin-top: .5em;
+  margin-top: 0.5em;
   margin-left: 0;
   width: 40vw;
-  background-color: rgb(169, 245, 98)
+  background-color: rgb(169, 245, 98);
 }
 
 .ykv2 {
   border: solid;
-  border-radius: .5em;
-  padding: .5em;
+  border-radius: 0.5em;
+  padding: 0.5em;
   padding-right: 2em;
-  margin-top: .5em;
+  margin-top: 0.5em;
   margin-left: 0;
   width: 20vw;
 }
@@ -292,10 +292,10 @@ input[type="organ"] {
   top: 0;
   left: 0;
 
-  background-color: rgba(0,0,0,0.2); /* Black background with opacity */
+  background-color: rgba(0, 0, 0, 0.2); /* Black background with opacity */
   display: flex;
   justify-content: center;
-  align-items: center
+  align-items: center;
 }
 
 .popup-inner {
@@ -303,7 +303,7 @@ input[type="organ"] {
   padding: 32px;
   width: 100%;
   max-width: 640px;
-  background-color: #FFF
+  background-color: #fff;
 }
 
 .popup-inner .close-btn {
@@ -312,8 +312,8 @@ input[type="organ"] {
   right: 16px;
   background-color: #7e7979;
   color: #fff;
-  border-radius: .75em;
-  padding: 7px 7px
+  border-radius: 0.75em;
+  padding: 7px 7px;
 }
 
 #content {
@@ -322,14 +322,14 @@ input[type="organ"] {
 }
 
 #centered_content {
-  flex: 1; 
+  flex: 1;
   height: 450px;
-  display: block; 
+  display: block;
   margin-left: 90px;
   border: 5px solid #b3b7bb;
   border-style: solid;
   border-radius: 9px;
-  border-width: thin ;
+  border-width: thin;
 }
 
 .select-box {
@@ -344,7 +344,7 @@ input[type="organ"] {
   width: 95%;
   margin: 20px;
   padding: 70px;
-  text-align:center;
+  text-align: center;
 }
 
 .ykvtab {
