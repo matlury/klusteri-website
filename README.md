@@ -23,7 +23,7 @@
 
 ## Definition of Done
 
-- Task toteutettu kuten pitää.
+- Taski toteutettu kuten pitää.
 - Pylint score mahdollisimman korkea (8.00).
 - Dokumentaatio suomeksi.
 - Koodi englanniksi.
@@ -45,7 +45,7 @@ poetry install
 poetry shell
 ```
 ### Tietokannan rakentaminen
-Katso ohjeet tietokannan pystyttämiseksi [täältä!](https://github.com/matlury/klusteri-website/blob/main/docs/database_instructions.md)
+Katso ohjeet tietokannan pystyttämiseksi [täältä](https://github.com/matlury/klusteri-website/blob/main/docs/database_instructions.md)
 
 Jos koodissa määriteltyjä tietokantatauluja on muokattu, on luotava uusi migraatio tietokantaa varten
 ```bash
@@ -111,7 +111,7 @@ Aja **Eslint** komennolla:
 npx eslint src
 ```
 
-Cypress-testeille löytyy ohjeet [täältä!](https://github.com/matlury/klusteri-website/blob/main/docs/cypress.md)
+Cypress-testeille löytyy ohjeet [täältä.](https://github.com/matlury/klusteri-website/blob/main/docs/cypress.md)
 
 ## Codecov
 
