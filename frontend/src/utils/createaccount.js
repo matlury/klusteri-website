@@ -23,6 +23,8 @@ const createaccount = ({
         const existingUsers = response.data;
         if (existingUsers.some((user) => user.email === email)) {
           resolve("Sähköposti on jo käytössä.");
+        } if (existingUsers.some((user) => user.username === username)) {
+          resolve("Käyttäjänimi on jo käytössä")
         } else {
           const userObject = {
             username,
