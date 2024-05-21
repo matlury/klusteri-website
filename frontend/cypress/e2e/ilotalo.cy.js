@@ -13,18 +13,18 @@ describe("Frontpage", () => {
   });
 
   it("Navigates to Christina Regina page when the link is clicked", function () {
-    cy.contains("span.link", "Christina Regina").click();
+    cy.contains("Christina Regina").click();
     cy.url().should("include", "/christinaregina");
   });
 
   it("rules and instructions can be accessed", function () {
-    cy.contains("span.link", "Säännöt ja ohjeet").click();
+    cy.contains("Säännöt ja ohjeet").click();
     cy.url().should("include", "/saannot_ja_ohjeet");
     cy.contains("Säännöt ja ohjeet");
   });
 
   it("privacy policy can be accessed", function () {
-    cy.contains("span.link", "Tietosuojaseloste").click();
+    cy.contains("Tietosuojaseloste").click();
     cy.url().should("include", "/tietosuojaseloste");
     cy.contains(
       "Tämä on EU:n yleisen tietosuoja-asetuksen mukainen rekisteri- ja tietosuojaseloste.",
@@ -33,7 +33,7 @@ describe("Frontpage", () => {
   });
 
   it("contacts page can be accessed and christina regina page can be rendered", function () {
-    cy.contains("span.link", "Yhteystiedot").click();
+    cy.contains("Yhteystiedot").click();
     cy.url().should("include", "/yhteystiedot");
     cy.contains("Domus Gaudium");
     cy.contains("Klusterikännykkä");
@@ -174,6 +174,7 @@ describe("Ownkeys", () => {
     cy.wait(500);
     cy.contains("Hei leppis!");
     cy.contains("Omat avaimet").click();
+    cy.reload()
 
     cy.get("#responsibility").type("fuksit");
     cy.contains("Ota vastuu").click();
@@ -211,6 +212,7 @@ describe("Ownkeys", () => {
     cy.wait(500);
     cy.contains("Hei leppis!");
     cy.contains("Omat avaimet").click();
+    cy.reload()
 
     cy.get("#responsibility").type("fuksit");
     cy.contains("Ota vastuu").click();
@@ -483,3 +485,4 @@ describe("Reservations", () => {
 });
 
 Cypress.on;
+

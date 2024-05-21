@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./index.css";
 import matlu from "./matlu.png";
 import FrontPage from "./pages/frontpage";
@@ -12,6 +12,8 @@ import Contacts from "./pages/contacts";
 import Rules_and_Instructions from "./pages/rules_instructions";
 import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
+
+import { AppBar, Toolbar, Button, Typography } from "@mui/material";
 
 const App = () => {
   const [showLoginPage, setShowLoginPage] = useState(true);
@@ -85,35 +87,42 @@ const App = () => {
   return (
     <Router>
       <div>
-        <div id="blackscreen">
-          <img src={matlu} id="leftLogo" width="200" height="150" alt="Logo" />
-        </div>
-        <div id="nav">
-          <span className="link" onClick={OpenFrontPage}>
-            Etusivu
-          </span>
-          <span className="link" onClick={OpenChristinaRegina}>
-            Christina Regina
-          </span>
-          <span className="link" onClick={OpenReservations}>
-            Varaukset
-          </span>
-          <span className="link" onClick={OpenKeys}>
-            Omat avaimet
-          </span>
-          <span className="link" onClick={OpenInformation}>
-            Omat tiedot
-          </span>
-          <span className="link" onClick={OpenContacts}>
-            Yhteystiedot
-          </span>
-          <span className="link" onClick={OpenRulesAndInstructions}>
-            Säännöt ja ohjeet
-          </span>
-          <span className="link" onClick={OpenPrivacyPolicy}>
-            Tietosuojaseloste
-          </span>
-        </div>
+        
+
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              Ilotalo
+            </Typography>
+            <Button color="inherit" component={Link} to="/">
+              Etusivu
+            </Button>
+            <Button color="inherit" component={Link} to="/christinaregina">
+              Christina Regina
+            </Button>
+            <Button color="inherit" component={Link} to="/varaukset">
+              Varaukset
+            </Button>
+            <Button color="inherit" component={Link} to="/omat_avaimet">
+              Omat avaimet
+            </Button>
+            <Button color="inherit" component={Link} to="/omat_tiedot">
+              Omat tiedot
+            </Button>
+            <Button color="inherit" component={Link} to="/yhteystiedot">
+              Yhteystiedot
+            </Button>
+            <Button color="inherit" component={Link} to="/saannot_ja_ohjeet">
+              Säännöt ja ohjeet
+            </Button>
+            <Button color="inherit" component={Link} to="/tietosuojaseloste">
+              Tietosuojaseloste
+            </Button>
+
+
+          </Toolbar>
+        </AppBar>
+
         <div id="ContentBlock" className="flex-container">
           <div className="left_content">
             <Routes>

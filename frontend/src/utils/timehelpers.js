@@ -28,10 +28,12 @@ export function getTestTimes() {
   let month = String(currentDate.getMonth() + 1).padStart(2, "0");
   let year = String(currentDate.getFullYear());
   let hours = String(currentDate.getHours()).padStart(2, "0");
+  let hoursadded = parseInt(hours) + 2;
+  let paddedHours = hoursadded.toString().padStart(2, '0');
   let minutes = String(currentDate.getMinutes()).padStart(2, "0");
 
   return [
     `${year}-${month}-${day}T${hours}:${minutes}`,
-    `${year}-${month}-${day}T${parseInt(hours) + 2}:${minutes}`,
+    `${year}-${month}-${day}T${paddedHours}:${minutes}`,
   ];
 }
