@@ -142,6 +142,7 @@ class NightResponsibility(models.Model):
     )
     present = models.BooleanField(default=True)
     late = models.BooleanField(default=False)
+    created_by = models.CharField(max_length=50, default="")
 
 class DefectFault(models.Model):
     """Model for defects and faults in Klusteri."""

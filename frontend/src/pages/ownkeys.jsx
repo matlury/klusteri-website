@@ -106,6 +106,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
       email: email,
       responsible_for: responsibility,
       login_time: loginTime,
+      created_by: username
     };
 
     confirmYKV(responsibilityObject);
@@ -115,8 +116,9 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
         username: user.username,
         email: user.email,
         responsible_for:
-          responsibility + `, kirjauksen tekijä: ${loggedUser.username}`,
+          responsibility,
         login_time: loginTime,
+        created_by: loggedUser.username
       };
       confirmYKV(responsibilityObject);
     });
@@ -260,9 +262,9 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
               handleYkvEdit={handleYkvEdit}
             />
           )}
-          {!checkIfLoggedIn() && user.role !== 5 && (
+          {user.role !== 5 && (
             <YkvForm
-              esponsibility={responsibility}
+              responsibility={responsibility}
               setResponsibility={setResponsibility}
               nameFilter={nameFilter}
               handleFilterChange={handleFilterChange}

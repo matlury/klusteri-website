@@ -29,6 +29,7 @@ const Responsibilities = ({ allResponsibilities }) => {
                 }}
               >
                 Vastuuhenkilö: {resp.username}, {resp.email} <br />
+                Luonut: {resp.created_by} <br />
                 Vastuussa henkilöistä: {resp.responsible_for} <br />
                 YKV-sisäänkirjaus klo: {formatDatetime(resp.login_time)} <br />
                 YKV-uloskirjaus klo:{" "}
