@@ -125,7 +125,7 @@ class NightResponsibilitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NightResponsibility
-        fields = ("id", "username", "email", "responsible_for", "login_time", "logout_time", "present", "late", "created_by")
+        fields = ("id", "username", "email", "responsible_for", "login_time", "logout_time", "present", "late", "created_by", "organisations")
 
 class DefectFaultSerializer(serializers.ModelSerializer):
     """Serializes a DefectFault object as JSON"""

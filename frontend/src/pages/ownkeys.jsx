@@ -93,7 +93,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
   };
 
   // this function handles the event of taking responsibility (check above)
-  const handleYkvLogin = (event) => {
+  const handleYkvLogin = async (event) => {
     event.preventDefault();
 
     const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
@@ -101,12 +101,18 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     const email = loggedUser.email;
     const loginTime = getCurrentDateTime();
 
+    const userdata = await axiosClient.get('users/userinfo', username)
+    console.log(userdata)
+    const user_orgs = Object.keys(userdata.data.organization).filter(organization => userdata.data.organization[organization] === true).join(', ');
+    console.log(user_orgs)
+
     const responsibilityObject = {
       username: username,
       email: email,
       responsible_for: responsibility,
       login_time: loginTime,
-      created_by: username
+      created_by: username,
+      organisations: user_orgs
     };
 
     confirmYKV(responsibilityObject);

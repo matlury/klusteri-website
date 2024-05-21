@@ -43,7 +43,7 @@ const YkvLogoutFunction = ({
           .reverse()
           .map((resp) => (
             <li className="ykv-active" key={resp.id}>
-              Vastuuhenkilö: {resp.username}, {resp.email} <br />
+              Vastuuhenkilö: {resp.username}, {resp.email}, {resp.organisations} <br />
               Luonut: {resp.created_by} <br />
               Vastuussa henkilöistä: {resp.responsible_for} <br />
               YKV-sisäänkirjaus klo: {formatDatetime(resp.login_time)} <br />
