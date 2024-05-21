@@ -1,7 +1,7 @@
 import "../index.css";
 import React, { useState, useEffect } from "react";
 import axiosClient from "../axios.js";
-import { getCurrentDateTime, formatDatetime } from "../utils/timehelpers.js";
+import { getCurrentDateTime } from "../utils/timehelpers.js";
 import {
   getPermission,
   fetchAllUsersWithKeys,
