@@ -4,6 +4,10 @@ import axios from "axios";
 import axiosClient from "../axios.js";
 import "../index.css";
 import { FaKey } from "react-icons/fa";
+import UserPage from "../components/UserPage.jsx";
+import OrganisationPage from "../components/OrganisationPage.jsx";
+import CreateOrganization from "../components/CreateOrganization.jsx";
+import AllUsers from "../components/AllUsers.jsx";
 
 const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const { user, setUser } = useStateContext();
@@ -68,53 +72,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   }, [isLoggedIn]);
 
   // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION OF THE LOGGED IN USER
-
-  // Shows the information of a standard user
-  const userPage = () => (
-    <form>
-      <div>
-        Käyttäjänimi:
-        <input
-          id="username"
-          type="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-      </div>
-      <div>
-        Sähköposti:
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </div>
-      <div>
-        Telegram:
-        <input
-          id="telegram"
-          type="telegram"
-          value={telegram}
-          onChange={(e) => setTelegram(e.target.value)}
-        />
-      </div>
-      <br />
-      <div>Rooli: {role}</div>
-      <div>Virka:</div>
-      <div>Tyyppi:</div>
-      <div>Myöntämispäivä:</div>
-      <div>Avaimet:</div>
-      <br />
-      <button
-        onClick={handleUserDetails}
-        className="create-user-button"
-        type="button"
-      >
-        Vahvista muutokset
-      </button>
-    </form>
-  );
 
   // Handles the user info update when the 'Vahvista Muutokset' button is clicked and gives error messages if the new username, email or telegram are taken by some other user
   const handleUserDetails = (event) => {
@@ -265,79 +222,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     });
   };
 
-  /* Shows more detailed information of the 
-  organizations and if the user has role 1, 
-  they can also delete the organization.
-  Also user can now update organization details
-  if they have role 1, 2 or 3
-  */
-
-  const renderOrganizationDetails = (orgId) => {
-    const organization = organisations.find((org) => org.id === orgId);
-
-    if (selectedOrg === orgId && organization && hasPermissionOrg === true) {
-      return (
-        <div>
-          Nimi:
-          <input
-            id="organization_name"
-            type="organ"
-            value={organization_new_name}
-            onChange={(e) => setOrganizationNewName(e.target.value)}
-          />
-          <p>
-            Koko:
-            <input
-              id="organization_size"
-              type="organ"
-              value={organization_new_size}
-              onChange={(e) => setOrganizationNewSize(e.target.value)}
-            />
-          </p>
-          <p>
-            Kotisivu:
-            <input
-              id="organization_homepage"
-              type="organ"
-              value={organization_new_homepage}
-              onChange={(e) => setOrganizationNewHomePage(e.target.value)}
-            />
-          </p>
-          <p>Puheenjohtaja:</p>
-          <p>
-            Organisaation sähköposti:
-            <input
-              id="organization_new_email"
-              type="organ"
-              value={organization_new_email}
-              onChange={(e) => setOrganizationNewEmail(e.target.value)}
-            />
-          </p>
-          <p>Klusterivastaava(t): </p>
-          {hasPermissionOrg === true && (
-            <button
-              onClick={() => handleOrganizationDetails(organization.id)}
-              className="create-user-button"
-              type="button"
-            >
-              Vahvista muutokset
-            </button>
-          )}
-          {hasPermission === true && (
-            <button
-              onClick={() => handleDeleteOrganization(organization.id)}
-              className="login-button"
-              type="button"
-            >
-              Poista järjestö
-            </button>
-          )}
-        </div>
-      );
-    }
-    return null;
-  };
-
   // Handles organization detail updates
   const handleOrganizationDetails = (orgId) => {
     const newOrganizationObject = {
@@ -394,79 +278,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
   };
 
-  //  Organization list
-  const organisationPage = () => (
-    <div>
-      <p></p>
-      <h2>Järjestöt</h2>
-      <ul style={{ listStyleType: "none", padding: 0 }}>
-        {organisations.map((org) => (
-          <li key={org.id}>
-            {org.name}
-            <button
-              className="login-button"
-              onClick={() => toggleOrgDetails(org.id)}
-            >
-              View
-            </button>
-            {renderOrganizationDetails(org.id)}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-
-  // Form for organization creation
-  const createOrganization = () => (
-    <form>
-      <h4>Luo uusi järjestö</h4>
-      <div>
-        Järjestön nimi:
-        <input
-          type="text"
-          id="name"
-          value={organization_name}
-          onChange={(e) => setOrganizationName(e.target.value)}
-        />
-      </div>
-      <div>
-        Sähköposti:
-        <input
-          type="text"
-          id="email"
-          value={organization_email}
-          onChange={(e) => setOrganizationEmail(e.target.value)}
-        />
-      </div>
-      <div>
-        Kotisivut:
-        <input
-          type="text"
-          id="homepage"
-          value={organization_homepage}
-          onChange={(e) => setOrganizationHomePage(e.target.value)}
-        />
-      </div>
-      <div>
-        Koko:
-        <input
-          type="text"
-          id="size"
-          value={organization_size}
-          onChange={(e) => setOrganizationSize(e.target.value)}
-        />
-      </div>
-      <br />
-      <button
-        className="create-user-button"
-        type="button"
-        onClick={handleCreateOrganization}
-      >
-        Luo järjestö
-      </button>
-    </form>
-  );
-
   // Handles the creation of organizations
   const handleCreateOrganization = () =>
     axios
@@ -514,28 +325,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION FOR ALL USERS (ONLY VISIBLE FOR LEPPIS PJ)
 
-  // Shows all users
-  const showAllUsers = () => (
-    <div>
-      <p></p>
-      <h4>Käyttäjät</h4>
-      <ul style={{ listStyleType: "none", padding: 0 }}>
-        {allUsers.map((user) => (
-          <li key={user.id}>
-            {user.username}
-            <button
-              className="login-button"
-              onClick={() => toggleUserDetails(user.id)}
-            >
-              View
-            </button>
-            {renderUserDetails(user.id)}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-
   // Gets every users data from backend
   const getAllUsers = () => {
     axios
@@ -569,74 +358,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       }
       return userId;
     });
-  };
-
-  // Shows user deatails if view button is pressed
-  const renderUserDetails = (userId) => {
-    const user = allUsers.find((user) => user.id === userId);
-    if (selectedUser === userId && user) {
-      return (
-        <div>
-          Käyttäjänimi:
-          <input
-            id="user_new_username"
-            type="text"
-            value={userDetailsUsername}
-            onChange={(e) => setUserDetailsUsername(e.target.value)}
-          />
-          Sähköposti:
-          <input
-            id="user_new_email"
-            type="text"
-            value={userDetailsEmail}
-            onChange={(e) => setuserDetailsEmail(e.target.value)}
-          />
-          Telegram:
-          <input
-            id="user_new_telegram"
-            type="text"
-            value={userDetailsTelegram}
-            onChange={(e) => setuserDetailsTelegram(e.target.value)}
-          />
-          Rooli:
-          <input
-            id="user_new_role"
-            type="text"
-            value={userDetailsRole}
-            onChange={(e) => setuserDetailsRole(e.target.value)}
-          />
-          <p>Jäsenyydet: </p>
-          <ul>
-            {userDetailsOrganizations.map((org) => (
-              <li key={org}>- {org}</li>
-            ))}
-          </ul>
-          <br />
-          {/* display a button for saving the changes if the user has a role <= 3 */}
-          {hasPermissionOrg === true && (
-            <button
-              onClick={handleUpdateAnotherUser}
-              className="create-user-button"
-              type="button"
-              style={{ marginBottom: ".25em" }}
-            >
-              Vahvista muutokset
-            </button>
-          )}
-          {hasPermission === true && (
-            <button
-              onClick={() => handlePJChange(user.id)}
-              className="change-pj-button"
-              type="button"
-            >
-              Siirrä PJ-oikeudet
-            </button>
-          )}
-          <p></p>
-        </div>
-      );
-    }
-    return null;
   };
 
   // Handles PJ change
@@ -772,11 +493,69 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           <div style={{ display: "flex" }}>
             <div id="left_content">
               <div id="leftleft_content">
-                {userPage()}
-                {organisationPage()}
-                {hasPermissionOrg === true && renderOrganizationDetails}
-                {hasPermission === true && createOrganization()}
-                {hasPermissionOrg === true && showAllUsers()}
+                {
+                  <UserPage
+                    username={username}
+                    setUsername={setUsername}
+                    email={email}
+                    setEmail={setEmail}
+                    telegram={telegram}
+                    setTelegram={setTelegram}
+                    handleUserDetails={handleUserDetails}
+                    role={role}
+                  />
+                }
+                {
+                  <OrganisationPage
+                    organisations={organisations}
+                    selectedOrg={selectedOrg}
+                    hasPermissionOrg={hasPermissionOrg}
+                    organization_new_name={organization_new_name}
+                    setOrganizationNewName={setOrganizationNewName}
+                    setOrganizationNewSize={setOrganizationNewSize}
+                    organization_new_homepage={organization_new_homepage}
+                    setOrganizationNewHomePage={setOrganizationNewHomePage}
+                    organization_new_email={organization_new_email}
+                    setOrganizationNewEmail={setOrganizationNewEmail}
+                    handleOrganizationDetails={handleOrganizationDetails}
+                    hasPermission={hasPermission}
+                    handleDeleteOrganization={handleDeleteOrganization}
+                    organization_new_size={organization_new_size}
+                    toggleOrgDetails={toggleOrgDetails}
+                  />
+                }
+                {hasPermission === true && (
+                  <CreateOrganization
+                    organization_name={organization_name}
+                    setOrganizationName={setOrganizationName}
+                    organization_email={organization_email}
+                    setOrganizationEmail={setOrganizationEmail}
+                    organization_homepage={organization_homepage}
+                    setOrganizationHomePage={setOrganizationHomePage}
+                    organization_size={organization_size}
+                    setOrganizationSize={setOrganizationSize}
+                    handleCreateOrganization={handleCreateOrganization}
+                  />
+                )}
+                {hasPermissionOrg === true && (
+                  <AllUsers
+                    allUsers={allUsers}
+                    toggleUserDetails={toggleUserDetails}
+                    userDetailsUsername={userDetailsUsername}
+                    setUserDetailsUsername={setUserDetailsUsername}
+                    userDetailsEmail={userDetailsEmail}
+                    setuserDetailsEmail={setuserDetailsEmail}
+                    userDetailsTelegram={userDetailsTelegram}
+                    userDetailsRole={userDetailsRole}
+                    setuserDetailsRole={setuserDetailsRole}
+                    userDetailsOrganizations={userDetailsOrganizations}
+                    hasPermissionOrg={hasPermissionOrg}
+                    handleUpdateAnotherUser={handleUpdateAnotherUser}
+                    hasPermission={hasPermission}
+                    handlePJChange={handlePJChange}
+                    selectedUser={selectedUser}
+                  />
+                )}
               </div>
             </div>
             {hasPermission === true && (
