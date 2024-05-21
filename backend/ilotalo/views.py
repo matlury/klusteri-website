@@ -743,12 +743,17 @@ class HandOverKeyView(APIView):
         users_keys = user_to_update.keys
         users_keys[organization_name] = True
 
-        # Update the user's organization list
-        users_organizaions = user_to_update.organization
-        users_organizaions[organization_name] = True
+        users_organizations = user_to_update.organization
+        users_organizations[organization_name] = True
+
+        # Combine updates into a single dictionary
+        updated_data = {
+            'keys': users_keys,
+            'organization': users_organizations
+        }
 
         serializer = UserUpdateSerializer(
-            instance=user_to_update, data=[users_keys, users_organizaions], partial=True
+            instance=user_to_update, data=updated_data, partial=True
         )
 
         if serializer.is_valid():
