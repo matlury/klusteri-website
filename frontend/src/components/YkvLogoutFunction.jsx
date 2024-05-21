@@ -36,7 +36,7 @@ const YkvLogoutFunction = ({
         />
       )}
       <p></p>
-      <h2>Kaikki aktiiviset: </h2>
+      <h2>Kaikki aktiiviset ({Object.keys(activeResponsibilites).length}): </h2>
       <ul style={{ listStyleType: "none", padding: 0 }}>
         {activeResponsibilites
           .slice()
