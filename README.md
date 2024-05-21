@@ -11,15 +11,7 @@
 ## Dokumentaatiot
 
 - [Product Backlog](https://github.com/orgs/matlury/projects/1)
-- [Sprint 0 Task Board](https://github.com/orgs/matlury/projects/2/views/1)
-- [Sprint 1 Task Board](https://github.com/orgs/matlury/projects/4)
-- [Sprint 2 Task Board](https://github.com/orgs/matlury/projects/9)
-- [Sprint 3 Task Board](https://github.com/orgs/matlury/projects/10/views/1?layout=board&filterQuery=label%3Atask&groupedBy%5BcolumnId%5D=78602831)
-- [Sprint 4 Task Board](https://github.com/orgs/matlury/projects/12)
-- [Sprint 5 Task Board](https://github.com/orgs/matlury/projects/13)
-- [Sprint 6 Task Board](https://github.com/orgs/matlury/projects/15)
-- [Sprint 7 Task Board](https://github.com/orgs/matlury/projects/16)
-- [Työaikakirjanpito](https://helsinkifi-my.sharepoint.com/:x:/g/personal/lottatan_ad_helsinki_fi/EZIQBLlssnFAqYrJUHNZ14gBl33k5Y19wSDGfExXcVhacw?e=qAxWNy)
+- [Sprint 0 Task Board](https://github.com/orgs/matlury/projects/18)
 
 ## Definition of Done
 
@@ -129,3 +121,4 @@ Raportin muodostaminen frontendille
 ~klusteri-website/frontend/$ npx jest --coverage
 ```
 Huom! Codecov ei toistaiseksi ota huomioon cypress-testejä
+
