@@ -59,7 +59,8 @@
       "^.+\\.jsx?$": "babel-jest"
     },
     "collectCoverageFrom": [
-      "src/pages/**/*.jsx"
+      "src/pages/**/*.jsx",
+      "src/components/**/*.jsx"
     ]
   },
   "scripts": {
