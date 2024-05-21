@@ -1,7 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import "./index.css";
-import matlu from "./matlu.png";
+import * as React from 'react';
+import PropTypes from 'prop-types';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import CssBaseline from '@mui/material/CssBaseline';
+import Divider from '@mui/material/Divider';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import InboxIcon from '@mui/icons-material/MoveToInbox';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import MailIcon from '@mui/icons-material/Mail';
+import MenuIcon from '@mui/icons-material/Menu';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import matlu from './matlu.png';
+
 import FrontPage from "./pages/frontpage";
 import LoginPage from "./pages/loginpage";
 import NewAccountPage from "./pages/createpage";
@@ -13,46 +29,60 @@ import Rules_and_Instructions from "./pages/rules_instructions";
 import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
 
-import { AppBar, Toolbar, Button, Typography } from "@mui/material";
+import { BrowserRouter as Router, Route, Routes, Link} from "react-router-dom";
 
-const App = () => {
-  const [showLoginPage, setShowLoginPage] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loggedUser, setLoggedUser] = useState(
-    JSON.parse(localStorage.getItem("loggedUser")) || null,
-  );
 
-  // Checks whether a user is logged in
-  useEffect(() => {
-    const loggedInStatus = localStorage.getItem("isLoggedIn");
-    if (loggedInStatus === "true") {
-      setIsLoggedIn(true);
+
+const drawerWidth = 240;
+
+
+// Next constants are used for UI eg. toggle the navigation menu.
+const App = (props) => {
+  const { window } = props;
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [isClosing, setIsClosing] = React.useState(false);
+
+  const handleDrawerClose = () => {
+    setIsClosing(true);
+    setMobileOpen(false);
+  };
+
+  const handleDrawerTransitionEnd = () => {
+    setIsClosing(false);
+  };
+
+  const handleDrawerToggle = () => {
+    if (!isClosing) {
+      setMobileOpen(!mobileOpen);
     }
-  }, []);
-
-  // Hides login page and shows create new user page
-  const handleCreateNewUser = () => {
-    setShowLoginPage(false);
   };
 
-  // Sets localstorage value to true, if someone is logged in
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-    localStorage.setItem("isLoggedIn", "true");
-  };
 
-  // Removes localstorage value if someone logs out
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    localStorage.removeItem("isLoggedIn");
-  };
 
-  // The next constants are paths to different pages on the website. They are accessible by clicking their names in the navigation bar
+// Hides login page and shows create new user page
+const handleCreateNewUser = () => {
+  setShowLoginPage(false);
+};
+
+// Sets localstorage value to true, if someone is logged in
+const handleLogin = () => {
+  setIsLoggedIn(true);
+  localStorage.setItem("isLoggedIn", "true");
+};
+
+// Removes localstorage value if someone logs out
+const handleLogout = () => {
+  setIsLoggedIn(false);
+  localStorage.removeItem("isLoggedIn");
+};
+
+// The next constants are paths to different pages on the website. They are accessible by clicking their names in the navigation bar
 
   const OpenFrontPage = () => {
     const frontpage_url = "/";
     window.open(frontpage_url, "_self");
   };
+
   const OpenChristinaRegina = () => {
     const christinaregina_url = "/christinaregina";
     window.open(christinaregina_url, "_self");
@@ -83,85 +113,108 @@ const App = () => {
     window.open(privacypolicy_url, "_self");
   };
 
-  // Routes to the different pages. Everything is displayed on the left side of the screen, except the login info and register info is on the right side
-  return (
-    <Router>
-      <div>
-        
+  const drawer = (
+    <div>
+      <img src={matlu} alt="logo" style={{height: '15%'}} />
+      <Divider />
+      <List>
+        {['etusivu', 'Christina Regina', 'Varaukset', 'Omat avaimet', 'Omat tiedot', 'Yhteystiedot', 'Säännöt ja ohjeet', 'Tietosuojaseloste'].map((text, index) => (
+          <ListItem key={text} disablePadding>
+            <ListItemButton>
+            {/* <ListItemButton component={Link} to={text === 'Etusivu' ? '/' : `/${text.toLowerCase().replace(/\s+/g, '_')}`}> */}
 
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Ilotalo
-            </Typography>
-            <Button color="inherit" component={Link} to="/">
-              Etusivu
-            </Button>
-            <Button color="inherit" component={Link} to="/christinaregina">
-              Christina Regina
-            </Button>
-            <Button color="inherit" component={Link} to="/varaukset">
-              Varaukset
-            </Button>
-            <Button color="inherit" component={Link} to="/omat_avaimet">
-              Omat avaimet
-            </Button>
-            <Button color="inherit" component={Link} to="/omat_tiedot">
-              Omat tiedot
-            </Button>
-            <Button color="inherit" component={Link} to="/yhteystiedot">
-              Yhteystiedot
-            </Button>
-            <Button color="inherit" component={Link} to="/saannot_ja_ohjeet">
-              Säännöt ja ohjeet
-            </Button>
-            <Button color="inherit" component={Link} to="/tietosuojaseloste">
-              Tietosuojaseloste
-            </Button>
-
-
-          </Toolbar>
-        </AppBar>
-
-        <div id="ContentBlock" className="flex-container">
-          <div className="left_content">
-            <Routes>
-              <Route path="/christinaregina" element={<ChristinaRegina />} />
-              <Route path="/" element={<FrontPage />} />
-              <Route
-                path="/omat_tiedot"
-                element={<OwnPage isLoggedIn={isLoggedIn} />}
-              />
-              <Route path="/tietosuojaseloste" element={<PrivacyPolicy />} />
-              <Route path="/yhteystiedot" element={<Contacts />} />
-              <Route
-                path="/saannot_ja_ohjeet"
-                element={<Rules_and_Instructions />}
-              />
-              <Route path="/varaukset" element={<Reservations />} />
-              <Route
-                path="/omat_avaimet"
-                element={
-                  <OwnKeys isLoggedIn={isLoggedIn} loggedUser={loggedUser} />
-                }
-              />
-            </Routes>
-          </div>
-          <div className="right_content">
-            {showLoginPage ? (
-              <LoginPage
-                onLogin={handleLogin}
-                onLogout={handleLogout}
-                onCreateNewUser={handleCreateNewUser}
-              />
-            ) : (
-              <NewAccountPage onAccountCreated={handleCreateNewUser} />
-            )}
-          </div>
-        </div>
-      </div>
-    </Router>
+              <ListItemIcon>
+                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+              </ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+    </div>
   );
-};
+
+  // Remove this const when copying and pasting into your project.
+  const container = window !== undefined ? () => window().document.body : undefined;
+
+  return (
+    <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+      <AppBar
+        position="fixed"
+        sx={{
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          ml: { sm: `${drawerWidth}px` },
+        }}
+      >
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { sm: 'none' } }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap component="div">
+            Ilotalo
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Box
+        component="nav"
+        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        aria-label="mailbox folders"
+      >
+        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+        <Drawer
+          container={container}
+          variant="temporary"
+          open={mobileOpen}
+          onTransitionEnd={handleDrawerTransitionEnd}
+          onClose={handleDrawerClose}
+          ModalProps={{
+            keepMounted: true, // Better open performance on mobile.
+          }}
+          sx={{
+            display: { xs: 'block', sm: 'none' },
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+          }}
+        >
+          {drawer}
+        </Drawer>
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: 'none', sm: 'block' },
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+          }}
+          open
+        >
+          {drawer}
+        </Drawer>
+      </Box>
+      <Box
+        component="main"
+        sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
+      >
+        <Toolbar />
+          <Router>
+            <Routes>
+              
+              <Route path="/" element={<FrontPage />} />
+              <Route path="/christinaregina" element={<ChristinaRegina />} />
+            </Routes>
+          </Router>
+      </Box>
+    </Box>
+  );
+}
+
+
+
+
 
 export default App;
