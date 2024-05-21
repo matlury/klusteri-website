@@ -101,10 +101,13 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     const email = loggedUser.email;
     const loginTime = getCurrentDateTime();
 
-    const userdata = await axiosClient.get('users/userinfo', username)
-    console.log(userdata)
-    const user_orgs = Object.keys(userdata.data.organization).filter(organization => userdata.data.organization[organization] === true).join(', ');
-    console.log(user_orgs)
+    const userdata = await axiosClient.get('/listobjects/users/')
+
+    const user = userdata.data.find(user => user.username === username);
+    
+    const user_orgs = Object.keys(user.organization)
+    .filter(organization => user.organization[organization] === true)
+    .join(', ');
 
     const responsibilityObject = {
       username: username,
