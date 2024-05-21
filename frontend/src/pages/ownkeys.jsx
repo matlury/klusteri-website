@@ -176,7 +176,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
       .then((response) => {
         setAllResponsibilities(response.data);
         const filteredResponsibilities = response.data.filter(
-          (item) => item.email === email,
+          (item) => item.email === email || item.created_by === user.username,
         );
         setOwnResponsibilities(filteredResponsibilities);
       })
