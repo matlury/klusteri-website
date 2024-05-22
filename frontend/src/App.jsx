@@ -118,18 +118,28 @@ const handleLogout = () => {
       <img src={matlu} alt="logo" style={{height: '15%'}} />
       <Divider />
       <List>
-        {['etusivu', 'Christina Regina', 'Varaukset', 'Omat avaimet', 'Omat tiedot', 'Yhteystiedot', 'Säännöt ja ohjeet', 'Tietosuojaseloste'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-            {/* <ListItemButton component={Link} to={text === 'Etusivu' ? '/' : `/${text.toLowerCase().replace(/\s+/g, '_')}`}> */}
+        {['Etusivu', 'Christina Regina', 'Varaukset', 'Omat avaimet', 'Omat tiedot', 'Yhteystiedot', 'Säännöt ja ohjeet', 'Tietosuojaseloste'].map((text, index) => (
+           <ListItem key={text} disablePadding>
+            {/*</ListItemButton>{/* <ListItemButton component={Link} to={text === 'Etusivu' ? '/' : `/${text.toLowerCase().replace(/\s+/g, '_')}`}> */}
+            
+            <ListItemButton 
+            key={text} 
+            component="a"
+            href= {`/${text.toLowerCase().replace(/\s+/g, '_')}`}
 
+            >
+           
               <ListItemIcon>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
+
               <ListItemText primary={text} />
+
             </ListItemButton>
+           
           </ListItem>
         ))}
+
       </List>
       <Divider />
     </div>
