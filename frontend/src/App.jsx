@@ -1,5 +1,4 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -36,6 +35,7 @@ import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
 
 import { BrowserRouter as Router, Route, Routes, Link} from "react-router-dom";
+import { green } from '@mui/material/colors';
 
 
 
@@ -124,13 +124,14 @@ const handleLogout = () => {
       <AppBar
         position="fixed"
         sx={{
+          bgcolor: '#FFFFFF',
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
         }}
       >
         <Toolbar>
           <IconButton
-            color="inherit"
+            color="primary"
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
@@ -138,8 +139,8 @@ const handleLogout = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Ilotalo
+          <Typography variant="h6" noWrap component="div" color={'primary'}>
+            Ilotalo 3.0
           </Typography>
         </Toolbar>
       </AppBar>
