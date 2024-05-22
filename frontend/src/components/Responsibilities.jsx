@@ -27,7 +27,9 @@ const Responsibilities = ({
           {allResponsibilities
             .slice()
             .filter((resp) =>
-              resp.username.toLowerCase().includes(ykvFilter.toLowerCase()),
+              resp.username.toLowerCase().includes(ykvFilter.toLowerCase()) ||
+              resp.created_by.toLowerCase().includes(ykvFilter.toLowerCase()) ||
+              resp.responsible_for.toLowerCase().includes(ykvFilter.toLowerCase())
             )
             .reverse()
             .map((resp) => (
