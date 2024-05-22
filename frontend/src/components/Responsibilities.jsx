@@ -3,15 +3,18 @@ import { formatDatetime } from "../utils/timehelpers";
 
 const Responsibilities = ({
     allResponsibilities,
-    ykvFilter,
-    handleYkvFilterChange,
+    minFilter,
+    handleMinFilterChange,
+    maxFilter,
+    handleMaxFilterChange,
   }) => {
   return (
     <div>
       <h2>Kaikki vastuut</h2>
-      Etsi henkilöitä:{" "}
+      Hae kirjauksia aikavälillä:{" "}
       <br />
-      <input value={ykvFilter} onChange={handleYkvFilterChange} type="text" />
+      <input value={minFilter} onChange={handleMinFilterChange} type="datetime-local" />
+      <input value={maxFilter} onChange={handleMaxFilterChange} type="datetime-local" />
       <br />
       <br />
       <div
@@ -27,7 +30,8 @@ const Responsibilities = ({
           {allResponsibilities
             .slice()
             .filter((resp) =>
-              resp.username.toLowerCase().includes(ykvFilter.toLowerCase()),
+              Date.parse(resp.login_time) < Number(Date.parse(maxFilter)) &&
+              Date.parse(resp.logout_time) > Number(Date.parse(minFilter))
             )
             .reverse()
             .map((resp) => (

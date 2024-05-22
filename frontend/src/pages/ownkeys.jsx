@@ -23,6 +23,8 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
 
   const [nameFilter, setNameFilter] = useState("");
   const [ykvFilter, setYkvFilter] = useState("");
+  const [maxFilter, setMaxFilter] = useState("2025-01-01T00:00");
+  const [minFilter, setMinFilter] = useState("2024-01-01T00:00");
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -92,11 +94,15 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
   const handleFilterChange = (event) => {
     setNameFilter(event.target.value);
   };
-
   const handleYkvFilterChange = (event) => {
     setYkvFilter(event.target.value);
   };
-
+  const handleMaxFilterChange = (event) => {
+    setMaxFilter(event.target.value);
+  };
+  const handleMinFilterChange = (event) => {
+    setMinFilter(event.target.value);
+  };
   // this function handles the event of taking responsibility (check above)
   const handleYkvLogin = async (event) => {
     event.preventDefault();
@@ -296,6 +302,10 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
               allResponsibilities={allResponsibilities}
               ykvFilter={ykvFilter} 
               handleYkvFilterChange={handleYkvFilterChange}
+              maxFilter={maxFilter}
+              minFilter={minFilter}
+              handleMaxFilterChange={handleMaxFilterChange}
+              handleMinFilterChange={handleMinFilterChange}
             />
           )}
         </div>
