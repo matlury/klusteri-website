@@ -582,7 +582,9 @@ class UpdateNightResponsibilityView(APIView):
         except ObjectDoesNotExist:
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
         
-        if responsibility_to_update.username != user.data["username"] or responsibility_to_update.created_by != user.data["username"]:
+        if responsibility_to_update.username == user.data["username"] or responsibility_to_update.created_by == user.data["username"]:
+            pass
+        else:
             return Response(
                 "Not allowed for this user",
                 status=status.HTTP_400_BAD_REQUEST,
