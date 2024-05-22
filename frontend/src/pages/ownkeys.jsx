@@ -146,7 +146,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
         axiosClient
           .post(`/ykv/create_responsibility`, responsibilityObject)
           .then((response) => {
-            console.log("Läpi meni");
             setSuccess("YKV-sisäänkirjaus onnistui");
             setTimeout(() => setSuccess(""), 5000);
             getResponsibility();
