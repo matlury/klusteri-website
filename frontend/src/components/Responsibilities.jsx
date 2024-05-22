@@ -7,10 +7,15 @@ const Responsibilities = ({
     handleMinFilterChange,
     maxFilter,
     handleMaxFilterChange,
+    ykvFilter,
+    handleYkvFilterChange,
   }) => {
   return (
     <div>
       <h2>Kaikki vastuut</h2>
+      Etsi henkilöitä:{" "}
+      <br />
+      <input value={ykvFilter} onChange={handleYkvFilterChange} type="text" />
       Hae kirjauksia aikavälillä:{" "}
       <br />
       <input value={minFilter} onChange={handleMinFilterChange} type="datetime-local" />
@@ -30,6 +35,9 @@ const Responsibilities = ({
           {allResponsibilities
             .slice()
             .filter((resp) =>
+              (resp.username.toLowerCase().includes(ykvFilter.toLowerCase()) ||
+              resp.created_by.toLowerCase().includes(ykvFilter.toLowerCase()) ||
+              resp.responsible_for.toLowerCase().includes(ykvFilter.toLowerCase())) && 
               Date.parse(resp.login_time) < Number(Date.parse(maxFilter)) &&
               Date.parse(resp.logout_time) > Number(Date.parse(minFilter))
             )
