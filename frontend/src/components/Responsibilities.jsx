@@ -18,6 +18,7 @@ const Responsibilities = ({
       <input value={ykvFilter} onChange={handleYkvFilterChange} type="text" />
       Hae kirjauksia aikavälillä:{" "}
       <br />
+      <input type="hidden" id="timezone" name="timezone" value="03:00" />
       <input value={minFilter} onChange={handleMinFilterChange} type="datetime-local" />
       <input value={maxFilter} onChange={handleMaxFilterChange} type="datetime-local" />
       <br />
@@ -38,8 +39,8 @@ const Responsibilities = ({
               (resp.username.toLowerCase().includes(ykvFilter.toLowerCase()) ||
               resp.created_by.toLowerCase().includes(ykvFilter.toLowerCase()) ||
               resp.responsible_for.toLowerCase().includes(ykvFilter.toLowerCase())) && 
-              Date.parse(resp.login_time) < Number(Date.parse(maxFilter)) &&
-              Date.parse(resp.logout_time) > Number(Date.parse(minFilter))
+              Date.parse(resp.login_time) < (Number(Date.parse(maxFilter)) - new Date().getTimezoneOffset()*60000) &&
+              Date.parse(resp.logout_time) > (Number(Date.parse(minFilter)) - new Date().getTimezoneOffset()*60000)
             )
             .reverse()
             .map((resp) => (
