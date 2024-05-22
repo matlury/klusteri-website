@@ -1,7 +1,7 @@
 """
 Models define what kind of objects can be stored in the database
 """
-
+from django.utils import timezone
 from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import (
@@ -100,13 +100,13 @@ class Event(models.Model):
         auto_now = False,
         auto_now_add = False,
         blank = True,
-        default = (f"{datetime_start}")
+        default = timezone.now
     )
     end = models.DateTimeField(
         auto_now = False,
         auto_now_add = False,
         blank = True,
-        default = (f"{datetime_end}")
+        default = timezone.now
     )
     title = models.CharField(max_length=100, default="") # Name of the event
     organizer = models.CharField(max_length=100, default="") # Organization responsible for the event
@@ -132,13 +132,13 @@ class NightResponsibility(models.Model):
         auto_now = False,
         auto_now_add = False,
         blank = True,
-        default = (f"{datetime_start}")
+        default = timezone.now
     )
     logout_time = models.DateTimeField(
         auto_now = False,
         auto_now_add = False,
         blank = True,
-        default = (f"{datetime_end}")
+        default = timezone.now
     )
     present = models.BooleanField(default=True)
     late = models.BooleanField(default=False)
