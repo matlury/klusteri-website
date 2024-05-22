@@ -38,6 +38,7 @@ const Responsibilities = ({
             .filter((resp) =>
               (resp.username.toLowerCase().includes(ykvFilter.toLowerCase()) ||
               resp.created_by.toLowerCase().includes(ykvFilter.toLowerCase()) ||
+              resp.organisations.toLowerCase().includes(ykvFilter.toLowerCase()) ||
               resp.responsible_for.toLowerCase().includes(ykvFilter.toLowerCase())) && 
               Date.parse(resp.login_time) < (Number(Date.parse(maxFilter)) - new Date().getTimezoneOffset()*60000) &&
               Date.parse(resp.logout_time) > (Number(Date.parse(minFilter)) - new Date().getTimezoneOffset()*60000)
