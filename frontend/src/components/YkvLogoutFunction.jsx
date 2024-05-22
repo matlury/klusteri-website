@@ -16,6 +16,13 @@ const YkvLogoutFunction = ({
   setRespToEdit,
   handleYkvEdit,
 }) => {
+  const user = JSON.parse(localStorage.getItem("loggedUser"))
+  let resps;
+  if (user) {
+    resps = activeResponsibilites.filter((responsibility) => responsibility.username == user.username || responsibility.created_by == user.username)
+  } else {
+    resps = activeResponsibilites
+  }
   return (
     <div>
       <button
@@ -30,15 +37,15 @@ const YkvLogoutFunction = ({
         <Popup
           trigger={buttonPopup}
           setTrigger={setButtonPopup}
-          active={activeResponsibilites}
+          active={resps}
           setIdToLogout={setIdToLogout}
           onSubmit={handleYkvLogout}
         />
       )}
       <p></p>
-      <h2>Kaikki aktiiviset ({Object.keys(activeResponsibilites).length}): </h2>
+      <h2>Kaikki aktiiviset ({Object.keys(resps).length} / {Object.keys(activeResponsibilites).length}): </h2>
       <ul style={{ listStyleType: "none", padding: 0 }}>
-        {activeResponsibilites
+        {resps
           .slice()
           .reverse()
           .map((resp) => (

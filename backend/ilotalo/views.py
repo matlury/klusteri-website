@@ -581,6 +581,12 @@ class UpdateNightResponsibilityView(APIView):
             responsibility_to_update = NightResponsibility.objects.get(id=pk)
         except ObjectDoesNotExist:
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
+        
+        if responsibility_to_update.username != user.data["username"] or responsibility_to_update.created_by != user.data["username"]:
+            return Response(
+                "Not allowed for this user",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
             
         responsibility = NightResponsibilitySerializer(
             instance=responsibility_to_update, data=request.data, partial=True
@@ -615,6 +621,12 @@ class LogoutNightResponsibilityView(APIView):
             responsibility_to_update = NightResponsibility.objects.get(id=pk)
         except ObjectDoesNotExist:
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
+        
+        if responsibility_to_update.username != user.data["username"] or responsibility_to_update.created_by != user.data["username"]:
+            return Response(
+                "Not allowed for this user",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         logout_time = request.data.get("logout_time")
         if not logout_time:
