@@ -6,13 +6,19 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
+import KeyOutlinedIcon from '@mui/icons-material/KeyOutlined';
+import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
+import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
+import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined';
+import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import MailIcon from '@mui/icons-material/Mail';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -76,43 +82,8 @@ const handleLogout = () => {
   localStorage.removeItem("isLoggedIn");
 };
 
-// The next constants are paths to different pages on the website. They are accessible by clicking their names in the navigation bar
-
-  const OpenFrontPage = () => {
-    const frontpage_url = "/";
-    window.open(frontpage_url, "_self");
-  };
-
-  const OpenChristinaRegina = () => {
-    const christinaregina_url = "/christinaregina";
-    window.open(christinaregina_url, "_self");
-  };
-  const OpenReservations = () => {
-    const reservations_url = "/varaukset";
-    window.open(reservations_url, "_self");
-  };
-  const OpenKeys = () => {
-    const keys_url = "/omat_avaimet";
-    window.open(keys_url, "_self");
-  };
-  const OpenInformation = () => {
-    const information_url = "/omat_tiedot";
-    window.open(information_url, "_self");
-  };
-  const OpenContacts = () => {
-    const contacts_url = "/yhteystiedot";
-    window.open(contacts_url, "_self");
-  };
-  const OpenRulesAndInstructions = () => {
-    const rules_and_instructions_url = "/saannot_ja_ohjeet";
-    window.open(rules_and_instructions_url, "_self");
-  };
-
-  const OpenPrivacyPolicy = () => {
-    const privacypolicy_url = "/tietosuojaseloste";
-    window.open(privacypolicy_url, "_self");
-  };
-
+  const icons = [<HomeOutlinedIcon/>, <InfoOutlinedIcon/>, <CalendarMonthOutlinedIcon/>, <KeyOutlinedIcon/>,
+   <ManageAccountsOutlinedIcon/>, <LocationOnOutlinedIcon/>, <FactCheckOutlinedIcon/>, <AdminPanelSettingsOutlinedIcon/>]
   const drawer = (
     <div>
       <img src={matlu} alt="logo" style={{height: '15%'}} />
@@ -125,12 +96,11 @@ const handleLogout = () => {
             <ListItemButton 
             key={text} 
             component="a"
-            href= {`/${text.toLowerCase().replace(/\s+/g, '_')}`}
 
-            >
-           
+            href= {`/${text.toLowerCase().replace(/\s+/g, '_').replace(/ä/g, 'a')
+            .replace(/ö/g, 'o')}`}>
               <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+               {icons[index]} 
               </ListItemIcon>
 
               <ListItemText primary={text} />
@@ -213,9 +183,16 @@ const handleLogout = () => {
         <Toolbar />
           <Router>
             <Routes>
-              
               <Route path="/" element={<FrontPage />} />
-              <Route path="/christinaregina" element={<ChristinaRegina />} />
+              <Route path="/etusivu" element={<FrontPage />} />
+              <Route path="/christina_regina" element={<ChristinaRegina />} />
+              <Route path="/varaukset" element={<Reservations />} />
+
+              <Route path="/yhteystiedot" element={<Contacts />} />
+              <Route path="/saannot_ja_ohjeet"element={<Rules_and_Instructions />}/>
+              <Route path="/tietosuojaseloste" element={<PrivacyPolicy />} />
+              
+    
             </Routes>
           </Router>
       </Box>
