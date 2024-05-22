@@ -22,6 +22,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
   const [allUsersWithKeys, setAllUsersWithKeys] = useState([]);
 
   const [nameFilter, setNameFilter] = useState("");
+  const [ykvFilter, setYkvFilter] = useState("");
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -90,6 +91,10 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
   // searches for the names based on the filter the user makes
   const handleFilterChange = (event) => {
     setNameFilter(event.target.value);
+  };
+
+  const handleYkvFilterChange = (event) => {
+    setYkvFilter(event.target.value);
   };
 
   // this function handles the event of taking responsibility (check above)
@@ -287,7 +292,11 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
             <OwnYkvList ownResponsibilities={ownResponsibilities} />
           )}
           {hasPermission === true && (
-            <Responsibilities allResponsibilities={allResponsibilities} />
+            <Responsibilities
+              allResponsibilities={allResponsibilities}
+              ykvFilter={ykvFilter} 
+              handleYkvFilterChange={handleYkvFilterChange}
+            />
           )}
         </div>
       )}

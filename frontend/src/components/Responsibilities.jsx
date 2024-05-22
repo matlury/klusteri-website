@@ -1,10 +1,19 @@
 import React from "react";
 import { formatDatetime } from "../utils/timehelpers";
 
-const Responsibilities = ({ allResponsibilities }) => {
+const Responsibilities = ({
+    allResponsibilities,
+    ykvFilter,
+    handleYkvFilterChange,
+  }) => {
   return (
     <div>
       <h2>Kaikki vastuut</h2>
+      Etsi henkilöitä:{" "}
+      <br />
+      <input value={ykvFilter} onChange={handleYkvFilterChange} type="text" />
+      <br />
+      <br />
       <div
         style={{
           maxHeight: "500px",
@@ -17,6 +26,9 @@ const Responsibilities = ({ allResponsibilities }) => {
         <ul style={{ listStyleType: "none", padding: 0 }}>
           {allResponsibilities
             .slice()
+            .filter((resp) =>
+              resp.username.toLowerCase().includes(ykvFilter.toLowerCase()),
+            )
             .reverse()
             .map((resp) => (
               <li
