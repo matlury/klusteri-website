@@ -91,22 +91,14 @@ class Event(models.Model):
     description, responsible party, and whether it is open or not.
     """
 
-    # Default start and end times for events
-    datetime_start = datetime.strptime("01.01.1970 12:00", "%d.%m.%Y %H:%M")
-    datetime_end = datetime.strptime("02.01.1970 14:00", "%d.%m.%Y %H:%M")
-
     # Fields for event attributes
     start = models.DateTimeField(
-        auto_now = False,
-        auto_now_add = False,
-        blank = True,
-        default = timezone.now
+        auto_now_add = True,
+        blank = True
     )
     end = models.DateTimeField(
-        auto_now = False,
-        auto_now_add = False,
+        auto_now = True,
         blank = True,
-        default = timezone.now
     )
     title = models.CharField(max_length=100, default="") # Name of the event
     organizer = models.CharField(max_length=100, default="") # Organization responsible for the event
@@ -122,23 +114,16 @@ class NightResponsibility(models.Model):
     login and logout times, and attendance status.
     """
 
-    datetime_start = datetime.strptime("01.01.1970 12:00", "%d.%m.%Y %H:%M")
-    datetime_end = datetime.strptime("02.01.1970 14:00", "%d.%m.%Y %H:%M")
-
     username = models.CharField(max_length=50, default="")
     email = models.EmailField(max_length=150, default="")
     responsible_for = models.CharField(max_length=500, default="")
     login_time = models.DateTimeField(
-        auto_now = False,
-        auto_now_add = False,
-        blank = True,
-        default = timezone.now
+        auto_now_add = True,
+        blank = True
     )
     logout_time = models.DateTimeField(
-        auto_now = False,
-        auto_now_add = False,
+        auto_now = True,
         blank = True,
-        default = timezone.now
     )
     present = models.BooleanField(default=True)
     late = models.BooleanField(default=False)
