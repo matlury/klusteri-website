@@ -48,6 +48,20 @@ const App = (props) => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
 
+  const [showLoginPage, setShowLoginPage] = React.useState(true);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [loggedUser, setLoggedUser] = React.useState(
+    JSON.parse(localStorage.getItem("loggedUser")) || null,
+  );
+
+  // Checks whether a user is logged in
+  React.useEffect(() => {
+    const loggedInStatus = localStorage.getItem("isLoggedIn");
+    if (loggedInStatus === "true") {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   const handleDrawerClose = () => {
     setIsClosing(true);
     setMobileOpen(false);
@@ -188,11 +202,18 @@ const handleLogout = () => {
               <Route path="/etusivu" element={<FrontPage />} />
               <Route path="/christina_regina" element={<ChristinaRegina />} />
               <Route path="/varaukset" element={<Reservations />} />
-
+            
               <Route path="/yhteystiedot" element={<Contacts />} />
               <Route path="/saannot_ja_ohjeet"element={<Rules_and_Instructions />}/>
               <Route path="/tietosuojaseloste" element={<PrivacyPolicy />} />
               
+              <Route path="/login" element ={showLoginPage ? (
+              <LoginPage
+                onLogin={handleLogin}
+                onLogout={handleLogout}
+                onCreateNewUser={handleCreateNewUser}
+              />): (
+                <NewAccountPage onAccountCreated={handleCreateNewUser} />)}/>
     
             </Routes>
           </Router>
