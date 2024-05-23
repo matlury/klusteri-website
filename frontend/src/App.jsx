@@ -36,6 +36,7 @@ import OwnKeys from "./pages/ownkeys";
 
 import { BrowserRouter as Router, Route, Routes, Link} from "react-router-dom";
 import { green } from '@mui/material/colors';
+import { Button } from 'react-bootstrap';
 
 
 
@@ -156,6 +157,8 @@ const handleLogout = () => {
           <Typography variant="h6" noWrap component="div" color={'primary'}>
             Ilotalo 3.0
           </Typography>
+          <Box sx={{ flexGrow: 1 }} />
+          <Button variant="primary" href='/login'>Kirjaudu</Button>
         </Toolbar>
       </AppBar>
       <Box
