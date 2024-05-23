@@ -205,7 +205,12 @@ const handleLogout = () => {
               <Route path="/etusivu" element={<FrontPage />} />
               <Route path="/christina_regina" element={<ChristinaRegina />} />
               <Route path="/varaukset" element={<Reservations />} />
-            
+              <Route
+                path="/omat_avaimet"
+                element={
+                  <OwnKeys isLoggedIn={isLoggedIn} loggedUser={loggedUser} />
+                }/>
+             
               <Route path="/yhteystiedot" element={<Contacts />} />
               <Route path="/saannot_ja_ohjeet"element={<Rules_and_Instructions />}/>
               <Route path="/tietosuojaseloste" element={<PrivacyPolicy />} />
