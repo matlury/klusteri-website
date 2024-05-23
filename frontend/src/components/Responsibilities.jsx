@@ -48,11 +48,7 @@ const Responsibilities = ({
               <li
                 className="ykv"
                 key={resp.id}
-                style={{
-                  backgroundColor: resp.present
-                    ? "rgb(169, 245, 98)"
-                    : "transparent",
-                }}
+                style={{backgroundColor: activeColour(resp)}}
               >
                 Vastuuhenkilö: {resp.username}, {resp.email}, {resp.organisations} <br />
                 Luonut: {resp.created_by} <br />
@@ -68,6 +64,16 @@ const Responsibilities = ({
       </div>
     </div>
   );
+};
+
+function activeColour({present, late}) {
+  if (late) {
+    return "rgb(250, 160, 160)"
+  } else if (present) {
+    return "rgb(169, 245, 98)"
+  } else {
+    return "transparent"
+  };
 };
 
 export default Responsibilities;
