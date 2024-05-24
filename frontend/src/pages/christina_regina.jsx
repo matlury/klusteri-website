@@ -1,4 +1,3 @@
-import "../index.css";
 import React from "react";
 import christinaregina from "../ChristinaRegina.png";
 
