@@ -581,6 +581,14 @@ class UpdateNightResponsibilityView(APIView):
             responsibility_to_update = NightResponsibility.objects.get(id=pk)
         except ObjectDoesNotExist:
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
+        
+        if responsibility_to_update.username == user.data["username"] or responsibility_to_update.created_by == user.data["username"]:
+            pass
+        else:
+            return Response(
+                "Not allowed for this user",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
             
         responsibility = NightResponsibilitySerializer(
             instance=responsibility_to_update, data=request.data, partial=True
@@ -615,17 +623,27 @@ class LogoutNightResponsibilityView(APIView):
             responsibility_to_update = NightResponsibility.objects.get(id=pk)
         except ObjectDoesNotExist:
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
+        
+        if responsibility_to_update.username == user.data["username"] or responsibility_to_update.created_by == user.data["username"]:
+            pass
+        else:
+            return Response(
+                "Not allowed for this user",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         logout_time = request.data.get("logout_time")
         if not logout_time:
             return Response("Logout time not provided", status=status.HTTP_400_BAD_REQUEST)
 
         # Check if logout is later than 7.15
-        limit = datetime.now().replace(hour=7, minute=15)
+        # ATTENTION! Current method is bad and doesn't acknowledge timezones
+        limit = datetime.now().replace(hour=5, minute=15)
         datetime_format = "%Y-%m-%d %H:%M"
         logout_time = datetime.strptime(request.data["logout_time"], datetime_format)
+        login_time = datetime.strptime(str(responsibility_to_update.login_time)[:-16], datetime_format)
 
-        if logout_time > limit:
+        if (logout_time > limit) and (login_time < limit):
             request.data["late"] = True
         else:
             request.data["late"] = False
@@ -743,8 +761,17 @@ class HandOverKeyView(APIView):
         users_keys = user_to_update.keys
         users_keys[organization_name] = True
 
+        users_organizations = user_to_update.organization
+        users_organizations[organization_name] = True
+
+        # Combine updates into a single dictionary
+        updated_data = {
+            'keys': users_keys,
+            'organization': users_organizations
+        }
+
         serializer = UserUpdateSerializer(
-            instance=user_to_update, data=users_keys, partial=True
+            instance=user_to_update, data=updated_data, partial=True
         )
 
         if serializer.is_valid():

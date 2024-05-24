@@ -1,7 +1,7 @@
 import "../index.css";
 import React, { useState, useEffect } from "react";
 import axiosClient from "../axios.js";
-import { getCurrentDateTime, formatDatetime } from "../utils/timehelpers.js";
+import { getCurrentDateTime } from "../utils/timehelpers.js";
 import {
   getPermission,
   fetchAllUsersWithKeys,
@@ -22,6 +22,9 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
   const [allUsersWithKeys, setAllUsersWithKeys] = useState([]);
 
   const [nameFilter, setNameFilter] = useState("");
+  const [ykvFilter, setYkvFilter] = useState("");
+  const [maxFilter, setMaxFilter] = useState("2025-01-01T00:00");
+  const [minFilter, setMinFilter] = useState("2024-01-01T00:00");
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -91,9 +94,17 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
   const handleFilterChange = (event) => {
     setNameFilter(event.target.value);
   };
-
+  const handleYkvFilterChange = (event) => {
+    setYkvFilter(event.target.value);
+  };
+  const handleMaxFilterChange = (event) => {
+    setMaxFilter(event.target.value);
+  };
+  const handleMinFilterChange = (event) => {
+    setMinFilter(event.target.value);
+  };
   // this function handles the event of taking responsibility (check above)
-  const handleYkvLogin = (event) => {
+  const handleYkvLogin = async (event) => {
     event.preventDefault();
 
     const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
@@ -101,11 +112,21 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     const email = loggedUser.email;
     const loginTime = getCurrentDateTime();
 
+    const userdata = await axiosClient.get('/listobjects/users/')
+
+    const user = userdata.data.find(user => user.username === username);
+    
+    const user_orgs = Object.keys(user.organization)
+    .filter(organization => user.organization[organization] === true)
+    .join(', ');
+
     const responsibilityObject = {
       username: username,
       email: email,
       responsible_for: responsibility,
       login_time: loginTime,
+      created_by: username,
+      organisations: user_orgs
     };
 
     confirmYKV(responsibilityObject);
@@ -115,8 +136,9 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
         username: user.username,
         email: user.email,
         responsible_for:
-          responsibility + `, kirjauksen tekijä: ${loggedUser.username}`,
+          responsibility,
         login_time: loginTime,
+        created_by: loggedUser.username
       };
       confirmYKV(responsibilityObject);
     });
@@ -130,7 +152,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
         axiosClient
           .post(`/ykv/create_responsibility`, responsibilityObject)
           .then((response) => {
-            console.log("Läpi meni");
             setSuccess("YKV-sisäänkirjaus onnistui");
             setTimeout(() => setSuccess(""), 5000);
             getResponsibility();
@@ -165,7 +186,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
       .then((response) => {
         setAllResponsibilities(response.data);
         const filteredResponsibilities = response.data.filter(
-          (item) => item.email === email,
+          (item) => item.email === email || item.created_by === user.username,
         );
         setOwnResponsibilities(filteredResponsibilities);
       })
@@ -260,9 +281,9 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
               handleYkvEdit={handleYkvEdit}
             />
           )}
-          {!checkIfLoggedIn() && user.role !== 5 && (
+          {user.role !== 5 && (
             <YkvForm
-              esponsibility={responsibility}
+              responsibility={responsibility}
               setResponsibility={setResponsibility}
               nameFilter={nameFilter}
               handleFilterChange={handleFilterChange}
@@ -276,7 +297,15 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
             <OwnYkvList ownResponsibilities={ownResponsibilities} />
           )}
           {hasPermission === true && (
-            <Responsibilities allResponsibilities={allResponsibilities} />
+            <Responsibilities
+              allResponsibilities={allResponsibilities}
+              ykvFilter={ykvFilter} 
+              handleYkvFilterChange={handleYkvFilterChange}
+              maxFilter={maxFilter}
+              minFilter={minFilter}
+              handleMaxFilterChange={handleMaxFilterChange}
+              handleMinFilterChange={handleMinFilterChange}
+            />
           )}
         </div>
       )}

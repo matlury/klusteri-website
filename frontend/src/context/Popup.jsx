@@ -45,13 +45,14 @@ function Popup(props) {
   return props.trigger ? (
     <div className="popup">
       <div className="popup-inner">
-        <h2>Valitse aktiiviset YKV-kirjaukset</h2>
+        <h2>Valitse uloskirjattavat</h2>
         <ul style={{ listStyleType: "none", padding: 0 }}>
           {props.active
             .slice()
             .reverse()
             .map((resp) => (
               <li className="ykv2" key={resp.id}>
+                <b>{resp.responsible_for}</b><br/>
                 Vastuuhenkilö: {resp.username}, {resp.email}
                 <input
                   type="checkbox"

@@ -10,7 +10,8 @@ export function getCurrentDateTime() {
 }
 
 export function formatDatetime(datetimeString) {
-  let date = new Date(datetimeString);
+  let dt = Number(Date.parse(datetimeString)) - new Date().getTimezoneOffset()*60000
+  let date = new Date(dt);
 
   let hours = String(date.getUTCHours()).padStart(2, "0");
   let minutes = String(date.getUTCMinutes()).padStart(2, "0");

@@ -233,15 +233,17 @@ const MyCalendar = () => {
   // Gets current night responsibilities from the backend
   useEffect(() => {
     const fetchResponsibilities = async () => {
-      try {
-        const response = await axiosClient.get(
-          "listobjects/nightresponsibilities/",
-        );
-        setAllResponsibilities(response.data);
-        const active = response.data.filter((item) => item.present === true);
-        setActiveResponsibilities(active);
-      } catch (error) {
-        console.error("Error fetching responsibilities", error);
+      if (localStorage.getItem("loggedUser") != 'null') {
+        try {
+          const response = await axiosClient.get(
+            "listobjects/nightresponsibilities/",
+          );
+          setAllResponsibilities(response.data);
+          const active = response.data.filter((item) => item.present === true);
+          setActiveResponsibilities(active);
+        } catch (error) {
+          console.error("Error fetching responsibilities", error);
+        }
       }
     };
 
