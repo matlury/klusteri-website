@@ -637,11 +637,12 @@ class LogoutNightResponsibilityView(APIView):
             return Response("Logout time not provided", status=status.HTTP_400_BAD_REQUEST)
 
         # Check if logout is later than 7.15
-        limit = datetime.now().replace(hour=7, minute=15)
+        limit = datetime.now().replace(hour=5, minute=15)
         datetime_format = "%Y-%m-%d %H:%M"
         logout_time = datetime.strptime(request.data["logout_time"], datetime_format)
+        login_time = datetime.strptime(str(responsibility_to_update.login_time)[:-16], datetime_format)
 
-        if logout_time > limit:
+        if (logout_time > limit) and (login_time < limit):
             request.data["late"] = True
         else:
             request.data["late"] = False
