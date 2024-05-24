@@ -1,5 +1,6 @@
 import React from "react";
 import { formatDatetime } from "../utils/timehelpers";
+import { activeColour } from "../utils/ykvhelpers";
 
 const Responsibilities = ({
     allResponsibilities,
@@ -64,16 +65,6 @@ const Responsibilities = ({
       </div>
     </div>
   );
-};
-
-function activeColour({present, late}) {
-  if (late) {
-    return "rgb(250, 160, 160)"
-  } else if (present) {
-    return "rgb(169, 245, 98)"
-  } else {
-    return "transparent"
-  };
 };
 
 export default Responsibilities;
