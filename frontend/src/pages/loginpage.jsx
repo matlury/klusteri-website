@@ -25,7 +25,8 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
   }, [setUser]);
 
   // Handles the switch to the create user view if the button is clicked
-  const handleCreateUser = () => {
+  const handleCreateUser = (event) => {
+    event.preventDefault();
     setShowCreateUser(true);
     onCreateNewUser();
   };
