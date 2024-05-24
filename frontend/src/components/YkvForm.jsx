@@ -22,9 +22,7 @@ const YkvForm = ({
         />
       </div>
       <br />
-      Kirjaa sisään muita henkilöitä
-      <br />
-      <br />
+      <p>Kirjaa sisään muita henkilöitä</p>
       Etsi avaimellisia henkilöitä käyttäjänimellä:{" "}
       <input value={nameFilter} onChange={handleFilterChange} type="text" />
       <br />

@@ -8,10 +8,10 @@ jest.mock("../axios");
 test("renders login form", () => {
   const { getByLabelText, getByText } = render(<LoginPage />);
 
-  const emailInput = getByLabelText("Sähköposti:");
-  const passwordInput = getByLabelText("Salasana:");
+  const emailInput = getByLabelText("Sähköposti");
+  const passwordInput = getByLabelText("Salasana");
   const loginButton = getByText("Kirjaudu sisään");
-  const createUserButton = getByText("Luo uusi käyttäjä");
+  const createUserButton = getByText("Luo tili");
 
   expect(emailInput).toBeInTheDocument();
   expect(passwordInput).toBeInTheDocument();
@@ -32,8 +32,8 @@ test("error message when logging in with invalid credentials", async () => {
   );
 
   // Fill in email and password fields
-  const emailInput = getByLabelText("Sähköposti:");
-  const passwordInput = getByLabelText("Salasana:");
+  const emailInput = getByLabelText("Sähköposti");
+  const passwordInput = getByLabelText("Salasana");
   fireEvent.change(emailInput, { target: { value: "test@example.com" } });
   fireEvent.change(passwordInput, { target: { value: "invalidpassword" } });
 
@@ -72,8 +72,8 @@ test("logging in with valid credentials works", async () => {
   );
 
   // Fill in email and password fields
-  const emailInput = getByLabelText("Sähköposti:");
-  const passwordInput = getByLabelText("Salasana:");
+  const emailInput = getByLabelText("Sähköposti");
+  const passwordInput = getByLabelText("Salasana");
   fireEvent.change(emailInput, { target: { value: "test@example.com" } });
   fireEvent.change(passwordInput, { target: { value: "password123" } });
 

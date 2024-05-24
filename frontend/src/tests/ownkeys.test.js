@@ -86,8 +86,10 @@ describe("OwnKeys Component", () => {
       expect(axiosClient.post).toHaveBeenCalledWith(
         "/ykv/create_responsibility",
         {
+          created_by: "example_user",
           email: "example_email@example.com",
-          login_time: expect.any(String),
+          login_time: expect.anything(),
+          organisations: "",
           responsible_for: "fuksit",
           username: "example_username",
         },

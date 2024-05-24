@@ -14,7 +14,7 @@ test("redirects to Christinaregina page when the link button is clicked", () => 
   const linkButton = getByText("Christina Regina");
   fireEvent.click(linkButton);
 
-  expect(openSpy).toHaveBeenCalledWith("/christinaregina", "_self");
+  expect(openSpy).toHaveBeenCalledWith("/christina_regina", "_self");
 
   // Restore the original window.open after the test
   openSpy.mockRestore();
