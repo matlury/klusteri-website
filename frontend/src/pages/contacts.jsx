@@ -3,7 +3,7 @@ import React from "react";
 
 const Contacts = () => {
   const OpenChristinaRegina = () => {
-    const christinaregina_url = "/christinaregina";
+    const christinaregina_url = "/christina_regina";
     window.open(christinaregina_url, "_self");
   };
   return (
@@ -12,7 +12,7 @@ const Contacts = () => {
       <p>
         Domus Gaudium sijaitsee osoitteessa Leppäsuonkatu 11A, 00100 Helsinki.
       </p>
-      <a href="/christinaregina">
+      <a href="/christina_regina">
         <h1 onClick={OpenChristinaRegina}>Christina Regina</h1>
       </a>
       <p>

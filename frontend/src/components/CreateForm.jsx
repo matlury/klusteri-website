@@ -1,4 +1,5 @@
 import React from "react";
+import { TextField, Checkbox, FormControl, FormControlLabel, Button, FormGroup } from "@mui/material";
 
 const CreateForm = ({
   error,
@@ -17,73 +18,39 @@ const CreateForm = ({
   handleBackToLogin,
   handleCreateAccount,
 }) => (
-  <form className="form-container">
+  <FormGroup>
     <h3>Luo uusi käyttäjä</h3>
     {error && <p style={{ color: "red" }}>{error}</p>}
     <div className="input-fields">
       <div>
-        <label htmlFor="usernameInput">Käyttäjänimi:</label>
-        <input
-          id="usernameInput"
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
+        <TextField id="usernameInput" label="Käyttäjänimi" value={username} onChange={(e) => setUsername(e.target.value)} />
       </div>
       <div>
-        <label htmlFor="passwordInput">Salasana:</label>
-        <input
-          id="passwordInput"
-          type={showPasswords ? "text" : "password"}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <TextField id="passwordInput" label="Salasana" type={showPasswords ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} />
       </div>
       <div>
-        <label htmlFor="confirmPasswordInput">Vahvista salasana:</label>
-        <input
-          id="confirmPasswordInput"
-          type={showPasswords ? "text" : "password"}
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-        />
-        <input
-          type="checkbox"
-          checked={showPasswords}
-          onChange={toggleShowPasswords}
-        />
-        Näytä salasana
+        <TextField id="confirmPasswordInput" label="Vahvista" type={showPasswords ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
       </div>
       <div>
-        <label htmlFor="emailInput">Sähköposti:</label>
-        <input
-          id="emailInput"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <FormControlLabel control={<Checkbox checked={showPasswords} onChange={toggleShowPasswords} />} label="Näytä salasana" />
       </div>
       <div>
-        <label htmlFor="telegramInput">Telegram (valinnainen):</label>
-        <input
-          id="telegramInput"
-          type="text"
-          value={telegram}
-          onChange={(e) => setTelegram(e.target.value)}
-        />
+        <TextField id="emailInput" label="Sähköposti" value={email} onChange={(e) => setEmail(e.target.value)} />
+      </div>
+      <div>
+        <TextField id="telegramInput" label="Telegram (valinnainen)" value={telegram} onChange={(e) => setTelegram(e.target.value)} />
       </div>
     </div>
-    <button className="login-button" type="button" onClick={handleBackToLogin}>
-      Takaisin
-    </button>
-    <button
-      className="create-user-button"
-      type="button"
-      onClick={handleCreateAccount}
-    >
-      Luo käyttäjä
-    </button>
-  </form>
+    <div className="button-container">
+      <Button variant="text" className="login-button" color="primary" type="button" onClick={handleBackToLogin}>
+        Takaisin
+      </Button>
+
+      <Button variant="contained" className="create-user-button" color="primary" type="button" onClick={handleCreateAccount}>
+        Luo tili
+      </Button>
+    </div>
+  </FormGroup>
 );
 
 export default CreateForm;
