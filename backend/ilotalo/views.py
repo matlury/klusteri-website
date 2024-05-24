@@ -637,6 +637,7 @@ class LogoutNightResponsibilityView(APIView):
             return Response("Logout time not provided", status=status.HTTP_400_BAD_REQUEST)
 
         # Check if logout is later than 7.15
+        # ATTENTION! Current method is bad and doesn't acknowledge timezones
         limit = datetime.now().replace(hour=5, minute=15)
         datetime_format = "%Y-%m-%d %H:%M"
         logout_time = datetime.strptime(request.data["logout_time"], datetime_format)
