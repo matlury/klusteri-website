@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "../index.css";
 import NewAccountPage from "./createpage";
 import FrontPage from "./frontpage";
 import { useStateContext } from "../context/ContextProvider.jsx";

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import LoginPage from "./loginpage";
-import "../index.css";
 import newaccountcheck from "../utils/newaccountcheck";
 import CreateForm from "../components/CreateForm";
 import createaccount from "../utils/createaccount";
