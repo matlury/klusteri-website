@@ -35,7 +35,6 @@ import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
 
 import { BrowserRouter as Router, Route, Routes, Link} from "react-router-dom";
-import { green } from '@mui/material/colors';
 import { Button } from 'react-bootstrap';
 
 
@@ -93,6 +92,9 @@ const handleLogin = () => {
 
 // Removes localstorage value if someone logs out
 const handleLogout = () => {
+  localStorage.removeItem("loggedUser");
+  localStorage.removeItem("isLoggedIn");
+  setLoggedUser(null);
   setIsLoggedIn(false);
   localStorage.removeItem("isLoggedIn");
 };
@@ -158,7 +160,12 @@ const handleLogout = () => {
             Ilotalo 3.0
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
-          <Button variant="primary" href='/login'>Kirjaudu</Button>
+          {isLoggedIn ? (
+          <Button variant="outlined" className="logout-button" onClick={handleLogout}>
+          Kirjaudu ulos </Button>)
+          :(
+          <Button variant="primary" href='/login'>Kirjaudu</Button>)}
+
         </Toolbar>
       </AppBar>
       <Box
@@ -208,8 +215,11 @@ const handleLogout = () => {
               <Route
                 path="/omat_avaimet"
                 element={
-                  <OwnKeys isLoggedIn={isLoggedIn} loggedUser={loggedUser} />
-                }/>
+                  <OwnKeys isLoggedIn={isLoggedIn} loggedUser={loggedUser}/>}/>
+              <Route
+                path="/omat_tiedot"
+                element={
+                <OwnPage isLoggedIn={isLoggedIn}/>}/>
              
               <Route path="/yhteystiedot" element={<Contacts />} />
               <Route path="/saannot_ja_ohjeet"element={<Rules_and_Instructions />}/>

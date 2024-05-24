@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../index.css";
 import NewAccountPage from "./createpage";
+import FrontPage from "./frontpage";
 import { useStateContext } from "../context/ContextProvider.jsx";
 import CountdownTimer from "../context/CountdownTimer.jsx";
 import login from "../utils/login.js";
@@ -53,17 +54,9 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
       {showCreateUser ? (
         <NewAccountPage />
       ) : user ? (
-        <>
-          <p>Hei {user.username}!</p>
-          <Button variant="contained" className="logout-button" onClick={handleLogout}>
-            Kirjaudu ulos
-          </Button>
 
-          <br />
-          <br />
-          <p>Automaattinen uloskirjaus:</p>
-          <CountdownTimer initialTime={timeLeft} onExpire={handleLogout} />
-        </>
+        <FrontPage/>
+       
       ) : (
         <LoginForm
           email={email}
