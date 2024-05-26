@@ -10,7 +10,8 @@ export function getCurrentDateTime() {
 }
 
 export function formatDatetime(datetimeString) {
-  let dt = Number(Date.parse(datetimeString)) - new Date().getTimezoneOffset()*60000
+  let dt =
+    Number(Date.parse(datetimeString)) - new Date().getTimezoneOffset() * 60000;
   let date = new Date(dt);
 
   let hours = String(date.getUTCHours()).padStart(2, "0");
@@ -30,7 +31,7 @@ export function getTestTimes() {
   let year = String(currentDate.getFullYear());
   let hours = String(currentDate.getHours()).padStart(2, "0");
   let hoursadded = parseInt(hours) + 2;
-  let paddedHours = hoursadded.toString().padStart(2, '0');
+  let paddedHours = hoursadded.toString().padStart(2, "0");
   let minutes = String(currentDate.getMinutes()).padStart(2, "0");
 
   return [

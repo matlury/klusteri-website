@@ -1,5 +1,12 @@
 import React from "react";
-import { TextField, Checkbox, FormControl, FormControlLabel, Button, FormGroup } from "@mui/material";
+import {
+  TextField,
+  Checkbox,
+  FormControl,
+  FormControlLabel,
+  Button,
+  FormGroup,
+} from "@mui/material";
 
 const CreateForm = ({
   error,
@@ -23,30 +30,74 @@ const CreateForm = ({
     {error && <p style={{ color: "red" }}>{error}</p>}
     <div className="input-fields">
       <div>
-        <TextField id="usernameInput" label="Käyttäjänimi" value={username} onChange={(e) => setUsername(e.target.value)} />
+        <TextField
+          id="usernameInput"
+          label="Käyttäjänimi"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
       </div>
       <div>
-        <TextField id="passwordInput" label="Salasana" type={showPasswords ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} />
+        <TextField
+          id="passwordInput"
+          label="Salasana"
+          type={showPasswords ? "text" : "password"}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
       </div>
       <div>
-        <TextField id="confirmPasswordInput" label="Vahvista" type={showPasswords ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+        <TextField
+          id="confirmPasswordInput"
+          label="Vahvista"
+          type={showPasswords ? "text" : "password"}
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
       </div>
       <div>
-        <FormControlLabel control={<Checkbox checked={showPasswords} onChange={toggleShowPasswords} />} label="Näytä salasana" />
+        <FormControlLabel
+          control={
+            <Checkbox checked={showPasswords} onChange={toggleShowPasswords} />
+          }
+          label="Näytä salasana"
+        />
       </div>
       <div>
-        <TextField id="emailInput" label="Sähköposti" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <TextField
+          id="emailInput"
+          label="Sähköposti"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
       </div>
       <div>
-        <TextField id="telegramInput" label="Telegram (valinnainen)" value={telegram} onChange={(e) => setTelegram(e.target.value)} />
+        <TextField
+          id="telegramInput"
+          label="Telegram (valinnainen)"
+          value={telegram}
+          onChange={(e) => setTelegram(e.target.value)}
+        />
       </div>
     </div>
     <div className="button-container">
-      <Button variant="text" className="login-button" color="primary" type="button" onClick={handleBackToLogin}>
+      <Button
+        variant="text"
+        className="login-button"
+        color="primary"
+        type="button"
+        onClick={handleBackToLogin}
+      >
         Takaisin
       </Button>
 
-      <Button variant="contained" className="create-user-button" color="primary" type="button" onClick={handleCreateAccount}>
+      <Button
+        variant="contained"
+        className="create-user-button"
+        color="primary"
+        type="button"
+        onClick={handleCreateAccount}
+      >
         Luo tili
       </Button>
     </div>

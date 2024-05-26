@@ -61,7 +61,7 @@ describe("OwnKeys Component", () => {
     const responsibile_for = getByLabelText("Kenestä otat vastuun?");
     fireEvent.change(responsibile_for, { target: { value: "fuksit" } });
 
-    window.confirm = jest.fn(() => true)
+    window.confirm = jest.fn(() => true);
 
     const respButton = getByText("Ota vastuu");
     fireEvent.click(respButton);
