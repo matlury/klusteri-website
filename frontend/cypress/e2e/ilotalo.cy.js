@@ -145,351 +145,287 @@ describe("Frontpage", () => {
   });
 });
 
-//describe("Ownkeys", () => {
-//  beforeEach(function () {
-//    cy.request("POST", "http://localhost:8000/api/testing/reset");
-//    cy.visit("http://localhost:5173");
-//  });
-
-//  it("logging in works", function () {
-//    cy.on("uncaught:exception", () => {
-//      return false;
-//    });
-
-//    const body = {
-//      username: "leppis",
-//      password: "salasana123",
-//      email: "pj@gmail.com",
-//      telegram: "pjtg",
-//      role: 1,
-//      keys: null,
-//      organization: null,
-//    };
-
-//    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
-//      (response) => {
-//        expect(response.body).to.have.property("username", "leppis");
-//      },
-//    );
-
-//    cy.wait(1000);
-
-//    cy.get("#email").type("pj@gmail.com");
-//    cy.get("#password").type("salasana123");
-//    cy.get(".login-button").click();
-
-//    cy.wait(500);
-//    cy.contains("Hei leppis!");
-//    cy.contains("Omat avaimet").click();
-//    cy.reload()
-
-//    cy.get("#responsibility").type("fuksit");
-//    cy.contains("Ota vastuu").click();
-
-//    cy.contains("Vastuuhenkilö: leppis, pj@gmail.com");
-//    cy.contains("Vastuussa henkilöistä: fuksit");
-//  });
-
-//  it("YKV-logout works", function () {
-//    cy.on("uncaught:exception", () => {
-//      return false;
-//    });
-
-//    const body = {
-//      username: "leppis",
-//      password: "salasana123",
-//      email: "pj@gmail.com",
-//      telegram: "pjtg",
-//      role: 1,
-//      keys: null,
-//      organization: null,
-//    };
-
-//    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
-//      (response) => {
-//        expect(response.body).to.have.property("username", "leppis");
-//      },
-//    );
-
-//    cy.wait(1000);
-//    cy.get("#email").type("pj@gmail.com");
-//    cy.get("#password").type("salasana123");
-//    cy.get(".login-button").click();
-
-//    cy.wait(500);
-//    cy.contains("Hei leppis!");
-//    cy.contains("Omat avaimet").click();
-//    cy.reload()
-
-//    cy.get("#responsibility").type("fuksit");
-//    cy.contains("Ota vastuu").click();
-
-//    cy.contains("YKV-uloskirjaus").click();
-//    cy.contains("Select All").click();
-//    cy.contains("Submit").click();
-//    cy.contains("YKV-uloskirjaus onnistui");
-//  });
-//});
-
-// //describe("Ownpage", () => {
-// //  beforeEach(function () {
-//     cy.request("POST", "http://localhost:8000/api/testing/reset");
-//     cy.visit("http://localhost:5173/omat_tiedot");
-//   });
-
-//   it("logging in works", function () {
-//     cy.on("uncaught:exception", () => {
-//       return false;
-//     });
-
-//     const body = {
-//       username: "leppis",
-//       password: "salasana123",
-//       email: "pj@gmail.com",
-//       telegram: "pjtg",
-//       role: 1,
-//       keys: null,
-//       organization: null,
-//     };
-
-//     cy.request("POST", "http://localhost:8000/api/users/register", body).then(
-//       (response) => {
-//         expect(response.body).to.have.property("username", "leppis");
-//       },
-//     );
-
-//     cy.wait(1000);
-
-//     cy.get("#email").type("pj@gmail.com");
-//     cy.get("#password").type("salasana123");
-//     cy.get(".login-button").click();
-
-//     cy.wait(500);
-//     cy.contains("Hei leppis!");
-
-//     cy.contains("Käyttäjänimi:");
-//     cy.contains("Sähköposti:");
-//     cy.contains("Järjestöt");
-//   });
-
-//   it("logging out works", function () {
-//     cy.on("uncaught:exception", () => {
-//       return false;
-//     });
-
-//     const body = {
-//       username: "leppis",
-//       password: "salasana123",
-//       email: "pj@gmail.com",
-//       telegram: "pjtg",
-//       role: 1,
-//       keys: null,
-//       organization: null,
-//     };
-
-//     cy.request("POST", "http://localhost:8000/api/users/register", body).then(
-//       (response) => {
-//         expect(response.body).to.have.property("username", "leppis");
-//       },
-//     );
-
-//     cy.wait(1000);
-
-//     cy.get("#email").type("pj@gmail.com");
-//     cy.get("#password").type("salasana123");
-//     cy.get(".login-button").click();
-
-//     cy.wait(500);
-//     cy.contains("Hei leppis!");
-
-//     cy.contains("Kirjaudu ulos").click();
-//     cy.wait(500);
-
-//     cy.contains("Kirjaudu sisään");
-//   });
-// });
-
-// describe("Reservations", () => {
-//   beforeEach(function () {
-//     cy.request("POST", "http://localhost:8000/api/testing/reset");
-//     cy.visit("http://localhost:5173/varaukset");
-//   });
-
-//   it("logging in works", function () {
-//     cy.on("uncaught:exception", () => {
-//       return false;
-//     });
-
-//     const body = {
-//       username: "leppis",
-//       password: "salasana123",
-//       email: "pj@gmail.com",
-//       telegram: "pjtg",
-//       role: 1,
-//       keys: null,
-//       organization: null,
-//     };
-
-//     cy.request("POST", "http://localhost:8000/api/users/register", body).then(
-//       (response) => {
-//         expect(response.body).to.have.property("username", "leppis");
-//       },
-//     );
-
-//     cy.wait(1000);
-
-//     cy.get("#email").type("pj@gmail.com");
-//     cy.get("#password").type("salasana123");
-//     cy.get(".login-button").click();
-
-//     cy.wait(500);
-//     cy.contains("Hei leppis!");
-
-//     cy.contains("Varauskalenteri");
-//   });
-
-//   it("logging out works", function () {
-//     cy.on("uncaught:exception", () => {
-//       return false;
-//     });
-
-//     const body = {
-//       username: "leppis",
-//       password: "salasana123",
-//       email: "pj@gmail.com",
-//       telegram: "pjtg",
-//       role: 1,
-//       keys: null,
-//       organization: null,
-//     };
-
-//     cy.request("POST", "http://localhost:8000/api/users/register", body).then(
-//       (response) => {
-//         expect(response.body).to.have.property("username", "leppis");
-//       },
-//     );
-
-//     cy.wait(1000);
-
-//     cy.get("#email").type("pj@gmail.com");
-//     cy.get("#password").type("salasana123");
-//     cy.get(".login-button").click();
-
-//     cy.wait(500);
-//     cy.contains("Hei leppis!");
-
-//     cy.contains("Kirjaudu ulos").click();
-//     cy.wait(500);
-
-//     cy.contains("Kirjaudu sisään");
-//   });
-
-//   describe("Creating and deleting", () => {
-//     beforeEach(function () {
-//       cy.on("uncaught:exception", () => {
-//         return false;
-//       });
-
-//       const body = {
-//         username: "leppis",
-//         password: "salasana123",
-//         email: "pj@gmail.com",
-//         telegram: "pjtg",
-//         role: 1,
-//         keys: null,
-//         organization: null,
-//       };
-
-//       cy.request("POST", "http://localhost:8000/api/users/register", body).then(
-//         (response) => {
-//           expect(response.body).to.have.property("username", "leppis");
-//         },
-//       );
-
-//       cy.wait(1000);
-
-//       cy.get("#email").type("pj@gmail.com");
-//       cy.get("#password").type("salasana123");
-//       cy.get(".login-button").click();
-
-//       cy.wait(500);
-//     });
-
-//     it("Creating event works", function () {
-//       cy.get("#createEvent").click();
-
-//       const dates = getTestTimes();
-
-//       const checkdate = getCurrentDateTime();
-
-//       cy.get("#startTime").type(dates[0]);
-
-//       cy.get("#endTime").click().type(dates[1]);
-
-//       cy.get("#eventName").type("Test Event");
-//       cy.get("#organizerName").type("Tester Mann");
-//       cy.get("#responsibleName").type("Mr Responsible");
-//       cy.get("#eventDescription").type("This is a testing event");
-
-//       cy.get("#eventOpen").select("Avoin tapahtuma");
-//       cy.get("#eventRoom").select("Kokoushuone");
-
-//       cy.get("#confirmCreate").click();
-
-//       cy.wait(500);
-//       cy.contains("Test Event").click();
-//       cy.contains(checkdate);
-//       cy.contains("Test Event");
-//       cy.contains("Järjestäjä: Tester Mann");
-//       cy.contains("Vastuuhenkilö: Mr Responsible");
-//       cy.contains("Kuvaus: This is a testing event");
-//       cy.contains("Tila: Avoin");
-//       cy.contains("Huone: Kokoushuone");
-//     });
-
-//     it("Deleting event works", function () {
-//       const dates = getTestTimes();
-
-//       const body = {
-//         start: dates[0],
-//         end: dates[1],
-//         title: "Test Event 2",
-//         organizer: "Tester Mannen",
-//         description: "Testing event",
-//         responsible: "Mr Irresponsible",
-//         open: false,
-//         room: "Kerhotila",
-//       };
-
-//       const token = localStorage.getItem("ACCESS_TOKEN");
-
-//       cy.request({
-//         method: "POST",
-//         url: "http://localhost:8000/api/events/create_event",
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: body,
-//       }).then((response) => {
-//         expect(response.body).to.have.property("title", "Test Event 2");
-//       });
-
-//       cy.reload();
-
-//       cy.contains("Test Event 2").then(() => {
-//         cy.contains("Test Event 2").click();
-//       });
-
-//       cy.wait(500);
-
-//       cy.get("#deleteEvent").click();
-//       cy.wait(500);
-//       cy.get("#closeEvent").click();
-
-//       cy.contains("Test Event 2").should("not.exist");
-//     });
-//   });
-// });
-
-// Cypress.on;
+describe("Ownkeys", () => {
+  beforeEach(function () {
+    cy.request("POST", "http://localhost:8000/api/testing/reset");
+    cy.visit("http://localhost:5173");
+  });
+  it("YKV-login in works", function () {
+    cy.on("uncaught:exception", () => {
+      return false;
+    });
+    const body = {
+      username: "leppis",
+      password: "salasana123",
+      email: "pj@gmail.com",
+      telegram: "pjtg",
+      role: 1,
+      keys: {"tko-äly": true},
+      organization: {"tko-äly": true},
+    };
+    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+      (response) => {
+        expect(response.body).to.have.property("username", "leppis");
+      },
+    );
+    cy.wait(1000);
+    cy.contains("Kirjaudu").click()
+    cy.get("#email").type("pj@gmail.com");
+    cy.get("#password").type("salasana123");
+    cy.get(".login-button").click();
+    cy.wait(500);
+    cy.contains("Omat avaimet").click();
+    cy.reload()
+    cy.get("#responsibility").type("fuksit");
+    cy.contains("Ota vastuu").click();
+    cy.contains("Vastuuhenkilö: leppis, pj@gmail.com");
+    cy.contains("Vastuussa henkilöistä: fuksit");
+  });
+  it("YKV-logout works", function () {
+    cy.on("uncaught:exception", () => {
+      return false;
+    });
+    const body = {
+      username: "leppis",
+      password: "salasana123",
+      email: "pj@gmail.com",
+      telegram: "pjtg",
+      role: 1,
+      keys: {"tko-äly": true},
+      organization: {"tko-äly": true},
+    };
+    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+      (response) => {
+        expect(response.body).to.have.property("username", "leppis");
+      },
+    );
+    cy.wait(1000);
+    cy.contains("Kirjaudu").click()
+    cy.get("#email").type("pj@gmail.com");
+    cy.get("#password").type("salasana123");
+    cy.get(".login-button").click();
+    cy.wait(500);
+    cy.contains("Omat avaimet").click();
+    cy.reload()
+    cy.get("#responsibility").type("fuksit");
+    cy.contains("Ota vastuu").click();
+    cy.contains("YKV-uloskirjaus").click();
+    cy.contains("Select All").click();
+    cy.contains("Submit").click();
+    cy.contains("YKV-uloskirjaus onnistui");
+  });
+});
+
+describe("Ownpage", () => {
+  beforeEach(function () {
+    cy.request("POST", "http://localhost:8000/api/testing/reset");
+    cy.visit("http://localhost:5173/omat_tiedot");
+  });
+  it("logging in works", function () {
+    cy.on("uncaught:exception", () => {
+      return false;
+    });
+    const body = {
+      username: "leppis",
+      password: "salasana123",
+      email: "pj@gmail.com",
+      telegram: "pjtg",
+      role: 1,
+      keys: null,
+      organization: null,
+    };
+    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+      (response) => {
+        expect(response.body).to.have.property("username", "leppis");
+      },
+    );
+    cy.wait(1000);
+    cy.contains("Kirjaudu").click()
+    cy.get("#email").type("pj@gmail.com");
+    cy.get("#password").type("salasana123");
+    cy.get(".login-button").click();
+    cy.wait(500);
+    cy.contains("Omat tiedot").click()
+    cy.contains("Käyttäjänimi:");
+    cy.contains("Sähköposti:");
+    cy.contains("Järjestöt");
+  });
+  it("logging out works", function () {
+    cy.on("uncaught:exception", () => {
+      return false;
+    });
+    const body = {
+      username: "leppis",
+      password: "salasana123",
+      email: "pj@gmail.com",
+      telegram: "pjtg",
+      role: 1,
+      keys: null,
+      organization: null,
+    };
+    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+      (response) => {
+        expect(response.body).to.have.property("username", "leppis");
+      },
+    );
+    cy.wait(1000);
+    cy.contains("Kirjaudu").click()
+    cy.get("#email").type("pj@gmail.com");
+    cy.get("#password").type("salasana123");
+    cy.get(".login-button").click();
+    cy.wait(500);
+    cy.contains("Kirjaudu ulos").click();
+    cy.wait(500);
+    cy.contains("Kirjaudu");
+  });
+});
+
+describe("Reservations", () => {
+  beforeEach(function () {
+    cy.request("POST", "http://localhost:8000/api/testing/reset");
+    cy.visit("http://localhost:5173/varaukset");
+  });
+  it("logging in works", function () {
+    cy.on("uncaught:exception", () => {
+      return false;
+    });
+    const body = {
+      username: "leppis",
+      password: "salasana123",
+      email: "pj@gmail.com",
+      telegram: "pjtg",
+      role: 1,
+      keys: null,
+      organization: null,
+    };
+    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+      (response) => {
+        expect(response.body).to.have.property("username", "leppis");
+      },
+    );
+    cy.wait(1000);
+    cy.contains("Kirjaudu").click()
+    cy.get("#email").type("pj@gmail.com");
+    cy.get("#password").type("salasana123");
+    cy.get(".login-button").click();
+    cy.wait(500);
+    cy.contains("Varaukset").click()
+    cy.contains("Varauskalenteri");
+  });
+  it("logging out works", function () {
+    cy.on("uncaught:exception", () => {
+      return false;
+    });
+    const body = {
+      username: "leppis",
+      password: "salasana123",
+      email: "pj@gmail.com",
+      telegram: "pjtg",
+      role: 1,
+      keys: null,
+      organization: null,
+    };
+    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+      (response) => {
+        expect(response.body).to.have.property("username", "leppis");
+      },
+    );
+    cy.wait(1000);
+    cy.contains("Kirjaudu").click()
+    cy.get("#email").type("pj@gmail.com");
+    cy.get("#password").type("salasana123");
+    cy.get(".login-button").click();
+    cy.wait(500);
+    cy.contains("Kirjaudu ulos").click();
+    cy.wait(500);
+    cy.contains("Kirjaudu");
+  });
+
+ describe("Creating and deleting", () => {
+   beforeEach(function () {
+     cy.on("uncaught:exception", () => {
+       return false;
+     });
+     const body = {
+       username: "leppis",
+       password: "salasana123",
+       email: "pj@gmail.com",
+       telegram: "pjtg",
+       role: 1,
+       keys: null,
+       organization: null,
+     };
+     cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+       (response) => {
+         expect(response.body).to.have.property("username", "leppis");
+       },
+     );
+     cy.wait(1000);
+     cy.contains("Kirjaudu").click()
+     cy.get("#email").type("pj@gmail.com");
+     cy.get("#password").type("salasana123");
+     cy.get(".login-button").click();
+     cy.wait(500);
+     cy.contains("Varaukset").click()
+   });
+   it("Creating event works", function () {
+     cy.get("#createEvent").click();
+     const dates = getTestTimes();
+     const checkdate = getCurrentDateTime();
+     cy.get("#startTime").type(dates[0]);
+     cy.get("#endTime").click().type(dates[1]);
+     cy.get("#eventName").type("Test Event");
+     cy.get("#organizerName").type("Tester Mann");
+     cy.get("#responsibleName").type("Mr Responsible");
+     cy.get("#eventDescription").type("This is a testing event");
+     cy.get("#eventOpen").select("Avoin tapahtuma");
+     cy.get("#eventRoom").select("Kokoushuone");
+     cy.get("#confirmCreate").click();
+     cy.wait(500);
+     cy.contains("Test Event").click();
+     cy.contains(checkdate);
+     cy.contains("Test Event");
+     cy.contains("Järjestäjä: Tester Mann");
+     cy.contains("Vastuuhenkilö: Mr Responsible");
+     cy.contains("Kuvaus: This is a testing event");
+     cy.contains("Tila: Avoin");
+     cy.contains("Huone: Kokoushuone");
+   });
+   it("Deleting event works", function () {
+     const dates = getTestTimes();
+     const body = {
+       start: dates[0],
+       end: dates[1],
+       title: "Test Event 2",
+       organizer: "Tester Mannen",
+       description: "Testing event",
+       responsible: "Mr Irresponsible",
+       open: false,
+       room: "Kerhotila",
+     };
+     const token = localStorage.getItem("ACCESS_TOKEN");
+     cy.request({
+       method: "POST",
+       url: "http://localhost:8000/api/events/create_event",
+       headers: {
+         Authorization: `Bearer ${token}`,
+       },
+       body: body,
+     }).then((response) => {
+       expect(response.body).to.have.property("title", "Test Event 2");
+     });
+     cy.reload();
+     cy.contains("Test Event 2").then(() => {
+       cy.contains("Test Event 2").click();
+     });
+     cy.wait(500);
+     cy.get("#deleteEvent").click();
+     cy.wait(500);
+     cy.get("#closeEvent").click();
+     cy.contains("Test Event 2").should("not.exist");
+   });
+ });
+});
+
+Cypress.on;
 
