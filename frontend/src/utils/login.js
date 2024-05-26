@@ -20,7 +20,6 @@ const login = ({ email, password, setError, setToken, onLogin, setUser }) => {
         })
         .then((response) => {
           setUser(response.data);
-          console.log("User details:", response.data);
           localStorage.setItem("loggedUser", JSON.stringify(response.data));
           localStorage.setItem("isLoggedIn", true);
           onLogin();

@@ -2,28 +2,11 @@ import { render, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Reservations from "../../src/pages/reservations";
 import React from "react";
-import axiosClient from "../axios.js";
+import mockAxios from "../../__mocks__/axios.js";
 
-// Mock axiosClient
-jest.mock("../axios", () => {
-  return {
-    __esModule: true,
-    default: {
-      get: jest.fn().mockResolvedValue({ data: {} }),
-      post: jest.fn().mockResolvedValue({}),
-      put: jest.fn().mockResolvedValue({}),
-    },
-    create: jest.fn(() => ({
-      post: jest.fn().mockResolvedValue({}),
-    })),
-    defaults: {
-      headers: {
-        common: {
-          Authorization: "Bearer example_token",
-        },
-      },
-    },
-  };
+afterEach(() => {
+  // cleaning up the mess left behind the previous test
+  mockAxios.reset();
 });
 
 describe("Reservations component", () => {
