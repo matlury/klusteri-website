@@ -888,3 +888,27 @@ class RemoveDefectFaultView(APIView):
         defect_to_remove.delete()
 
         return Response(f"Defect {defect_to_remove.description} successfully removed", status=status.HTTP_200_OK)
+
+def force_logout_ykv_logins():
+    try:
+        responsibility_to_update = NightResponsibility.objects.filter(present=True)
+        if len(responsibility_to_update) == 0:
+            return "Nothing to log out" 
+    except ObjectDoesNotExist:
+        return "Nothing to log out"
+
+    datetime_format = "%Y-%m-%d %H:%M"
+    logout_time = datetime.strptime(str(datetime.now())[:-10], datetime_format)
+    
+    for resp in responsibility_to_update:
+        print(resp.created_by)
+        data = {'late': True,
+                'present': False, 
+                'logout_time': logout_time}
+        responsibility = NightResponsibilitySerializer(
+            instance=resp, data=data, partial=True
+        )
+        if responsibility.is_valid():
+            responsibility.save()
+    
+    return "logged out users"
