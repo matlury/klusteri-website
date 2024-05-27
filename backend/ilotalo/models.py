@@ -14,6 +14,7 @@ from django.contrib.auth.models import (
 class Organization(models.Model):
     """Model for student organizations"""
 
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, default="", unique=True)
     email = models.EmailField(max_length=100, default="", unique=True)
     homepage = models.CharField(max_length=100, default="")

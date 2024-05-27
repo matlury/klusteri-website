@@ -59,15 +59,31 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
         return user
+        
+class OrganizationSerializer(serializers.ModelSerializer):
+    """Serializes an Organization object as JSON"""
+
+    class Meta:
+        model = Organization
+        fields = ("id", "name", "email", "homepage", "size")
+
+    def validate_size(self, size):
+        """Validates size when creating a new organization."""
+
+        if int(size) not in [0, 1]:
+            raise serializers.ValidationError("Organization size must be 0 or 1 (small or large).")
+        return size
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     """
     Serializer for updating a user
     """
 
+    keys = OrganizationSerializer(many=True, read_only=True)
+
     class Meta:
         model = User
-        fields = ("id", "username", "email", "telegram", "role")
+        fields = ("id", "username", "email", "telegram", "role", "keys")
 
     def validate_role(self, role):
         """Validates role when updating a user. Limits: 1 <= role <= 7."""
@@ -95,21 +111,6 @@ class UserNoPasswordSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("id", "username", "email", "telegram", "role")
-
-
-class OrganizationSerializer(serializers.ModelSerializer):
-    """Serializes an Organization object as JSON"""
-
-    class Meta:
-        model = Organization
-        fields = ("id", "name", "email", "homepage", "size")
-
-    def validate_size(self, size):
-        """Validates size when creating a new organization."""
-
-        if int(size) not in [0, 1]:
-            raise serializers.ValidationError("Organization size must be 0 or 1 (small or large).")
-        return size
 
 class EventSerializer(serializers.ModelSerializer):
     """Serializes an Event object as JSON"""

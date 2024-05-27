@@ -741,14 +741,13 @@ class HandOverKeyView(APIView):
 
         try:
             user_to_update = User.objects.get(id=pk)
-            organization_name = request.data["organization_name"]
         except ObjectDoesNotExist:
             return Response("User not found", status=status.HTTP_404_NOT_FOUND)
-        except KeyError:
-            return Response(
-                "Provide the name of the organization",
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        
+        try:
+            organization_to_update = Organization.objects.get(name=request.data["organization_name"])
+        except ObjectDoesNotExist:
+            return Response("Organization not found", status=status.HTTP_404_NOT_FOUND)
 
         # Check if the request contains unwanted data
         if (len(request.data.keys())) > 1:
@@ -758,17 +757,11 @@ class HandOverKeyView(APIView):
             )
         
         # Update the user's key list
-        users_keys = user_to_update.keys
-        users_keys[organization_name] = True
-
-        # Update the users organisations
-        users_organizations = user_to_update.organization
-        users_organizations[organization_name] = True
+        users_keys = organization_to_update.id
 
         # Combine updates into a single dictionary
         updated_data = {
             'keys': users_keys,
-            'organization': users_organizations
         }
 
         # Update the users role if it's 5
@@ -780,6 +773,7 @@ class HandOverKeyView(APIView):
         )
 
         if serializer.is_valid():
+            user_to_update.keys.add(organization_to_update)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
