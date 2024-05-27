@@ -52,7 +52,8 @@ function Popup(props) {
             .reverse()
             .map((resp) => (
               <li className="ykv2" key={resp.id}>
-                <b>{resp.responsible_for}</b><br/>
+                <b>{resp.responsible_for}</b>
+                <br />
                 Vastuuhenkilö: {resp.username}, {resp.email}
                 <input
                   type="checkbox"

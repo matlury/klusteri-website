@@ -43,10 +43,22 @@ jobs:
       - name: Make migrations
         working-directory: ./backend
         run: poetry run python manage.py migrate
-
-      - name: Run tests
+        
+      - name: Run backend tests
         working-directory: ./backend
         run: poetry run coverage run --branch -m pytest
+
+      - name: Create backend coverage report
+        working-directory: ./backend
+        run: poetry run coverage xml
+
+      - name: Run frontend tests
+        working-directory: ./frontend
+        run: npm run test
+
+      - name: Create frontend coverage report
+        working-directory: ./frontend
+        run: npx jest --coverage
 
       #Cypress tests require backend to be running
       - name: Start backend

@@ -3,25 +3,31 @@ import { formatDatetime } from "../utils/timehelpers";
 import { activeColour } from "../utils/ykvhelpers";
 
 const Responsibilities = ({
-    allResponsibilities,
-    minFilter,
-    handleMinFilterChange,
-    maxFilter,
-    handleMaxFilterChange,
-    ykvFilter,
-    handleYkvFilterChange,
-  }) => {
+  allResponsibilities,
+  minFilter,
+  handleMinFilterChange,
+  maxFilter,
+  handleMaxFilterChange,
+  ykvFilter,
+  handleYkvFilterChange,
+}) => {
   return (
     <div>
       <h2>Kaikki vastuut</h2>
-      Etsi henkilöitä:{" "}
-      <br />
+      Etsi henkilöitä: <br />
       <input value={ykvFilter} onChange={handleYkvFilterChange} type="text" />
-      Hae kirjauksia aikavälillä:{" "}
-      <br />
+      Hae kirjauksia aikavälillä: <br />
       <input type="hidden" id="timezone" name="timezone" value="03:00" />
-      <input value={minFilter} onChange={handleMinFilterChange} type="datetime-local" />
-      <input value={maxFilter} onChange={handleMaxFilterChange} type="datetime-local" />
+      <input
+        value={minFilter}
+        onChange={handleMinFilterChange}
+        type="datetime-local"
+      />
+      <input
+        value={maxFilter}
+        onChange={handleMaxFilterChange}
+        type="datetime-local"
+      />
       <br />
       <br />
       <div
@@ -36,22 +42,36 @@ const Responsibilities = ({
         <ul style={{ listStyleType: "none", padding: 0 }}>
           {allResponsibilities
             .slice()
-            .filter((resp) =>
-              (resp.username.toLowerCase().includes(ykvFilter.toLowerCase()) ||
-              resp.created_by.toLowerCase().includes(ykvFilter.toLowerCase()) ||
-              resp.organisations.toLowerCase().includes(ykvFilter.toLowerCase()) ||
-              resp.responsible_for.toLowerCase().includes(ykvFilter.toLowerCase())) && 
-              Date.parse(resp.login_time) < (Number(Date.parse(maxFilter)) - new Date().getTimezoneOffset()*60000) &&
-              Date.parse(resp.logout_time) > (Number(Date.parse(minFilter)) - new Date().getTimezoneOffset()*60000)
+            .filter(
+              (resp) =>
+                (resp.username
+                  .toLowerCase()
+                  .includes(ykvFilter.toLowerCase()) ||
+                  resp.created_by
+                    .toLowerCase()
+                    .includes(ykvFilter.toLowerCase()) ||
+                  resp.organisations
+                    .toLowerCase()
+                    .includes(ykvFilter.toLowerCase()) ||
+                  resp.responsible_for
+                    .toLowerCase()
+                    .includes(ykvFilter.toLowerCase())) &&
+                Date.parse(resp.login_time) <
+                  Number(Date.parse(maxFilter)) -
+                    new Date().getTimezoneOffset() * 60000 &&
+                Date.parse(resp.logout_time) >
+                  Number(Date.parse(minFilter)) -
+                    new Date().getTimezoneOffset() * 60000,
             )
             .reverse()
             .map((resp) => (
               <li
                 className="ykv"
                 key={resp.id}
-                style={{backgroundColor: activeColour(resp)}}
+                style={{ backgroundColor: activeColour(resp) }}
               >
-                Vastuuhenkilö: {resp.username}, {resp.email}, {resp.organisations} <br />
+                Vastuuhenkilö: {resp.username}, {resp.email},{" "}
+                {resp.organisations} <br />
                 Luonut: {resp.created_by} <br />
                 Vastuussa henkilöistä: {resp.responsible_for} <br />
                 YKV-sisäänkirjaus klo: {formatDatetime(resp.login_time)} <br />

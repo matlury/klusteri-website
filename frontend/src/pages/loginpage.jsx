@@ -54,9 +54,7 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
       {showCreateUser ? (
         <NewAccountPage />
       ) : user ? (
-
-        <FrontPage/>
-       
+        <FrontPage />
       ) : (
         <LoginForm
           email={email}

@@ -112,13 +112,13 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     const email = loggedUser.email;
     const loginTime = getCurrentDateTime();
 
-    const userdata = await axiosClient.get('/listobjects/users/')
+    const userdata = await axiosClient.get("/listobjects/users/");
 
-    const user = userdata.data.find(user => user.username === username);
-    
+    const user = userdata.data.find((user) => user.username === username);
+
     const user_orgs = Object.keys(user.organization)
-    .filter(organization => user.organization[organization] === true)
-    .join(', ');
+      .filter((organization) => user.organization[organization] === true)
+      .join(", ");
 
     const responsibilityObject = {
       username: username,
@@ -126,7 +126,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
       responsible_for: responsibility,
       login_time: loginTime,
       created_by: username,
-      organisations: user_orgs
+      organisations: user_orgs,
     };
 
     confirmYKV(responsibilityObject);
@@ -135,10 +135,9 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
       const responsibilityObject = {
         username: user.username,
         email: user.email,
-        responsible_for:
-          responsibility,
+        responsible_for: responsibility,
         login_time: loginTime,
-        created_by: loggedUser.username
+        created_by: loggedUser.username,
       };
       confirmYKV(responsibilityObject);
     });
@@ -299,7 +298,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
           {hasPermission === true && (
             <Responsibilities
               allResponsibilities={allResponsibilities}
-              ykvFilter={ykvFilter} 
+              ykvFilter={ykvFilter}
               handleYkvFilterChange={handleYkvFilterChange}
               maxFilter={maxFilter}
               minFilter={minFilter}

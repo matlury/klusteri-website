@@ -624,6 +624,10 @@ class LogoutNightResponsibilityView(APIView):
         except ObjectDoesNotExist:
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
         
+        logout_time = request.data.get("logout_time")
+        if not logout_time:
+            return Response("Logout time not provided", status=status.HTTP_400_BAD_REQUEST)
+        
         if responsibility_to_update.username == user.data["username"] or responsibility_to_update.created_by == user.data["username"]:
             pass
         else:
@@ -631,10 +635,6 @@ class LogoutNightResponsibilityView(APIView):
                 "Not allowed for this user",
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-        logout_time = request.data.get("logout_time")
-        if not logout_time:
-            return Response("Logout time not provided", status=status.HTTP_400_BAD_REQUEST)
 
         # Check if logout is later than 7.15
         # ATTENTION! Current method is bad and doesn't acknowledge timezones

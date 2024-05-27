@@ -16,12 +16,16 @@ const YkvLogoutFunction = ({
   setRespToEdit,
   handleYkvEdit,
 }) => {
-  const user = JSON.parse(localStorage.getItem("loggedUser"))
+  const user = JSON.parse(localStorage.getItem("loggedUser"));
   let resps;
   if (user) {
-    resps = activeResponsibilites.filter((responsibility) => responsibility.username == user.username || responsibility.created_by == user.username)
+    resps = activeResponsibilites.filter(
+      (responsibility) =>
+        responsibility.username == user.username ||
+        responsibility.created_by == user.username,
+    );
   } else {
-    resps = activeResponsibilites
+    resps = activeResponsibilites;
   }
   return (
     <div>
@@ -43,19 +47,24 @@ const YkvLogoutFunction = ({
         />
       )}
       <p></p>
-      <h2>Kaikki aktiiviset ({Object.keys(resps).length} / {Object.keys(activeResponsibilites).length}): </h2>
+      <h2>
+        Kaikki aktiiviset ({Object.keys(resps).length} /{" "}
+        {Object.keys(activeResponsibilites).length}):{" "}
+      </h2>
       <ul style={{ listStyleType: "none", padding: 0 }}>
         {resps
           .slice()
           .reverse()
           .map((resp) => (
             <li className="ykv-active" key={resp.id}>
-              Vastuuhenkilö: {resp.username}, {resp.email}, {resp.organisations} <br />
+              Vastuuhenkilö: {resp.username}, {resp.email}, {resp.organisations}{" "}
+              <br />
               Luonut: {resp.created_by} <br />
               Vastuussa henkilöistä: {resp.responsible_for} <br />
               YKV-sisäänkirjaus klo: {formatDatetime(resp.login_time)} <br />
               <br></br>
-              {(resp.username === loggedUser.username || resp.created_by === loggedUser.username) && (
+              {(resp.username === loggedUser.username ||
+                resp.created_by === loggedUser.username) && (
                 <>
                   <button
                     onClick={() => setEditButtonPopup(true)}

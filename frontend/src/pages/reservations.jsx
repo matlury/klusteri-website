@@ -233,7 +233,7 @@ const MyCalendar = () => {
   // Gets current night responsibilities from the backend
   useEffect(() => {
     const fetchResponsibilities = async () => {
-      if (localStorage.getItem("loggedUser") != 'null') {
+      if (localStorage.getItem("loggedUser") != "null") {
         try {
           const response = await axiosClient.get(
             "listobjects/nightresponsibilities/",

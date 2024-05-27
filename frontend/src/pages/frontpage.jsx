@@ -8,13 +8,13 @@ const FrontPage = () => {
       <p>
         Talon latinankielinen nimi, Domus Gaudium, tarkoittaa Ilo- tai
         Riemu-nimistä taloa. Se viittaa luontevasti opiskelun ja
-        opiskelijaelämän riemuihin ja jatkaa akateemista traditiota ja sopii paikan muuhun nimistöön, kuten
-        Domus Academicaan.
+        opiskelijaelämän riemuihin ja jatkaa akateemista traditiota ja sopii
+        paikan muuhun nimistöön, kuten Domus Academicaan.
       </p>
       <p>
-        Talo sai myös oman tunnuslauseen,
-        "sub hoc tecto cives academici excoluntur”, joka suomennettuna
-        tarkoittaa ”tämän rakennuksen suojissa tehdään akateemisia kansalaisia”.
+        Talo sai myös oman tunnuslauseen, "sub hoc tecto cives academici
+        excoluntur”, joka suomennettuna tarkoittaa ”tämän rakennuksen suojissa
+        tehdään akateemisia kansalaisia”.
       </p>
     </div>
   );

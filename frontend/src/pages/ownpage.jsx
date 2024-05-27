@@ -51,16 +51,16 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // Writes down if a user is logged in
   useEffect(() => {
     setIsLoggedIn(false);
-      const loggedUser = JSON.parse(localStorage.getItem("loggedUser")) || null;
-      if (loggedUser) {
-        setIsLoggedIn(true);
+    const loggedUser = JSON.parse(localStorage.getItem("loggedUser")) || null;
+    if (loggedUser) {
+      setIsLoggedIn(true);
       setUsername(loggedUser.username);
       setEmail(loggedUser.email);
       setTelegram(loggedUser.telegram);
       setRole(loggedUser.role);
       getOrganisations();
       getPermission();
-      }
+    }
   }, [user || propIsLoggedIn]);
 
   // Fetches the organisations if a user is logged in

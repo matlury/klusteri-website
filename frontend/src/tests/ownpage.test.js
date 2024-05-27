@@ -13,6 +13,7 @@ localStorage.setItem("loggedUser", JSON.stringify(user));
 
 describe("OwnPage Component", () => {
   it("opens without logging in", () => {
+    localStorage.setItem("loggedUser", null);
     const { getByText } = render(<OwnPage isLoggedIn={false} />);
     expect(getByText("Kirjaudu sisään")).toBeInTheDocument();
   });
