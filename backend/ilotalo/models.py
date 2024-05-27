@@ -30,24 +30,17 @@ class UserAccountManager(BaseUserManager):
         - get_by_natural_key(username): retreives a user's data using USERNAME_FIELD
     """
 
-    def create_user(self, username, password, email, telegram, role, organization, keys):
+    def create_user(self, username, password, email, telegram, role):
         """Create a new User object"""
         email = self.normalize_email(email)
         email = email.lower()
-
-        if keys is None:
-            keys = {}
-        if organization is None:
-            organization = {}
 
         user = self.model(
             username=username,
             password=password,
             email=email,
             telegram=telegram,
-            role=role,
-            organization=organization,
-            keys=keys
+            role=role
         )
 
         # Hash the password and save the User object
@@ -73,11 +66,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=100, default="", unique=True)
     telegram = models.CharField(max_length=100, default="", blank=True)
     role = models.IntegerField(default=5)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-    organization = models.JSONField(default=dict, null=True)
-    keys = models.JSONField(default=dict, null=True)
-    rights_for_reservation = models.BooleanField(default=True)
+    keys = models.ManyToManyField(Organization)
 
     objects = UserAccountManager()
 

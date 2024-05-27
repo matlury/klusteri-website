@@ -15,7 +15,7 @@ More info: https://www.django-rest-framework.org/api-guide/serializers/
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("id", "username", "password", "email", "telegram", "role", "organization", "keys", "rights_for_reservation")
+        fields = ("id", "username", "password", "email", "telegram", "role")
 
     def validate_role(self, role):
         """Validates role when creating a new user. Limits: 1 <= role <= 7."""
@@ -55,9 +55,7 @@ class UserSerializer(serializers.ModelSerializer):
             password=validated_data["password"],
             email=validated_data["email"],
             telegram=validated_data.get("telegram", ""),
-            role=validated_data["role"],
-            organization=validated_data["organization"],
-            keys=validated_data["keys"]
+            role=validated_data["role"]
         )
 
         return user
@@ -69,7 +67,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "email", "telegram", "role", "organization", "keys", "rights_for_reservation")
+        fields = ("id", "username", "email", "telegram", "role")
 
     def validate_role(self, role):
         """Validates role when updating a user. Limits: 1 <= role <= 7."""
@@ -96,7 +94,7 @@ class UserNoPasswordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "email", "telegram", "role", "organization", "keys", "rights_for_reservation")
+        fields = ("id", "username", "email", "telegram", "role")
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
