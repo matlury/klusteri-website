@@ -761,6 +761,7 @@ class HandOverKeyView(APIView):
         users_keys = user_to_update.keys
         users_keys[organization_name] = True
 
+        # Update the users organisations
         users_organizations = user_to_update.organization
         users_organizations[organization_name] = True
 
@@ -769,6 +770,10 @@ class HandOverKeyView(APIView):
             'keys': users_keys,
             'organization': users_organizations
         }
+
+        # Update the users role if it's 5
+        if user_to_update.role == 5:
+            updated_data["role"] = 4
 
         serializer = UserUpdateSerializer(
             instance=user_to_update, data=updated_data, partial=True

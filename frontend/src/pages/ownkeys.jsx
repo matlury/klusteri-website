@@ -173,7 +173,10 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     if (allResponsibilities.length === 0) {
       return false;
     }
-    return ownResponsibilities.some((resp) => resp.present === true);
+    if (loggedUser.role !== 5) {
+      return true;
+    }
+    return false
   }
 
   // THE FOLLOWING FUNCTIONS RENDER SPECIFIC YKV-RESPONSIBILITIES
