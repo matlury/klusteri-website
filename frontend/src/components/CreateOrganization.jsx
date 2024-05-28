@@ -1,4 +1,5 @@
 import React from "react";
+import { Button, TextField, Switch, FormControlLabel } from "@mui/material";
 
 // Form for organization creation
 const CreateOrganization = ({
@@ -16,49 +17,20 @@ const CreateOrganization = ({
     <form>
       <h4>Luo uusi järjestö</h4>
       <div>
-        Järjestön nimi:
-        <input
-          type="text"
-          id="name"
-          value={organization_name}
-          onChange={(e) => setOrganizationName(e.target.value)}
-        />
+        <TextField id="name" label="Järjestön nimi" value={organization_name} onChange={(e) => setOrganizationName(e.target.value)} />
       </div>
       <div>
-        Sähköposti:
-        <input
-          type="text"
-          id="email"
-          value={organization_email}
-          onChange={(e) => setOrganizationEmail(e.target.value)}
-        />
+        <TextField id="email" label="Sähköposti" value={organization_email} onChange={(e) => setOrganizationEmail(e.target.value)} />
       </div>
       <div>
-        Kotisivut:
-        <input
-          type="text"
-          id="homepage"
-          value={organization_homepage}
-          onChange={(e) => setOrganizationHomePage(e.target.value)}
-        />
+        <TextField id="homepage" label="Kotisivu" value={organization_homepage} onChange={(e) => setOrganizationHomePage(e.target.value)} />
       </div>
       <div>
-        Koko:
-        <input
-          type="text"
-          id="size"
-          value={organization_size}
-          onChange={(e) => setOrganizationSize(e.target.value)}
-        />
+        <FormControlLabel control={<Switch />} label="Iso järjestö" />
+        <TextField id="size" label="Koko" value={organization_size} onChange={(e) => setOrganizationSize(e.target.value)} />
       </div>
       <br />
-      <button
-        className="create-user-button"
-        type="button"
-        onClick={handleCreateOrganization}
-      >
-        Luo järjestö
-      </button>
+      <Button onClick={handleCreateOrganization} variant="contained" className="create-user-button" >Luo järjestö</Button>
     </form>
   );
 };

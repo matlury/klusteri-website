@@ -1,4 +1,5 @@
 import React from "react";
+import { Button, TextField } from "@mui/material";
 
 const UserPage = ({
   username,
@@ -12,47 +13,22 @@ const UserPage = ({
 }) => {
   return (
     <form>
+      <h2>Omat tiedot</h2>
       <div>
-        Käyttäjänimi:
-        <input
-          id="username"
-          type="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
+        <TextField id="username" label="Käyttäjänimi" value={username} onChange={(e) => setUsername(e.target.value)} />
       </div>
       <div>
-        Sähköposti:
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <TextField id="email" label="Sähköposti" value={email} onChange={(e) => setEmail(e.target.value)} />
       </div>
       <div>
-        Telegram:
-        <input
-          id="telegram"
-          type="telegram"
-          value={telegram}
-          onChange={(e) => setTelegram(e.target.value)}
-        />
+        <TextField id="telegram" label="Telegram" value={telegram} onChange={(e) => setTelegram(e.target.value)} />
       </div>
+      <Button onClick={handleUserDetails} variant="contained" className="create-user-button" >Tallenna </Button>
       <br />
-      <div>Rooli: {role}</div>
-      <div>Virka:</div>
-      <div>Tyyppi:</div>
-      <div>Myöntämispäivä:</div>
-      <div>Avaimet:</div>
+      <div>Käyttäjän rooli: {role}</div>
+
       <br />
-      <button
-        onClick={handleUserDetails}
-        className="create-user-button"
-        type="button"
-      >
-        Vahvista muutokset
-      </button>
+
     </form>
   );
 };

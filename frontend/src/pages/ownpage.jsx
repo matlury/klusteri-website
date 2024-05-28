@@ -563,7 +563,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
               <div
                 id="centered_content"
                 style={{
-                  position: "absolute",
+                  position: "center",
                   bottom: "170px",
                   left: "30%",
                   width: "30%",
