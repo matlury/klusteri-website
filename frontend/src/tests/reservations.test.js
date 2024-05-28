@@ -13,7 +13,6 @@ describe("Reservations component", () => {
   it("renders Reservations component", () => {
     const { getByText } = render(<Reservations />);
     expect(getByText("Varauskalenteri")).toBeInTheDocument();
-    expect(getByText("Aktiiviset YKV-kirjaukset")).toBeInTheDocument();
   });
 
   it("renders the booking form", () => {

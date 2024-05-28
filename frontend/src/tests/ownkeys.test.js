@@ -8,6 +8,7 @@ import "@testing-library/jest-dom";
 import OwnKeys from "../../src/pages/ownkeys";
 import React from "react";
 import mockAxios from "../../__mocks__/axios";
+import { act } from "react-dom/test-utils";
 
 afterEach(() => {
   // cleaning up the mess left behind the previous test
@@ -26,8 +27,8 @@ describe("OwnKeys Component", () => {
       email: "example_email@example.com",
       telegram: "example_telegram",
       role: 1,
-      keys: {},
-      organization: {},
+      keys: {"tko-äly": true},
+      organization: {"tko-äly": true},
       rights_for_reservation: true,
     };
 
@@ -46,39 +47,57 @@ describe("OwnKeys Component", () => {
       email: "example_email@example.com",
       telegram: "example_telegram",
       role: 1,
-      keys: {},
-      organization: {},
+      keys: {"tko-äly": true},
+      organization: {"tko-äly": true},
       rights_for_reservation: true,
     };
 
     window.confirm = jest.fn(() => true);
     localStorage.setItem("ACCESS_TOKEN", "example_token");
+    localStorage.setItem("loggeduser", JSON.stringify(user));
 
-    const { getByText, getByLabelText } = render(
+    const { getByText, getByLabelText, getByTestId } = render(
       <OwnKeys isLoggedIn={true} loggedUser={user} />,
     );
 
     const responsibile_for = getByLabelText("Kenestä otat vastuun?");
     fireEvent.change(responsibile_for, { target: { value: "fuksit" } });
 
-    window.confirm = jest.fn(() => true);
-
-    const respButton = getByText("Ota vastuu");
+    const respButton = getByTestId("createresponsibility");
     fireEvent.click(respButton);
+    let responseObj = { data: [
+      {
+          "id": 1,
+          "username": "example_username",
+          "email": "example_email@example.com",
+          "telegram": "example_telegram",
+          "role": 1,
+          "organization": {
+              "tko-äly": true
+          },
+          "keys": {
+              "tko-äly": true
+          },
+          "rights_for_reservation": true
+      },] };
+      
+    mockAxios.mockResponseFor({url: '/listobjects/users/'}, responseObj)
 
     // Wait for the mockAxios.post to be called
     await waitFor(() => {
-      //expect(mockAxios.post).toHaveBeenCalledWith(
-      //  `ykv/create_responsibility`,
-      //  {
-      //    created_by: "example_user",
-      //    email: "example_email@example.com",
-      //    login_time: expect.anything(),
-      //    organisations: "",
-      //    responsible_for: "fuksit",
-      //    username: "example_username",
-      //  },
-      //);
+      
+      expect(mockAxios.get).toHaveBeenCalledWith('/listobjects/users/')
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        `/ykv/create_responsibility`,
+        {
+          created_by: "example_username",
+          email: "example_email@example.com",
+          login_time: expect.anything(),
+          organisations: "tko-äly",
+          responsible_for: "fuksit",
+          username: "example_username",
+        },
+      );
       expect(mockAxios.get).toHaveBeenCalledWith(
         `listobjects/nightresponsibilities/`,
       );

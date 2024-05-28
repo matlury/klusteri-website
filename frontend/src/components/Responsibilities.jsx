@@ -15,7 +15,7 @@ const Responsibilities = ({
     <div>
       <h2>Kaikki vastuut</h2>
       Etsi henkilöitä: <br />
-      <input value={ykvFilter} onChange={handleYkvFilterChange} type="text" />
+      <input value={ykvFilter} onChange={handleYkvFilterChange} type="text" data-testid="ykvfiltersearch"/>
       Hae kirjauksia aikavälillä: <br />
       <input type="hidden" id="timezone" name="timezone" value="03:00" />
       <input
@@ -73,7 +73,7 @@ const Responsibilities = ({
                 Vastuuhenkilö: {resp.username}, {resp.email},{" "}
                 {resp.organisations} <br />
                 Luonut: {resp.created_by} <br />
-                Vastuussa henkilöistä: {resp.responsible_for} <br />
+                <p>Vastuussa henkilöistä: {resp.responsible_for}</p>
                 YKV-sisäänkirjaus klo: {formatDatetime(resp.login_time)} <br />
                 YKV-uloskirjaus klo:{" "}
                 {!resp.present && formatDatetime(resp.logout_time)}
