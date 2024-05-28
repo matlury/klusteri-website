@@ -1,98 +1,69 @@
-import React from "react";
-import { formatDatetime } from "../utils/timehelpers";
-import EditPopup from "../context/EditPopup";
-import Popup from "../context/Popup";
+import React, { Component } from "react";
+import axiosClient from "../axios.js";
+import { DataGrid } from '@mui/x-data-grid';
+import { Button } from "@mui/material";
 
-const YkvLogoutFunction = ({
-  handleYkvLogout,
-  idToLogout,
-  buttonPopup,
-  setButtonPopup,
-  activeResponsibilites,
-  setIdToLogout,
-  loggedUser,
-  setEditButtonPopup,
-  editButtonPopup,
-  setRespToEdit,
-  handleYkvEdit,
-}) => {
-  const user = JSON.parse(localStorage.getItem("loggedUser"));
-  let resps;
-  if (user) {
-    resps = activeResponsibilites.filter(
-      (responsibility) =>
-        responsibility.username == user.username ||
-        responsibility.created_by == user.username,
-    );
-  } else {
-    resps = activeResponsibilites;
+
+class YkvLogoutFunction extends Component {
+  constructor() {
+    super();
+    this.state = {
+      users: [],
+      loading: true,
+    };
+
+    this.columns = [
+      { field: 'Vastuuhenkilö', headerName: 'Vastuuhenkilö', width: 200 },
+      { field: 'Vastuussa', headerName: 'Vastuussa', width: 300 },
+      { field: 'YKV_sisäänkirjaus', headerName: 'YKV sisäänkirjaus', width: 200 },
+    ];
   }
-  return (
-    <div>
-      <button
-        onClick={() => handleYkvLogout(idToLogout)}
+
+  componentDidMount() {
+    axiosClient
+      .get("/listobjects/nightresponsibilities/")
+      .then((res) => {
+        const userData = res.data.map((u, index) => ({
+          id: index, // DataGrid requires a unique 'id' for each row
+          Vastuuhenkilö: u.username,
+          Vastuussa: u.responsible_for,
+          YKV_sisäänkirjaus: u.login_time, // Assuming login_time is available
+        }));
+        this.setState({
+          users: userData,
+          loading: false,
+        });
+      })
+      .catch((error) => console.error(error));
+  }
+
+  render() {
+    return this.state.loading ? (
+      <div>Lataa...</div>
+    ) : (
+      
+      <div style={{ height: 400, width: '100%' }}>
+        <h2>Aktiiviset</h2>
+        <Button
+        variant="contained"
         className="login-button"
-        type="button"
-      >
-        {" "}
-        YKV-uloskirjaus{" "}
-      </button>
-      {buttonPopup && (
-        <Popup
-          trigger={buttonPopup}
-          setTrigger={setButtonPopup}
-          active={resps}
-          setIdToLogout={setIdToLogout}
-          onSubmit={handleYkvLogout}
+        color="primary"
+        type="submit"
+        >
+          + Ota vastuu
+        </Button>
+        
+
+        <DataGrid
+          rows={this.state.users}
+          columns={this.columns}
+          pageSize={5}
+          rowsPerPageOptions={[5, 10, 20]}
+          checkboxSelection={true}
         />
-      )}
-      <p></p>
-      <h2>
-        Kaikki aktiiviset ({Object.keys(resps).length} /{" "}
-        {Object.keys(activeResponsibilites).length}):{" "}
-      </h2>
-      <ul style={{ listStyleType: "none", padding: 0 }}>
-        {resps
-          .slice()
-          .reverse()
-          .map((resp) => (
-            <li className="ykv-active" key={resp.id}>
-              Vastuuhenkilö: {resp.username}, {resp.email}, {resp.organisations}{" "}
-              <br />
-              Luonut: {resp.created_by} <br />
-              Vastuussa henkilöistä: {resp.responsible_for} <br />
-              YKV-sisäänkirjaus klo: {formatDatetime(resp.login_time)} <br />
-              <br></br>
-              {(resp.username === loggedUser.username ||
-                resp.created_by === loggedUser.username) && (
-                <>
-                  <button
-                    onClick={() => setEditButtonPopup(true)}
-                    style={{ marginLeft: "20px" }}
-                    className="login-button"
-                    type="button"
-                  >
-                    {" "}
-                    Muokkaa omaa YKV-kirjausta{" "}
-                  </button>
-                  {editButtonPopup && (
-                    <EditPopup
-                      trigger={editButtonPopup}
-                      resp={resp}
-                      setTrigger={setEditButtonPopup}
-                      setRespToEdit={setRespToEdit}
-                      onSubmit={handleYkvEdit}
-                    />
-                  )}
-                </>
-              )}
-              <br />
-              <br />
-            </li>
-          ))}
-      </ul>
-    </div>
-  );
-};
+      </div>
+    );
+  }
+}
 
 export default YkvLogoutFunction;
