@@ -22,11 +22,13 @@ const Responsibilities = ({
         value={minFilter}
         onChange={handleMinFilterChange}
         type="datetime-local"
+        data-testid="timefiltermin"
       />
       <input
         value={maxFilter}
         onChange={handleMaxFilterChange}
         type="datetime-local"
+        data-testid="timefiltermax"
       />
       <br />
       <br />
