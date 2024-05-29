@@ -9,6 +9,7 @@ from django.contrib.auth.models import (
     PermissionsMixin,
     BaseUserManager,
 )
+from django.contrib.postgres.fields import ArrayField
 
 
 class Organization(models.Model):
@@ -104,6 +105,7 @@ class NightResponsibility(models.Model):
     """
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
+    organizations = models.ManyToManyField(Organization)
     responsible_for = models.CharField(max_length=500, default="")
     login_time = models.DateTimeField(
         auto_now_add = True,
@@ -115,7 +117,7 @@ class NightResponsibility(models.Model):
     )
     present = models.BooleanField(default=True)
     late = models.BooleanField(default=False)
-    created_by = models.CharField(max_length=50, default="")
+    created_by = models.CharField(max_length=50, default="") # CHANGE TO FOREIGN KEY
 
 class DefectFault(models.Model):
     """Model for defects and faults in Klusteri."""

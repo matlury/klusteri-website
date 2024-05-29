@@ -124,6 +124,18 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = '__all__'
 
+"""
+Doesn't work I don't know why
+class NightResponsibilitySerializer(serializers.ModelSerializer):
+    organizations = OrganizationSerializer(many=True, read_only=True)
+    username = serializers.CharField(source='user.username')
+    email = serializers.CharField(source='user.email')
+
+    class Meta:
+        model = NightResponsibility
+        fields = '__all__'
+"""
+
 class NightResponsibilitySerializer(serializers.ModelSerializer):
     """Serializes a NightResponsibility object as JSON"""
 

@@ -39,6 +39,7 @@ const Responsibilities = ({
           padding: "10px",
         }}
       >
+        {/* SEARCH BAR
         <ul style={{ listStyleType: "none", padding: 0 }}>
           {allResponsibilities
             .slice()
@@ -81,7 +82,8 @@ const Responsibilities = ({
                 <br />
               </li>
             ))}
-        </ul>
+          </ul>*/
+          }
       </div>
     </div>
   );

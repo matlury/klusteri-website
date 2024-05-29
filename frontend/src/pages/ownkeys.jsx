@@ -108,36 +108,41 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     event.preventDefault();
 
     const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
-    const username = loggedUser.username;
+    const user_id = loggedUser.id;
     const email = loggedUser.email;
     const loginTime = getCurrentDateTime();
 
     const userdata = await axiosClient.get("/listobjects/users/");
 
-    const user = userdata.data.find((user) => user.username === username);
+    const user = userdata.data.find((user) => user.id === user_id);
 
-    const user_orgs = Object.keys(user.organization)
-      .filter((organization) => user.organization[organization] === true)
-      .join(", ");
+    console.log(user.keys);
+
+    const user_orgs = user.keys.map(key => key.id);
+
+    console.log(user_orgs);
 
     const responsibilityObject = {
-      username: username,
+      user: user_id,
       email: email,
       responsible_for: responsibility,
       login_time: loginTime,
-      created_by: username,
-      organisations: user_orgs,
+      created_by: loggedUser.username,
+      organizations: user_orgs,
     };
+
+    console.log(responsibilityObject);
 
     confirmYKV(responsibilityObject);
 
     selectedForYKV.map((user) => {
       const responsibilityObject = {
-        username: user.username,
+        user: user_id,
         email: user.email,
         responsible_for: responsibility,
         login_time: loginTime,
         created_by: loggedUser.username,
+        organizations: user_orgs,
       };
       confirmYKV(responsibilityObject);
     });
