@@ -51,14 +51,13 @@ class UserAccountManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser):
     """
     The custom User model.
 
     Inheritance
     -----------
     AbstractBaseUser: Core implementation of a user model. Includes i.e. password hashing and tokenized password resets.
-    PermissionsMixin: Django's permission framework
     """
 
     id = models.AutoField(primary_key=True)
@@ -104,8 +103,7 @@ class NightResponsibility(models.Model):
     login and logout times, and attendance status.
     """
 
-    username = models.CharField(max_length=50, default="")
-    email = models.EmailField(max_length=150, default="")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
     responsible_for = models.CharField(max_length=500, default="")
     login_time = models.DateTimeField(
         auto_now_add = True,
@@ -118,7 +116,6 @@ class NightResponsibility(models.Model):
     present = models.BooleanField(default=True)
     late = models.BooleanField(default=False)
     created_by = models.CharField(max_length=50, default="")
-    organisations = models.CharField(max_length=100, default="")
 
 class DefectFault(models.Model):
     """Model for defects and faults in Klusteri."""

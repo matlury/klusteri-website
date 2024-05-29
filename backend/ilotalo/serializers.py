@@ -11,11 +11,28 @@ back to complex data types.
 More info: https://www.django-rest-framework.org/api-guide/serializers/
 """
 
+        
+class OrganizationSerializer(serializers.ModelSerializer):
+    """Serializes an Organization object as JSON"""
+
+    class Meta:
+        model = Organization
+        fields = '__all__'
+
+    def validate_size(self, size):
+        """Validates size when creating a new organization."""
+
+        if int(size) not in [0, 1]:
+            raise serializers.ValidationError("Organization size must be 0 or 1 (small or large).")
+        return size
 
 class UserSerializer(serializers.ModelSerializer):
+
+    keys = OrganizationSerializer(many=True, read_only=True)
+
     class Meta:
         model = User
-        fields = ("id", "username", "password", "email", "telegram", "role")
+        fields = '__all__'
 
     def validate_role(self, role):
         """Validates role when creating a new user. Limits: 1 <= role <= 7."""
@@ -59,20 +76,6 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
         return user
-        
-class OrganizationSerializer(serializers.ModelSerializer):
-    """Serializes an Organization object as JSON"""
-
-    class Meta:
-        model = Organization
-        fields = ("id", "name", "email", "homepage", "size")
-
-    def validate_size(self, size):
-        """Validates size when creating a new organization."""
-
-        if int(size) not in [0, 1]:
-            raise serializers.ValidationError("Organization size must be 0 or 1 (small or large).")
-        return size
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     """
@@ -83,7 +86,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "email", "telegram", "role", "keys")
+        exclude = ('password',)
 
     def validate_role(self, role):
         """Validates role when updating a user. Limits: 1 <= role <= 7."""
@@ -108,9 +111,11 @@ class UserNoPasswordSerializer(serializers.ModelSerializer):
     Serializes a User object as JSON without displaying the hashed password
     """
 
+    keys = OrganizationSerializer(many=True, read_only=True)
+
     class Meta:
         model = User
-        fields = ("id", "username", "email", "telegram", "role")
+        exclude = ('password',)
 
 class EventSerializer(serializers.ModelSerializer):
     """Serializes an Event object as JSON"""
