@@ -11,6 +11,7 @@ from .serializers import (
     UserUpdateSerializer,
     EventSerializer,
     NightResponsibilitySerializer,
+    CreateNightResponsibilitySerializer,
     DefectFaultSerializer,
 )
 from .models import User, Organization, Event, NightResponsibility, DefectFault
@@ -549,7 +550,7 @@ class CreateNightResponsibilityView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        serializer = NightResponsibilitySerializer(data=request.data)
+        serializer = CreateNightResponsibilitySerializer(data=request.data)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
