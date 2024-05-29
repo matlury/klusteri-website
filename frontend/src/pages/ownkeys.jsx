@@ -120,7 +120,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
 
     const user_orgs = user.keys.map(key => key.id);
 
-    console.log(user_orgs);
+    console.log(typeof(user_orgs));
 
     const responsibilityObject = {
       user: user_id,
@@ -149,7 +149,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
 
     function confirmYKV(responsibilityObject) {
       const confirm = window.confirm(
-        `Henkilö ${responsibilityObject.username}\nottaa vastuun henkilöistä: ${responsibility}\nAlkaen kello: ${loginTime}`,
+        `Henkilö ${(userdata.data.find((user) => user.id === responsibilityObject.user)).username}\nottaa vastuun henkilöistä: ${responsibility}\nAlkaen kello: ${loginTime}`,
       );
 
       if (confirm) {

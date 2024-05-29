@@ -53,7 +53,7 @@ const YkvLogoutFunction = ({
           .reverse()
           .map((resp) => (
             <li className="ykv-active" key={resp.id}>
-              Vastuuhenkilö: {resp.username}, {resp.email}, {resp.organisations}{" "}
+              Vastuuhenkilö: {resp.user.username}, {resp.user.email}, {resp.organizations.map(organization => organization.name)}{" "}
               <br />
               Luonut: {resp.created_by} <br />
               Vastuussa henkilöistä: {resp.responsible_for} <br />
