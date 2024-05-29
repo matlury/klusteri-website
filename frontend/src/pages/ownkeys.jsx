@@ -143,10 +143,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     });
 
     function confirmYKV(responsibilityObject) {
-      const confirm = window.confirm(
-        `Henkilö ${responsibilityObject.username}\nottaa vastuun henkilöistä: ${responsibility}\nAlkaen kello: ${loginTime}`,
-      );
-
       if (confirm) {
         axiosClient
           .post(`/ykv/create_responsibility`, responsibilityObject)
@@ -267,6 +263,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
           {success && <p style={{ color: "green" }}>{success}</p>}
           {checkIfLoggedIn() && (
             <YkvLogoutFunction
+              handleYkvLogin={handleYkvLogin}
               handleYkvLogout={handleYkvLogout}
               idToLogout={idToLogout}
               buttonPopup={buttonPopup}
@@ -278,32 +275,8 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
               editButtonPopup={editButtonPopup}
               setRespToEdit={setRespToEdit}
               handleYkvEdit={handleYkvEdit}
-            />
-          )}
-          {user.role !== 5 && (
-            <YkvForm
               responsibility={responsibility}
               setResponsibility={setResponsibility}
-              nameFilter={nameFilter}
-              handleFilterChange={handleFilterChange}
-              allUsersWithKeys={allUsersWithKeys}
-              selectedForYKV={selectedForYKV}
-              handleCheckboxChange={handleCheckboxChange}
-              handleYkvLogin={handleYkvLogin}
-            />
-          )}
-          {!(loggedUser.role === 1 || loggedUser.role === 5) && (
-            <OwnYkvList ownResponsibilities={ownResponsibilities} />
-          )}
-          {hasPermission === true && (
-            <Responsibilities
-              allResponsibilities={allResponsibilities}
-              ykvFilter={ykvFilter}
-              handleYkvFilterChange={handleYkvFilterChange}
-              maxFilter={maxFilter}
-              minFilter={minFilter}
-              handleMaxFilterChange={handleMaxFilterChange}
-              handleMinFilterChange={handleMinFilterChange}
             />
           )}
         </div>

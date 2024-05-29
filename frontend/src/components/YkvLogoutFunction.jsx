@@ -1,9 +1,22 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "../axios.js";
 import { DataGrid } from '@mui/x-data-grid';
-import { Button } from "@mui/material";
+import { Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Autocomplete} from "@mui/material";
 
-const YkvLogoutFunction = () => {
+
+
+
+const YkvLogoutFunction = ({handleYkvLogin, responsibility, setResponsibility}) => {
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,16 +45,67 @@ const YkvLogoutFunction = () => {
   return loading ? (
     <div>Lataa...</div>
   ) : (
-    <div style={{ height: 400, width: '100%' }}>
+    <div style={{ height: 600, width: '100%' }}>
       <h2>Aktiiviset</h2>
-      <Button
-        variant="contained"
-        className="login-button"
-        color="primary"
-        type="submit"
-      >
+      <React.Fragment>
+      <Button variant="contained" className="login-button" color="primary" onClick={handleClickOpen}>
         + Ota vastuu
       </Button>
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        PaperProps={{
+          component: 'form',
+          onSubmit: (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.currentTarget);
+            const formJson = Object.fromEntries(formData.entries());
+            const email = formJson.email;
+            console.log(email);
+            handleClose();
+          },
+        }}
+      >
+        <DialogTitle>Ota vastuu</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Kirjaa sisään YKV-valvontaan henkilöitä ja ota vastuu.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            required
+            margin="dense"
+            id="responsibility"
+            type="responsibility"
+            label="Kenestä otat vastuun?"
+            value={responsibility}
+            fullWidth
+            variant="standard"
+            onChange={(e) => setResponsibility(e.target.value)}
+          />
+
+          <Autocomplete
+            id="combo-box-demo"
+            options={users}
+            getOptionLabel={(option) => option.Vastuuhenkilö}
+            style={{ width: 300 }}
+            renderInput={(params) => <TextField {...params} label="Kirjaa toisen käyttäjän puolesta" variant="standard" />}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Peruuta</Button>
+          <Button
+            type="submit"
+            onClick={handleYkvLogin}
+            className="create-user-button"
+            >Ota vastuu
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </React.Fragment>
+
+
       <DataGrid
         rows={users}
         columns={columns}
