@@ -11,14 +11,14 @@ import Responsibilities from "../components/Responsibilities.jsx";
 import YkvLogoutFunction from "../components/YkvLogoutFunction.jsx";
 import OwnYkvList from "../components/OwnYkvList.jsx";
 
-const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
+const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: propLoggedUser }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
   const [responsibility, setResponsibility] = useState("");
   const [email, setEmail] = useState("");
-  const [loggedUser, setLoggedUser] = useState(user);
+  const [loggedUser, setLoggedUser] = useState(propLoggedUser);
   const [allResponsibilities, setAllResponsibilities] = useState([]);
   const [ownResponsibilities, setOwnResponsibilities] = useState([]);
-  const [activeResponsibilites, setActiveResponsibilites] = useState([]);
+  const [activeResponsibilities, setActiveResponsibilities] = useState([]);
   const [allUsersWithKeys, setAllUsersWithKeys] = useState([]);
 
   const [nameFilter, setNameFilter] = useState("");
@@ -40,26 +40,26 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
 
   const API_URL = process.env.API_URL;
 
-  // effect hooks keep the information of the logged user up to date
   useEffect(() => {
     setIsLoggedIn(propIsLoggedIn);
     if (propIsLoggedIn) {
-      const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
-      setEmail(loggedUser.email);
-      setLoggedUser(loggedUser);
-      getPermission({ API_URL, setHasPermission });
+      const storedUser = JSON.parse(localStorage.getItem("loggedUser"));
+      if (storedUser) {
+        setEmail(storedUser.email);
+        setLoggedUser(storedUser);
+        getPermission({ API_URL, setHasPermission });
+      }
     }
   }, [propIsLoggedIn]);
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isLoggedIn && loggedUser) {
       getResponsibility();
       getActiveResponsibilities();
       getPermission({ API_URL, setHasPermission });
     }
-  }, [isLoggedIn, selectedForYKV]);
+  }, [isLoggedIn, loggedUser, selectedForYKV]);
 
-  // Fetch all users with keys when the component mounts or when 'loggedUser' changes
   useEffect(() => {
     const fetchData = async () => {
       if (loggedUser) {
@@ -94,12 +94,15 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
   const handleFilterChange = (event) => {
     setNameFilter(event.target.value);
   };
+
   const handleYkvFilterChange = (event) => {
     setYkvFilter(event.target.value);
   };
+
   const handleMaxFilterChange = (event) => {
     setMaxFilter(event.target.value);
   };
+
   const handleMinFilterChange = (event) => {
     setMinFilter(event.target.value);
   };
@@ -108,12 +111,13 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     event.preventDefault();
 
     const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
+    if (!loggedUser) return;
+
     const username = loggedUser.username;
     const email = loggedUser.email;
     const loginTime = getCurrentDateTime();
 
     const userdata = await axiosClient.get("/listobjects/users/");
-
     const user = userdata.data.find((user) => user.username === username);
 
     const user_orgs = Object.keys(user.organization)
@@ -181,7 +185,8 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
       .then((response) => {
         setAllResponsibilities(response.data);
         const filteredResponsibilities = response.data.filter(
-          (item) => item.email === email || item.created_by === user.username,
+          (item) =>
+            item.email === email || (loggedUser && item.created_by === loggedUser.username)
         );
         setOwnResponsibilities(filteredResponsibilities);
       })
@@ -196,7 +201,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
       .then((response) => {
         setAllResponsibilities(response.data);
         const active = response.data.filter((item) => item.present === true);
-        setActiveResponsibilites(active);
+        setActiveResponsibilities(active);
       })
       .catch((error) => {
         console.error("Error fetching responsibilities", error);
@@ -230,15 +235,13 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
           setError("YKV-uloskirjaus epäonnistui");
           setTimeout(() => setError(""), 5000);
           console.error("Ykv-uloskirjaus epäonnistui", error);
-        }),
+        })
     );
   };
 
   // THE FOLLOWING FUNCTIONS HANDLE THE YKV-LOGIN EDITS
 
   const handleYkvEdit = (respId, respToEdit) => {
-    console.log("resptoedit", respToEdit);
-
     axiosClient
       .put(`ykv/update_responsibility/${respId}/`, respToEdit)
       .then((response) => {
@@ -268,7 +271,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
               idToLogout={idToLogout}
               buttonPopup={buttonPopup}
               setButtonPopup={setButtonPopup}
-              activeResponsibilites={activeResponsibilites}
+              activeResponsibilities={activeResponsibilities}
               setIdToLogout={setIdToLogout}
               loggedUser={loggedUser}
               setEditButtonPopup={setEditButtonPopup}
