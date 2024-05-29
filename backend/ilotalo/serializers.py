@@ -122,18 +122,18 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ("id", "start", "end", "title", "organizer", "description", "responsible", "open", "room")
+        fields = '__all__'
 
 class NightResponsibilitySerializer(serializers.ModelSerializer):
     """Serializes a NightResponsibility object as JSON"""
 
     class Meta:
         model = NightResponsibility
-        fields = ("id", "username", "email", "responsible_for", "login_time", "logout_time", "present", "late", "created_by", "organisations")
+        fields = '__all__'
 
 class DefectFaultSerializer(serializers.ModelSerializer):
     """Serializes a DefectFault object as JSON"""
 
     class Meta:
         model = DefectFault
-        fields = ("id", "description", "email_sent", "repaired")
+        fields = '__all__'
