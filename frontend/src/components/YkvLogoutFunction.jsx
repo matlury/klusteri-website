@@ -73,7 +73,7 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
       .then((res) => {
         const userData = res.data.map((u, index) => ({
           id: index, // DataGrid requires a unique 'id' for each row
-          Vastuuhenkilö: u.username,
+          Vastuuhenkilö: u.user.username,
           Vastuussa: u.responsible_for,
           YKV_sisäänkirjaus: u.login_time, // Assuming login_time is available
         }));
