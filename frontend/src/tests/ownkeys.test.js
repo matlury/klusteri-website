@@ -301,10 +301,9 @@ describe("OwnKeys Component", () => {
       }
     ] };
 
-
     await waitFor(() => {
-      mockAxios.mockResponseFor({url: 'listobjects/nightresponsibilities/'}, response)
-      mockAxios.mockResponseFor({url: 'undefined/api/users/userinfo'}, responsedata)
+    mockAxios.mockResponseFor({url: 'undefined/api/users/userinfo'}, responsedata)
+    mockAxios.mockResponseFor({url: 'listobjects/nightresponsibilities/'}, response)
 
       expect(mockAxios.get).toHaveBeenCalledWith('undefined/api/users/userinfo', {"headers": {"Authorization": "Bearer example_token"}})
       expect(mockAxios.get).toHaveBeenCalledWith('listobjects/nightresponsibilities/')
