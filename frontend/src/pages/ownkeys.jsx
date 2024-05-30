@@ -177,14 +177,14 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: propLoggedUser }) => 
 
   // function that checks if the user logged in (if there are no responsibilities, the user cant be logged in either)
   function checkIfLoggedIn() {
-    if (allResponsibilities.length === 0) {
-      return false;
-    }
-    if (loggedUser.role !== 5) {
-      return true;
+    if (loggedUser) {
+      if (loggedUser.role !== 5) {
+        return true;
+      }
+      return false
     }
     return false
-  }
+    }
 
   // THE FOLLOWING FUNCTIONS RENDER SPECIFIC YKV-RESPONSIBILITIES
 
