@@ -108,7 +108,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: propLoggedUser }) => 
   };
   // this function handles the event of taking responsibility (check above)
   const handleYkvLogin = async (event) => {
-    event.preventDefault();
+   // event.preventDefault();
 
     const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
     if (!loggedUser) return;
@@ -212,7 +212,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: propLoggedUser }) => 
   // handles the end of taking responsibility
   const handleYkvLogout = (selectedIds) => {
     setButtonPopup(true);
-
+    console.log("selectedIds", selectedIds);
     selectedIds.forEach((id) =>
       axiosClient
         .put(`ykv/logout_responsibility/${id}/`, {

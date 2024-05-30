@@ -4,11 +4,12 @@ import { DataGrid } from '@mui/x-data-grid';
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Autocomplete } from "@mui/material";
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
-const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility }) => {
+const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, handleYkvLogout, selectedIds }) => {
   const [open, setOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [selectedUserName, setSelectedUserName] = useState('');
+  const [search, setSearch] = useState('');
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -26,6 +27,7 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility }
   const [loading, setLoading] = useState(true);
 
   const handleRemove = (id) => {
+    handleYkvLogout(selectedIds);
     setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
     setConfirmOpen(false);
   };
@@ -71,6 +73,20 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility }
       .catch((error) => console.error(error));
   }, []);
 
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const formJson = Object.fromEntries(formData.entries());
+    const email = formJson.email;
+    console.log(email);
+    handleYkvLogin(); // Call handleYkvLogin if needed
+    handleClose(); // Close the dialog
+  };
+
+  const filteredUsers = users.filter(user =>
+    user.Vastuussa.toLowerCase().includes(search.toLowerCase())
+  );
+
   return loading ? (
     <div>Lataa...</div>
   ) : (
@@ -86,14 +102,7 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility }
           onClose={handleClose}
           PaperProps={{
             component: 'form',
-            onSubmit: (event) => {
-              event.preventDefault();
-              const formData = new FormData(event.currentTarget);
-              const formJson = Object.fromEntries(formData.entries());
-              const email = formJson.email;
-              console.log(email);
-              handleClose();
-            },
+            onSubmit: handleFormSubmit,
           }}
         >
           <DialogTitle>Ota vastuu</DialogTitle>
@@ -106,7 +115,7 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility }
               required
               margin="dense"
               id="responsibility"
-              type="responsibility"
+              type="text"
               label="Kenestä otat vastuun?"
               value={responsibility}
               fullWidth
@@ -126,16 +135,24 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility }
             <Button onClick={handleClose}>Peruuta</Button>
             <Button
               type="submit"
-              onClick={handleYkvLogin}
               className="create-user-button"
-            >Ota vastuu
+            >
+              Ota vastuu
             </Button>
           </DialogActions>
         </Dialog>
       </React.Fragment>
 
+      <TextField
+        label="Hae vastuussa"
+        variant="outlined"
+        fullWidth
+        margin="normal"
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
       <DataGrid
-        rows={users}
+        rows={filteredUsers}
         columns={columns}
         pageSize={5}
         rowsPerPageOptions={[5, 10, 20]}
