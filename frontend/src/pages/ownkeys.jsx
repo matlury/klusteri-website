@@ -23,8 +23,12 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
 
   const [nameFilter, setNameFilter] = useState("");
   const [ykvFilter, setYkvFilter] = useState("");
-  const [maxFilter, setMaxFilter] = useState("2025-01-01T00:00");
-  const [minFilter, setMinFilter] = useState("2024-01-01T00:00");
+  var d = new Date();
+  d.setDate(d.getDate() - 6);
+  d.setDated(d)
+  const [minFilter, setMinFilter] = useState(d.toISOString().slice(0,-8));
+  d.setDate(d.getDate() + 7);
+  const [maxFilter, setMaxFilter] = useState(d.toISOString().slice(0,-8));
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
