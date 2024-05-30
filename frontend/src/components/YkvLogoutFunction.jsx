@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "../axios.js";
 import { DataGrid } from '@mui/x-data-grid';
-import { Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Autocomplete} from "@mui/material";
+import { Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Autocomplete } from "@mui/material";
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
-
-
-
-const YkvLogoutFunction = ({handleYkvLogin, responsibility, setResponsibility}) => {
-  const [open, setOpen] = React.useState(false);
+const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility }) => {
+  const [open, setOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedUserName, setSelectedUserName] = useState('');
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -17,13 +18,41 @@ const YkvLogoutFunction = ({handleYkvLogin, responsibility, setResponsibility}) 
     setOpen(false);
   };
 
+  const handleConfirmClose = () => {
+    setConfirmOpen(false);
+  };
+
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const handleRemove = (id) => {
+    setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+    setConfirmOpen(false);
+  };
+
+  const handleLogoutClick = (id, name) => {
+    setSelectedUserId(id);
+    setSelectedUserName(name);
+    setConfirmOpen(true);
+  };
+
   const columns = [
-    { field: 'Vastuuhenkilö', headerName: 'Vastuuhenkilö', width: 200 },
-    { field: 'Vastuussa', headerName: 'Vastuussa', width: 300 },
-    { field: 'YKV_sisäänkirjaus', headerName: 'YKV sisäänkirjaus', width: 200 },
+    {
+      field: 'actions',
+      headerName: 'Uloskirjaus',
+      width: 90,
+      renderCell: (params) => (
+        <Button
+          variant="outlined"
+          onClick={() => handleLogoutClick(params.id, params.row.Vastuussa)}
+        >
+          <LogoutOutlinedIcon />
+        </Button>
+      ),
+    },
+    { field: 'Vastuuhenkilö', headerName: 'Vastuuhenkilö', width: 170 },
+    { field: 'Vastuussa', headerName: 'Vastuussa', width: 200 },
+    { field: 'YKV_sisäänkirjaus', headerName: 'YKV sisäänkirjaus', width: 220 },
   ];
 
   useEffect(() => {
@@ -48,71 +77,91 @@ const YkvLogoutFunction = ({handleYkvLogin, responsibility, setResponsibility}) 
     <div style={{ height: 600, width: '100%' }}>
       <h2>Aktiiviset</h2>
       <React.Fragment>
-      <Button variant="contained" className="login-button" color="primary" onClick={handleClickOpen}>
-        + Ota vastuu
-      </Button>
+        <Button variant="contained" className="login-button" color="primary" onClick={handleClickOpen}>
+          + Ota vastuu
+        </Button>
 
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        PaperProps={{
-          component: 'form',
-          onSubmit: (event) => {
-            event.preventDefault();
-            const formData = new FormData(event.currentTarget);
-            const formJson = Object.fromEntries(formData.entries());
-            const email = formJson.email;
-            console.log(email);
-            handleClose();
-          },
-        }}
-      >
-        <DialogTitle>Ota vastuu</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Kirjaa sisään YKV-valvontaan henkilöitä ja ota vastuu.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="responsibility"
-            type="responsibility"
-            label="Kenestä otat vastuun?"
-            value={responsibility}
-            fullWidth
-            variant="standard"
-            onChange={(e) => setResponsibility(e.target.value)}
-          />
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          PaperProps={{
+            component: 'form',
+            onSubmit: (event) => {
+              event.preventDefault();
+              const formData = new FormData(event.currentTarget);
+              const formJson = Object.fromEntries(formData.entries());
+              const email = formJson.email;
+              console.log(email);
+              handleClose();
+            },
+          }}
+        >
+          <DialogTitle>Ota vastuu</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Kirjaa sisään YKV-valvontaan henkilöitä ja ota vastuu.
+            </DialogContentText>
+            <TextField
+              autoFocus
+              required
+              margin="dense"
+              id="responsibility"
+              type="responsibility"
+              label="Kenestä otat vastuun?"
+              value={responsibility}
+              fullWidth
+              variant="standard"
+              onChange={(e) => setResponsibility(e.target.value)}
+            />
 
-          <Autocomplete
-            id="combo-box-demo"
-            options={users}
-            getOptionLabel={(option) => option.Vastuuhenkilö}
-            style={{ width: 300 }}
-            renderInput={(params) => <TextField {...params} label="Kirjaa toisen käyttäjän puolesta" variant="standard" />}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Peruuta</Button>
-          <Button
-            type="submit"
-            onClick={handleYkvLogin}
-            className="create-user-button"
+            <Autocomplete
+              id="combo-box-demo"
+              options={users}
+              getOptionLabel={(option) => option.Vastuuhenkilö}
+              style={{ width: 300 }}
+              renderInput={(params) => <TextField {...params} label="Kirjaa toisen käyttäjän puolesta" variant="standard" />}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Peruuta</Button>
+            <Button
+              type="submit"
+              onClick={handleYkvLogin}
+              className="create-user-button"
             >Ota vastuu
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </React.Fragment>
-
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </React.Fragment>
 
       <DataGrid
         rows={users}
         columns={columns}
         pageSize={5}
         rowsPerPageOptions={[5, 10, 20]}
-        checkboxSelection
       />
+
+      <Dialog
+        open={confirmOpen}
+        onClose={handleConfirmClose}
+      >
+        <DialogTitle>Vahvista YKV uloskirjaus</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Oletko varma, että haluat kirjata ulos henkilön {selectedUserName}?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleConfirmClose}>Peruuta</Button>
+          <Button
+            onClick={() => handleRemove(selectedUserId)}
+            color="primary"
+            variant="contained"
+          >
+            Vahvista
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
