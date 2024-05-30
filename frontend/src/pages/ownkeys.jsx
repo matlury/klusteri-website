@@ -25,7 +25,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
   const [ykvFilter, setYkvFilter] = useState("");
   var d = new Date();
   d.setDate(d.getDate() - 6);
-  d.setDated(d)
   const [minFilter, setMinFilter] = useState(d.toISOString().slice(0,-8));
   d.setDate(d.getDate() + 7);
   const [maxFilter, setMaxFilter] = useState(d.toISOString().slice(0,-8));
