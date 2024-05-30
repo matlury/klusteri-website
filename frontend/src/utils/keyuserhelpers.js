@@ -17,7 +17,7 @@ export const getPermission = async ({ API_URL, setHasPermission }) => {
       const currentUser = response.data;
       if (currentUser.role === 1) {
         setHasPermission(true);
-      } if (currentUser[0].role === 1) {
+      } else if (currentUser[0].role === 1) {
         setHasPermission(true);
       }
       else {
