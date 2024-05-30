@@ -23,8 +23,11 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: propLoggedUser }) => 
 
   const [nameFilter, setNameFilter] = useState("");
   const [ykvFilter, setYkvFilter] = useState("");
-  const [maxFilter, setMaxFilter] = useState("2025-01-01T00:00");
-  const [minFilter, setMinFilter] = useState("2024-01-01T00:00");
+  var d = new Date();
+  d.setDate(d.getDate() - 6);
+  const [minFilter, setMinFilter] = useState(d.toISOString().slice(0,-8));
+  d.setDate(d.getDate() + 7);
+  const [maxFilter, setMaxFilter] = useState(d.toISOString().slice(0,-8));
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -112,41 +115,45 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: propLoggedUser }) => 
 
     const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
     if (!loggedUser) return;
-
-    const username = loggedUser.username;
+    
+    const user_id = loggedUser.id;
     const email = loggedUser.email;
     const loginTime = getCurrentDateTime();
 
     const userdata = await axiosClient.get("/listobjects/users/");
-    const user = userdata.data.find((user) => user.username === username);
 
-    const user_orgs = Object.keys(user.organization)
-      .filter((organization) => user.organization[organization] === true)
-      .join(", ");
+    const user = userdata.data.find((user) => user.id === user_id);
+
+    const user_orgs = user.keys.map(key => key.id);
 
     const responsibilityObject = {
-      username: username,
+      user: user_id,
       email: email,
       responsible_for: responsibility,
       login_time: loginTime,
-      created_by: username,
-      organisations: user_orgs,
+      created_by: loggedUser.username,
+      organizations: user_orgs,
     };
 
     confirmYKV(responsibilityObject);
 
     selectedForYKV.map((user) => {
       const responsibilityObject = {
-        username: user.username,
+        user: user.id,
         email: user.email,
         responsible_for: responsibility,
         login_time: loginTime,
         created_by: loggedUser.username,
+        organizations: user_orgs,
       };
       confirmYKV(responsibilityObject);
     });
 
     function confirmYKV(responsibilityObject) {
+      const confirm = window.confirm(
+        `Henkilö ${(userdata.data.find((user) => user.id === responsibilityObject.user)).username}\nottaa vastuun henkilöistä: ${responsibility}\nAlkaen kello: ${loginTime}`,
+      );
+
       if (confirm) {
         axiosClient
           .post(`/ykv/create_responsibility`, responsibilityObject)
@@ -173,7 +180,10 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: propLoggedUser }) => 
     if (allResponsibilities.length === 0) {
       return false;
     }
-    return ownResponsibilities.some((resp) => resp.present === true);
+    if (loggedUser.role !== 5) {
+      return true;
+    }
+    return false
   }
 
   // THE FOLLOWING FUNCTIONS RENDER SPECIFIC YKV-RESPONSIBILITIES

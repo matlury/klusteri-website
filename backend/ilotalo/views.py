@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q
+from django.db.models import Q, Count
 from .serializers import (
     UserSerializer,
     OrganizationSerializer,
@@ -11,6 +11,7 @@ from .serializers import (
     UserUpdateSerializer,
     EventSerializer,
     NightResponsibilitySerializer,
+    CreateNightResponsibilitySerializer,
     DefectFaultSerializer,
 )
 from .models import User, Organization, Event, NightResponsibility, DefectFault
@@ -425,12 +426,6 @@ class CreateEventView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if not user.data["rights_for_reservation"]:
-            return Response(
-                "You don't have rights to make reservation",
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
         serializer = EventSerializer(data=request.data)
 
         if not serializer.is_valid():
@@ -458,12 +453,6 @@ class RemoveEventView(APIView):
             return Response(
                 "You can't remove the event",
                 status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if not user.data["rights_for_reservation"]:
-            return Response(
-                "You don't have rights to delete reservations",
-                status=status.HTTP_400_BAD_REQUEST
             )
 
         try:
@@ -499,12 +488,6 @@ class UpdateEventView(APIView):
             return Response(
                 "Users with role 5 can't edit events",
                 status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if not user.data["rights_for_reservation"]:
-            return Response(
-                "You don't have rights to edit reservations",
-                status=status.HTTP_400_BAD_REQUEST
             )
 
         try:
@@ -549,7 +532,7 @@ class CreateNightResponsibilityView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        serializer = NightResponsibilitySerializer(data=request.data)
+        serializer = CreateNightResponsibilitySerializer(data=request.data)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -582,7 +565,7 @@ class UpdateNightResponsibilityView(APIView):
         except ObjectDoesNotExist:
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
         
-        if responsibility_to_update.username == user.data["username"] or responsibility_to_update.created_by == user.data["username"]:
+        if responsibility_to_update.user_id == user.data["id"] or responsibility_to_update.created_by == user.data["username"]:
             pass
         else:
             return Response(
@@ -628,7 +611,7 @@ class LogoutNightResponsibilityView(APIView):
         if not logout_time:
             return Response("Logout time not provided", status=status.HTTP_400_BAD_REQUEST)
         
-        if responsibility_to_update.username == user.data["username"] or responsibility_to_update.created_by == user.data["username"]:
+        if responsibility_to_update.user_id == user.data["id"] or responsibility_to_update.created_by == user.data["username"]:
             pass
         else:
             return Response(
@@ -739,42 +722,43 @@ class HandOverKeyView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        try:
-            user_to_update = User.objects.get(id=pk)
-            organization_name = request.data["organization_name"]
-        except ObjectDoesNotExist:
-            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
-        except KeyError:
-            return Response(
-                "Provide the name of the organization",
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
         # Check if the request contains unwanted data
         if (len(request.data.keys())) > 1:
             return Response(
                 "You can only hand over a Klusteri key through this endpoint",
                 status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        # Update the user's key list
-        users_keys = user_to_update.keys
-        users_keys[organization_name] = True
+            )        
 
-        users_organizations = user_to_update.organization
-        users_organizations[organization_name] = True
+        try:
+            user_to_update = User.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+        
+        try:
+            organization_to_update = Organization.objects.get(name=request.data["organization_name"])
+        except ObjectDoesNotExist:
+            return Response("Organization not found", status=status.HTTP_404_NOT_FOUND)
+        except KeyError:
+            return Response("Provide the name of the organization", status=status.HTTP_400_BAD_REQUEST)
+
+        # Update the user's key list
+        users_keys = organization_to_update.id
 
         # Combine updates into a single dictionary
         updated_data = {
             'keys': users_keys,
-            'organization': users_organizations
         }
+
+        # Update the users role if it's 5
+        if user_to_update.role == 5:
+            updated_data["role"] = 4
 
         serializer = UserUpdateSerializer(
             instance=user_to_update, data=updated_data, partial=True
         )
 
         if serializer.is_valid():
+            user_to_update.keys.add(organization_to_update)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -883,3 +867,26 @@ class RemoveDefectFaultView(APIView):
         defect_to_remove.delete()
 
         return Response(f"Defect {defect_to_remove.description} successfully removed", status=status.HTTP_200_OK)
+
+def force_logout_ykv_logins():
+    try:
+        responsibility_to_update = NightResponsibility.objects.filter(present=True)
+        if len(responsibility_to_update) == 0:
+            return "Nothing to log out" 
+    except ObjectDoesNotExist:
+        return "Nothing to log out"
+
+    datetime_format = "%Y-%m-%d %H:%M"
+    logout_time = datetime.strptime(str(datetime.now())[:-10], datetime_format)
+    
+    for resp in responsibility_to_update:
+        data = {'late': True,
+                'present': False, 
+                'logout_time': logout_time}
+        responsibility = NightResponsibilitySerializer(
+            instance=resp, data=data, partial=True
+        )
+        if responsibility.is_valid():
+            responsibility.save()
+    
+    return "logged out users"

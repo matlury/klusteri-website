@@ -11,11 +11,44 @@ back to complex data types.
 More info: https://www.django-rest-framework.org/api-guide/serializers/
 """
 
-
 class UserSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = User
-        fields = ("id", "username", "password", "email", "telegram", "role", "organization", "keys", "rights_for_reservation")
+        fields = '__all__'
+
+class UserNoPasswordSerializer(serializers.ModelSerializer):
+    """
+    Serializes a User object as JSON without displaying the hashed password
+    """
+
+    class Meta:
+        model = User
+        exclude = ('password',)
+        
+class OrganizationSerializer(serializers.ModelSerializer):
+    """Serializes an Organization object as JSON"""
+
+    user_set = UserNoPasswordSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Organization
+        fields = '__all__'
+
+    def validate_size(self, size):
+        """Validates size when creating a new organization."""
+
+        if int(size) not in [0, 1]:
+            raise serializers.ValidationError("Organization size must be 0 or 1 (small or large).")
+        return size
+
+class UserSerializer(serializers.ModelSerializer):
+
+    keys = OrganizationSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = User
+        fields = '__all__'
 
     def validate_role(self, role):
         """Validates role when creating a new user. Limits: 1 <= role <= 7."""
@@ -55,9 +88,7 @@ class UserSerializer(serializers.ModelSerializer):
             password=validated_data["password"],
             email=validated_data["email"],
             telegram=validated_data.get("telegram", ""),
-            role=validated_data["role"],
-            organization=validated_data["organization"],
-            keys=validated_data["keys"]
+            role=validated_data["role"]
         )
 
         return user
@@ -67,9 +98,11 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     Serializer for updating a user
     """
 
+    keys = OrganizationSerializer(many=True, read_only=True)
+
     class Meta:
         model = User
-        fields = ("id", "username", "email", "telegram", "role", "organization", "keys", "rights_for_reservation")
+        exclude = ('password',)
 
     def validate_role(self, role):
         """Validates role when updating a user. Limits: 1 <= role <= 7."""
@@ -94,42 +127,40 @@ class UserNoPasswordSerializer(serializers.ModelSerializer):
     Serializes a User object as JSON without displaying the hashed password
     """
 
+    keys = OrganizationSerializer(many=True, read_only=True)
+
     class Meta:
         model = User
-        fields = ("id", "username", "email", "telegram", "role", "organization", "keys", "rights_for_reservation")
-
-
-class OrganizationSerializer(serializers.ModelSerializer):
-    """Serializes an Organization object as JSON"""
-
-    class Meta:
-        model = Organization
-        fields = ("id", "name", "email", "homepage", "size")
-
-    def validate_size(self, size):
-        """Validates size when creating a new organization."""
-
-        if int(size) not in [0, 1]:
-            raise serializers.ValidationError("Organization size must be 0 or 1 (small or large).")
-        return size
+        exclude = ('password',)
 
 class EventSerializer(serializers.ModelSerializer):
     """Serializes an Event object as JSON"""
 
     class Meta:
         model = Event
-        fields = ("id", "start", "end", "title", "organizer", "description", "responsible", "open", "room")
+        fields = '__all__'
 
 class NightResponsibilitySerializer(serializers.ModelSerializer):
     """Serializes a NightResponsibility object as JSON"""
+    organizations = OrganizationSerializer(many=True, read_only=True)
+    user = UserNoPasswordSerializer(read_only=True)
+    # username = serializers.CharField(source='user.username')
+    # email = serializers.CharField(source='user.email')
 
     class Meta:
         model = NightResponsibility
-        fields = ("id", "username", "email", "responsible_for", "login_time", "logout_time", "present", "late", "created_by", "organisations")
+        fields = '__all__'
+
+class CreateNightResponsibilitySerializer(serializers.ModelSerializer):
+    """Used for saving NightResponsibility object to the database"""
+
+    class Meta:
+        model = NightResponsibility
+        fields = '__all__'
 
 class DefectFaultSerializer(serializers.ModelSerializer):
     """Serializes a DefectFault object as JSON"""
 
     class Meta:
         model = DefectFault
-        fields = ("id", "description", "email_sent", "repaired")
+        fields = '__all__'

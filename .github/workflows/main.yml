@@ -42,6 +42,10 @@ jobs:
 
       - name: Make migrations
         working-directory: ./backend
+        run: poetry run python manage.py makemigrations
+
+      - name: Migrate
+        working-directory: ./backend
         run: poetry run python manage.py migrate
         
       - name: Run backend tests
