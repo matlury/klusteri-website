@@ -57,9 +57,19 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
     { field: 'YKV_sisäänkirjaus', headerName: 'YKV sisäänkirjaus', width: 220 },
   ];
 
+
+  const columns_2 = [
+    
+    { field: 'Vastuuhenkilö', headerName: 'Vastuuhenkilö', width: 170 },
+    { field: 'Luonut', headerName: 'Luonut', width: 220 },
+    { field: 'Vastuussa henkilöistä', headerName: 'Vastuussa henkilöistä', width: 200 },
+    { field: 'YKV_sisäänkirjaus', headerName: 'YKV sisäänkirjaus', width: 220 },
+    { field: 'YKV_uloskirjaus', headerName: 'YKV uloskirjaus', width: 220 },
+  ];
+
   useEffect(() => {
     axiosClient
-      .get("/listobjects/nightresponsibilities/")
+      .get("/listobjects/nightresponsibilities/")   // pitääkö olla aktiivisista, ks. ownkeys rivi 200
       .then((res) => {
         const userData = res.data.map((u, index) => ({
           id: index, // DataGrid requires a unique 'id' for each row
@@ -179,7 +189,21 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
           </Button>
         </DialogActions>
       </Dialog>
+
+
+      <h2>Kaikki vastuut</h2>
+      <DataGrid
+        rows={filteredUsers}
+        columns={columns_2}
+        pageSize={5}
+        rowsPerPageOptions={[5, 10, 20]}
+      />
+
+
     </div>
+  
+    
+
   );
 };
 
