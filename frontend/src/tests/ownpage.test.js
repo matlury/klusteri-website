@@ -1,22 +1,24 @@
-// import "@testing-library/jest-dom";
-// import { render } from "@testing-library/react";
-// import OwnPage from "../pages/ownpage";
+import "@testing-library/jest-dom";
+import { render } from "@testing-library/react";
+import OwnPage from "../pages/ownpage";
 
-// const user = {
-//   username: "example_username",
-//   email: "example_email@example.com",
-//   telegram: "example_telegram",
-//   role: 1,
-// };
+const user = {
+  username: "example_username",
+  email: "example_email@example.com",
+  telegram: "example_telegram",
+  role: 1,
+};
 
-// localStorage.setItem("loggedUser", JSON.stringify(user));
+localStorage.setItem("loggedUser", JSON.stringify(user));
 
-// describe("OwnPage Component", () => {
-//   it("opens without logging in", () => {
-//     localStorage.setItem("loggedUser", null);
-//     const { getByText } = render(<OwnPage isLoggedIn={false} />);
-//     expect(getByText("Kirjaudu sisään")).toBeInTheDocument();
-//   });
+describe("OwnPage Component", () => {
+  it("opens without logging in", () => {
+    localStorage.setItem("loggedUser", null);
+    const { getByText } = render(<OwnPage isLoggedIn={false} />);
+    expect(getByText("Kirjaudu sisään")).toBeInTheDocument();
+  });
+}
+)
 
 //   it("opens with role 5", () => {
 //     const user = {

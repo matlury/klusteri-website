@@ -1,24 +1,26 @@
-// import {
-//   getByLabelText,
-//   render,
-//   fireEvent,
-//   waitFor,
-// } from "@testing-library/react";
-// import "@testing-library/jest-dom";
-// import OwnKeys from "../../src/pages/ownkeys";
-// import React from "react";
-// import mockAxios from "../../__mocks__/axios";
+import {
+  getByLabelText,
+  render,
+  fireEvent,
+  waitFor,
+} from "@testing-library/react";
+import "@testing-library/jest-dom";
+import OwnKeys from "../../src/pages/ownkeys";
+import React from "react";
+import mockAxios from "../../__mocks__/axios";
 
-// afterEach(() => {
-//   // cleaning up the mess left behind the previous test
-//   mockAxios.reset();
-// });
+afterEach(() => {
+  // cleaning up the mess left behind the previous test
+  mockAxios.reset();
+});
 
-// describe("OwnKeys Component", () => {
-//   it("opens without logging in", () => {
-//     const { getByText } = render(<OwnKeys isLoggedIn={false} />);
-//     expect(getByText("Kirjaudu sisään")).toBeInTheDocument();
-//   });
+describe("OwnKeys Component", () => {
+  it("opens without logging in", () => {
+    const { getByText } = render(<OwnKeys isLoggedIn={false} />);
+    expect(getByText("Kirjaudu sisään")).toBeInTheDocument();
+  });
+}
+)
 
 //   it("opens with role 1", () => {
 //     const user = {
