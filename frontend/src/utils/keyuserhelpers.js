@@ -17,7 +17,10 @@ export const getPermission = async ({ API_URL, setHasPermission }) => {
       const currentUser = response.data;
       if (currentUser.role === 1) {
         setHasPermission(true);
-      } else {
+      } if (currentUser[0].role === 1) {
+        setHasPermission(true);
+      }
+      else {
         setHasPermission(false);
       }
     });
@@ -48,13 +51,6 @@ const checkUser = (user, loggedUser, allResponsibilities) => {
     return false;
   }
   if (user.id === loggedUser.id) {
-    return false;
-  }
-  // check if a user already has an active YKV
-  const alreadyLoggedIn = allResponsibilities.filter(
-    (resp) => resp.email === user.email && resp.present,
-  );
-  if (alreadyLoggedIn.length !== 0) {
     return false;
   }
   return true;

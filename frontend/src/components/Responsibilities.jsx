@@ -15,18 +15,20 @@ const Responsibilities = ({
     <div>
       <h2>Kaikki vastuut</h2>
       Etsi henkilöitä: <br />
-      <input value={ykvFilter} onChange={handleYkvFilterChange} type="text" />
+      <input value={ykvFilter} onChange={handleYkvFilterChange} type="text" data-testid="ykvfiltersearch"/>
       Hae kirjauksia aikavälillä: <br />
       <input type="hidden" id="timezone" name="timezone" value="03:00" />
       <input
         value={minFilter}
         onChange={handleMinFilterChange}
         type="datetime-local"
+        data-testid="timefiltermin"
       />
       <input
         value={maxFilter}
         onChange={handleMaxFilterChange}
         type="datetime-local"
+        data-testid="timefiltermax"
       />
       <br />
       <br />
@@ -44,24 +46,20 @@ const Responsibilities = ({
             .slice()
             .filter(
               (resp) =>
-                (resp.username
+                (resp.user.username
                   .toLowerCase()
                   .includes(ykvFilter.toLowerCase()) ||
                   resp.created_by
                     .toLowerCase()
                     .includes(ykvFilter.toLowerCase()) ||
-                  resp.organisations
-                    .toLowerCase()
-                    .includes(ykvFilter.toLowerCase()) ||
+                  resp.organizations.some((org) => org.name.toLowerCase().includes(ykvFilter.toLowerCase())) ||
                   resp.responsible_for
                     .toLowerCase()
                     .includes(ykvFilter.toLowerCase())) &&
                 Date.parse(resp.login_time) <
-                  Number(Date.parse(maxFilter)) -
-                    new Date().getTimezoneOffset() * 60000 &&
+                  Number(Date.parse(maxFilter)) &&
                 Date.parse(resp.logout_time) >
-                  Number(Date.parse(minFilter)) -
-                    new Date().getTimezoneOffset() * 60000,
+                  Number(Date.parse(minFilter)),
             )
             .reverse()
             .map((resp) => (
@@ -70,10 +68,10 @@ const Responsibilities = ({
                 key={resp.id}
                 style={{ backgroundColor: activeColour(resp) }}
               >
-                Vastuuhenkilö: {resp.username}, {resp.email},{" "}
-                {resp.organisations} <br />
+                Vastuuhenkilö: {resp.user.username}, {resp.user.email},{" "}
+                {resp.organizations.map(organization => organization.name)} <br />
                 Luonut: {resp.created_by} <br />
-                Vastuussa henkilöistä: {resp.responsible_for} <br />
+                <p>Vastuussa henkilöistä: {resp.responsible_for}</p>
                 YKV-sisäänkirjaus klo: {formatDatetime(resp.login_time)} <br />
                 YKV-uloskirjaus klo:{" "}
                 {!resp.present && formatDatetime(resp.logout_time)}
@@ -81,7 +79,7 @@ const Responsibilities = ({
                 <br />
               </li>
             ))}
-        </ul>
+          </ul>
       </div>
     </div>
   );

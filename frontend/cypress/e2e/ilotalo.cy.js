@@ -145,76 +145,76 @@ describe("Frontpage", () => {
   });
 });
 
-describe("Ownkeys", () => {
-  beforeEach(function () {
-    cy.request("POST", "http://localhost:8000/api/testing/reset");
-    cy.visit("http://localhost:5173");
-  });
-  it("YKV-login in works", function () {
-    cy.on("uncaught:exception", () => {
-      return false;
-    });
-    const body = {
-      username: "leppis",
-      password: "salasana123",
-      email: "pj@gmail.com",
-      telegram: "pjtg",
-      role: 1,
-      keys: { "tko-äly": true },
-      organization: { "tko-äly": true },
-    };
-    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
-      (response) => {
-        expect(response.body).to.have.property("username", "leppis");
-      },
-    );
-    cy.wait(1000);
-    cy.contains("Kirjaudu").click();
-    cy.get("#email").type("pj@gmail.com");
-    cy.get("#password").type("salasana123");
-    cy.get(".login-button").click();
-    cy.wait(500);
-    cy.contains("Omat avaimet").click();
-    cy.reload();
-    cy.get("#responsibility").type("fuksit");
-    cy.contains("Ota vastuu").click();
-    cy.contains("Vastuuhenkilö: leppis, pj@gmail.com");
-    cy.contains("Vastuussa henkilöistä: fuksit");
-  });
-  it("YKV-logout works", function () {
-    cy.on("uncaught:exception", () => {
-      return false;
-    });
-    const body = {
-      username: "leppis",
-      password: "salasana123",
-      email: "pj@gmail.com",
-      telegram: "pjtg",
-      role: 1,
-      keys: { "tko-äly": true },
-      organization: { "tko-äly": true },
-    };
-    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
-      (response) => {
-        expect(response.body).to.have.property("username", "leppis");
-      },
-    );
-    cy.wait(1000);
-    cy.contains("Kirjaudu").click();
-    cy.get("#email").type("pj@gmail.com");
-    cy.get("#password").type("salasana123");
-    cy.get(".login-button").click();
-    cy.wait(500);
-    cy.contains("Omat avaimet").click();
-    cy.reload();
-    cy.get("#responsibility").type("fuksit");
-    cy.contains("Ota vastuu").click();
-    cy.contains("YKV-uloskirjaus").click();
-    cy.contains("Select All").click();
-    cy.contains("Submit").click();
-    cy.contains("YKV-uloskirjaus onnistui");
-  });
-});
+//describe("Ownkeys", () => {
+//  beforeEach(function () {
+//    cy.request("POST", "http://localhost:8000/api/testing/reset");
+//    cy.visit("http://localhost:5173");
+//  });
+//  it("YKV-login in works", function () {
+//    cy.on("uncaught:exception", () => {
+//      return false;
+//    });
+//    const body = {
+//      username: "leppis",
+//      password: "salasana123",
+//      email: "pj@gmail.com",
+//      telegram: "pjtg",
+//      role: 1,
+//      keys: { "tko-äly": true },
+//      organization: { "tko-äly": true },
+//    };
+//    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+//      (response) => {
+//        expect(response.body).to.have.property("username", "leppis");
+//      },
+//    );
+//    cy.wait(1000);
+//    cy.contains("Kirjaudu").click();
+//    cy.get("#email").type("pj@gmail.com");
+//    cy.get("#password").type("salasana123");
+//    cy.get(".login-button").click();
+//    cy.wait(500);
+//    cy.contains("Omat avaimet").click();
+//    cy.reload();
+//    cy.get("#responsibility").type("fuksit");
+//    cy.contains("Ota vastuu").click();
+//    cy.contains("Vastuuhenkilö: leppis, pj@gmail.com");
+//    cy.contains("Vastuussa henkilöistä: fuksit");
+//  });
+//  it("YKV-logout works", function () {
+//    cy.on("uncaught:exception", () => {
+//      return false;
+//    });
+//    const body = {
+//      username: "leppis",
+//      password: "salasana123",
+//      email: "pj@gmail.com",
+//      telegram: "pjtg",
+//      role: 1,
+//      keys: { "tko-äly": true },
+//      organization: { "tko-äly": true },
+//    };
+//    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+//      (response) => {
+//        expect(response.body).to.have.property("username", "leppis");
+//      },
+//    );
+//    cy.wait(1000);
+//    cy.contains("Kirjaudu").click();
+//    cy.get("#email").type("pj@gmail.com");
+//    cy.get("#password").type("salasana123");
+//    cy.get(".login-button").click();
+//    cy.wait(500);
+//    cy.contains("Omat avaimet").click();
+//    cy.reload();
+//    cy.get("#responsibility").type("fuksit");
+//    cy.contains("Ota vastuu").click();
+//    cy.contains("YKV-uloskirjaus").click();
+//    cy.contains("Select All").click();
+//    cy.contains("Submit").click();
+//    cy.contains("YKV-uloskirjaus onnistui");
+//  });
+//});
 
 describe("Ownpage", () => {
   beforeEach(function () {

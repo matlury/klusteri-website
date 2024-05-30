@@ -17,47 +17,43 @@ const YkvLogoutFunction = ({
   handleYkvEdit,
 }) => {
   const user = JSON.parse(localStorage.getItem("loggedUser"));
-  let resps;
-  if (user) {
-    resps = activeResponsibilites.filter(
-      (responsibility) =>
-        responsibility.username == user.username ||
-        responsibility.created_by == user.username,
-    );
-  } else {
-    resps = activeResponsibilites;
-  }
+  const hasactive = activeResponsibilites.some((resp) => resp.username === user.username || resp.created_by === user.username );
+  const own = activeResponsibilites.filter((responsibility) => responsibility.username == user.username || responsibility.created_by == user.username)
   return (
     <div>
-      <button
-        onClick={() => handleYkvLogout(idToLogout)}
-        className="login-button"
-        type="button"
-      >
-        {" "}
-        YKV-uloskirjaus{" "}
-      </button>
-      {buttonPopup && (
-        <Popup
-          trigger={buttonPopup}
-          setTrigger={setButtonPopup}
-          active={resps}
-          setIdToLogout={setIdToLogout}
-          onSubmit={handleYkvLogout}
-        />
+        {hasactive && (
+        <>
+          <button
+            onClick={() => handleYkvLogout(idToLogout)}
+            className="login-button"
+            type="button"
+          >
+            YKV-uloskirjaus
+          </button>
+          {buttonPopup && (
+            <Popup
+              trigger={buttonPopup}
+              setTrigger={setButtonPopup}
+              active={own}
+              setIdToLogout={setIdToLogout}
+              onSubmit={handleYkvLogout}
+            />
+          )}
+        </>
       )}
       <p></p>
+
       <h2>
-        Kaikki aktiiviset ({Object.keys(resps).length} /{" "}
+        Kaikki aktiiviset ({Object.keys(own).length} /{" "}
         {Object.keys(activeResponsibilites).length}):{" "}
       </h2>
       <ul style={{ listStyleType: "none", padding: 0 }}>
-        {resps
+        {activeResponsibilites
           .slice()
           .reverse()
           .map((resp) => (
             <li className="ykv-active" key={resp.id}>
-              Vastuuhenkilö: {resp.username}, {resp.email}, {resp.organisations}{" "}
+              Vastuuhenkilö: {resp.user.username}, {resp.user.email}, {resp.organizations.map(organization => organization.name)}
               <br />
               Luonut: {resp.created_by} <br />
               Vastuussa henkilöistä: {resp.responsible_for} <br />

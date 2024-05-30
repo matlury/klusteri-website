@@ -9,11 +9,13 @@ from django.contrib.auth.models import (
     PermissionsMixin,
     BaseUserManager,
 )
+from django.contrib.postgres.fields import ArrayField
 
 
 class Organization(models.Model):
     """Model for student organizations"""
 
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, default="", unique=True)
     email = models.EmailField(max_length=100, default="", unique=True)
     homepage = models.CharField(max_length=100, default="")
@@ -30,24 +32,17 @@ class UserAccountManager(BaseUserManager):
         - get_by_natural_key(username): retreives a user's data using USERNAME_FIELD
     """
 
-    def create_user(self, username, password, email, telegram, role, organization, keys):
+    def create_user(self, username, password, email, telegram, role):
         """Create a new User object"""
         email = self.normalize_email(email)
         email = email.lower()
-
-        if keys is None:
-            keys = {}
-        if organization is None:
-            organization = {}
 
         user = self.model(
             username=username,
             password=password,
             email=email,
             telegram=telegram,
-            role=role,
-            organization=organization,
-            keys=keys
+            role=role
         )
 
         # Hash the password and save the User object
@@ -57,14 +52,13 @@ class UserAccountManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser):
     """
     The custom User model.
 
     Inheritance
     -----------
     AbstractBaseUser: Core implementation of a user model. Includes i.e. password hashing and tokenized password resets.
-    PermissionsMixin: Django's permission framework
     """
 
     id = models.AutoField(primary_key=True)
@@ -73,11 +67,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=100, default="", unique=True)
     telegram = models.CharField(max_length=100, default="", blank=True)
     role = models.IntegerField(default=5)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-    organization = models.JSONField(default=dict, null=True)
-    keys = models.JSONField(default=dict, null=True)
-    rights_for_reservation = models.BooleanField(default=True)
+    keys = models.ManyToManyField(Organization)
 
     objects = UserAccountManager()
 
@@ -114,8 +104,8 @@ class NightResponsibility(models.Model):
     login and logout times, and attendance status.
     """
 
-    username = models.CharField(max_length=50, default="")
-    email = models.EmailField(max_length=150, default="")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
+    organizations = models.ManyToManyField(Organization)
     responsible_for = models.CharField(max_length=500, default="")
     login_time = models.DateTimeField(
         auto_now_add = True,
@@ -127,8 +117,7 @@ class NightResponsibility(models.Model):
     )
     present = models.BooleanField(default=True)
     late = models.BooleanField(default=False)
-    created_by = models.CharField(max_length=50, default="")
-    organisations = models.CharField(max_length=100, default="")
+    created_by = models.CharField(max_length=50, default="") # CHANGE TO FOREIGN KEY
 
 class DefectFault(models.Model):
     """Model for defects and faults in Klusteri."""
