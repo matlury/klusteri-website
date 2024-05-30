@@ -119,11 +119,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
 
     const user = userdata.data.find((user) => user.id === user_id);
 
-    console.log(user.keys);
-
     const user_orgs = user.keys.map(key => key.id);
-
-    console.log(typeof(user_orgs));
 
     const responsibilityObject = {
       user: user_id,
@@ -134,9 +130,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
       organizations: user_orgs,
     };
 
-    console.log(responsibilityObject);
-
-    console.log(selectedForYKV);
     confirmYKV(responsibilityObject);
 
     selectedForYKV.map((user) => {
