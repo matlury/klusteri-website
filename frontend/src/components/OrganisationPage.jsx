@@ -25,7 +25,7 @@ const OrganisationPage = ({
       <ul style={{ listStyleType: "none", padding: 0 }}>
         {organisations.map((org) => (
           <li key={org.id}>
-            {org.name}
+            {org.name}{" (avaimia: "}{org.user_set.length}{")"}
             <button
               className="login-button"
               onClick={() => toggleOrgDetails(org.id)}

@@ -11,9 +11,25 @@ back to complex data types.
 More info: https://www.django-rest-framework.org/api-guide/serializers/
 """
 
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = '__all__'
+
+class UserNoPasswordSerializer(serializers.ModelSerializer):
+    """
+    Serializes a User object as JSON without displaying the hashed password
+    """
+
+    class Meta:
+        model = User
+        exclude = ('password',)
         
 class OrganizationSerializer(serializers.ModelSerializer):
     """Serializes an Organization object as JSON"""
+
+    user_set = UserNoPasswordSerializer(many=True, read_only=True)
 
     class Meta:
         model = Organization

@@ -57,11 +57,9 @@ const Responsibilities = ({
                     .toLowerCase()
                     .includes(ykvFilter.toLowerCase())) &&
                 Date.parse(resp.login_time) <
-                  Number(Date.parse(maxFilter)) -
-                    new Date().getTimezoneOffset() * 60000 &&
+                  Number(Date.parse(maxFilter)) &&
                 Date.parse(resp.logout_time) >
-                  Number(Date.parse(minFilter)) -
-                    new Date().getTimezoneOffset() * 60000,
+                  Number(Date.parse(minFilter)),
             )
             .reverse()
             .map((resp) => (
