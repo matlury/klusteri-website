@@ -59,6 +59,7 @@ const YkvForm = ({
         onClick={handleYkvLogin}
         className="create-user-button"
         type="button"
+        data-testid="createresponsibility"
       >
         Ota vastuu
       </button>
