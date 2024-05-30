@@ -39,21 +39,18 @@ const Responsibilities = ({
           padding: "10px",
         }}
       >
-        {/* SEARCH BAR
         <ul style={{ listStyleType: "none", padding: 0 }}>
           {allResponsibilities
             .slice()
             .filter(
               (resp) =>
-                (resp.username
+                (resp.user.username
                   .toLowerCase()
                   .includes(ykvFilter.toLowerCase()) ||
                   resp.created_by
                     .toLowerCase()
                     .includes(ykvFilter.toLowerCase()) ||
-                  resp.organisations
-                    .toLowerCase()
-                    .includes(ykvFilter.toLowerCase()) ||
+                  resp.organizations.some((org) => org.name.toLowerCase().includes(ykvFilter.toLowerCase())) ||
                   resp.responsible_for
                     .toLowerCase()
                     .includes(ykvFilter.toLowerCase())) &&
@@ -71,8 +68,8 @@ const Responsibilities = ({
                 key={resp.id}
                 style={{ backgroundColor: activeColour(resp) }}
               >
-                Vastuuhenkilö: {resp.username}, {resp.email},{" "}
-                {resp.organisations} <br />
+                Vastuuhenkilö: {resp.user.username}, {resp.user.email},{" "}
+                {resp.organizations.map(organization => organization.name)} <br />
                 Luonut: {resp.created_by} <br />
                 Vastuussa henkilöistä: {resp.responsible_for} <br />
                 YKV-sisäänkirjaus klo: {formatDatetime(resp.login_time)} <br />
@@ -82,8 +79,7 @@ const Responsibilities = ({
                 <br />
               </li>
             ))}
-          </ul>*/
-          }
+          </ul>
       </div>
     </div>
   );

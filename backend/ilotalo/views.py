@@ -426,12 +426,6 @@ class CreateEventView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if not user.data["rights_for_reservation"]:
-            return Response(
-                "You don't have rights to make reservation",
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
         serializer = EventSerializer(data=request.data)
 
         if not serializer.is_valid():
@@ -459,12 +453,6 @@ class RemoveEventView(APIView):
             return Response(
                 "You can't remove the event",
                 status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if not user.data["rights_for_reservation"]:
-            return Response(
-                "You don't have rights to delete reservations",
-                status=status.HTTP_400_BAD_REQUEST
             )
 
         try:
@@ -500,12 +488,6 @@ class UpdateEventView(APIView):
             return Response(
                 "Users with role 5 can't edit events",
                 status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if not user.data["rights_for_reservation"]:
-            return Response(
-                "You don't have rights to edit reservations",
-                status=status.HTTP_400_BAD_REQUEST
             )
 
         try:
@@ -583,7 +565,7 @@ class UpdateNightResponsibilityView(APIView):
         except ObjectDoesNotExist:
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
         
-        if responsibility_to_update.username == user.data["username"] or responsibility_to_update.created_by == user.data["username"]:
+        if responsibility_to_update.user_id == user.data["id"] or responsibility_to_update.created_by == user.data["username"]:
             pass
         else:
             return Response(
@@ -629,7 +611,7 @@ class LogoutNightResponsibilityView(APIView):
         if not logout_time:
             return Response("Logout time not provided", status=status.HTTP_400_BAD_REQUEST)
         
-        if responsibility_to_update.username == user.data["username"] or responsibility_to_update.created_by == user.data["username"]:
+        if responsibility_to_update.user_id == user.data["id"] or responsibility_to_update.created_by == user.data["username"]:
             pass
         else:
             return Response(

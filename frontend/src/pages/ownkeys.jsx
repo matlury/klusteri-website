@@ -133,11 +133,12 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
 
     console.log(responsibilityObject);
 
+    console.log(selectedForYKV);
     confirmYKV(responsibilityObject);
 
     selectedForYKV.map((user) => {
       const responsibilityObject = {
-        user: user_id,
+        user: user.id,
         email: user.email,
         responsible_for: responsibility,
         login_time: loginTime,
