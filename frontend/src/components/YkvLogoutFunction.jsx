@@ -55,6 +55,7 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
     { field: 'Vastuuhenkilö', headerName: 'Vastuuhenkilö', width: 170 },
     { field: 'Vastuussa', headerName: 'Vastuussa', width: 200 },
     { field: 'YKV_sisäänkirjaus', headerName: 'YKV sisäänkirjaus', width: 220 },
+    { field: 'Organisaatiot', headerName: 'Organisaatiot', width: 220 },
   ];
 
 
@@ -76,6 +77,7 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
           Vastuuhenkilö: u.user.username,
           Vastuussa: u.responsible_for,
           YKV_sisäänkirjaus: u.login_time, // Assuming login_time is available
+          Organisaatiot: u.organizations.map(organization => organization.name), // Assuming login_time is available
         }));
         setUsers(userData);
         setLoading(false);
