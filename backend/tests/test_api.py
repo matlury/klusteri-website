@@ -217,6 +217,24 @@ class TestDjangoAPI(TestCase):
 
         self.user_count = 5
 
+
+        tko_aly_data = self.data = {
+            "email": "tko@aly.fi",
+            "homepage": "tko-aly.fi",
+            "name": "tko-aly",
+            "size": 1
+        }
+
+        response = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            data=tko_aly_data,
+            format="json",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"}
+        )
+
+        self.tko_aly_id = response.data["id"]
+
+
     def test_creating_user(self):
         """A new user can be created if the parameters are valid"""
 
@@ -1919,12 +1937,12 @@ class TestDjangoAPI(TestCase):
         response = self.client.put(
             f"http://localhost:8000/api/keys/hand_over_key/{user_id}/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"organization_name": "Matrix"},
+            data={"organization_name": "tko-aly"},
             format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(response.data["keys"]["Matrix"])
+        self.assertEqual(response.data["keys"][0]["id"], self.tko_aly_id)
     
     def test_hand_over_key_invalid(self):
         """Everything that can go wrong with handing over a Klusteri key"""
@@ -1967,7 +1985,7 @@ class TestDjangoAPI(TestCase):
 
         # Attempt including additional data to the request
         response = self.client.put(
-            f"http://localhost:8000/api/keys/hand_over_key/{user_id}/",
+            f"http://localhost:8000/api/keys/hand_over_key/{self.leppis_id}/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
                 "organization_name": "Matrix",
