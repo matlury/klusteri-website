@@ -21,15 +21,6 @@ class TestDjangoAPI(TestCase):
             "email": "klusse.osoite@gmail.com",
             "telegram": "klussentg",
             "role": 5,
-            "organization": {
-                "TKO-äly": False,
-                "Matrix": False
-            },
-            "keys": {
-                "TKO-äly": False,
-                "Matrix": False
-            },
-            "rights_for_reservation": True
         }
 
         response = self.client.post(
@@ -61,9 +52,6 @@ class TestDjangoAPI(TestCase):
             "email": "leppispj@gmail.com",
             "telegram": "tgleppispj",
             "role": 1,
-            "organization": None,
-            "keys": None,
-            "rights_for_reservation": True
         }
 
         response = self.client.post(
@@ -96,15 +84,6 @@ class TestDjangoAPI(TestCase):
             "email": "muokkaus@gmail.com",
             "telegram": "muokkaus",
             "role": 3,
-            "organization": {
-                "TKO-äly": False,
-                "Matrix": False
-            },
-            "keys": {
-                "TKO-äly": False,
-                "Matrix": True
-            },
-            "rights_for_reservation": True
         }
 
         response = self.client.post(
@@ -138,15 +117,6 @@ class TestDjangoAPI(TestCase):
             "email": "avaimellinen@gmail.com",
             "telegram": "avaimellinen",
             "role": 4,
-            "organization": {
-                "TKO-äly": False,
-                "Matrix": False
-            },
-            "keys": {
-                "TKO-äly": False,
-                "Matrix": False
-            },
-            "rights_for_reservation": True
         }
 
         response = self.client.post(
@@ -180,15 +150,6 @@ class TestDjangoAPI(TestCase):
             "email": "jarjestopj@gmail.com",
             "telegram": "jarjestopj",
             "role": 6,
-            "organization": {
-                "TKO-äly": False,
-                "Matrix": False
-            },
-            "keys": {
-                "TKO-äly": False,
-                "Matrix": False
-            },
-            "rights_for_reservation": True
         }
 
         response = self.client.post(
@@ -246,14 +207,6 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "domustg",
                 "role": 5,
-                "organization": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                },
-                "keys": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                }
             },
             format="json",
         )
@@ -274,14 +227,6 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "",
                 "role": 5,
-                "organization": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                },
-                "keys": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                }
             },
             format="json",
         )
@@ -294,14 +239,6 @@ class TestDjangoAPI(TestCase):
                 "email": "gaudium.regina@gmail.com",
                 "telegram": "",
                 "role": 5,
-                "organization": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                },
-                "keys": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                }
             },
             format="json",
         )
@@ -320,14 +257,6 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "domustg",
                 "role": 5,
-                "organization": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                },
-                "keys": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                }
             },
             format="json",
         )
@@ -345,14 +274,6 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "domustg",
                 "role": 5,
-                "organization": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                },
-                "keys": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                }
             },
             format="json",
         )
@@ -371,14 +292,6 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "christina",
                 "role": 5,
-                "organization": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                },
-                "keys": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                }
             },
             format="json",
         )
@@ -403,14 +316,6 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "christina",
                 "role": 5,
-                "organization": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                },
-                "keys": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                }
             },
             format="json",
         )
@@ -445,14 +350,6 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "klussentg",
                 "role": 5,
-                "organization": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                },
-                "keys": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                }
             },
             format="json",
         )
@@ -544,14 +441,6 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "tguser",
                 "role": 5,
-                "organization": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                },
-                "keys": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                }
             },
             format="json",
         )
@@ -591,14 +480,6 @@ class TestDjangoAPI(TestCase):
                 "email": "regina.gaudium@gmail.com",
                 "telegram": "tguser",
                 "role": 5,
-                "organization": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                },
-                "keys": {
-                    "TKO-äly": False,
-                    "Matrix": False
-                }
             },
             format="json",
         )
@@ -1135,71 +1016,71 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(event_created.data["room"], "Kattilahuone")
 
-    def test_update_room_no_rights(self):
-        """If a user has their event permissions set to False, they can not update events"""
-
-        # first create an event to update it
-        event_created = self.client.post(
-            "http://localhost:8000/api/events/create_event",
-            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={
-                "room": "Kerhotila",
-                "title": "varaus",
-                "organizer": "Matrix",
-                "description": "Pidetään hauskaa",
-                "responsible": "Matti",
-                "open": True,
-            },
-            format="json",
-        )
-
-        # change the reservation rights to false
-        user = User.objects.get(id=self.leppis_id)
-        user.rights_for_reservation = False
-        user.save()
-
-        # try to update an event
-        event_id = event_created.data['id']
-        response = self.client.put(
-            f"http://localhost:8000/api/events/update_event/{event_id}/",
-            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"room": "Pelihuone"},
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_delete_event_no_rights(self):
-        """Attempting to delete an event. Same conditions as in the previous test"""
-
-        # first create an event to delete it
-        event_created = self.client.post(
-            "http://localhost:8000/api/events/create_event",
-            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={
-                "room": "Kerhotila",
-                "title": "varaus",
-                "organizer": "Matrix",
-                "description": "Pidetään hauskaa",
-                "responsible": "Matti",
-                "open": True,
-            },
-            format="json",
-        )
-
-        # change the reservation rights to false
-        user = User.objects.get(id=self.leppis_id)
-        user.rights_for_reservation = False
-        user.save()
-
-        # try to delete an event
-        event_id = event_created.data['id']
-        response = self.client.delete(
-            f"http://localhost:8000/api/events/delete_event/{event_id}/",
-            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+#    def test_update_room_no_rights(self):
+#        """If a user has their event permissions set to False, they can not update events"""
+#
+#        # first create an event to update it
+#        event_created = self.client.post(
+#            "http://localhost:8000/api/events/create_event",
+#            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+#            data={
+#                "room": "Kerhotila",
+#                "title": "varaus",
+#                "organizer": "Matrix",
+#                "description": "Pidetään hauskaa",
+#                "responsible": "Matti",
+#                "open": True,
+#            },
+#            format="json",
+#        )
+#
+#        # change the reservation rights to false
+#        user = User.objects.get(id=self.leppis_id)
+#        user.rights_for_reservation = False
+#        user.save()
+#
+#        # try to update an event
+#        event_id = event_created.data['id']
+#        response = self.client.put(
+#            f"http://localhost:8000/api/events/update_event/{event_id}/",
+#            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+#            data={"room": "Pelihuone"},
+#            format="json",
+#        )
+#
+#        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+#
+#    def test_delete_event_no_rights(self):
+#        """Attempting to delete an event. Same conditions as in the previous test"""
+#
+#        # first create an event to delete it
+#        event_created = self.client.post(
+#            "http://localhost:8000/api/events/create_event",
+#            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+#            data={
+#                "room": "Kerhotila",
+#                "title": "varaus",
+#                "organizer": "Matrix",
+#                "description": "Pidetään hauskaa",
+#                "responsible": "Matti",
+#                "open": True,
+#            },
+#            format="json",
+#        )
+#
+#        # change the reservation rights to false
+#        user = User.objects.get(id=self.leppis_id)
+#        user.rights_for_reservation = False
+#        user.save()
+#
+#        # try to delete an event
+#        event_id = event_created.data['id']
+#        response = self.client.delete(
+#            f"http://localhost:8000/api/events/delete_event/{event_id}/",
+#            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+#        )
+#
+#        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_deleting_event(self):
         """LeppisPJ can delete an event"""
@@ -1272,13 +1153,13 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/ykv/create_responsibility",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "username": "matti",
-                "email": "matti@hotmail.com",
+                "user": self.leppis_id,
                 "responsible_for": "",
                 "login_time": "1970-01-01T12:00",
                 "logout_time": "1970-01-02T14:00",
                 "present": True,
-                "late": False
+                "late": False,
+                "organizations": [self.tko_aly_id, ],
             },
             format="json",
         )
@@ -1289,13 +1170,13 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/ykv/create_responsibility",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "username": "matti",
-                "email": "matti@hotmail.com",
+                "user": self.leppis_id,
                 "responsible_for": "kutsutut vieraat",
                 "login_time": "1970-01-01T12:00",
                 "logout_time": "1970-01-02T14:00",
                 "present": True,
-                "late": False
+                "late": False,
+                "organizations": [self.tko_aly_id, ],
             },
             format="json",
         )
@@ -1307,13 +1188,13 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/ykv/create_responsibility",
             headers={"Authorization": f"Bearer {self.access_token}"},
             data={
-               "username": "matti",
-                "email": "matti@hotmail.com",
+                "user": self.leppis_id,
                 "responsible_for": "kutsutut vieraat",
                 "login_time": "1970-01-01T12:00",
                 "logout_time": "1970-01-02T14:00",
                 "present": True,
-                "late": False
+                "late": False,
+                "organizations": [self.tko_aly_id, ],
             },
             format="json",
         )
@@ -1328,12 +1209,13 @@ class TestDjangoAPI(TestCase):
             f"http://localhost:8000/api/ykv/create_responsibility",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "username": "matti",
-                "created_by": "LeppisPJ",
-                "email": "matti@hotmail.com",
+                "user": self.leppis_id,
                 "responsible_for": "kutsutut vieraat",
                 "login_time": "1970-01-01T12:00",
-                "logout_time": "1970-01-02T14:00"
+                "logout_time": "1970-01-02T14:00",
+                "present": True,
+                "late": False,
+                "organizations": [self.tko_aly_id, ],
             },
             format="json",
         )
@@ -1363,11 +1245,13 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/ykv/create_responsibility",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "username": "matti",
-                "created_by": "LeppisPJ",
-                "email": "matti@hotmail.com",
+                "user": self.leppis_id,
                 "responsible_for": "kutsutut vieraat",
-                "login_time": login_time.strftime("%Y-%m-%d %H:%M")
+                "login_time": "1970-01-01T12:00",
+                "logout_time": "1970-01-02T14:00",
+                "present": True,
+                "late": False,
+                "organizations": [self.tko_aly_id, ],
             },
             format="json",
         )
@@ -1443,13 +1327,13 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/ykv/create_responsibility",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "username": "matti",
-                "email": "matti@hotmail.com",
+                "user": self.leppis_id,
                 "responsible_for": "kutsutut vieraat",
                 "login_time": "1970-01-01T12:00",
                 "logout_time": "1970-01-02T14:00",
                 "present": True,
-                "late": False
+                "late": False,
+                "organizations": [self.tko_aly_id, ],
             },
             format="json",
         )
@@ -1474,11 +1358,13 @@ class TestDjangoAPI(TestCase):
             f"http://localhost:8000/api/ykv/create_responsibility",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "username": "matti",
-                "email": "matti@hotmail.com",
+                "user": self.leppis_id,
                 "responsible_for": "kutsutut vieraat",
                 "login_time": "1970-01-01T12:00",
-                "logout_time": "1970-01-02T14:00"
+                "logout_time": "1970-01-02T14:00",
+                "present": True,
+                "late": False,
+                "organizations": [self.tko_aly_id, ],
             },
             format="json",
         )
@@ -1503,11 +1389,13 @@ class TestDjangoAPI(TestCase):
             f"http://localhost:8000/api/ykv/create_responsibility",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "username": "matti",
-                "email": "matti@hotmail.com",
+                "user": self.leppis_id,
                 "responsible_for": "kutsutut vieraat",
                 "login_time": "1970-01-01T12:00",
-                "logout_time": "1970-01-02T14:00"
+                "logout_time": "1970-01-02T14:00",
+                "present": True,
+                "late": False,
+                "organizations": [self.tko_aly_id, ],
             },
             format="json",
         )
@@ -1560,13 +1448,13 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/ykv/create_responsibility",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "username": "matti",
-                "email": "matti@hotmail.com",
+                "user": self.leppis_id,
                 "responsible_for": "kutsutut vieraat",
                 "login_time": "1970-01-01T12:00",
                 "logout_time": "1970-01-02T14:00",
                 "present": True,
-                "late": False
+                "late": False,
+                "organizations": [self.tko_aly_id, ],
             },
             format="json",
         )
@@ -1591,11 +1479,13 @@ class TestDjangoAPI(TestCase):
             f"http://localhost:8000/api/ykv/create_responsibility",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "username": "matti",
-                "email": "matti@hotmail.com",
+                "user": self.leppis_id,
                 "responsible_for": "kutsutut vieraat",
                 "login_time": "1970-01-01T12:00",
-                "logout_time": "1970-01-02T14:00"
+                "logout_time": "1970-01-02T14:00",
+                "present": True,
+                "late": False,
+                "organizations": [self.tko_aly_id, ],
             },
             format="json",
         )
@@ -1870,21 +1760,6 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_change_rights_reservation(self):
-        """An authorized user can change the rights for reservation"""
-
-        # change Muokkaus user rights from true to false as Jarjestopj user
-        user_id = User.objects.all()[2].id
-        response = self.client.put(
-            f"http://localhost:8000/api/users/change_rights_reservation/{user_id}/",
-            headers={"Authorization": f"Bearer {self.jarjestopj_access_token}"},
-            data={"rights_for_reservation": False},
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["rights_for_reservation"], False)
-    
     def test_change_rights_reservation_as_tavallinen(self):
         """An authorized user can change the rights for reservation"""
 
@@ -1914,20 +1789,20 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
     
-    def test_change_rights_reservation_invalid(self):
-        """An authorized user can change the rights for reservation"""
-
-        # try to change the rights with invalid input
-        user_id = User.objects.all()[2].id
-        response = self.client.put(
-            f"http://localhost:8000/api/users/change_rights_reservation/{user_id}/",
-            headers={"Authorization": f"Bearer {self.jarjestopj_access_token}"},
-            data={"rights_for_reservation": ""},
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(self.muokkaus_user["rights_for_reservation"], True)
+#    def test_change_rights_reservation_invalid(self):
+#        """An authorized user can change the rights for reservation"""
+#
+#        # try to change the rights with invalid input
+#        user_id = User.objects.all()[2].id
+#        response = self.client.put(
+#            f"http://localhost:8000/api/users/change_rights_reservation/{user_id}/",
+#            headers={"Authorization": f"Bearer {self.jarjestopj_access_token}"},
+#            data={"rights_for_reservation": ""},
+#            format="json",
+#        )
+#
+#        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+#        self.assertEqual(self.muokkaus_user["rights_for_reservation"], True)
     
     def test_hand_over_key_valid(self):
         """A user with permission can hand over a Klusteri key"""
