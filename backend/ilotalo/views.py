@@ -901,7 +901,6 @@ def force_logout_ykv_logins():
     logout_time = datetime.strptime(str(datetime.now())[:-10], datetime_format)
     
     for resp in responsibility_to_update:
-        print(resp.created_by)
         data = {'late': True,
                 'present': False, 
                 'logout_time': logout_time}
