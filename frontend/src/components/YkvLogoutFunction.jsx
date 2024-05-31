@@ -4,7 +4,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Autocomplete } from "@mui/material";
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
-const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, handleYkvLogout, selectedIds }) => {
+const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, handleYkvLogout, loggedUser }) => {
   const [open, setOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
@@ -23,12 +23,13 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
     setConfirmOpen(false);
   };
 
-  const [users, setUsers] = useState([]);
+  const [activeUsers, setactiveUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const handleRemove = (id) => {
-    handleYkvLogout(selectedIds);
-    setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+    handleYkvLogout(id);
+    setactiveUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
     setConfirmOpen(false);
   };
 
@@ -62,25 +63,31 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
   const columns_2 = [
     
     { field: 'Vastuuhenkilö', headerName: 'Vastuuhenkilö', width: 170 },
-    { field: 'Luonut', headerName: 'Luonut', width: 220 },
-    { field: 'Vastuussa henkilöistä', headerName: 'Vastuussa henkilöistä', width: 200 },
+    { field: 'created_by', headerName: 'Luonut', width: 220 },
+    { field: 'Vastuussa', headerName: 'Vastuussa', width: 200 },
     { field: 'YKV_sisäänkirjaus', headerName: 'YKV sisäänkirjaus', width: 220 },
-    { field: 'YKV_uloskirjaus', headerName: 'YKV uloskirjaus', width: 220 },
+    { field: 'logout_time', headerName: 'YKV uloskirjaus', width: 220 },
     { field: 'Organisaatiot', headerName: 'Järjestöt', width: 220 },
   ];
 
   useEffect(() => {
     axiosClient
-      .get("/listobjects/nightresponsibilities/")   // pitääkö olla aktiivisista, ks. ownkeys rivi 200
+      .get("/listobjects/nightresponsibilities/")
       .then((res) => {
         const userData = res.data.map((u, index) => ({
-          id: index, // DataGrid requires a unique 'id' for each row
+          id: u.id, // DataGrid requires a unique 'id' for each row
           Vastuuhenkilö: u.user.username,
           Vastuussa: u.responsible_for,
           YKV_sisäänkirjaus: u.login_time, // Assuming login_time is available
           Organisaatiot: u.organizations.map(organization => organization.name), // Assuming login_time is available
+          present: u.present,
+          created_by: u.created_by,
+          logout_time: u.present ? null : u.logout_time
         }));
-        setUsers(userData);
+        setAllUsers(userData)
+        setactiveUsers(userData.filter((resp) => resp.present === true &&
+        resp.Vastuuhenkilö == loggedUser.username && 
+        resp.created_by == loggedUser.username));
         setLoading(false);
       })
       .catch((error) => console.error(error));
@@ -96,9 +103,16 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
     handleClose(); // Close the dialog
   };
 
-  const filteredUsers = users.filter(user =>
-    user.Vastuussa.toLowerCase().includes(search.toLowerCase())
+  const filteredUsers = allUsers.filter(user =>
+    user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
+    user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase())
   );
+
+  const ownUsers = allUsers.filter(user => user.Vastuuhenkilö === loggedUser.username 
+    || user.created_by === loggedUser.username).filter(user =>
+      user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
+      user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase())
+    );
 
   return loading ? (
     <div>Lataa...</div>
@@ -138,7 +152,7 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
 
             <Autocomplete
               id="combo-box-demo"
-              options={users}
+              options={activeUsers}
               getOptionLabel={(option) => option.Vastuuhenkilö}
               style={{ width: 300 }}
               renderInput={(params) => <TextField {...params} label="Kirjaa toisen käyttäjän puolesta" variant="standard" />}
@@ -156,16 +170,8 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
         </Dialog>
       </React.Fragment>
 
-      <TextField
-        label="Hae vastuussa"
-        variant="outlined"
-        fullWidth
-        margin="normal"
-        onChange={(e) => setSearch(e.target.value)}
-      />
-
       <DataGrid
-        rows={filteredUsers}
+        rows={activeUsers}
         columns={columns}
         pageSize={5}
         rowsPerPageOptions={[5, 10, 20]}
@@ -194,14 +200,41 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
       </Dialog>
 
 
-      <h2>Kaikki vastuut</h2>
-      <DataGrid
-        rows={filteredUsers}
-        columns={columns_2}
-        pageSize={5}
-        rowsPerPageOptions={[5, 10, 20]}
-      />
+      {(loggedUser.role !==5) &&
+        <div>        
+        <TextField
+          label="Hae vastuussa"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        </div>      
+      }
 
+      {(loggedUser.role !== 1) && (loggedUser.role !== 5) &&
+        <div>
+        <h2>Omat vastuut</h2>
+        <DataGrid
+          rows={ownUsers}
+          columns={columns_2}
+          pageSize={5}
+          rowsPerPageOptions={[5, 10, 20]}
+        />
+        </div>
+      }
+
+      {(loggedUser.role === 1) && (
+        <div>        
+        <h2>Kaikki vastuut</h2>
+        <DataGrid
+          rows={filteredUsers}
+          columns={columns_2}
+          pageSize={5}
+          rowsPerPageOptions={[5, 10, 20]}
+        />
+        </div>)
+      }
 
     </div>
   
