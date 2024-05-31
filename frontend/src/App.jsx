@@ -106,7 +106,7 @@ const App = (props) => {
   ];
   const drawer = (
     <div>
-      <img src={matlu} alt="logo" style={{ height: "15%" }} />
+      <img src={matlu} alt="logo" style={{ height: "22.95%" }} /> {/* ADD PADDING TO LOGO */}
       <Divider />
       <List>
         {[
