@@ -152,7 +152,7 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
 
             <Autocomplete
               id="combo-box-demo"
-              options={activeUsers}
+              options={allUsers}
               getOptionLabel={(option) => option.Vastuuhenkilö}
               style={{ width: 300 }}
               renderInput={(params) => <TextField {...params} label="Kirjaa toisen käyttäjän puolesta" variant="standard" />}
