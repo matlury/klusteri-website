@@ -6,10 +6,7 @@ import {
   getPermission,
   fetchAllUsersWithKeys,
 } from "../utils/keyuserhelpers.js";
-import YkvForm from "../components/YkvForm.jsx";
-import Responsibilities from "../components/Responsibilities.jsx";
 import YkvLogoutFunction from "../components/YkvLogoutFunction.jsx";
-import OwnYkvList from "../components/OwnYkvList.jsx";
 
 const OwnKeys = ({
   isLoggedIn: propIsLoggedIn,
