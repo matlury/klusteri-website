@@ -1,10 +1,12 @@
 import React from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import { Calendar } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../index.css";
-import { formatDatetime } from "../utils/timehelpers";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
+import { Select, InputLabel, FormControl } from "@mui/material";
 
 const ReservationsView = ({
   handleAddNewEventClick,
@@ -31,11 +33,9 @@ const ReservationsView = ({
       <div className="add-event-button">
         <Button
           id="createEvent"
-          variant="primary"
+          variant="contained"
           onClick={handleAddNewEventClick}
           style={{
-            backgroundColor: "gray",
-            borderColor: "gray",
             padding: "7px",
             margin: "10px",
           }}
@@ -76,94 +76,112 @@ const ReservationsView = ({
             <p style={{ color: "grey" }}>
               Voit tehdä enimmillään 24 tunnin varauksen.
             </p>
-            <p>
-              Alkaa:{" "}
-              <input
-                id="startTime"
-                type="datetime-local"
-                name="start"
-                ref={startRef}
-                onChange={handleInputChange}
-              />
-            </p>
-            <p>
-              Päättyy:{" "}
-              <input
-                id="endTime"
-                type="datetime-local"
-                name="end"
-                ref={endRef}
-                onChange={handleInputChange}
-              />
-            </p>
+            <TextField
+              id="startTime"
+              label="Alkaa"
+              type="datetime-local"
+              name="start"
+              inputRef={startRef}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <TextField
+              id="endTime"
+              label="Päättyy"
+              type="datetime-local"
+              name="end"
+              inputRef={endRef}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
             <p style={{ color: "red" }}>
               Huomioithan yökäyttösäännöt klo 00-08.
             </p>
-            <input
+            <TextField
               id="eventName"
               name="title"
-              placeholder="Tapahtuman nimi"
+              label="Tapahtuman nimi"
               value={eventDetails.title}
               onChange={handleInputChange}
-              style={{ width: "100%", borderRadius: "5px" }}
+              fullWidth
+              margin="normal"
             />
-            <p></p>
-            <input
+            <TextField
               id="organizerName"
               name="organizer"
-              placeholder="Järjestäjä"
+              label="Järjestäjä"
               value={eventDetails.organizer}
               onChange={handleInputChange}
-              style={{ width: "100%", borderRadius: "5px" }}
+              fullWidth
+              margin="normal"
             />
-            <p></p>
-            <input
+            <TextField
               id="responsibleName"
               name="responsible"
-              placeholder="Vastuuhenkilö"
+              label="Vastuuhenkilö"
               value={eventDetails.responsible}
               onChange={handleInputChange}
-              style={{ width: "100%", borderRadius: "5px" }}
+              fullWidth
+              margin="normal"
             />
-            <p></p>
-
-            <textarea
+            <TextField
               id="eventDescription"
               name="description"
-              placeholder="Tapahtuman kuvaus"
+              label="Tapahtuman kuvaus"
               value={eventDetails.description}
               onChange={handleInputChange}
-              style={{ width: "100%", height: "100px", borderRadius: "5px" }}
+              multiline
+              rows={4}
+              fullWidth
+              margin="normal"
             />
-            <select
-              id="eventOpen"
-              name="isOpen"
-              value={eventDetails.isOpen}
-              onChange={handleInputChange}
-            >
-              <option value="tyhjä">Valitse avoimuus</option>
-              <option value="avoin">Avoin tapahtuma</option>
-              <option value="suljettu">Vain jäsenille</option>
-            </select>
-            <select
-              id="eventRoom"
-              name="room"
-              value={eventDetails.room}
-              onChange={handleInputChange}
-            >
-              <option value="tyhjä">Valitse huone</option>
-              <option value="Kokoushuone">Kokoushuone</option>
-              <option value="Kerhotila">Kerhotila</option>
-              <option value="Oleskelutila">Oleskelutila</option>
-              <option value="ChristinaRegina">ChristinaRegina</option>
-            </select>
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="eventOpen-label">Avoimuus</InputLabel>
+              <Select
+                labelId="eventOpen-label"
+                id="eventOpen"
+                name="isOpen"
+                value={eventDetails.isOpen}
+                onChange={handleInputChange}
+                label="Avoimuus"
+              >
+                <MenuItem value="tyhjä">Valitse avoimuus</MenuItem>
+                <MenuItem value="avoin">Avoin tapahtuma</MenuItem>
+                <MenuItem value="suljettu">Vain jäsenille</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="eventRoom-label">Huone</InputLabel>
+              <Select
+                labelId="eventRoom-label"
+                id="eventRoom"
+                name="room"
+                value={eventDetails.room}
+                onChange={handleInputChange}
+                label="Huone"
+              >
+                <MenuItem value="tyhjä">Valitse huone</MenuItem>
+                <MenuItem value="Kokoushuone">Kokoushuone</MenuItem>
+                <MenuItem value="Kerhotila">Kerhotila</MenuItem>
+                <MenuItem value="Oleskelutila">Oleskelutila</MenuItem>
+                <MenuItem value="ChristinaRegina">ChristinaRegina</MenuItem>
+              </Select>
+            </FormControl>
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
+          <Button variant="outlined" onClick={handleCloseModal}>
             Sulje
           </Button>
-          <Button id="confirmCreate" variant="primary" onClick={handleAddEvent}>
+          <Button id="confirmCreate" variant="contained" onClick={handleAddEvent}>
             Tallenna
           </Button>
         </Modal.Footer>
@@ -193,14 +211,15 @@ const ReservationsView = ({
         <Modal.Footer>
           <Button
             id="deleteEvent"
-            variant="danger"
+            variant="contained"
+            color="error"
             onClick={() => handleDeleteEvent(selectedEvent.id)}
           >
             Poista tapahtuma
           </Button>
           <Button
             id="closeEvent"
-            variant="secondary"
+            variant="outlined"
             onClick={handleCloseModal}
           >
             Sulje

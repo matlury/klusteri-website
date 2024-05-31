@@ -107,11 +107,11 @@ npx eslint src
 
 Cypress-testeille löytyy ohjeet [täältä.](https://github.com/matlury/klusteri-website/blob/main/docs/cypress.md)
 
-## Codecov
+## Codecov ja coverage
 
-Codecovin testikattavuuden päivittämiseksi on muodostettava uudet testikattavuusraportit. Kun tämän jälkeen committaa ja pushaa githubiin, Codecovin näkymä päivittyy automaattisesti.  
+Testikattavauusraportit lähetetään automaattisesti Codecoviin CI:n yhteydessä
 
-**HUOM!** Jos main.yml-tiedostossa tekee muutoksia "Upload coverage reports to codecov"-otsikon alle, on muodostettava uudet testikattavuusraportit ennen githubiin pushaamista. Muuten Codecov pudottaa testikattavuuden nollaan.
+Raportit muodostetaan seuraavilla komennoilla
 
 Raportin muodostaminen backendille
 ```bash
@@ -122,5 +122,6 @@ Raportin muodostaminen frontendille
 ```bash
 ~klusteri-website/frontend/$ npx jest --coverage
 ```
+
 Huom! Codecov ei toistaiseksi ota huomioon cypress-testejä
 

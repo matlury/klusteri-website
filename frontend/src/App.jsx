@@ -106,7 +106,8 @@ const App = (props) => {
   ];
   const drawer = (
     <div>
-      <img src={matlu} alt="logo" style={{ height: "15%" }} />
+      <img src={matlu} alt="logo" style={{ height: "22.9%" }} />{" "}
+      {/* ADD PADDING TO LOGO */}
       <Divider />
       <List>
         {[
@@ -120,19 +121,16 @@ const App = (props) => {
           "Tietosuojaseloste",
         ].map((text, index) => (
           <ListItem key={text} disablePadding>
-            {/*</ListItemButton>{/* <ListItemButton component={Link} to={text === 'Etusivu' ? '/' : `/${text.toLowerCase().replace(/\s+/g, '_')}`}> */}
-
             <ListItemButton
               key={text}
-              component="a"
-              href={`/${text
+              component={Link}
+              to={`/${text
                 .toLowerCase()
                 .replace(/\s+/g, "_")
                 .replace(/ä/g, "a")
                 .replace(/ö/g, "o")}`}
             >
               <ListItemIcon>{icons[index]}</ListItemIcon>
-
               <ListItemText primary={text} />
             </ListItemButton>
           </ListItem>
@@ -142,99 +140,97 @@ const App = (props) => {
     </div>
   );
 
-  // Remove this const when copying and pasting into your project.
   const container =
     window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{
-          bgcolor: "#FFFFFF",
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            color="primary"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div" color={"primary"}>
-            Ilotalo 3.0
-          </Typography>
-          <Box sx={{ flexGrow: 1 }} />
-          {isLoggedIn ? (
-            <Button
-              variant="outlined"
-              className="logout-button"
-              onClick={handleLogout}
+    <Router>
+      <Box sx={{ display: "flex" }}>
+        <CssBaseline />
+        <AppBar
+          position="fixed"
+          sx={{
+            bgcolor: "#FFFFFF",
+            width: { sm: `calc(100% - ${drawerWidth}px)` },
+            ml: { sm: `${drawerWidth}px` },
+          }}
+        >
+          <Toolbar>
+            <IconButton
+              color="primary"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2, display: { sm: "none" } }}
             >
-              Kirjaudu ulos{" "}
-            </Button>
-          ) : (
-            <Button variant="primary" href="/login">
-              Kirjaudu
-            </Button>
-          )}
-        </Toolbar>
-      </AppBar>
-      <Box
-        component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="mailbox folders"
-      >
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-        <Drawer
-          container={container}
-          variant="temporary"
-          open={mobileOpen}
-          onTransitionEnd={handleDrawerTransitionEnd}
-          onClose={handleDrawerClose}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap component="div" color={"primary"}>
+              Ilotalo 3.0
+            </Typography>
+            <Box sx={{ flexGrow: 1 }} />
+            {isLoggedIn ? (
+              <Button
+                variant="outlined"
+                className="logout-button"
+                onClick={handleLogout}
+              >
+                Kirjaudu ulos{" "}
+              </Button>
+            ) : (
+              <Button variant="primary" href="/login">
+                Kirjaudu
+              </Button>
+            )}
+          </Toolbar>
+        </AppBar>
+        <Box
+          component="nav"
+          sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+          aria-label="mailbox folders"
+        >
+          <Drawer
+            container={container}
+            variant="temporary"
+            open={mobileOpen}
+            onTransitionEnd={handleDrawerTransitionEnd}
+            onClose={handleDrawerClose}
+            ModalProps={{
+              keepMounted: true,
+            }}
+            sx={{
+              display: { xs: "block", sm: "none" },
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: drawerWidth,
+              },
+            }}
+          >
+            {drawer}
+          </Drawer>
+          <Drawer
+            variant="permanent"
+            sx={{
+              display: { xs: "none", sm: "block" },
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: drawerWidth,
+              },
+            }}
+            open
+          >
+            {drawer}
+          </Drawer>
+        </Box>
+        <Box
+          component="main"
           sx={{
-            display: { xs: "block", sm: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
+            flexGrow: 1,
+            p: 3,
+            width: { sm: `calc(100% - ${drawerWidth}px)` },
           }}
         >
-          {drawer}
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: "none", sm: "block" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
-          }}
-          open
-        >
-          {drawer}
-        </Drawer>
-      </Box>
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-        }}
-      >
-        <Toolbar />
-        <Router>
+          <Toolbar />
           <Routes>
             <Route path="/" element={<FrontPage />} />
             <Route path="/etusivu" element={<FrontPage />} />
@@ -250,14 +246,12 @@ const App = (props) => {
               path="/omat_tiedot"
               element={<OwnPage isLoggedIn={isLoggedIn} />}
             />
-
             <Route path="/yhteystiedot" element={<Contacts />} />
             <Route
               path="/saannot_ja_ohjeet"
               element={<Rules_and_Instructions />}
             />
             <Route path="/tietosuojaseloste" element={<PrivacyPolicy />} />
-
             <Route
               path="/login"
               element={
@@ -273,9 +267,9 @@ const App = (props) => {
               }
             />
           </Routes>
-        </Router>
+        </Box>
       </Box>
-    </Box>
+    </Router>
   );
 };
 

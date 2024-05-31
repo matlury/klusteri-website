@@ -17,10 +17,11 @@ export const getPermission = async ({ API_URL, setHasPermission }) => {
       const currentUser = response.data;
       if (currentUser.role === 1) {
         setHasPermission(true);
-      } if (currentUser[0].role === 1) {
-        setHasPermission(true);
-      }
-      else {
+      } else if (currentUser[0]) {
+        if (currentUser[0].role === 1) {
+          setHasPermission(true);
+        }
+      } else {
         setHasPermission(false);
       }
     });

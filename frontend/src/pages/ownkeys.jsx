@@ -6,28 +6,28 @@ import {
   getPermission,
   fetchAllUsersWithKeys,
 } from "../utils/keyuserhelpers.js";
-import YkvForm from "../components/YkvForm.jsx";
-import Responsibilities from "../components/Responsibilities.jsx";
 import YkvLogoutFunction from "../components/YkvLogoutFunction.jsx";
-import OwnYkvList from "../components/OwnYkvList.jsx";
 
-const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
+const OwnKeys = ({
+  isLoggedIn: propIsLoggedIn,
+  loggedUser: propLoggedUser,
+}) => {
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
   const [responsibility, setResponsibility] = useState("");
   const [email, setEmail] = useState("");
-  const [loggedUser, setLoggedUser] = useState(user);
+  const [loggedUser, setLoggedUser] = useState(propLoggedUser);
   const [allResponsibilities, setAllResponsibilities] = useState([]);
   const [ownResponsibilities, setOwnResponsibilities] = useState([]);
-  const [activeResponsibilites, setActiveResponsibilites] = useState([]);
+  const [activeResponsibilities, setActiveResponsibilities] = useState([]);
   const [allUsersWithKeys, setAllUsersWithKeys] = useState([]);
 
   const [nameFilter, setNameFilter] = useState("");
   const [ykvFilter, setYkvFilter] = useState("");
   var d = new Date();
   d.setDate(d.getDate() - 6);
-  const [minFilter, setMinFilter] = useState(d.toISOString().slice(0,-8));
+  const [minFilter, setMinFilter] = useState(d.toISOString().slice(0, -8));
   d.setDate(d.getDate() + 7);
-  const [maxFilter, setMaxFilter] = useState(d.toISOString().slice(0,-8));
+  const [maxFilter, setMaxFilter] = useState(d.toISOString().slice(0, -8));
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -43,26 +43,26 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
 
   const API_URL = process.env.API_URL;
 
-  // effect hooks keep the information of the logged user up to date
   useEffect(() => {
     setIsLoggedIn(propIsLoggedIn);
     if (propIsLoggedIn) {
-      const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
-      setEmail(loggedUser.email);
-      setLoggedUser(loggedUser);
-      getPermission({ API_URL, setHasPermission });
+      const storedUser = JSON.parse(localStorage.getItem("loggedUser"));
+      if (storedUser) {
+        setEmail(storedUser.email);
+        setLoggedUser(storedUser);
+        getPermission({ API_URL, setHasPermission });
+      }
     }
   }, [propIsLoggedIn]);
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isLoggedIn && loggedUser) {
       getResponsibility();
       getActiveResponsibilities();
       getPermission({ API_URL, setHasPermission });
     }
-  }, [isLoggedIn, selectedForYKV]);
+  }, [isLoggedIn, loggedUser, selectedForYKV]);
 
-  // Fetch all users with keys when the component mounts or when 'loggedUser' changes
   useEffect(() => {
     const fetchData = async () => {
       if (loggedUser) {
@@ -97,20 +97,25 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
   const handleFilterChange = (event) => {
     setNameFilter(event.target.value);
   };
+
   const handleYkvFilterChange = (event) => {
     setYkvFilter(event.target.value);
   };
+
   const handleMaxFilterChange = (event) => {
     setMaxFilter(event.target.value);
   };
+
   const handleMinFilterChange = (event) => {
     setMinFilter(event.target.value);
   };
   // this function handles the event of taking responsibility (check above)
   const handleYkvLogin = async (event) => {
-    event.preventDefault();
+    // event.preventDefault();
 
     const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
+    if (!loggedUser) return;
+
     const user_id = loggedUser.id;
     const email = loggedUser.email;
     const loginTime = getCurrentDateTime();
@@ -119,7 +124,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
 
     const user = userdata.data.find((user) => user.id === user_id);
 
-    const user_orgs = user.keys.map(key => key.id);
+    const user_orgs = user.keys.map((key) => key.id);
 
     const responsibilityObject = {
       user: user_id,
@@ -145,10 +150,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
     });
 
     function confirmYKV(responsibilityObject) {
-      const confirm = window.confirm(
-        `Henkilö ${(userdata.data.find((user) => user.id === responsibilityObject.user)).username}\nottaa vastuun henkilöistä: ${responsibility}\nAlkaen kello: ${loginTime}`,
-      );
-
       if (confirm) {
         axiosClient
           .post(`/ykv/create_responsibility`, responsibilityObject)
@@ -172,13 +173,13 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
 
   // function that checks if the user logged in (if there are no responsibilities, the user cant be logged in either)
   function checkIfLoggedIn() {
-    if (allResponsibilities.length === 0) {
+    if (loggedUser) {
+      if (loggedUser.role !== 5) {
+        return true;
+      }
       return false;
     }
-    if (loggedUser.role !== 5) {
-      return true;
-    }
-    return false
+    return false;
   }
 
   // THE FOLLOWING FUNCTIONS RENDER SPECIFIC YKV-RESPONSIBILITIES
@@ -190,7 +191,9 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
       .then((response) => {
         setAllResponsibilities(response.data);
         const filteredResponsibilities = response.data.filter(
-          (item) => item.email === email || item.created_by === user.username,
+          (item) =>
+            item.email === email ||
+            (loggedUser && item.created_by === loggedUser.username),
         );
         setOwnResponsibilities(filteredResponsibilities);
       })
@@ -205,7 +208,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
       .then((response) => {
         setAllResponsibilities(response.data);
         const active = response.data.filter((item) => item.present === true);
-        setActiveResponsibilites(active);
+        setActiveResponsibilities(active);
       })
       .catch((error) => {
         console.error("Error fetching responsibilities", error);
@@ -214,40 +217,35 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
   // THE FOLLOWING FUNCTIONS HANDLE THE YKV-LOGOUT
 
   // handles the end of taking responsibility
-  const handleYkvLogout = (selectedIds) => {
+  const handleYkvLogout = (id) => {
     setButtonPopup(true);
-
-    selectedIds.forEach((id) =>
-      axiosClient
-        .put(`ykv/logout_responsibility/${id}/`, {
-          logout_time: getCurrentDateTime(),
-        })
-        .then((response) => {
-          setSuccess("YKV-uloskirjaus onnistui");
-          setTimeout(() => setSuccess(""), 5000);
-          getResponsibility();
-          getActiveResponsibilities();
-          fetchAllUsersWithKeys({
-            API_URL,
-            allUsersWithKeys,
-            setAllUsersWithKeys,
-            loggedUser,
-            allResponsibilities,
-          });
-        })
-        .catch((error) => {
-          setError("YKV-uloskirjaus epäonnistui");
-          setTimeout(() => setError(""), 5000);
-          console.error("Ykv-uloskirjaus epäonnistui", error);
-        }),
-    );
+    axiosClient
+      .put(`ykv/logout_responsibility/${id}/`, {
+        logout_time: getCurrentDateTime(),
+      })
+      .then((response) => {
+        setSuccess("YKV-uloskirjaus onnistui");
+        setTimeout(() => setSuccess(""), 5000);
+        getResponsibility();
+        getActiveResponsibilities();
+        fetchAllUsersWithKeys({
+          API_URL,
+          allUsersWithKeys,
+          setAllUsersWithKeys,
+          loggedUser,
+          allResponsibilities,
+        });
+      })
+      .catch((error) => {
+        setError("YKV-uloskirjaus epäonnistui");
+        setTimeout(() => setError(""), 5000);
+        console.error("Ykv-uloskirjaus epäonnistui", error);
+      });
   };
 
   // THE FOLLOWING FUNCTIONS HANDLE THE YKV-LOGIN EDITS
 
   const handleYkvEdit = (respId, respToEdit) => {
-    console.log("resptoedit", respToEdit);
-
     axiosClient
       .put(`ykv/update_responsibility/${respId}/`, respToEdit)
       .then((response) => {
@@ -272,43 +270,20 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: user }) => {
           {success && <p style={{ color: "green" }}>{success}</p>}
           {checkIfLoggedIn() && (
             <YkvLogoutFunction
+              handleYkvLogin={handleYkvLogin}
               handleYkvLogout={handleYkvLogout}
               idToLogout={idToLogout}
               buttonPopup={buttonPopup}
               setButtonPopup={setButtonPopup}
-              activeResponsibilites={activeResponsibilites}
+              activeResponsibilities={activeResponsibilities}
               setIdToLogout={setIdToLogout}
               loggedUser={loggedUser}
               setEditButtonPopup={setEditButtonPopup}
               editButtonPopup={editButtonPopup}
               setRespToEdit={setRespToEdit}
               handleYkvEdit={handleYkvEdit}
-            />
-          )}
-          {user.role !== 5 && (
-            <YkvForm
               responsibility={responsibility}
               setResponsibility={setResponsibility}
-              nameFilter={nameFilter}
-              handleFilterChange={handleFilterChange}
-              allUsersWithKeys={allUsersWithKeys}
-              selectedForYKV={selectedForYKV}
-              handleCheckboxChange={handleCheckboxChange}
-              handleYkvLogin={handleYkvLogin}
-            />
-          )}
-          {!(loggedUser.role === 1 || loggedUser.role === 5) && (
-            <OwnYkvList ownResponsibilities={ownResponsibilities} />
-          )}
-          {hasPermission === true && (
-            <Responsibilities
-              allResponsibilities={allResponsibilities}
-              ykvFilter={ykvFilter}
-              handleYkvFilterChange={handleYkvFilterChange}
-              maxFilter={maxFilter}
-              minFilter={minFilter}
-              handleMaxFilterChange={handleMaxFilterChange}
-              handleMinFilterChange={handleMinFilterChange}
             />
           )}
         </div>

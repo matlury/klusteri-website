@@ -15,7 +15,12 @@ const Responsibilities = ({
     <div>
       <h2>Kaikki vastuut</h2>
       Etsi henkilöitä: <br />
-      <input value={ykvFilter} onChange={handleYkvFilterChange} type="text" data-testid="ykvfiltersearch"/>
+      <input
+        value={ykvFilter}
+        onChange={handleYkvFilterChange}
+        type="text"
+        data-testid="ykvfiltersearch"
+      />
       Hae kirjauksia aikavälillä: <br />
       <input type="hidden" id="timezone" name="timezone" value="03:00" />
       <input
@@ -52,14 +57,14 @@ const Responsibilities = ({
                   resp.created_by
                     .toLowerCase()
                     .includes(ykvFilter.toLowerCase()) ||
-                  resp.organizations.some((org) => org.name.toLowerCase().includes(ykvFilter.toLowerCase())) ||
+                  resp.organizations.some((org) =>
+                    org.name.toLowerCase().includes(ykvFilter.toLowerCase()),
+                  ) ||
                   resp.responsible_for
                     .toLowerCase()
                     .includes(ykvFilter.toLowerCase())) &&
-                Date.parse(resp.login_time) <
-                  Number(Date.parse(maxFilter)) &&
-                Date.parse(resp.logout_time) >
-                  Number(Date.parse(minFilter)),
+                Date.parse(resp.login_time) < Number(Date.parse(maxFilter)) &&
+                Date.parse(resp.logout_time) > Number(Date.parse(minFilter)),
             )
             .reverse()
             .map((resp) => (
@@ -69,7 +74,8 @@ const Responsibilities = ({
                 style={{ backgroundColor: activeColour(resp) }}
               >
                 Vastuuhenkilö: {resp.user.username}, {resp.user.email},{" "}
-                {resp.organizations.map(organization => organization.name)} <br />
+                {resp.organizations.map((organization) => organization.name)}{" "}
+                <br />
                 Luonut: {resp.created_by} <br />
                 <p>Vastuussa henkilöistä: {resp.responsible_for}</p>
                 YKV-sisäänkirjaus klo: {formatDatetime(resp.login_time)} <br />
@@ -79,7 +85,7 @@ const Responsibilities = ({
                 <br />
               </li>
             ))}
-          </ul>
+        </ul>
       </div>
     </div>
   );
