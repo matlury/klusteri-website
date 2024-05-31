@@ -4,7 +4,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Autocomplete } from "@mui/material";
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
-const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, handleYkvLogout, selectedIds }) => {
+const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, handleYkvLogout }) => {
   const [open, setOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
@@ -23,12 +23,13 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
     setConfirmOpen(false);
   };
 
-  const [users, setUsers] = useState([]);
+  const [activeUsers, setactiveUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const handleRemove = (id) => {
-    handleYkvLogout(selectedIds);
-    setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+    handleYkvLogout(id);
+    setactiveUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
     setConfirmOpen(false);
   };
 
@@ -73,13 +74,15 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
       .get("/listobjects/nightresponsibilities/")   // pitääkö olla aktiivisista, ks. ownkeys rivi 200
       .then((res) => {
         const userData = res.data.map((u, index) => ({
-          id: index, // DataGrid requires a unique 'id' for each row
+          id: u.id, // DataGrid requires a unique 'id' for each row
           Vastuuhenkilö: u.user.username,
           Vastuussa: u.responsible_for,
           YKV_sisäänkirjaus: u.login_time, // Assuming login_time is available
           Organisaatiot: u.organizations.map(organization => organization.name), // Assuming login_time is available
+          present: u.present 
         }));
-        setUsers(userData);
+        setAllUsers(userData)
+        setactiveUsers(userData.filter((resp) => resp.present === true));
         setLoading(false);
       })
       .catch((error) => console.error(error));
@@ -95,7 +98,7 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
     handleClose(); // Close the dialog
   };
 
-  const filteredUsers = users.filter(user =>
+  const filteredUsers = allUsers.filter(user =>
     user.Vastuussa.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -137,7 +140,7 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
 
             <Autocomplete
               id="combo-box-demo"
-              options={users}
+              options={activeUsers}
               getOptionLabel={(option) => option.Vastuuhenkilö}
               style={{ width: 300 }}
               renderInput={(params) => <TextField {...params} label="Kirjaa toisen käyttäjän puolesta" variant="standard" />}
@@ -164,7 +167,7 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
       />
 
       <DataGrid
-        rows={filteredUsers}
+        rows={activeUsers}
         columns={columns}
         pageSize={5}
         rowsPerPageOptions={[5, 10, 20]}

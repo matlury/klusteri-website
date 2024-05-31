@@ -220,33 +220,30 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: propLoggedUser }) => 
   // THE FOLLOWING FUNCTIONS HANDLE THE YKV-LOGOUT
 
   // handles the end of taking responsibility
-  const handleYkvLogout = (selectedIds) => {
+  const handleYkvLogout = (id) => {
     setButtonPopup(true);
-    console.log("selectedIds", selectedIds);
-    selectedIds.forEach((id) =>
       axiosClient
-        .put(`ykv/logout_responsibility/${id}/`, {
-          logout_time: getCurrentDateTime(),
-        })
-        .then((response) => {
-          setSuccess("YKV-uloskirjaus onnistui");
-          setTimeout(() => setSuccess(""), 5000);
-          getResponsibility();
-          getActiveResponsibilities();
-          fetchAllUsersWithKeys({
-            API_URL,
-            allUsersWithKeys,
-            setAllUsersWithKeys,
-            loggedUser,
-            allResponsibilities,
-          });
-        })
-        .catch((error) => {
-          setError("YKV-uloskirjaus epäonnistui");
-          setTimeout(() => setError(""), 5000);
-          console.error("Ykv-uloskirjaus epäonnistui", error);
-        })
-    );
+      .put(`ykv/logout_responsibility/${id}/`, {
+        logout_time: getCurrentDateTime(),
+      })
+      .then((response) => {
+        setSuccess("YKV-uloskirjaus onnistui");
+        setTimeout(() => setSuccess(""), 5000);
+        getResponsibility();
+        getActiveResponsibilities();
+        fetchAllUsersWithKeys({
+          API_URL,
+          allUsersWithKeys,
+          setAllUsersWithKeys,
+          loggedUser,
+          allResponsibilities,
+        });
+      })
+      .catch((error) => {
+        setError("YKV-uloskirjaus epäonnistui");
+        setTimeout(() => setError(""), 5000);
+        console.error("Ykv-uloskirjaus epäonnistui", error);
+      })
   };
 
   // THE FOLLOWING FUNCTIONS HANDLE THE YKV-LOGIN EDITS
