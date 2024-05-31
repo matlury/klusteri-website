@@ -63,6 +63,7 @@ const YkvLogoutFunction = ({
         <Button
           variant="outlined"
           onClick={() => handleLogoutClick(params.id, params.row.Vastuussa)}
+          id="removeresp"
         >
           <LogoutOutlinedIcon />
         </Button>
@@ -204,6 +205,7 @@ const YkvLogoutFunction = ({
               type="submit"
               className="create-user-button"
               data-testid="createresponsibility"
+              id="takeresp"
             >
               Ota vastuu
             </Button>
@@ -231,6 +233,7 @@ const YkvLogoutFunction = ({
             onClick={() => handleRemove(selectedUserId)}
             color="primary"
             variant="contained"
+            id="confirmlogout"
           >
             Vahvista
           </Button>
