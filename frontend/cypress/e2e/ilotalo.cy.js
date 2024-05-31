@@ -303,6 +303,7 @@ describe("Reservations", () => {
 
   describe("Creating and deleting", () => {
     beforeEach(function () {
+      cy.viewport(2560, 1440)
       cy.on("uncaught:exception", () => {
         return false;
       });
@@ -338,8 +339,10 @@ describe("Reservations", () => {
       cy.get("#organizerName").type("Tester Mann");
       cy.get("#responsibleName").type("Mr Responsible");
       cy.get("#eventDescription").type("This is a testing event");
-      cy.get("#eventOpen").select("Avoin tapahtuma");
-      cy.get("#eventRoom").select("Kokoushuone");
+      cy.get("#eventOpen").click()
+      cy.contains("Avoin tapahtuma").click()
+      cy.get("#eventRoom").click()
+      cy.contains("Kokoushuone").click()
       cy.get("#confirmCreate").click();
       cy.wait(500);
       cy.contains("Test Event").click();
