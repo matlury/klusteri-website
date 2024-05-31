@@ -150,10 +150,6 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: propLoggedUser }) => 
     });
 
     function confirmYKV(responsibilityObject) {
-      const confirm = window.confirm(
-        `Henkilö ${(userdata.data.find((user) => user.id === responsibilityObject.user)).username}\nottaa vastuun henkilöistä: ${responsibility}\nAlkaen kello: ${loginTime}`,
-      );
-
       if (confirm) {
         axiosClient
           .post(`/ykv/create_responsibility`, responsibilityObject)
