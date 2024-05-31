@@ -183,9 +183,9 @@ describe("Frontpage", () => {
 //     cy.contains("Peruuta").click();    // että sulkee ikkunan, tilapäinen keino poistua pop-upista
 //     cy.reload();
 //     cy.contains("fuksit");
-    //cy.contains("Vastuuhenkilö: leppis, pj@gmail.com");
-    //cy.contains("Vastuussa henkilöistä: fuksit");
-  //});
+//cy.contains("Vastuuhenkilö: leppis, pj@gmail.com");
+//cy.contains("Vastuussa henkilöistä: fuksit");
+//});
 //   it("YKV-logout works", function () {
 //     cy.on("uncaught:exception", () => {
 //       return false;

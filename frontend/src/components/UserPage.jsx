@@ -15,20 +15,40 @@ const UserPage = ({
     <form>
       <h2>Omat tiedot</h2>
       <div>
-        <TextField id="username" label="Käyttäjänimi" value={username} onChange={(e) => setUsername(e.target.value)} />
+        <TextField
+          id="username"
+          label="Käyttäjänimi"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
       </div>
       <div>
-        <TextField id="email" label="Sähköposti" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <TextField
+          id="email"
+          label="Sähköposti"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
       </div>
       <div>
-        <TextField id="telegram" label="Telegram" value={telegram} onChange={(e) => setTelegram(e.target.value)} />
+        <TextField
+          id="telegram"
+          label="Telegram"
+          value={telegram}
+          onChange={(e) => setTelegram(e.target.value)}
+        />
       </div>
-      <Button onClick={handleUserDetails} variant="contained" className="create-user-button" >Tallenna </Button>
+      <Button
+        onClick={handleUserDetails}
+        variant="contained"
+        className="create-user-button"
+      >
+        Tallenna{" "}
+      </Button>
       <br />
       <div>Käyttäjän rooli: {role}</div>
 
       <br />
-
     </form>
   );
 };

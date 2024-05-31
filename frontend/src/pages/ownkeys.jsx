@@ -11,7 +11,10 @@ import Responsibilities from "../components/Responsibilities.jsx";
 import YkvLogoutFunction from "../components/YkvLogoutFunction.jsx";
 import OwnYkvList from "../components/OwnYkvList.jsx";
 
-const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: propLoggedUser }) => {
+const OwnKeys = ({
+  isLoggedIn: propIsLoggedIn,
+  loggedUser: propLoggedUser,
+}) => {
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
   const [responsibility, setResponsibility] = useState("");
   const [email, setEmail] = useState("");
@@ -25,9 +28,9 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: propLoggedUser }) => 
   const [ykvFilter, setYkvFilter] = useState("");
   var d = new Date();
   d.setDate(d.getDate() - 6);
-  const [minFilter, setMinFilter] = useState(d.toISOString().slice(0,-8));
+  const [minFilter, setMinFilter] = useState(d.toISOString().slice(0, -8));
   d.setDate(d.getDate() + 7);
-  const [maxFilter, setMaxFilter] = useState(d.toISOString().slice(0,-8));
+  const [maxFilter, setMaxFilter] = useState(d.toISOString().slice(0, -8));
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -111,11 +114,11 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: propLoggedUser }) => 
   };
   // this function handles the event of taking responsibility (check above)
   const handleYkvLogin = async (event) => {
-   // event.preventDefault();
+    // event.preventDefault();
 
     const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
     if (!loggedUser) return;
-    
+
     const user_id = loggedUser.id;
     const email = loggedUser.email;
     const loginTime = getCurrentDateTime();
@@ -124,7 +127,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: propLoggedUser }) => 
 
     const user = userdata.data.find((user) => user.id === user_id);
 
-    const user_orgs = user.keys.map(key => key.id);
+    const user_orgs = user.keys.map((key) => key.id);
 
     const responsibilityObject = {
       user: user_id,
@@ -177,10 +180,10 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: propLoggedUser }) => 
       if (loggedUser.role !== 5) {
         return true;
       }
-      return false
+      return false;
     }
-    return false
-    }
+    return false;
+  }
 
   // THE FOLLOWING FUNCTIONS RENDER SPECIFIC YKV-RESPONSIBILITIES
 
@@ -192,7 +195,8 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: propLoggedUser }) => 
         setAllResponsibilities(response.data);
         const filteredResponsibilities = response.data.filter(
           (item) =>
-            item.email === email || (loggedUser && item.created_by === loggedUser.username)
+            item.email === email ||
+            (loggedUser && item.created_by === loggedUser.username),
         );
         setOwnResponsibilities(filteredResponsibilities);
       })
@@ -218,7 +222,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: propLoggedUser }) => 
   // handles the end of taking responsibility
   const handleYkvLogout = (id) => {
     setButtonPopup(true);
-      axiosClient
+    axiosClient
       .put(`ykv/logout_responsibility/${id}/`, {
         logout_time: getCurrentDateTime(),
       })
@@ -239,7 +243,7 @@ const OwnKeys = ({ isLoggedIn: propIsLoggedIn, loggedUser: propLoggedUser }) => 
         setError("YKV-uloskirjaus epäonnistui");
         setTimeout(() => setError(""), 5000);
         console.error("Ykv-uloskirjaus epäonnistui", error);
-      })
+      });
   };
 
   // THE FOLLOWING FUNCTIONS HANDLE THE YKV-LOGIN EDITS

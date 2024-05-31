@@ -17,8 +17,7 @@ describe("OwnPage Component", () => {
     const { getByText } = render(<OwnPage isLoggedIn={false} />);
     expect(getByText("Kirjaudu sisään")).toBeInTheDocument();
   });
-}
-)
+});
 
 //   it("opens with role 5", () => {
 //     const user = {

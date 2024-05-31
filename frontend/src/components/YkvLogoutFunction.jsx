@@ -1,15 +1,30 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "../axios.js";
-import { DataGrid } from '@mui/x-data-grid';
-import { Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Autocomplete } from "@mui/material";
-import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import { DataGrid } from "@mui/x-data-grid";
+import {
+  Button,
+  TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Autocomplete,
+} from "@mui/material";
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 
-const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, handleYkvLogout, loggedUser }) => {
+const YkvLogoutFunction = ({
+  handleYkvLogin,
+  responsibility,
+  setResponsibility,
+  handleYkvLogout,
+  loggedUser,
+}) => {
   const [open, setOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
-  const [selectedUserName, setSelectedUserName] = useState('');
-  const [search, setSearch] = useState('');
+  const [selectedUserName, setSelectedUserName] = useState("");
+  const [search, setSearch] = useState("");
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -41,8 +56,8 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
 
   const columns = [
     {
-      field: 'actions',
-      headerName: 'Uloskirjaus',
+      field: "actions",
+      headerName: "Uloskirjaus",
       width: 90,
       renderCell: (params) => (
         <Button
@@ -53,21 +68,19 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
         </Button>
       ),
     },
-    { field: 'Vastuuhenkilö', headerName: 'Vastuuhenkilö', width: 170 },
-    { field: 'Vastuussa', headerName: 'Vastuussa', width: 200 },
-    { field: 'YKV_sisäänkirjaus', headerName: 'YKV sisäänkirjaus', width: 220 },
-    { field: 'Organisaatiot', headerName: 'Järjestöt', width: 220 },
+    { field: "Vastuuhenkilö", headerName: "Vastuuhenkilö", width: 170 },
+    { field: "Vastuussa", headerName: "Vastuussa", width: 200 },
+    { field: "YKV_sisäänkirjaus", headerName: "YKV sisäänkirjaus", width: 220 },
+    { field: "Organisaatiot", headerName: "Järjestöt", width: 220 },
   ];
 
-
   const columns_2 = [
-    
-    { field: 'Vastuuhenkilö', headerName: 'Vastuuhenkilö', width: 170 },
-    { field: 'created_by', headerName: 'Luonut', width: 220 },
-    { field: 'Vastuussa', headerName: 'Vastuussa', width: 200 },
-    { field: 'YKV_sisäänkirjaus', headerName: 'YKV sisäänkirjaus', width: 220 },
-    { field: 'logout_time', headerName: 'YKV uloskirjaus', width: 220 },
-    { field: 'Organisaatiot', headerName: 'Järjestöt', width: 220 },
+    { field: "Vastuuhenkilö", headerName: "Vastuuhenkilö", width: 170 },
+    { field: "created_by", headerName: "Luonut", width: 220 },
+    { field: "Vastuussa", headerName: "Vastuussa", width: 200 },
+    { field: "YKV_sisäänkirjaus", headerName: "YKV sisäänkirjaus", width: 220 },
+    { field: "logout_time", headerName: "YKV uloskirjaus", width: 220 },
+    { field: "Organisaatiot", headerName: "Järjestöt", width: 220 },
   ];
 
   useEffect(() => {
@@ -79,15 +92,22 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
           Vastuuhenkilö: u.user.username,
           Vastuussa: u.responsible_for,
           YKV_sisäänkirjaus: u.login_time, // Assuming login_time is available
-          Organisaatiot: u.organizations.map(organization => organization.name), // Assuming login_time is available
+          Organisaatiot: u.organizations.map(
+            (organization) => organization.name,
+          ), // Assuming login_time is available
           present: u.present,
           created_by: u.created_by,
-          logout_time: u.present ? null : u.logout_time
+          logout_time: u.present ? null : u.logout_time,
         }));
-        setAllUsers(userData)
-        setactiveUsers(userData.filter((resp) => resp.present === true &&
-        resp.Vastuuhenkilö == loggedUser.username && 
-        resp.created_by == loggedUser.username));
+        setAllUsers(userData);
+        setactiveUsers(
+          userData.filter(
+            (resp) =>
+              resp.present === true &&
+              resp.Vastuuhenkilö == loggedUser.username &&
+              resp.created_by == loggedUser.username,
+          ),
+        );
         setLoading(false);
       })
       .catch((error) => console.error(error));
@@ -103,24 +123,37 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
     handleClose(); // Close the dialog
   };
 
-  const filteredUsers = allUsers.filter(user =>
-    user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
-    user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase())
+  const filteredUsers = allUsers.filter(
+    (user) =>
+      user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
+      user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const ownUsers = allUsers.filter(user => user.Vastuuhenkilö === loggedUser.username 
-    || user.created_by === loggedUser.username).filter(user =>
-      user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
-      user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase())
+  const ownUsers = allUsers
+    .filter(
+      (user) =>
+        user.Vastuuhenkilö === loggedUser.username ||
+        user.created_by === loggedUser.username,
+    )
+    .filter(
+      (user) =>
+        user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
+        user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase()),
     );
 
   return loading ? (
     <div>Lataa...</div>
   ) : (
-    <div style={{ height: 600, width: '100%' }}>
+    <div style={{ height: 600, width: "100%" }}>
       <h2>Aktiiviset</h2>
       <React.Fragment>
-        <Button variant="contained" className="login-button" color="primary" onClick={handleClickOpen}>
+        <Button
+          variant="contained"
+          className="login-button"
+          color="primary"
+          onClick={handleClickOpen}
+          data-testid="opencreateform"
+        >
           + Ota vastuu
         </Button>
 
@@ -128,7 +161,7 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
           open={open}
           onClose={handleClose}
           PaperProps={{
-            component: 'form',
+            component: "form",
             onSubmit: handleFormSubmit,
           }}
         >
@@ -148,6 +181,7 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
               fullWidth
               variant="standard"
               onChange={(e) => setResponsibility(e.target.value)}
+              data-testid="responsibilityfield"
             />
 
             <Autocomplete
@@ -155,7 +189,13 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
               options={allUsers}
               getOptionLabel={(option) => option.Vastuuhenkilö}
               style={{ width: 300 }}
-              renderInput={(params) => <TextField {...params} label="Kirjaa toisen käyttäjän puolesta" variant="standard" />}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Kirjaa toisen käyttäjän puolesta"
+                  variant="standard"
+                />
+              )}
             />
           </DialogContent>
           <DialogActions>
@@ -163,6 +203,7 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
             <Button
               type="submit"
               className="create-user-button"
+              data-testid="createresponsibility"
             >
               Ota vastuu
             </Button>
@@ -177,10 +218,7 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
         rowsPerPageOptions={[5, 10, 20]}
       />
 
-      <Dialog
-        open={confirmOpen}
-        onClose={handleConfirmClose}
-      >
+      <Dialog open={confirmOpen} onClose={handleConfirmClose}>
         <DialogTitle>Vahvista YKV uloskirjaus</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -199,47 +237,42 @@ const YkvLogoutFunction = ({ handleYkvLogin, responsibility, setResponsibility, 
         </DialogActions>
       </Dialog>
 
-
-      {(loggedUser.role !==5) &&
-        <div>        
-        <TextField
-          label="Hae vastuussa"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        </div>      
-      }
-
-      {(loggedUser.role !== 1) && (loggedUser.role !== 5) &&
+      {loggedUser.role !== 5 && (
         <div>
-        <h2>Omat vastuut</h2>
-        <DataGrid
-          rows={ownUsers}
-          columns={columns_2}
-          pageSize={5}
-          rowsPerPageOptions={[5, 10, 20]}
-        />
+          <TextField
+            label="Hae vastuussa"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
-      }
+      )}
 
-      {(loggedUser.role === 1) && (
-        <div>        
-        <h2>Kaikki vastuut</h2>
-        <DataGrid
-          rows={filteredUsers}
-          columns={columns_2}
-          pageSize={5}
-          rowsPerPageOptions={[5, 10, 20]}
-        />
-        </div>)
-      }
+      {loggedUser.role !== 1 && loggedUser.role !== 5 && (
+        <div>
+          <h2>Omat vastuut</h2>
+          <DataGrid
+            rows={ownUsers}
+            columns={columns_2}
+            pageSize={5}
+            rowsPerPageOptions={[5, 10, 20]}
+          />
+        </div>
+      )}
 
+      {loggedUser.role === 1 && (
+        <div>
+          <h2>Kaikki vastuut</h2>
+          <DataGrid
+            rows={filteredUsers}
+            columns={columns_2}
+            pageSize={5}
+            rowsPerPageOptions={[5, 10, 20]}
+          />
+        </div>
+      )}
     </div>
-  
-    
-
   );
 };
 
