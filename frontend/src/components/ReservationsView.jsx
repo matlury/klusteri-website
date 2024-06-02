@@ -181,7 +181,11 @@ const ReservationsView = ({
           <Button variant="outlined" onClick={handleCloseModal}>
             Sulje
           </Button>
-          <Button id="confirmCreate" variant="contained" onClick={handleAddEvent}>
+          <Button
+            id="confirmCreate"
+            variant="contained"
+            onClick={handleAddEvent}
+          >
             Tallenna
           </Button>
         </Modal.Footer>
@@ -217,11 +221,7 @@ const ReservationsView = ({
           >
             Poista tapahtuma
           </Button>
-          <Button
-            id="closeEvent"
-            variant="outlined"
-            onClick={handleCloseModal}
-          >
+          <Button id="closeEvent" variant="outlined" onClick={handleCloseModal}>
             Sulje
           </Button>
         </Modal.Footer>

@@ -42,6 +42,7 @@ const UserPage = ({
         onClick={handleUserDetails}
         variant="contained"
         className="create-user-button"
+        data-testid="saveuserdata"
       >
         Tallenna{" "}
       </Button>

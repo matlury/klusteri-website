@@ -145,97 +145,26 @@ describe("Frontpage", () => {
   });
 });
 
- describe("Ownkeys", () => {
-   beforeEach(function () {
-     cy.request("POST", "http://localhost:8000/api/testing/reset");
-     cy.visit("http://localhost:5173");
-   });
-   it("YKV-login in works", function () {
-     cy.on("uncaught:exception", () => {
-       return false;
-     });
-     const body = {
-       username: "leppis",
-       password: "salasana123",
-       email: "pj@gmail.com",
-       telegram: "pjtg",
-       role: 1,
-     };
-     let user_id
-     cy.request("POST", "http://localhost:8000/api/users/register", body).then(
-       (response) => {
-         user_id = response.body.id
-         expect(response.body).to.have.property("username", "leppis");
-       },
-     );
-     cy.wait(1000);
-     cy.contains("Kirjaudu").click();
-     cy.get("#email").type("pj@gmail.com");
-     cy.get("#password").type("salasana123");
-     cy.get(".login-button").click();
-
-     cy.window().its('localStorage').invoke('getItem', 'ACCESS_TOKEN').should('not.be.null').then((token) => {
-      const req = {
-        email: "sahkoposti@tko-aly.fi",
-        homepage: "tko-aly.fi",
-        name: "tko-äly",
-        size: "1",
-      };
-  
-      cy.request({
-        method: "POST",
-        url: "http://localhost:8000/api/organizations/create",
-        body: req,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }).then((response) => {
-        expect(response.body).to.have.property("name", "tko-äly");
-      });
-     });
-
-     cy.window().its('localStorage').invoke('getItem', 'ACCESS_TOKEN').should('not.be.null').then((token) => {
-      const request = {
-        organization_name: "tko-äly"
-       };
-  
-      cy.request({
-        method: "PUT",
-        url: `http://localhost:8000/api/keys/hand_over_key/${user_id}/`,
-        body: request,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }).then((response) => {
-        expect(response.body).to.have.property("id", user_id);
-      });
-     })
-
-     cy.contains("Omat avaimet").click();
-     cy.contains("+ Ota vastuu").click();
-     cy.get("#responsibility").type("fuksit");
-     cy.get("#takeresp").click();
-     cy.contains("Peruuta").click();
-     cy.reload();
-     cy.contains("fuksit");
-     cy.contains("leppis");
-     cy.contains("fuksit");
-     });
-   it("YKV-logout works", function () {
-     cy.on("uncaught:exception", () => {
-       return false;
-     });
-     const body = {
+describe("Ownkeys", () => {
+  beforeEach(function () {
+    cy.request("POST", "http://localhost:8000/api/testing/reset");
+    cy.visit("http://localhost:5173");
+  });
+  it("YKV-login in works", function () {
+    cy.on("uncaught:exception", () => {
+      return false;
+    });
+    const body = {
       username: "leppis",
       password: "salasana123",
       email: "pj@gmail.com",
       telegram: "pjtg",
       role: 1,
     };
-    let user_id
+    let user_id;
     cy.request("POST", "http://localhost:8000/api/users/register", body).then(
       (response) => {
-        user_id = response.body.id
+        user_id = response.body.id;
         expect(response.body).to.have.property("username", "leppis");
       },
     );
@@ -245,55 +174,141 @@ describe("Frontpage", () => {
     cy.get("#password").type("salasana123");
     cy.get(".login-button").click();
 
-    cy.window().its('localStorage').invoke('getItem', 'ACCESS_TOKEN').should('not.be.null').then((token) => {
-     const req = {
-       email: "sahkoposti@tko-aly.fi",
-       homepage: "tko-aly.fi",
-       name: "tko-äly",
-       size: "1",
-     };
- 
-     cy.request({
-       method: "POST",
-       url: "http://localhost:8000/api/organizations/create",
-       body: req,
-       headers: {
-         Authorization: `Bearer ${token}`
-       }
-     }).then((response) => {
-       expect(response.body).to.have.property("name", "tko-äly");
-     });
+    cy.window()
+      .its("localStorage")
+      .invoke("getItem", "ACCESS_TOKEN")
+      .should("not.be.null")
+      .then((token) => {
+        const req = {
+          email: "sahkoposti@tko-aly.fi",
+          homepage: "tko-aly.fi",
+          name: "tko-äly",
+          size: "1",
+        };
+
+        cy.request({
+          method: "POST",
+          url: "http://localhost:8000/api/organizations/create",
+          body: req,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }).then((response) => {
+          expect(response.body).to.have.property("name", "tko-äly");
+        });
+      });
+
+    cy.window()
+      .its("localStorage")
+      .invoke("getItem", "ACCESS_TOKEN")
+      .should("not.be.null")
+      .then((token) => {
+        const request = {
+          organization_name: "tko-äly",
+        };
+
+        cy.request({
+          method: "PUT",
+          url: `http://localhost:8000/api/keys/hand_over_key/${user_id}/`,
+          body: request,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }).then((response) => {
+          expect(response.body).to.have.property("id", user_id);
+        });
+      });
+
+    cy.contains("Omat avaimet").click();
+    cy.contains("+ Ota vastuu").click();
+    cy.get("#responsibility").type("fuksit");
+    cy.get("#takeresp").click();
+    cy.contains("Peruuta").click();
+    cy.reload();
+    cy.contains("fuksit");
+    cy.contains("leppis");
+    cy.contains("fuksit");
+  });
+  it("YKV-logout works", function () {
+    cy.on("uncaught:exception", () => {
+      return false;
     });
+    const body = {
+      username: "leppis",
+      password: "salasana123",
+      email: "pj@gmail.com",
+      telegram: "pjtg",
+      role: 1,
+    };
+    let user_id;
+    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+      (response) => {
+        user_id = response.body.id;
+        expect(response.body).to.have.property("username", "leppis");
+      },
+    );
+    cy.wait(1000);
+    cy.contains("Kirjaudu").click();
+    cy.get("#email").type("pj@gmail.com");
+    cy.get("#password").type("salasana123");
+    cy.get(".login-button").click();
 
-    cy.window().its('localStorage').invoke('getItem', 'ACCESS_TOKEN').should('not.be.null').then((token) => {
-     const request = {
-       organization_name: "tko-äly"
-      };
- 
-     cy.request({
-       method: "PUT",
-       url: `http://localhost:8000/api/keys/hand_over_key/${user_id}/`,
-       body: request,
-       headers: {
-         Authorization: `Bearer ${token}`
-       }
-     }).then((response) => {
-       expect(response.body).to.have.property("id", user_id);
-     });
-    })
+    cy.window()
+      .its("localStorage")
+      .invoke("getItem", "ACCESS_TOKEN")
+      .should("not.be.null")
+      .then((token) => {
+        const req = {
+          email: "sahkoposti@tko-aly.fi",
+          homepage: "tko-aly.fi",
+          name: "tko-äly",
+          size: "1",
+        };
 
-     cy.contains("Omat avaimet").click();
-     cy.reload()
-     cy.contains("+ Ota vastuu").click();
-     cy.get("#responsibility").type("fuksit");
-     cy.get("#takeresp").click();
-     cy.reload()
-     cy.get("#removeresp").click();
-     cy.get("#confirmlogout").click();
-     cy.contains("YKV-uloskirjaus onnistui");
-   });
+        cy.request({
+          method: "POST",
+          url: "http://localhost:8000/api/organizations/create",
+          body: req,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }).then((response) => {
+          expect(response.body).to.have.property("name", "tko-äly");
+        });
+      });
+
+    cy.window()
+      .its("localStorage")
+      .invoke("getItem", "ACCESS_TOKEN")
+      .should("not.be.null")
+      .then((token) => {
+        const request = {
+          organization_name: "tko-äly",
+        };
+
+        cy.request({
+          method: "PUT",
+          url: `http://localhost:8000/api/keys/hand_over_key/${user_id}/`,
+          body: request,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }).then((response) => {
+          expect(response.body).to.have.property("id", user_id);
+        });
+      });
+
+    cy.contains("Omat avaimet").click();
+    cy.reload();
+    cy.contains("+ Ota vastuu").click();
+    cy.get("#responsibility").type("fuksit");
+    cy.get("#takeresp").click();
+    cy.reload();
+    cy.get("#removeresp").click();
+    cy.get("#confirmlogout").click();
+    cy.contains("YKV-uloskirjaus onnistui");
+  });
 });
-
 
 describe("Reservations", () => {
   beforeEach(function () {
@@ -303,7 +318,7 @@ describe("Reservations", () => {
 
   describe("Creating and deleting", () => {
     beforeEach(function () {
-      cy.viewport(2560, 1440)
+      cy.viewport(2560, 1440);
       cy.on("uncaught:exception", () => {
         return false;
       });
@@ -339,10 +354,10 @@ describe("Reservations", () => {
       cy.get("#organizerName").type("Tester Mann");
       cy.get("#responsibleName").type("Mr Responsible");
       cy.get("#eventDescription").type("This is a testing event");
-      cy.get("#eventOpen").click()
-      cy.contains("Avoin tapahtuma").click()
-      cy.get("#eventRoom").click()
-      cy.contains("Kokoushuone").click()
+      cy.get("#eventOpen").click();
+      cy.contains("Avoin tapahtuma").click();
+      cy.get("#eventRoom").click();
+      cy.contains("Kokoushuone").click();
       cy.get("#confirmCreate").click();
       cy.wait(500);
       cy.contains("Test Event").click();

@@ -477,6 +477,11 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         } else if (currentUser.role == 2 || currentUser.role == 3) {
           setHasPermissionOrg(true);
           setHasPermission(false);
+        } else if (currentUser[0]) {
+          if (currentUser[0].role === 1) {
+            setHasPermission(true);
+            setHasPermissionOrg(true);
+          }
         } else {
           setHasPermission(false);
           setHasPermissionOrg(false);
