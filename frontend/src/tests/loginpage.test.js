@@ -100,3 +100,18 @@ test("logging in with valid credentials works", async () => {
     ).not.toBeInTheDocument();
   });
 });
+
+test("switching to create account works", async () => {
+  const { getByLabelText, queryByText, getByText } = render(
+    <LoginPage
+      onLogin={jest.fn()}
+      onLogout={jest.fn()}
+      onCreateNewUser={jest.fn()}
+    />,
+  );
+
+  const loginButton = getByText("Luo tili");
+  fireEvent.click(loginButton);
+
+  expect(getByText("Näytä salasana")).toBeInTheDocument();
+})

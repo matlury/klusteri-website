@@ -1,8 +1,8 @@
-import { render, fireEvent, waitFor } from "@testing-library/react";
+import { render, fireEvent, waitFor, within } from "@testing-library/react";
 import NewAccountPage from "../../src/pages/createpage";
 import axiosClient from "../axios.js";
-
-jest.mock("../axios.js");
+import mockAxios from "../../__mocks__/axios";
+import "@testing-library/jest-dom";
 
 describe("NewAccountPage", () => {
   beforeEach(() => {
@@ -166,3 +166,106 @@ describe("NewAccountPage", () => {
     });
   });
 });
+
+describe("Createpage", () => {
+  beforeEach(() => {
+    mockAxios.reset();
+  });
+
+  afterEach(() => {
+    mockAxios.reset();
+  })
+  
+  test("register works with correct info", async () => {
+    const { getByText, getByLabelText } = render(<NewAccountPage />);
+
+    const usernameInput = getByLabelText("Käyttäjänimi");
+    const emailInput = getByLabelText("Sähköposti");
+    const passwordInput = getByLabelText("Salasana");
+    const password2Input = getByLabelText("Vahvista");
+
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "salasana1" } });
+    fireEvent.change(password2Input, { target: { value: "salasana1" } });
+    fireEvent.change(usernameInput, { target: { value: "testuser" } });
+
+    fireEvent.click(getByText("Luo tili"));
+
+    const resp = {data: [
+      {
+        "id": 2,
+        "keys": [],
+        "last_login": null,
+        "username": "esa123",
+        "email": "esa123@abc.com",
+        "telegram": "",
+        "role": 1
+    },
+    {
+        "id": 1,
+        "keys": [],
+        "last_login": null,
+        "username": "example_username",
+        "email": "example_email@example.com",
+        "telegram": "example_telegram",
+        "role": 1
+    }
+    ]}
+
+    mockAxios.get.mockResolvedValueOnce(resp);
+
+    await waitFor(() => {
+      expect(mockAxios.get).toHaveBeenCalledWith("undefined/api/listobjects/users/?email=test@example.com");
+      expect(getByText("Käyttäjä luotu onnistuneesti!")).toBeInTheDocument();
+    });
+  })
+
+  test("user already exists", async () => {
+    const { getByText, getByLabelText } = render(<NewAccountPage />);
+
+    const usernameInput = getByLabelText("Käyttäjänimi");
+    const emailInput = getByLabelText("Sähköposti");
+    const passwordInput = getByLabelText("Salasana");
+    const password2Input = getByLabelText("Vahvista");
+
+    fireEvent.change(emailInput, { target: { value: "example_email@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "salasana1" } });
+    fireEvent.change(password2Input, { target: { value: "salasana1" } });
+    fireEvent.change(usernameInput, { target: { value: "testuser" } });
+
+    fireEvent.click(getByText("Luo tili"));
+
+    const resp = {data: [
+      {
+        "id": 2,
+        "keys": [],
+        "last_login": null,
+        "username": "esa123",
+        "email": "esa123@abc.com",
+        "telegram": "",
+        "role": 1
+    },
+    {
+        "id": 1,
+        "keys": [],
+        "last_login": null,
+        "username": "example_username",
+        "email": "example_email@example.com",
+        "telegram": "example_telegram",
+        "role": 1
+    }
+    ]}
+
+    mockAxios.get.mockResolvedValueOnce(resp);
+
+    await waitFor(() => {
+      expect(mockAxios.get).toHaveBeenCalledWith("undefined/api/listobjects/users/?email=example_email@example.com");
+      
+      const errorMessage = getByText((content, element) => {
+        return element.tagName.toLowerCase() === 'p' && content.includes("Sähköposti on jo käytössä.");
+      });
+  
+      expect(within(errorMessage).getByText("Sähköposti on jo käytössä.")).toBeInTheDocument();
+    });
+  })
+})

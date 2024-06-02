@@ -18,14 +18,14 @@ const createaccount = ({
     axios
       .get(`${API_URL}/api/listobjects/users/?email=${email}`)
       .then((response) => {
-        console.log(response);
-        console.log(response.data);
         const existingUsers = response.data;
         if (existingUsers.some((user) => user.email === email)) {
           resolve("Sähköposti on jo käytössä.");
+          return
         }
         if (existingUsers.some((user) => user.username === username)) {
           resolve("Käyttäjänimi on jo käytössä");
+          return
         } else {
           const userObject = {
             username,
@@ -39,8 +39,6 @@ const createaccount = ({
           axios
             .post(`${API_URL}/api/users/register`, userObject)
             .then((response) => {
-              console.log(response);
-              console.log("Account created successfully!");
               setUserCreated(true);
               onAccountCreated && onAccountCreated();
 
@@ -52,6 +50,7 @@ const createaccount = ({
             .catch((error) => {
               console.error("Error creating account:", error);
               resolve("Virhe luotaessa käyttäjää.");
+              return
             });
           setShowLoginPage(true);
         }
@@ -59,6 +58,7 @@ const createaccount = ({
       .catch((error) => {
         console.error("Error checking email:", error);
         resolve("Virhe tarkistettaessa sähköpostia.");
+        return
       });
   });
 };

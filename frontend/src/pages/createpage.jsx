@@ -39,7 +39,6 @@ const NewAccountPage = ({ onAccountCreated }) => {
         setShowLoginPage,
         onAccountCreated,
       });
-      console.log(resp);
       if (typeof resp === "string") {
         setError(resp);
       }

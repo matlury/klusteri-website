@@ -2,11 +2,8 @@ import React, { useState, useEffect } from "react";
 import NewAccountPage from "./createpage";
 import FrontPage from "./frontpage";
 import { useStateContext } from "../context/ContextProvider.jsx";
-import CountdownTimer from "../context/CountdownTimer.jsx";
 import login from "../utils/login.js";
 import LoginForm from "../components/LoginForm.jsx";
-
-import { Button } from "@mui/material";
 
 const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
   const [email, setEmail] = useState("");
@@ -34,15 +31,6 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
   const handleLogin = (event) => {
     event.preventDefault();
     login({ email, password, setError, setToken, onLogin, setUser });
-  };
-
-  // Handles the logout function and clears the countdown timer
-  const handleLogout = () => {
-    localStorage.removeItem("loggedUser");
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("countdownTime");
-    setUser(null);
-    onLogout();
   };
 
   // renders the NewAccountPage if the showCreateUser function is true, if the user is logged in, it shows the username and logout-button
