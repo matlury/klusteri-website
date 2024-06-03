@@ -8,8 +8,6 @@ COPY . .
 
 RUN chmod -R 777 *
 
-RUN apt install psql
-
 RUN pip install poetry
 
 RUN poetry config virtualenvs.create false
