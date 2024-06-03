@@ -18,11 +18,11 @@ def clear_existing_jobs():
 def start():
     clear_existing_jobs()
     delete_old_job_executions()
-    scheduler = BackgroundScheduler()
+    scheduler = BackgroundScheduler(timezone="Europe/Kiev")
     scheduler.add_jobstore(DjangoJobStore(), "default")
     scheduler.add_job(
         force_logout_ykv,
-        trigger=CronTrigger(hour=5, minute=00),
+        trigger=CronTrigger(hour=8, minute=00),
         id="force_logout_ykv",
         max_instances=1,
         replace_existing=True,
