@@ -243,7 +243,7 @@ const YkvLogoutFunction = ({
       {loggedUser.role !== 5 && (
         <div>
           <TextField
-            label="Hae vastuussa"
+            label="Hae yökäyttövastuista"
             variant="outlined"
             fullWidth
             margin="normal"
