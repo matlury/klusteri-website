@@ -1,12 +1,19 @@
 import React from "react";
-import { Modal } from "react-bootstrap";
 import { Calendar } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import "bootstrap/dist/css/bootstrap.min.css";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
-import { Select, InputLabel, FormControl } from "@mui/material";
+import {
+  Select,
+  InputLabel,
+  FormControl,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Typography,
+} from "@mui/material";
 
 const ReservationsView = ({
   handleAddNewEventClick,
@@ -29,7 +36,9 @@ const ReservationsView = ({
 }) => {
   return (
     <div className="textbox">
-      <h1>Varauskalenteri</h1>
+      <Typography variant="h1" component="h1">
+        Varauskalenteri
+      </Typography>
       <div className="add-event-button">
         <Button
           id="createEvent"
@@ -66,16 +75,14 @@ const ReservationsView = ({
         })}
       />
 
-      <Modal show={showCreateModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>{"Lisää tapahtuma"}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
+      <Dialog open={showCreateModal} onClose={handleCloseModal}>
+        <DialogTitle>{"Lisää tapahtuma"}</DialogTitle>
+        <DialogContent>
           <div>
-            <p>Varauksen tiedot:</p>
-            <p style={{ color: "grey" }}>
+            <Typography variant="body1">Varauksen tiedot:</Typography>
+            <Typography variant="body2" color="textSecondary">
               Voit tehdä enimmillään 24 tunnin varauksen.
-            </p>
+            </Typography>
             <TextField
               id="startTime"
               label="Alkaa"
@@ -102,9 +109,9 @@ const ReservationsView = ({
                 shrink: true,
               }}
             />
-            <p style={{ color: "red" }}>
+            <Typography variant="body2" color="error">
               Huomioithan yökäyttösäännöt klo 00-08.
-            </p>
+            </Typography>
             <TextField
               id="eventName"
               name="title"
@@ -176,8 +183,8 @@ const ReservationsView = ({
               </Select>
             </FormControl>
           </div>
-        </Modal.Body>
-        <Modal.Footer>
+        </DialogContent>
+        <DialogActions>
           <Button variant="outlined" onClick={handleCloseModal}>
             Sulje
           </Button>
@@ -188,31 +195,39 @@ const ReservationsView = ({
           >
             Tallenna
           </Button>
-        </Modal.Footer>
-      </Modal>
+        </DialogActions>
+      </Dialog>
 
-      <Modal show={showInfoModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>{selectedEvent ? selectedEvent.title : ""}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
+      <Dialog open={showInfoModal} onClose={handleCloseModal}>
+        <DialogTitle>{selectedEvent ? selectedEvent.title : ""}</DialogTitle>
+        <DialogContent>
           {selectedEvent && (
             <>
-              <p>
+              <Typography variant="body1">
                 Alkaa: {moment(selectedEvent.start).format("YYYY-MM-DD HH:mm")}
-              </p>
-              <p>
+              </Typography>
+              <Typography variant="body1">
                 Päättyy: {moment(selectedEvent.end).format("YYYY-MM-DD HH:mm")}
-              </p>
-              <p>Järjestäjä: {selectedEvent.organizer}</p>
-              <p>Vastuuhenkilö: {selectedEvent.responsible}</p>
-              <p>Kuvaus: {selectedEvent.description}</p>
-              <p>Tila: {selectedEvent.open === true ? "Avoin" : "Suljettu"}</p>
-              <p>Huone: {selectedEvent.room}</p>
+              </Typography>
+              <Typography variant="body1">
+                Järjestäjä: {selectedEvent.organizer}
+              </Typography>
+              <Typography variant="body1">
+                Vastuuhenkilö: {selectedEvent.responsible}
+              </Typography>
+              <Typography variant="body1">
+                Kuvaus: {selectedEvent.description}
+              </Typography>
+              <Typography variant="body1">
+                Tila: {selectedEvent.open === true ? "Avoin" : "Suljettu"}
+              </Typography>
+              <Typography variant="body1">
+                Huone: {selectedEvent.room}
+              </Typography>
             </>
           )}
-        </Modal.Body>
-        <Modal.Footer>
+        </DialogContent>
+        <DialogActions>
           <Button
             id="deleteEvent"
             variant="contained"
@@ -224,8 +239,8 @@ const ReservationsView = ({
           <Button id="closeEvent" variant="outlined" onClick={handleCloseModal}>
             Sulje
           </Button>
-        </Modal.Footer>
-      </Modal>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
