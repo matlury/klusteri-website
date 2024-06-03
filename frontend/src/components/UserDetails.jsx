@@ -53,7 +53,7 @@ const UserDetails = ({
         <p>Jäsenyydet: </p>
         <ul>
           {userDetailsOrganizations.map((org) => (
-            <li key={org}>- {org}</li>
+            <li key={org}> {org}</li>
           ))}
         </ul>
         <br />

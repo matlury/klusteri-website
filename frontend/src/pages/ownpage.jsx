@@ -348,9 +348,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     setuserDetailsId(showThisUser.id);
 
     // get a list of each organization the user is a member of
-    const orgDict = showThisUser.organization;
+    const orgDict = showThisUser.keys;
     setuserDetailsOrganizations(
-      Object.keys(orgDict).filter((org) => orgDict[org] === true),
+      orgDict.map(org => org.name),
     );
 
     setSelectedUser((prevSelectedUser) => {
