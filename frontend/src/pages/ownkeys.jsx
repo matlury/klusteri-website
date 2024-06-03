@@ -82,33 +82,6 @@ const OwnKeys = ({
 
   // THE FOLLOWING FUNCTIONS HANDLES TAKING THE YKV-RESPONSIBILITIES
 
-  // handles the checkbox change
-  const handleCheckboxChange = (user) => {
-    setSelectedForYKV((prevState) => {
-      if (prevState.includes(user)) {
-        return prevState.filter((x) => x !== user);
-      } else {
-        return [...prevState, user];
-      }
-    });
-  };
-
-  // searches for the names based on the filter the user makes
-  const handleFilterChange = (event) => {
-    setNameFilter(event.target.value);
-  };
-
-  const handleYkvFilterChange = (event) => {
-    setYkvFilter(event.target.value);
-  };
-
-  const handleMaxFilterChange = (event) => {
-    setMaxFilter(event.target.value);
-  };
-
-  const handleMinFilterChange = (event) => {
-    setMinFilter(event.target.value);
-  };
   // this function handles the event of taking responsibility (check above)
   const handleYkvLogin = async (event) => {
     // event.preventDefault();

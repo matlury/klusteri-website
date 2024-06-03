@@ -71,17 +71,17 @@ const YkvLogoutFunction = ({
     },
     { field: "Vastuuhenkilö", headerName: "Vastuuhenkilö", width: 170 },
     { field: "Vastuussa", headerName: "Vastuussa", width: 200 },
-    { field: "YKV_sisäänkirjaus", headerName: "Sisäänkirjaus", width: 220 },
-    { field: "Organisaatiot", headerName: "Järjestöt", width: 220 },
+    { field: "YKV_sisäänkirjaus", headerName: "Sisäänkirjaus", width: 200 },
+    { field: "Organisaatiot", headerName: "Järjestöt", width: 200 },
   ];
 
   const columns_2 = [
     { field: "Vastuuhenkilö", headerName: "Vastuuhenkilö", width: 170 },
-    { field: "created_by", headerName: "Luonut", width: 220 },
+    { field: "created_by", headerName: "Luonut", width: 200 },
     { field: "Vastuussa", headerName: "Vastuussa", width: 200 },
-    { field: "YKV_sisäänkirjaus", headerName: "Sisäänkirjaus", width: 220 },
-    { field: "logout_time", headerName: "Uloskirjaus", width: 220 },
-    { field: "Organisaatiot", headerName: "Järjestöt", width: 220 },
+    { field: "YKV_sisäänkirjaus", headerName: "Sisäänkirjaus", width: 200 },
+    { field: "logout_time", headerName: "Uloskirjaus", width: 200 },
+    { field: "Organisaatiot", headerName: "Järjestöt", width: 200 },
   ];
 
   useEffect(() => {
@@ -105,7 +105,7 @@ const YkvLogoutFunction = ({
           userData.filter(
             (resp) =>
               resp.present === true &&
-              resp.Vastuuhenkilö == loggedUser.username &&
+              resp.Vastuuhenkilö == loggedUser.username ||
               resp.created_by == loggedUser.username,
           ),
         );
