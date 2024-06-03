@@ -71,7 +71,7 @@ const YkvLogoutFunction = ({
     },
     { field: "Vastuuhenkilö", headerName: "Vastuuhenkilö", width: 170 },
     { field: "Vastuussa", headerName: "Vastuussa", width: 200 },
-    { field: "YKV_sisäänkirjaus", headerName: "YKV sisäänkirjaus", width: 220 },
+    { field: "YKV_sisäänkirjaus", headerName: "Sisäänkirjaus", width: 220 },
     { field: "Organisaatiot", headerName: "Järjestöt", width: 220 },
   ];
 
@@ -79,8 +79,8 @@ const YkvLogoutFunction = ({
     { field: "Vastuuhenkilö", headerName: "Vastuuhenkilö", width: 170 },
     { field: "created_by", headerName: "Luonut", width: 220 },
     { field: "Vastuussa", headerName: "Vastuussa", width: 200 },
-    { field: "YKV_sisäänkirjaus", headerName: "YKV sisäänkirjaus", width: 220 },
-    { field: "logout_time", headerName: "YKV uloskirjaus", width: 220 },
+    { field: "YKV_sisäänkirjaus", headerName: "Sisäänkirjaus", width: 220 },
+    { field: "logout_time", headerName: "Uloskirjaus", width: 220 },
     { field: "Organisaatiot", headerName: "Järjestöt", width: 220 },
   ];
 
@@ -92,13 +92,13 @@ const YkvLogoutFunction = ({
           id: u.id, // DataGrid requires a unique 'id' for each row
           Vastuuhenkilö: u.user.username,
           Vastuussa: u.responsible_for,
-          YKV_sisäänkirjaus: u.login_time, // Assuming login_time is available
+          YKV_sisäänkirjaus: new Date(u.login_time), // Assuming login_time is available
           Organisaatiot: u.organizations.map(
             (organization) => organization.name,
           ), // Assuming login_time is available
           present: u.present,
           created_by: u.created_by,
-          logout_time: u.present ? null : u.logout_time,
+          logout_time: u.present ? null : new Date(u.logout_time),
         }));
         setAllUsers(userData);
         setactiveUsers(
