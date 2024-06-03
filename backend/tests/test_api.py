@@ -796,51 +796,50 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-#    ERROR WITH NEW DATABASE STRUCTURE
-#    def test_removing_organization(self):
-#        """Only LeppisPJ can remove an organization"""
-#
-#        # create an organization as LeppisPJ
-#        response = self.client.post(
-#            "http://localhost:8000/api/organizations/create",
-#            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-#            data={
-#                "name": "Matrix Ry",
-#                "email": "matrix_ry@gmail.com",
-#                "homepage": "matrix-ry.fi",
-#                "size": 1,
-#            },
-#            format="json",
-#        )
-#
-#        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-#
-#        # deleting the organization fails if the user is not LeppisPJ
-#        organization_id = response.data['id']
-#        response = self.client.delete(
-#            f"http://localhost:8000/api/organizations/remove/{organization_id}/",
-#            headers={"Authorization": f"Bearer {self.access_token}"},
-#            format="json",
-#        )
-#
-#        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-#
-#        # delete the organization as LeppisPJ
-#        response = self.client.delete(
-#            "http://localhost:8000/api/organizations/remove/123/",
-#            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-#            format="json",
-#        )
-#
-#        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-#
-#        response = self.client.delete(
-#            f"http://localhost:8000/api/organizations/remove/{organization_id}/",
-#            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-#            format="json",
-#        )
-#
-#        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    def test_removing_organization(self):
+        """Only LeppisPJ can remove an organization"""
+
+        # create an organization as LeppisPJ
+        response = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "name": "Matrix Ry",
+                "email": "matrix_ry@gmail.com",
+                "homepage": "matrix-ry.fi",
+                "size": 1,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # deleting the organization fails if the user is not LeppisPJ
+        organization_id = response.data['id']
+        response = self.client.delete(
+            f"http://localhost:8000/api/organizations/remove/{organization_id}/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # delete the organization as LeppisPJ
+        response = self.client.delete(
+            "http://localhost:8000/api/organizations/remove/123/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        response = self.client.delete(
+            f"http://localhost:8000/api/organizations/remove/{organization_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_creating_event(self):
         """Users with role 4 (avaimellinen) or higher can create new events"""

@@ -246,35 +246,12 @@ class RemoveOrganizationView(APIView):
                 "Organization not found", status=status.HTTP_404_NOT_FOUND
             )
 
-        remove_keys_from_users(organization_to_remove.name)
-        remove_memberships_from_users(organization_to_remove.name)
-
         organization_to_remove.delete()
 
         return Response(
             f"Organization {organization_to_remove.name} successfully removed",
             status=status.HTTP_200_OK
         )
-
-def remove_keys_from_users(org_name: str):
-    """Clear the keys of an organization getting removed"""
-
-    users_with_key = User.objects.filter(Q(keys__contains={org_name: True}))
-
-    # Remove the organization from the keys field
-    for users in users_with_key:
-        users.keys.pop(org_name)
-        users.save()
-
-def remove_memberships_from_users(org_name: str):
-    """Clear the memberships of an organization getting removed"""
-
-    users_with_membership = User.objects.filter(Q(organization__contains={org_name: True}))
-
-    # Remove the organization from the organization field
-    for users in users_with_membership:
-        users.organization.pop(org_name)
-        users.save()
 
 
 class UpdateOrganizationView(APIView):
