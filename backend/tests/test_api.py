@@ -3,7 +3,7 @@ from rest_framework.serializers import ValidationError
 from rest_framework.test import APIClient
 from rest_framework import status
 from ilotalo.models import User, Organization, Event
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 
 """
 Unit tests for back end features
@@ -1320,41 +1320,40 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+  
+    def test_logout_ykv_role5(self):
+        """An authorized user can logout ykv"""
 
-#    FIX TIMEZONES FOR THIS TEST    
-#    def test_logout_ykv_role5(self):
-#        """An authorized user can logout ykv"""
-#
-#        current_time = datetime.now()
-#        logout_time = current_time.replace(hour=7, minute=30)
-#
-#        # first create ykv
-#        ykv_created = self.client.post(
-#            "http://localhost:8000/api/ykv/create_responsibility",
-#            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-#            data={
-#                "user": self.leppis_id,
-#                "responsible_for": "kutsutut vieraat",
-#                "login_time": "1970-01-01T12:00",
-#                "logout_time": "1970-01-02T14:00",
-#                "present": True,
-#                "late": False,
-#                "organizations": [self.tko_aly_id, ],
-#            },
-#            format="json",
-#        )
-#
-#        # try to logout ykv with role 5 user
-#        ykv_id = ykv_created.data['id']
-#        response = self.client.put(
-#            f"http://localhost:8000/api/ykv/logout_responsibility/{ykv_id}/",
-#            headers={"Authorization": f"Bearer {self.access_token}"},
-#            data={"logout_time": logout_time.strftime("%Y-%m-%d %H:%M")},
-#            format="json",
-#        )
-#
-#        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-#        self.assertEqual(ykv_created.data["logout_time"][:19], current_time.strftime("%Y-%m-%dT%H:%M:%S"))
+        current_time = datetime.now(timezone.utc)
+        logout_time = current_time.replace(hour=7, minute=30)
+
+        # first create ykv
+        ykv_created = self.client.post(
+            "http://localhost:8000/api/ykv/create_responsibility",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "user": self.leppis_id,
+                "responsible_for": "kutsutut vieraat",
+                "login_time": "1970-01-01T12:00",
+                "logout_time": "1970-01-02T14:00",
+                "present": True,
+                "late": False,
+                "organizations": [self.tko_aly_id, ],
+            },
+            format="json",
+        )
+
+        # try to logout ykv with role 5 user
+        ykv_id = ykv_created.data['id']
+        response = self.client.put(
+            f"http://localhost:8000/api/ykv/logout_responsibility/{ykv_id}/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={"logout_time": logout_time.strftime("%Y-%m-%d %H:%M")},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(ykv_created.data["logout_time"][:19], current_time.strftime("%Y-%m-%dT%H:%M:%S"))
     
     def test_logout_ykv_empty(self):
         """An authorized user can logout ykv"""
