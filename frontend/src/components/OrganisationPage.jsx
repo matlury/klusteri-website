@@ -31,6 +31,7 @@ const OrganisationPage = ({
             {")"}
             <button
               className="login-button"
+              data-testid="orgdetailsbutton"
               onClick={() => toggleOrgDetails(org.id)}
             >
               View

@@ -135,7 +135,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         axiosClient
           .put(`/users/update/${user_id}/`, details)
           .then((response) => {
-            console.log("User details updated successfully:", response.data);
             localStorage.setItem("loggedUser", JSON.stringify(response.data));
             setUser(response.data);
             setSuccess("Tiedot päivitetty onnistuneesti!");
