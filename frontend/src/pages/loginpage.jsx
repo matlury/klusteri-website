@@ -37,12 +37,12 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
   // if the user is not logged nor in the create new user page, it shows the loginpage
   // starts the countdown timer for automatic logout
 
+  
+
   return (
     <div id="right_content">
       {showCreateUser ? (
         <NewAccountPage />
-      ) : user ? (
-        <FrontPage />
       ) : (
         <LoginForm
           email={email}
