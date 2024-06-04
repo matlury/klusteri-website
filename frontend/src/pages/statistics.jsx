@@ -2,8 +2,7 @@ import "../index.css";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import axiosClient from "../axios";
-import { PieChart } from '@mui/x-charts/PieChart';
-import { BarChart } from '@mui/x-charts/BarChart';
+import { Chart } from "react-google-charts";
 
 const API_URL = process.env.API_URL;
 
@@ -43,7 +42,7 @@ const Statistics = () => {
       });
       const orgdata = {}
       resp.data.forEach(org => {
-        orgdata[org.name] = {value: 0, label: org.name }
+        orgdata[org.name] = [org.name, 0]
       });
       const response = await axiosClient.get(`listobjects/nightresponsibilities/`).catch((error) => {
           console.error("Error fetching responsibilities", error);
@@ -51,10 +50,11 @@ const Statistics = () => {
       const responsibilities = response.data
       responsibilities.forEach(resp => {
         resp.organizations.forEach(org => {
-            orgdata[org.name] = {...orgdata[org.name], value: orgdata[org.name].value + 1}
+            orgdata[org.name][1] += 1
         })
       })
       const realdata = Object.values(orgdata)
+      realdata.unshift(["ORG", "YKV"])
 
       setorgsstatsdata(realdata)
     }
@@ -66,48 +66,50 @@ const Statistics = () => {
       const users = resp.data
       const userdata = {}
       users.forEach(usr => {
-        userdata[usr.username] = {data: [0], label: usr.username }
+        userdata[usr.username] = [usr.username, 0]
       });
       const response = await axiosClient.get(`listobjects/nightresponsibilities/`).catch((error) => {
           console.error("Error fetching responsibilities", error);
         });
       const responsibilities = response.data
       responsibilities.forEach(resp => {
-        userdata[resp.user.username] = {...userdata[resp.user.username], data: [userdata[resp.user.username].data[0] + 1]}
+        userdata[resp.user.username][1] += 1
       })
       Object.values(userdata).forEach(usr => {
-        if (usr.data.reduce((partialSum, a) => partialSum + a, 0) === 0) {
-            delete userdata[usr.label]
+        if (usr[1] === 0) {
+            delete userdata[usr[0]]
         }
       })
       const realdata = Object.values(userdata)
-      realdata.sort((a, b) => parseFloat(b.data.reduce((partialSum, b) => partialSum + b, 0)) - parseFloat(a.data.reduce((partialSum, a) => partialSum + a, 0)))
+      realdata.sort((a, b) => parseFloat(b[1]) - parseFloat(a[1]));
+      realdata.unshift(["PERSON", "YKV"])
       setAllUserStatsData(realdata)
     }
+
+    const options = {legend: { position: "none" }}
 
     if (userrole === 5 || userrole == null) {
         return ( <p>Kirjaudu sisään</p> )
     }
 
-    return(<div>
-        <h2>YKV-kirjausten määrä järjestöittäin</h2>
-        <PieChart
-        series={[
-        {
-      data: orgstatsdata,
-        },
-        ]}
-        width={400}
-        height={200}
-        />
-        <h2>YKV-kirjausten määrä käyttäjittäin</h2>
-        <BarChart 
-              width={500}
-              height={300}
-              series={allUserStatsData}
-              xAxis={[{ data: ["Käyttäjät"], scaleType: 'band' }]}
-        />
-        </div>
+    return(
+    <div>
+      <h2>YKV-kirjausten määrä järjestöittäin</h2>
+      <Chart
+        chartType="PieChart"
+        data={orgstatsdata}
+        width="100%"
+        height="25em"
+      />
+      <h2>YKV-kirjausten määrä käyttäjittäin</h2>
+      <Chart
+        chartType="BarChart"
+        width="100%"
+        height="25em"
+        data={allUserStatsData}
+        options={options}
+      />
+    </div>
     )
 }
 
