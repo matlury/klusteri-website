@@ -89,6 +89,7 @@ const App = (props) => {
 
   // Removes localstorage value if someone logs out
   const handleLogout = () => {
+    localStorage.removeItem("ACCESS_TOKEN");
     localStorage.removeItem("loggedUser");
     localStorage.removeItem("isLoggedIn");
     setLoggedUser(null);

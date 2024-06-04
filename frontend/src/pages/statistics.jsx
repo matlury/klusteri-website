@@ -1,3 +1,4 @@
+import "../index.css";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import axiosClient from "../axios";
@@ -14,13 +15,16 @@ const Statistics = () => {
 
     useEffect(() => {
       getPermission();
-      getOrgStats();
-      getAllUserStats();
+      if (localStorage.getItem("ACCESS_TOKEN")) {
+        getOrgStats();
+        getAllUserStats();
+      }
     }, [])
 
     const getPermission = async () => {
       const accessToken = localStorage.getItem("ACCESS_TOKEN");
-      await axios
+      if (accessToken) {
+        await axios
         .get(`${API_URL}/api/users/userinfo`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -30,6 +34,7 @@ const Statistics = () => {
           setUsername(response.data.username)
           setUserrole(response.data.role)
         });
+      }
     };
 
     const getOrgStats = async () => {
@@ -80,7 +85,7 @@ const Statistics = () => {
       setAllUserStatsData(realdata)
     }
 
-    if (userrole === 5 || userrole === null) {
+    if (userrole === 5 || userrole == null) {
         return ( <p>Kirjaudu sisään</p> )
     }
 
