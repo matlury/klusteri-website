@@ -446,6 +446,43 @@ describe("Ownpage", () => {
 
     });
 
+  it("Create new organization works", function () {
+    cy.on("uncaught:exception", () => {
+      return false;
+    });
+    const body = {
+      username: "super_prof",
+      password: "salasana123",
+      email: "super@gmail.com",
+      telegram: "",
+      role: 1,
+    };
+    let user_id;
+    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+      (response) => {
+        user_id = response.body.id;
+        expect(response.body).to.have.property("username", "super_prof");
+      },
+    );
+    cy.wait(1000);
+    cy.contains("Kirjaudu").click();
+    cy.get("#email").type("super@gmail.com");
+    cy.get("#password").type("salasana123");
+    cy.get(".login-button").click();
+    cy.contains("Talon latinankielinen nimi");
+
+    cy.wait(500);
+    cy.contains("Omat tiedot").click();
+
+    cy.get("#name").type("Teekkarit");
+    cy.get(".organization-email").type("teekkarit@mail.com");
+    cy.get("#homepage").type("www.teekkarit.fi");
+    cy.contains("Luo järjestö").click();
+    cy.contains("Onnistui: Järjestö luotu onnistuneesti!");
+    cy.contains("Teekkarit (avaimia: 0)");
+
+    });
+
   })
 
 Cypress.on;
