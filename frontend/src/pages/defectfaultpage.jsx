@@ -131,6 +131,8 @@ const DefectFault = () => {
   return (
     <div className="textbox">
       <div>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        {success && <p style={{ color: "green" }}>{success}</p>}
         <h2>Viat</h2>
         <React.Fragment>
           <Button
