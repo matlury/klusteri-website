@@ -10,6 +10,7 @@ import {
     DialogContentText,
     DialogTitle,
   } from "@mui/material";
+import CheckIcon from '@mui/icons-material/Check';
 
 const DefectFault = () => {
     const handleClickOpen = () => {
@@ -50,6 +51,21 @@ const DefectFault = () => {
               }
             }
       };
+
+      const handleDefectFaultRepair = (id) => {
+        setButtonPopup(true);
+        axiosClient
+          .put(`defects/repair_defect/${id}/`, {
+          })
+          .then((response) => {
+            setSuccess("Vian korjaus onnistui");
+            setTimeout(() => setSuccess(""), 5000);
+          })
+          .catch((error) => {
+            setError("Vian korjaus epäonnistui");
+            setTimeout(() => setError(""), 5000);
+          });
+      };
     
     const [open, setOpen] = useState(false);
     const [success, setSuccess] = useState("");
@@ -57,13 +73,42 @@ const DefectFault = () => {
     const [description, setDescription] = useState("");
     const [allDefects, setAllDefects] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedDefectId, setSelectedDefectId] = useState(null);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [buttonPopup, setButtonPopup] = useState(false);
 
 
+    const handleLogoutClick = (id) => {
+      setSelectedDefectId(id);
+      setConfirmOpen(true);
+    };
+
+    const handleConfirmClose = () => {
+      setConfirmOpen(false);
+    };
+
+    const handleRemove = (id) => {
+      handleDefectFaultRepair(id);
+      setConfirmOpen(false);
+    };
     const columns = [
       { field: "description", headerName: "Kuvaus", width: 400 },
       { field: "time", headerName: "Aika", width: 200}, 
-      { field: "email", headerName: "Sähköposti lähetetty", width: 170}, 
-      { field: "repaired", headerName: "Korjattu", width: 170}, 
+      { field: "email", headerName: "Sähköposti lähetetty", width: 90}, 
+      { field: "repaired", headerName: "Korjattu", width: 90},
+      {
+        field: "actions",
+        headerName: "Korjaa",
+        width: 90,
+        renderCell: (params) => (
+          <Button
+            variant="outlined"
+            onClick={() => handleLogoutClick(params.id)}
+          >
+            <CheckIcon />
+          </Button>
+        ),
+      },
     ];
 
     useEffect(() => {
@@ -93,7 +138,7 @@ const DefectFault = () => {
             color="primary"
             onClick={handleClickOpen}
           >
-            Lisää
+            + Lisää vika
           </Button>
           <Dialog
           open={open}
@@ -132,6 +177,7 @@ const DefectFault = () => {
           </DialogActions>
         </Dialog>
         </React.Fragment>
+
         <React.Fragment>
           <DataGrid
             rows={allDefects}
@@ -139,6 +185,25 @@ const DefectFault = () => {
             pageSize={5}
             rowsPerPageOptions={[5, 10, 20]}
           />
+          <Dialog open={confirmOpen} onClose={handleConfirmClose}>
+        <DialogTitle>Merkitse vika korjatuksi</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Oletko varma, että haluat merkitä vian korjatuksi?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleConfirmClose}>Peruuta</Button>
+          <Button
+            onClick={() => handleRemove(selectedDefectId)}
+            color="primary"
+            variant="contained"
+            id="confirmlogout"
+          >
+            Vahvista
+          </Button>
+        </DialogActions>
+      </Dialog>
         </React.Fragment>
       </div>
     </div>
