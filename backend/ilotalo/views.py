@@ -757,19 +757,6 @@ class CreateDefectFaultView(APIView):
     def post(self, request):
         user = UserSerializer(request.user)
 
-        if user.data["role"] not in [
-            LEPPISPJ,
-            LEPPISVARAPJ,
-            MUOKKAUS,
-            AVAIMELLINEN,
-            JARJESTOPJ,
-            JARJESTOVARAPJ
-        ]:
-            return Response(
-                "You can't create new defect reports",
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
         serializer = DefectFaultSerializer(data=request.data)
 
         if not serializer.is_valid():
