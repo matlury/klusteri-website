@@ -84,11 +84,9 @@ class Event(models.Model):
     # Fields for event attributes
     start = models.DateTimeField(
         auto_now_add = True,
-        blank = True
     )
     end = models.DateTimeField(
         auto_now = True,
-        blank = True,
     )
     title = models.CharField(max_length=100, default="") # Name of the event
     organizer = models.CharField(max_length=100, default="") # Organization responsible for the event
@@ -109,7 +107,6 @@ class NightResponsibility(models.Model):
     responsible_for = models.CharField(max_length=500, default="")
     login_time = models.DateTimeField(
         auto_now_add = True,
-        blank = True
     )
     logout_time = models.DateTimeField(
         auto_now = True,
@@ -124,10 +121,22 @@ class DefectFault(models.Model):
 
     id = models.AutoField(primary_key=True)
     description = models.CharField(max_length=300, default="")
-    email_sent = models.BooleanField(default=False)
-    repaired = models.BooleanField(default=False)
-#    user = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
+    """
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        default = 0
+        )
+    """
     time = models.DateTimeField(
         auto_now_add = True,
-        blank = True
     )
+    email_sent = models.DateTimeField(
+        blank = True,
+        null = True
+    )
+    repaired = models.DateTimeField(
+        blank = True,
+        null = True
+    )
+
