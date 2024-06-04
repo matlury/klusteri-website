@@ -13,6 +13,7 @@ import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlin
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
+import BarChartIcon from '@mui/icons-material/BarChart';
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -33,6 +34,7 @@ import Contacts from "./pages/contacts";
 import Rules_and_Instructions from "./pages/rules_instructions";
 import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
+import Statistics from "./pages/statistics";
 
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import { Button } from "react-bootstrap";
@@ -100,6 +102,7 @@ const App = (props) => {
     <CalendarMonthOutlinedIcon />,
     <KeyOutlinedIcon />,
     <ManageAccountsOutlinedIcon />,
+    <BarChartIcon />,
     <LocationOnOutlinedIcon />,
     <FactCheckOutlinedIcon />,
     <AdminPanelSettingsOutlinedIcon />,
@@ -116,6 +119,7 @@ const App = (props) => {
           "Varaukset",
           "Omat avaimet",
           "Omat tiedot",
+          "Tilastot",
           "Yhteystiedot",
           "Säännöt ja ohjeet",
           "Tietosuojaseloste",
@@ -246,6 +250,7 @@ const App = (props) => {
               path="/omat_tiedot"
               element={<OwnPage isLoggedIn={isLoggedIn} />}
             />
+            <Route path="/tilastot" element={<Statistics />}/>
             <Route path="/yhteystiedot" element={<Contacts />} />
             <Route
               path="/saannot_ja_ohjeet"
