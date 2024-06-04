@@ -143,6 +143,7 @@ const DefectFault = () => {
             + Lisää vika
           </Button>
           <Dialog
+          id="defectfaultdialog"
           open={open}
           onClose={handleClose}
           PaperProps={{
@@ -172,7 +173,7 @@ const DefectFault = () => {
             <Button onClick={handleClose}>Peruuta</Button>
             <Button
               type="submit"
-              id="takeresp"
+              id="createdefect"
             >
               Kirjaa vika
             </Button>
