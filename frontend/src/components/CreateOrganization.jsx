@@ -28,7 +28,7 @@ const CreateOrganization = ({
         <TextField
           id="email"
           label="Sähköposti"
-          class="organization-email"
+          className="organization-email"
           value={organization_email}
           onChange={(e) => setOrganizationEmail(e.target.value)}
         />
