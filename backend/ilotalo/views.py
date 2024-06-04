@@ -755,7 +755,6 @@ class CreateDefectFaultView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        user = UserSerializer(request.user)
 
         serializer = DefectFaultSerializer(data=request.data)
 

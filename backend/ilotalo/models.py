@@ -126,4 +126,4 @@ class DefectFault(models.Model):
     description = models.CharField(max_length=300, default="")
     email_sent = models.BooleanField(default=False)
     repaired = models.BooleanField(default=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
+#    user = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
