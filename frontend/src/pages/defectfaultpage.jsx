@@ -13,7 +13,6 @@ import {
 const DefectFault = () => {
     const getJSON = async (event) => {
         const userdata = await axiosClient.get("/listobjects/defects/");
-        console.log(userdata)
     };
     
     const handleClickOpen = () => {
@@ -27,12 +26,13 @@ const DefectFault = () => {
     const handleFormSubmit = (event) => {
         event.preventDefault();
         handleDefectFault();
+        handleClose(); 
       };
     
       const handleDefectFault = async (event) => {
     
         const defectFaultObject = {
-            description: "Testi2",
+            description: description,
           };
     
         confirmDefectFault(defectFaultObject)
@@ -57,6 +57,7 @@ const DefectFault = () => {
     const [open, setOpen] = useState(false);
     const [success, setSuccess] = useState("");
     const [error, setError] = useState("");
+    const [description, setDescription] = useState("");
 
   return (
     <div className="textbox">
@@ -93,7 +94,7 @@ const DefectFault = () => {
               label="Kuvaile vika"
               fullWidth
               variant="standard"
-//              onChange={(e) => setResponsibility(e.target.value)}
+              onChange={(e) => setDescription(e.target.value)}
               data-testid="responsibilityfield"
             />
           </DialogContent>
