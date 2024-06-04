@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axiosClient from "../axios.js";
+import { DataGrid } from "@mui/x-data-grid";
 import {
     Button,
     TextField,
@@ -11,10 +12,6 @@ import {
   } from "@mui/material";
 
 const DefectFault = () => {
-    const getJSON = async (event) => {
-        const userdata = await axiosClient.get("/listobjects/defects/");
-    };
-    
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -58,12 +55,38 @@ const DefectFault = () => {
     const [success, setSuccess] = useState("");
     const [error, setError] = useState("");
     const [description, setDescription] = useState("");
+    const [allDefects, setAllDefects] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+
+    const columns = [
+      { field: "description", headerName: "Kuvaus", width: 400 },
+      { field: "time", headerName: "Aika", width: 200}, 
+      { field: "email", headerName: "Sähköposti lähetetty", width: 170}, 
+      { field: "repaired", headerName: "Korjattu", width: 170}, 
+    ];
+
+    useEffect(() => {
+      axiosClient
+        .get("/listobjects/defects/")
+        .then((res) => {
+          const defectData = res.data.map((u, index) => ({
+            id: u.id, // DataGrid requires a unique 'id' for each row
+            description: u.description,
+            time: new Date(u.time),
+            email: u.email_sent ? "Kyllä" : "Ei",
+            repaired: u.repaired ? "Kyllä" : "Ei",
+          }));
+          setAllDefects(defectData);
+          setLoading(false);
+        })
+        .catch((error) => console.error(error));
+    }, []);
 
   return (
     <div className="textbox">
-      <h1>Viat</h1>
       <div>
-        <h2>Napit</h2>
+        <h2>Viat</h2>
         <React.Fragment>
           <Button
             variant="contained"
@@ -110,13 +133,12 @@ const DefectFault = () => {
         </Dialog>
         </React.Fragment>
         <React.Fragment>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={getJSON}
-          >
-            JSON
-          </Button>
+          <DataGrid
+            rows={allDefects}
+            columns={columns}
+            pageSize={5}
+            rowsPerPageOptions={[5, 10, 20]}
+          />
         </React.Fragment>
       </div>
     </div>

@@ -127,3 +127,7 @@ class DefectFault(models.Model):
     email_sent = models.BooleanField(default=False)
     repaired = models.BooleanField(default=False)
 #    user = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
+    time = models.DateTimeField(
+        auto_now_add = True,
+        blank = True
+    )
