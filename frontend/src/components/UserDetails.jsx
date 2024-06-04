@@ -56,7 +56,6 @@ const UserDetails = ({
             <li key={org}> {org}</li>
           ))}
         </ul>
-        <br />
         {/* display a button for saving the changes if the user has a role <= 3 */}
         {hasPermissionOrg === true && (
           <button

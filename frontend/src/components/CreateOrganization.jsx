@@ -50,7 +50,6 @@ const CreateOrganization = ({
           onChange={(e) => setOrganizationSize(e.target.value)}
         />
       </div>
-      <br />
       <Button
         onClick={handleCreateOrganization}
         variant="contained"
