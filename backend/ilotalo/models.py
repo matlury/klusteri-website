@@ -122,6 +122,8 @@ class NightResponsibility(models.Model):
 class DefectFault(models.Model):
     """Model for defects and faults in Klusteri."""
 
+    id = models.AutoField(primary_key=True)
     description = models.CharField(max_length=300, default="")
     email_sent = models.BooleanField(default=False)
     repaired = models.BooleanField(default=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
