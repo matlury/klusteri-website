@@ -139,11 +139,11 @@ const DefectFault = () => {
             variant="contained"
             color="primary"
             onClick={handleClickOpen}
+            data-testid="defectfaultdialog"
           >
             + Lisää vika
           </Button>
           <Dialog
-          id="defectfaultdialog"
           open={open}
           onClose={handleClose}
           PaperProps={{
@@ -160,20 +160,20 @@ const DefectFault = () => {
               autoFocus
               required
               margin="dense"
-              id="description"
+              data-testid="description"
+              value={description}
               type="text"
               label="Kuvaile vika"
               fullWidth
               variant="standard"
               onChange={(e) => setDescription(e.target.value)}
-              data-testid="responsibilityfield"
             />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Peruuta</Button>
             <Button
               type="submit"
-              id="createdefect"
+              data-testid="createdefect"
             >
               Kirjaa vika
             </Button>
@@ -201,7 +201,7 @@ const DefectFault = () => {
             onClick={() => handleRemove(selectedDefectId)}
             color="primary"
             variant="contained"
-            id="confirmlogout"
+            data-testid="confirmlogout"
           >
             Vahvista
           </Button>
