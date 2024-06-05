@@ -7,18 +7,12 @@ import RepairConfirmDialog from "../components/RepairConfirmDialog.jsx";
 
 const DefectFault = ({
   isLoggedIn: propIsLoggedIn,
-  loggedUser: propLoggedUser,
 }) => {
   
   useEffect(() => {
     setIsLoggedIn(propIsLoggedIn);
     if (propIsLoggedIn) {
       const storedUser = JSON.parse(localStorage.getItem("loggedUser"));
-      if (storedUser) {
-        setEmail(storedUser.email);
-        setLoggedUser(storedUser);
-        getPermission({ API_URL, setHasPermission });
-      }
     }
   }, [propIsLoggedIn]);
 
