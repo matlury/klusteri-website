@@ -38,6 +38,7 @@ const AllUsers = ({
   const [userDetailsOrganizations, setuserDetailsOrganizations] = useState("");
   const [userDetailsId, setuserDetailsId] = useState("");
 
+  const [selectedOrganization, setSelectedOrganization] = useState(null);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -58,6 +59,7 @@ const AllUsers = ({
     setuserDetailsOrganizations(showThisUser.Jäsenyydet.join(", "))
     handleClickOpen();
   };
+
 
   useEffect(() => {
     axiosClient
@@ -126,7 +128,7 @@ const AllUsers = ({
 
   return (
     <div>
-      <h4>Käyttäjät</h4>
+      <h2>Käyttäjät</h2>
       <div>
         <DataGrid
           rows={allUsers}
@@ -182,9 +184,12 @@ const AllUsers = ({
                         options={allOrganisations}
                         getOptionLabel={(option) => option.Organisaatio}
                         style={{ width: 300 }}
+                        onChange={(event, newValue) => {
+                          setSelectedOrganization(newValue);
+                        }}
                         renderInput={(params) => <TextField {...params} label="Valitse organisaatio" />}
                       />
-                      <Button variant="contained" onClick={() => handleKeySubmit(userDetailsId)}>Luovuta avain</Button>
+                      <Button variant="contained" onClick={() => handleKeySubmit(userDetailsId, selectedOrganization.Organisaatio)}>Luovuta avain</Button>
                     </AccordionDetails>
             </Accordion>
 

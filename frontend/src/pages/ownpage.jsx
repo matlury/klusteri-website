@@ -405,13 +405,14 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   };
 
   // Handles key submit
-  const handleKeySubmit = async (event) => {
+  //const handleKeySubmit = async (event) => {
+  const handleKeySubmit = async (UserId, Organization) => {
    // event.preventDefault();
 
-    if (!selectedUser || !selectedOrganization) {
-      console.error("Please select a user and an organization");
-      return;
-    }
+    // if (!selectedUserId || !selectedOrganization) {
+    //   console.error("Please select a user and an organization");
+    //   return;
+    // }
 
     // Display a confirmation dialog before handing over the key
     const confirmKeyHandover = window.confirm(
@@ -425,9 +426,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     try {
       const accessToken = localStorage.getItem("ACCESS_TOKEN");
       const response = await axios.put(
-        `${API_URL}/api/keys/hand_over_key/${selectedUser}/`,
+        `${API_URL}/api/keys/hand_over_key/${UserId}/`,
         {
-          organization_name: selectedOrganization,
+          organization_name: Organization,
         },
         {
           headers: {
