@@ -15,9 +15,9 @@ afterEach(() => {
 });
 
 describe("DefectFault Component", () => {
-  it("opens without logging in", () => {
+  it("doesn't open without logging in", () => {
     render(<DefectFault />);
-    expect(screen.getByText("Viat")).toBeInTheDocument();
+    expect(screen.getByText("Kirjaudu sisään")).toBeInTheDocument();
   });
 
   it("creating defect works", async () => {

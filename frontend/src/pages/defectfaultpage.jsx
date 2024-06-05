@@ -5,7 +5,24 @@ import DefectForm from "../components/DefectForm";
 import DefectList from "../components/DefectList";
 import RepairConfirmDialog from "../components/RepairConfirmDialog.jsx";
 
-const DefectFault = () => {
+const DefectFault = ({
+  isLoggedIn: propIsLoggedIn,
+  loggedUser: propLoggedUser,
+}) => {
+  
+  useEffect(() => {
+    setIsLoggedIn(propIsLoggedIn);
+    if (propIsLoggedIn) {
+      const storedUser = JSON.parse(localStorage.getItem("loggedUser"));
+      if (storedUser) {
+        setEmail(storedUser.email);
+        setLoggedUser(storedUser);
+        getPermission({ API_URL, setHasPermission });
+      }
+    }
+  }, [propIsLoggedIn]);
+
+  const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -100,32 +117,35 @@ const DefectFault = () => {
 
   return (
     <div className="textbox">
-      <div>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        {success && <p style={{ color: "green" }}>{success}</p>}
-        <h2>Viat</h2>
-        <React.Fragment>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleClickOpen}
-            data-testid="defectfaultdialog"
-          >
-            + Lisää vika
-          </Button>
-          <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
-        </React.Fragment>
+      {!isLoggedIn && <h3>Kirjaudu sisään</h3>}
+      {isLoggedIn && (
+        <div>
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          {success && <p style={{ color: "green" }}>{success}</p>}
+          <h2>Viat</h2>
+          <React.Fragment>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleClickOpen}
+              data-testid="defectfaultdialog"
+            >
+              + Lisää vika
+            </Button>
+            <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
+          </React.Fragment>
 
-        <React.Fragment>
-          <DefectList allDefects={allDefects} handleLogoutClick={handleLogoutClick} />
-          <RepairConfirmDialog
-            open={confirmOpen}
-            handleConfirmClose={handleConfirmClose}
-            handleRemove={handleRemove}
-            selectedDefectId={selectedDefectId}
-          />
-        </React.Fragment>
-      </div>
+          <React.Fragment>
+            <DefectList allDefects={allDefects} handleLogoutClick={handleLogoutClick} />
+            <RepairConfirmDialog
+              open={confirmOpen}
+              handleConfirmClose={handleConfirmClose}
+              handleRemove={handleRemove}
+              selectedDefectId={selectedDefectId}
+            />
+          </React.Fragment>
+        </div>
+      )}
     </div>
   );
 };
