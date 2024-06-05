@@ -394,10 +394,9 @@ class CreateEventView(APIView):
             LEPPISPJ,
             LEPPISVARAPJ,
             MUOKKAUS,
-            AVAIMELLINEN,
             JARJESTOPJ,
             JARJESTOVARAPJ
-        ]:
+        ] or not user.data["rights_for_reservation"]:
             return Response(
                 "You can't add an event",
                 status=status.HTTP_400_BAD_REQUEST,

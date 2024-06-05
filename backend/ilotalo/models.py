@@ -19,7 +19,7 @@ class Organization(models.Model):
     name = models.CharField(max_length=50, default="", unique=True)
     email = models.EmailField(max_length=100, default="", unique=True)
     homepage = models.CharField(max_length=100, default="")
-    size = models.IntegerField(default=0)
+    color = models.CharField(max_length=7, blank=True, null=True)
 
 class UserAccountManager(BaseUserManager):
     """
@@ -68,6 +68,7 @@ class User(AbstractBaseUser):
     telegram = models.CharField(max_length=100, default="", blank=True)
     role = models.IntegerField(default=5)
     keys = models.ManyToManyField(Organization)
+    rights_for_reservation = models.BooleanField(default=False)
 
     objects = UserAccountManager()
 

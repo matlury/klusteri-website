@@ -14,12 +14,12 @@ const OrganizationDetails = ({
   hasPermissionOrg,
   organization_new_name,
   setOrganizationNewName,
-  organization_new_size,
-  setOrganizationNewSize,
   organization_new_homepage,
   setOrganizationNewHomePage,
   organization_new_email,
   setOrganizationNewEmail,
+  organization_new_color,
+  setOrganizationNewColor,
   handleOrganizationDetails,
   hasPermission,
   handleDeleteOrganization,
@@ -36,15 +36,6 @@ const OrganizationDetails = ({
           value={organization_new_name}
           onChange={(e) => setOrganizationNewName(e.target.value)}
         />
-        <p>
-          Koko:
-          <input
-            id="organization_size"
-            type="organ"
-            value={organization_new_size}
-            onChange={(e) => setOrganizationNewSize(e.target.value)}
-          />
-        </p>
         <p>
           Kotisivu:
           <input
@@ -65,6 +56,15 @@ const OrganizationDetails = ({
           />
         </p>
         <p>Klusterivastaava(t): </p>
+        <p>
+          Organisaation väri:
+          <input
+            id="organization_new_color"
+            type="organ"
+            value={organization_new_color}
+            onChange={(e) => setOrganizationNewColor(e.target.value)}
+          />
+        </p>
         {hasPermissionOrg === true && (
           <button
             onClick={() => handleOrganizationDetails(organization.id)}

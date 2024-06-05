@@ -9,8 +9,8 @@ const CreateOrganization = ({
   setOrganizationEmail,
   organization_homepage,
   setOrganizationHomePage,
-  organization_size,
-  setOrganizationSize,
+  organization_color,
+  setOrganizationColor,
   handleCreateOrganization,
 }) => {
   return (
@@ -42,12 +42,11 @@ const CreateOrganization = ({
         />
       </div>
       <div>
-        <FormControlLabel control={<Switch />} label="Iso järjestö" />
         <TextField
-          id="size"
-          label="Koko"
-          value={organization_size}
-          onChange={(e) => setOrganizationSize(e.target.value)}
+          id="color"
+          label="Järjestön väri"
+          value={organization_color}
+          onChange={(e) => setOrganizationColor(e.target.value)}
         />
       </div>
       <Button

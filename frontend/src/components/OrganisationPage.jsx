@@ -7,12 +7,12 @@ const OrganisationPage = ({
   hasPermissionOrg,
   organization_new_name,
   setOrganizationNewName,
-  organization_new_size,
-  setOrganizationNewSize,
   organization_new_homepage,
   setOrganizationNewHomePage,
   organization_new_email,
   setOrganizationNewEmail,
+  organization_new_color,
+  setOrganizationNewColor,
   handleOrganizationDetails,
   hasPermission,
   handleDeleteOrganization,
@@ -44,15 +44,15 @@ const OrganisationPage = ({
                 hasPermissionOrg={hasPermissionOrg}
                 organization_new_name={organization_new_name}
                 setOrganizationNewName={setOrganizationNewName}
-                setOrganizationNewSize={setOrganizationNewSize}
                 organization_new_homepage={organization_new_homepage}
                 setOrganizationNewHomePage={setOrganizationNewHomePage}
                 organization_new_email={organization_new_email}
                 setOrganizationNewEmail={setOrganizationNewEmail}
+                organization_new_color={organization_new_color}
+                setOrganizationNewColor={setOrganizationNewColor}
                 handleOrganizationDetails={handleOrganizationDetails}
                 hasPermission={hasPermission}
                 handleDeleteOrganization={handleDeleteOrganization}
-                organization_new_size={organization_new_size}
               />
             }
           </li>
