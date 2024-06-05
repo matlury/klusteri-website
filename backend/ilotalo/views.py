@@ -788,7 +788,7 @@ class RepairDefectFaultView(APIView):
         except ObjectDoesNotExist:
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
         
-        defect_to_update.repaired = True
+        defect_to_update.repaired = datetime.now()
 
         defectfault = DefectFaultSerializer(
             instance=defect_to_update, data=request.data, partial=True

@@ -94,8 +94,8 @@ const DefectFault = () => {
     const columns = [
       { field: "description", headerName: "Kuvaus", width: 400 },
       { field: "time", headerName: "Aika", width: 200}, 
-      { field: "email", headerName: "Sähköposti lähetetty", width: 90}, 
-      { field: "repaired", headerName: "Korjattu", width: 90},
+      { field: "email", headerName: "Sähköposti lähetetty", width: 200}, 
+      { field: "repaired", headerName: "Korjattu", width: 200},
       {
         field: "actions",
         headerName: "Korjaa",
@@ -119,8 +119,8 @@ const DefectFault = () => {
             id: u.id, // DataGrid requires a unique 'id' for each row
             description: u.description,
             time: new Date(u.time),
-            email: u.email_sent ? "Kyllä" : "Ei",
-            repaired: u.repaired ? "Kyllä" : "Ei",
+            email: u.email_sent == null ? "Ei" : new Date(u.email_sent),
+            repaired: u.repaired == null ? "Ei" : new Date(u.repaired),
           }));
           setAllDefects(defectData);
           setLoading(false);
