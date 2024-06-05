@@ -10,16 +10,25 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Autocomplete,
 } from "@mui/material";
+import Accordion from '@mui/material/Accordion';
+import AccordionActions from '@mui/material/AccordionActions';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const AllUsers = ({
   handleUpdateAnotherUser,
   hasPermissionOrg,
   hasPermission,
-  handlePJChange
+  handlePJChange,
+  handleKeySubmit,
 }) => {
 
   const [allUsers, setAllUsers] = useState([]);
+  const [allOrganisations, setAllOrganisations] = useState([]);
+
   const [open, setOpen] = useState(false);
   
   const [userDetailsUsername, setUserDetailsUsername] = useState("");
@@ -68,6 +77,23 @@ const AllUsers = ({
       .catch((error) => console.error(error));
   }, []);
 
+  useEffect(() => {
+    axiosClient
+      .get("listobjects/organizations/")
+      .then((res) => {
+        const orgData = res.data.map((u) => ({
+          id: u.id,
+          Organisaatio: u.name,
+          email: u.email,
+          kotisivu: u.homepage,
+          Avaimia: u.user_set.length,
+        }));
+        setAllOrganisations(orgData);
+      })
+      .catch((error) => console.error(error));
+  }, []);
+
+
   const handleFormSubmit = (event) => {
     event.preventDefault();
     handleUpdateAnotherUser(userDetailsId, userDetailsUsername, userDetailsEmail, userDetailsTelegram, userDetailsRole,
@@ -75,14 +101,11 @@ const AllUsers = ({
     handleClose();
   };
 
-
-
-
   const columns = [
     {
       field: "actions",
-      headerName: "Muokkaa/Siirrä PJ-oikeudet",
-      width: 200,
+      headerName: "Muokkaa",
+      width: 130,
       renderCell: (params) => (
         <Button
           variant="contained"
@@ -113,11 +136,8 @@ const AllUsers = ({
         />
       </div>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Muokkaa tai lisää PJ-oikeudet</DialogTitle>
+        <DialogTitle>Muokkaa käyttäjää</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Muokkaa käyttäjän tietoja ja/tai lisää PJ-oikeudet.
-          </DialogContentText>
           <form onSubmit={handleFormSubmit}>
             <TextField
               label="Käyttäjänimi"
@@ -147,6 +167,29 @@ const AllUsers = ({
               onChange={(e) => setuserDetailsRole(e.target.value)}
               fullWidth
             />
+
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1-content"
+                  id="panel1-header"
+                >
+                  Luovuta avain
+                  </AccordionSummary>
+                    <AccordionDetails>
+                      <Autocomplete
+                        id="combo-box-org"
+                        options={allOrganisations}
+                        getOptionLabel={(option) => option.Organisaatio}
+                        style={{ width: 300 }}
+                        renderInput={(params) => <TextField {...params} label="Valitse organisaatio" />}
+                      />
+                      <Button variant="contained" onClick={() => handleKeySubmit(userDetailsId)}>Luovuta avain</Button>
+                    </AccordionDetails>
+            </Accordion>
+
+            <Button onClick={() => handlePJChange(userDetailsId)}>Vaihda puheenjohtajaksi</Button>
+
             {/* <TextField
               label="Jäsenyydet"
               // value={organizations}
@@ -164,7 +207,7 @@ const AllUsers = ({
             variant="contained"
             color="primary"
           >
-            Vahvista muutokset
+            Tallenna
           </Button>
         </DialogActions>
         </form>

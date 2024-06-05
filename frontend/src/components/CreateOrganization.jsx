@@ -41,15 +41,6 @@ const CreateOrganization = ({
           onChange={(e) => setOrganizationHomePage(e.target.value)}
         />
       </div>
-      <div>
-        <FormControlLabel control={<Switch />} label="Iso järjestö" />
-        <TextField
-          id="size"
-          label="Koko"
-          value={organization_size}
-          onChange={(e) => setOrganizationSize(e.target.value)}
-        />
-      </div>
       <Button
         onClick={handleCreateOrganization}
         variant="contained"

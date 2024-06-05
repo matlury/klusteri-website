@@ -406,7 +406,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   // Handles key submit
   const handleKeySubmit = async (event) => {
-    event.preventDefault();
+   // event.preventDefault();
 
     if (!selectedUser || !selectedOrganization) {
       console.error("Please select a user and an organization");
@@ -566,6 +566,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                     hasPermission={hasPermission}
                     handlePJChange={handlePJChange}
                     selectedUser={selectedUser}
+                    handleKeySubmit={handleKeySubmit}
                   />
                 )}
               </div>
