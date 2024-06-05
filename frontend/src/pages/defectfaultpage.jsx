@@ -106,7 +106,9 @@ const DefectFault = ({
   };
 
   useEffect(() => {
-    fetchDefects();
+    if (isLoggedIn) {
+      fetchDefects();
+    }
   }, []);
 
   return (
