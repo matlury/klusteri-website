@@ -74,27 +74,55 @@ const DefectFault = () => {
     const [allDefects, setAllDefects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedDefectId, setSelectedDefectId] = useState(null);
+    const [selectedDefectEmailId, setSelectedDefectEmailId] = useState(null);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [buttonPopup, setButtonPopup] = useState(false);
 
 
-    const handleLogoutClick = (id) => {
+    const handleReparClick = (id) => {
       setSelectedDefectId(id);
       setConfirmOpen(true);
+    };
+
+    const handleEmailClick = (id) => {
+      setSelectedDefectEmailId(id);
+      setButtonPopup(true);
     };
 
     const handleConfirmClose = () => {
       setConfirmOpen(false);
     };
 
+    const handleConfirmCloseEmail = () => {
+      setButtonPopup(false);
+    };
+
     const handleRemove = (id) => {
       handleDefectFaultRepair(id);
       setConfirmOpen(false);
     };
+
+    const handleMarkEmail = (id) => {
+      setButtonPopup(false);
+    };
+
     const columns = [
       { field: "description", headerName: "Kuvaus", width: 400 },
       { field: "time", headerName: "Aika", width: 200}, 
       { field: "email", headerName: "Sähköposti lähetetty", width: 200}, 
+      {
+        field: "email_sent",
+        headerName: "Merkitse lähetetyksi",
+        width: 170,
+        renderCell: (params) => (
+          <Button
+            variant="outlined"
+            onClick={() => handleEmailClick(params.id)}
+          >
+            <CheckIcon />
+          </Button>
+        ),
+      },
       { field: "repaired", headerName: "Korjattu", width: 200},
       {
         field: "actions",
@@ -103,7 +131,7 @@ const DefectFault = () => {
         renderCell: (params) => (
           <Button
             variant="outlined"
-            onClick={() => handleLogoutClick(params.id)}
+            onClick={() => handleReparClick(params.id)}
           >
             <CheckIcon />
           </Button>
@@ -202,6 +230,24 @@ const DefectFault = () => {
             color="primary"
             variant="contained"
             data-testid="confirmlogout"
+          >
+            Vahvista
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={buttonPopup} onClose={handleConfirmCloseEmail}>
+        <DialogTitle>Merkitse sähköposti lähetetyksi</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Oletko varma, että haluat merkitä sähköposti lähetetyksi?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleConfirmCloseEmail}>Peruuta</Button>
+          <Button
+            onClick={() => handleMarkEmail(selectedDefectEmailId)}
+            color="primary"
+            variant="contained"
           >
             Vahvista
           </Button>
