@@ -149,12 +149,14 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
   };
 
-  const handleUpdateAnotherUser = (event) => {
+  const handleUpdateAnotherUser = (userDetailsId, userDetailsUsername, userDetailsEmail, userDetailsTelegram, userDetailsRole,
+    userDetailsOrganizations) => {  
+  
     /*
     Event handler for updating someone else's information.
     No validation here because backend takes care of it.
     */
-    event.preventDefault();
+    //event.preventDefault();
 
     const confirmUpdate = window.confirm(
       `Oletko varma, että haluat päivittää tämän tietoja?`,
@@ -165,6 +167,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       email: userDetailsEmail,
       telegram: userDetailsTelegram,
       role: userDetailsRole,
+      id: userDetailsId, 
     };
 
     if (confirmUpdate) {
