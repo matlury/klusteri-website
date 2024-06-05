@@ -280,20 +280,7 @@ const App = (props) => {
               element={<Rules_and_Instructions />}
             />
             <Route path="/tietosuojaseloste" element={<PrivacyPolicy />} />
-            <Route
-              path="/login"
-              element={
-                showLoginPage ? (
-                  <LoginPage
-                    onLogin={handleLogin}
-                    onLogout={handleLogout}
-                    onCreateNewUser={handleCreateNewUser}
-                  />
-                ) : (
-                  <NewAccountPage />
-                )
-              }
-            />
+            
           </Routes>
           <LoginDialog
             open={loginDialogOpen}

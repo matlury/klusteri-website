@@ -42,7 +42,7 @@ describe("Frontpage", () => {
   });
 
   it("error message if password input is too short", function () {
-    cy.visit("http://localhost:5173/login");
+    cy.contains("Kirjaudu").click();
     cy.wait(1000);
     cy.contains("Luo tili").click();
     cy.get("#usernameInput").type("testuser");
@@ -50,12 +50,12 @@ describe("Frontpage", () => {
     cy.get("#confirmPasswordInput").type("s");
     cy.get("#emailInput").type("testuser@gmail.com");
     cy.get("#telegramInput").type("testtg");
-    cy.contains("Luo tili").click();
+    cy.get(".create-user-button").click();
     cy.contains("Salasanan tulee olla 8-20 merkkiä pitkä.");
   });
 
   it("error message if password input is too long", function () {
-    cy.visit("http://localhost:5173/login");
+    cy.contains("Kirjaudu").click();
     cy.contains("Luo tili").click();
     cy.contains("Telegram (valinnainen)"); //get
     cy.get("#usernameInput").type("testuser");
@@ -63,12 +63,13 @@ describe("Frontpage", () => {
     cy.get("#confirmPasswordInput").type("1234567890salasanaaaaaaaa");
     cy.get("#emailInput").type("testuser@gmail.com");
     cy.get("#telegramInput").type("testtg");
-    cy.contains("Luo tili").click();
+    cy.get(".create-user-button").click();
+
     cy.contains("Salasanan tulee olla 8-20 merkkiä pitkä.");
   });
 
   it("error message if passwords dont match", function () {
-    cy.visit("http://localhost:5173/login");
+    cy.contains("Kirjaudu").click();
     cy.contains("Luo tili").click();
     cy.contains("Telegram (valinnainen)");
     cy.get("#usernameInput").type("testuser");
@@ -76,12 +77,12 @@ describe("Frontpage", () => {
     cy.get("#confirmPasswordInput").type("salasana234");
     cy.get("#emailInput").type("testuser@gmail.com");
     cy.get("#telegramInput").type("testtg");
-    cy.contains("Luo tili").click();
+    cy.get(".create-user-button").click();
     cy.contains("Salasanat eivät täsmää.");
   });
 
   it("error message if password only contains numbers", function () {
-    cy.visit("http://localhost:5173/login");
+    cy.contains("Kirjaudu").click();
     cy.contains("Luo tili").click();
     cy.contains("Telegram (valinnainen)");
     cy.get("#usernameInput").type("testuser");
@@ -89,26 +90,26 @@ describe("Frontpage", () => {
     cy.get("#confirmPasswordInput").type("1234567890");
     cy.get("#emailInput").type("testuser@gmail.com");
     cy.get("#telegramInput").type("testtg");
-    cy.contains("Luo tili").click();
+    cy.get(".create-user-button").click();
     cy.contains("Salasana ei saa sisältää pelkkiä numeroita tai kirjaimia.");
   });
 
   it("error message if a field is missing", function () {
-    cy.visit("http://localhost:5173/login");
+    cy.contains("Kirjaudu").click();
     cy.contains("Luo tili").click();
     cy.contains("Telegram (valinnainen)");
     cy.get("#passwordInput").type("1234567890");
     cy.get("#confirmPasswordInput").type("1234567890");
     cy.get("#emailInput").type("testuser@gmail.com");
     cy.get("#telegramInput").type("testtg");
-    cy.contains("Luo tili").click();
+    cy.get(".create-user-button").click();
     cy.contains(
       "Käyttäjänimi, salasana, sähköposti ja vahvista salasana ovat pakollisia kenttiä.",
     );
   });
 
   it("a user can be created", function () {
-    cy.visit("http://localhost:5173/login");
+    cy.contains("Kirjaudu").click();
     cy.contains("Luo tili").click();
     cy.contains("Telegram (valinnainen)");
     cy.get("#usernameInput").type("testuser");
@@ -116,7 +117,7 @@ describe("Frontpage", () => {
     cy.get("#confirmPasswordInput").type("salasana123");
     cy.get("#emailInput").type("testuser@gmail.com");
     cy.get("#telegramInput").type("testtg");
-    cy.contains("Luo tili").click();
+    cy.get(".create-user-button").click();
     cy.contains("Käyttäjä luotu onnistuneesti!");
   });
 
@@ -133,8 +134,7 @@ describe("Frontpage", () => {
     cy.get("#confirmPasswordInput").type("salasana123");
     cy.get("#emailInput").type("testuser@gmail.com");
     cy.get("#telegramInput").type("testtg");
-    cy.contains("Luo tili").click();
-
+    cy.get(".create-user-button").click();
     cy.wait(500);
     cy.contains("Etusivu");
 
@@ -302,6 +302,7 @@ describe("Ownkeys", () => {
     cy.reload();
     cy.contains("+ Ota vastuu").click();
     cy.get("#responsibility").type("fuksit");
+    cy.wait(500);
     cy.get("#takeresp").click();
     cy.reload();
     cy.get("#removeresp").click();
