@@ -252,7 +252,7 @@ const App = (props) => {
             />
             <Route
               path="/viat"
-              element={<DefectFault isLoggedIn={isLoggedIn} />}
+              element={<DefectFault isLoggedIn={isLoggedIn} loggedUser={loggedUser} />}
             />
             <Route path="/yhteystiedot" element={<Contacts />} />
             <Route

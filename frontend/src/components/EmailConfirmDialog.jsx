@@ -12,7 +12,7 @@ import {
 const EmailConfirmDialog = ({ open, handleConfirmClose, handleMarkEmailSent, selectedDefectId }) => {
   return (
     <Dialog open={open} onClose={handleConfirmClose}>
-      <DialogTitle>Merkitse sähöposti lähetetyksi</DialogTitle>
+      <DialogTitle>Merkitse sähköposti lähetetyksi</DialogTitle>
       <DialogContent>
         <DialogContentText>Oletko varma, että haluat merkitä sähköpostin lähetetyksi?</DialogContentText>
       </DialogContent>

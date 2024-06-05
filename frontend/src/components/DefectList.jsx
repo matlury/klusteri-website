@@ -4,7 +4,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 
-const DefectList = ({ allDefects, handleRepairClick, handleEmailClick }) => {
+const DefectList = ({ loggedUser, allDefects, handleRepairClick, handleEmailClick }) => {
   const columns = [
     { field: "description", headerName: "Kuvaus", width: 400 },
     { field: "time", headerName: "Aika", width: 200 },
@@ -40,7 +40,30 @@ const DefectList = ({ allDefects, handleRepairClick, handleEmailClick }) => {
     },
   ];
 
-  return <DataGrid rows={allDefects} columns={columns} pageSize={5} rowsPerPageOptions={[5, 10, 20]} />;
-};
+  const columns_buttonless = [
+    { field: "description", headerName: "Kuvaus", width: 400 },
+    { field: "time", headerName: "Aika", width: 200 },
+    { field: "email", headerName: "Sähköposti lähetetty", width: 200 },
+    { field: "repaired", headerName: "Korjattu", width: 200 },
+  ];
 
-export default DefectList;
+  if (loggedUser && loggedUser.role === 1) {
+    return (
+      <DataGrid
+        rows={allDefects}
+        columns={columns}
+        pageSize={5}
+        rowsPerPageOptions={[5, 10, 20]}
+      />
+    );
+  } else {
+    return (
+      <DataGrid
+        rows={allDefects}
+        columns={columns_buttonless}
+        pageSize={5}
+        rowsPerPageOptions={[5, 10, 20]}
+      />
+    );
+  }
+};

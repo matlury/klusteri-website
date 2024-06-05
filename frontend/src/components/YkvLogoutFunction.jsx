@@ -239,7 +239,6 @@ const YkvLogoutFunction = ({
           </Button>
         </DialogActions>
       </Dialog>
-
       {loggedUser.role !== 5 && (
         <div>
           <TextField

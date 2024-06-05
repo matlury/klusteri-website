@@ -5,19 +5,24 @@ import DefectForm from "../components/DefectForm";
 import DefectList from "../components/DefectList";
 import RepairConfirmDialog from "../components/RepairConfirmDialog.jsx";
 import EmailConfirmDialog from "../components/EmailConfirmDialog.jsx";
-
 const DefectFault = ({
   isLoggedIn: propIsLoggedIn,
+  loggedUser: propLoggedUser,
 }) => {
   
   useEffect(() => {
     setIsLoggedIn(propIsLoggedIn);
     if (propIsLoggedIn) {
       const storedUser = JSON.parse(localStorage.getItem("loggedUser"));
+      if (storedUser) {
+        setLoggedUser(storedUser);
+      }
     }
+    
   }, [propIsLoggedIn]);
 
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
+  const [loggedUser, setLoggedUser] = useState(propLoggedUser);
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -163,7 +168,7 @@ const DefectFault = ({
           </React.Fragment>
 
         <React.Fragment>
-          <DefectList allDefects={allDefects} handleRepairClick={handleRepairClick} handleEmailClick={handleEmailClick}/>
+          <DefectList loggedUser={loggedUser} allDefects={allDefects} handleRepairClick={handleRepairClick} handleEmailClick={handleEmailClick}/>
           <RepairConfirmDialog
             open={confirmRepairOpen}
             handleConfirmClose={handleConfirmRepairClose}
