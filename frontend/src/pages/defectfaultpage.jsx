@@ -4,6 +4,7 @@ import { Button } from "@mui/material";
 import DefectForm from "../components/DefectForm";
 import DefectList from "../components/DefectList";
 import RepairConfirmDialog from "../components/RepairConfirmDialog.jsx";
+import EmailConfirmDialog from "../components/EmailConfirmDialog.jsx";
 
 const DefectFault = ({
   isLoggedIn: propIsLoggedIn,
@@ -23,8 +24,9 @@ const DefectFault = ({
   const [allDefects, setAllDefects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDefectId, setSelectedDefectId] = useState(null);
-  const [confirmOpen, setConfirmOpen] = useState(false);
   const [buttonPopup, setButtonPopup] = useState(false);
+  const [confirmRepairOpen, setConfirmRepairOpen] = useState(false);
+  const [confirmEmailOpen, setConfirmEmailOpen] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -74,18 +76,47 @@ const DefectFault = ({
       });
   };
 
-  const handleLogoutClick = (id) => {
+  const handleSendEmail = (id) => {
+    setButtonPopup(true);
+    axiosClient
+      .put(`defects/email_defect/${id}/`, {})
+      .then((response) => {
+        setSuccess("Sähköpostin lähetys onnistui");
+        setTimeout(() => setSuccess(""), 5000);
+        fetchDefects();
+      })
+      .catch((error) => {
+        setError("Sähköpostin lähetys epäonnistui");
+        setTimeout(() => setError(""), 5000);
+      });
+  };
+
+  const handleRepairClick = (id) => {
     setSelectedDefectId(id);
-    setConfirmOpen(true);
+    setConfirmRepairOpen(true);
   };
 
-  const handleConfirmClose = () => {
-    setConfirmOpen(false);
+  const handleEmailClick = (id) => {
+    setSelectedDefectId(id);
+    setConfirmEmailOpen(true);
   };
 
-  const handleRemove = (id) => {
+  const handleConfirmRepairClose = () => {
+    setConfirmRepairOpen(false);
+  };
+
+  const handleConfirmEmailClose = () => {
+    setConfirmEmailOpen(false);
+  };
+
+  const handleRepairFault = (id) => {
     handleDefectFaultRepair(id);
-    setConfirmOpen(false);
+    setConfirmRepairOpen(false);
+  };
+
+  const handleMarkEmailSent = (id) => {
+    handleSendEmail(id);
+    setConfirmEmailOpen(false);
   };
 
   const fetchDefects = () => {
@@ -131,17 +162,23 @@ const DefectFault = ({
             <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
           </React.Fragment>
 
-          <React.Fragment>
-            <DefectList allDefects={allDefects} handleLogoutClick={handleLogoutClick} />
-            <RepairConfirmDialog
-              open={confirmOpen}
-              handleConfirmClose={handleConfirmClose}
-              handleRemove={handleRemove}
-              selectedDefectId={selectedDefectId}
-            />
-          </React.Fragment>
-        </div>
-      )}
+        <React.Fragment>
+          <DefectList allDefects={allDefects} handleRepairClick={handleRepairClick} handleEmailClick={handleEmailClick}/>
+          <RepairConfirmDialog
+            open={confirmRepairOpen}
+            handleConfirmClose={handleConfirmRepairClose}
+            handleRepairFault={handleRepairFault}
+            selectedDefectId={selectedDefectId}
+          />
+          <EmailConfirmDialog
+            open={confirmEmailOpen}
+            handleConfirmClose={handleConfirmEmailClose}
+            handleMarkEmailSent={handleMarkEmailSent}
+            selectedDefectId={selectedDefectId}
+          />
+        </React.Fragment>
+      </div>
+       )}
     </div>
   );
 };
