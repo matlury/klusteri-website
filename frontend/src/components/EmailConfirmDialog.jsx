@@ -9,17 +9,17 @@ import {
   Button,
 } from "@mui/material";
 
-const RepairConfirmDialog = ({ open, handleConfirmClose, handleRepairFault, selectedDefectId }) => {
+const EmailConfirmDialog = ({ open, handleConfirmClose, handleMarkEmailSent, selectedDefectId }) => {
   return (
     <Dialog open={open} onClose={handleConfirmClose}>
-      <DialogTitle>Merkitse vika korjatuksi</DialogTitle>
+      <DialogTitle>Merkitse sähöposti lähetetyksi</DialogTitle>
       <DialogContent>
-        <DialogContentText>Oletko varma, että haluat merkitä vian korjatuksi?</DialogContentText>
+        <DialogContentText>Oletko varma, että haluat merkitä sähköpostin lähetetyksi?</DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleConfirmClose}>Peruuta</Button>
         <Button
-          onClick={() => handleRepairFault(selectedDefectId)}
+          onClick={() => handleMarkEmailSent(selectedDefectId)}
           color="primary"
           variant="contained"
           data-testid="confirmlogout"
@@ -31,4 +31,4 @@ const RepairConfirmDialog = ({ open, handleConfirmClose, handleRepairFault, sele
   );
 };
 
-export default RepairConfirmDialog;
+export default EmailConfirmDialog;
