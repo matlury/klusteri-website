@@ -6,7 +6,18 @@ import DefectList from "../components/DefectList";
 import RepairConfirmDialog from "../components/RepairConfirmDialog.jsx";
 import EmailConfirmDialog from "../components/EmailConfirmDialog.jsx";
 
-const DefectFault = () => {
+const DefectFault = ({
+  isLoggedIn: propIsLoggedIn,
+}) => {
+  
+  useEffect(() => {
+    setIsLoggedIn(propIsLoggedIn);
+    if (propIsLoggedIn) {
+      const storedUser = JSON.parse(localStorage.getItem("loggedUser"));
+    }
+  }, [propIsLoggedIn]);
+
+  const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -126,26 +137,30 @@ const DefectFault = () => {
   };
 
   useEffect(() => {
-    fetchDefects();
+    if (isLoggedIn) {
+      fetchDefects();
+    }
   }, []);
 
   return (
     <div className="textbox">
-      <div>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        {success && <p style={{ color: "green" }}>{success}</p>}
-        <h2>Viat</h2>
-        <React.Fragment>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleClickOpen}
-            data-testid="defectfaultdialog"
-          >
-            + Lisää vika
-          </Button>
-          <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
-        </React.Fragment>
+      {!isLoggedIn && <h3>Kirjaudu sisään</h3>}
+      {isLoggedIn && (
+        <div>
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          {success && <p style={{ color: "green" }}>{success}</p>}
+          <h2>Viat</h2>
+          <React.Fragment>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleClickOpen}
+              data-testid="defectfaultdialog"
+            >
+              + Lisää vika
+            </Button>
+            <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
+          </React.Fragment>
 
         <React.Fragment>
           <DefectList allDefects={allDefects} handleRepairClick={handleRepairClick} handleEmailClick={handleEmailClick}/>
@@ -163,6 +178,7 @@ const DefectFault = () => {
           />
         </React.Fragment>
       </div>
+       )}
     </div>
   );
 };
