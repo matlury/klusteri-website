@@ -6,8 +6,10 @@ import axios from "axios";
 import axiosClient from "../axios";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { BarChart } from "@mui/x-charts/BarChart";
+import { Grid } from "@mui/material";
 import { CSVLink } from "react-csv";
 import { getCurrentDateTime } from "../utils/timehelpers";
+import Button from "@mui/material/Button";
 
 const API_URL = process.env.API_URL;
 
@@ -18,18 +20,26 @@ const Statistics = () => {
   const [allUserStatsData, setAllUserStatsData] = useState([]);
   const [CSVdata, setCSVdata] = useState(null);
   const [shouldDownload, setShouldDownload] = useState(false);
+  const [minFilter, setMinFilter] = useState("2024-01-01T00:00")
+  const [maxFilter, setMaxFilter] = useState("2029-01-01T00:00")
+  const [fetchedData, setFetchedData] = useState(null)
 
   useEffect(() => {
     getPermission();
-    if (localStorage.getItem("ACCESS_TOKEN")) {
-      fetchData().then(
-        ({ orgResponse, userResponse, responsibilitiesResponse }) => {
-          processOrgStats(orgResponse.data, responsibilitiesResponse.data);
-          processAllUserStats(userResponse.data, responsibilitiesResponse.data);
-        },
-      );
+    if (fetchedData) {
+      processOrgStats(fetchedData.orgResponse.data, fetchedData.responsibilitiesResponse.data);
+      processAllUserStats(fetchedData.userResponse.data, fetchedData.responsibilitiesResponse.data);
+    } else if (localStorage.getItem("ACCESS_TOKEN")) {
+      fetchData().then(setFetchedData);
     }
   }, []);
+
+  useEffect(() => {
+    if (fetchedData) {
+      processOrgStats(fetchedData.orgResponse.data, fetchedData.responsibilitiesResponse.data);
+      processAllUserStats(fetchedData.userResponse.data, fetchedData.responsibilitiesResponse.data);
+    }
+  }, [minFilter, maxFilter, fetchedData]);
 
   const fetchData = async () => {
     try {
@@ -68,10 +78,17 @@ const Statistics = () => {
     });
     responsibilities.forEach((resp) => {
       resp.organizations.forEach((org) => {
+        if ((Date.parse(resp.login_time) > Number(Date.parse(minFilter)) && 
+            Date.parse(resp.login_time) < Number(Date.parse(maxFilter))) ||
+            (Date.parse(resp.logout_time) < Number(Date.parse(maxFilter)) &&
+            Date.parse(resp.logout_time) > Number(Date.parse(minFilter))
+          )
+      ){
         orgdata[org.name] = {
           ...orgdata[org.name],
           value: orgdata[org.name].value + 1,
         };
+      }
       });
     });
     const realdata = Object.values(orgdata);
@@ -85,10 +102,17 @@ const Statistics = () => {
     });
     responsibilities.forEach((resp) => {
       if (userdata[resp.user.username]) {
+        if ((Date.parse(resp.login_time) > Number(Date.parse(minFilter)) && 
+        Date.parse(resp.login_time) < Number(Date.parse(maxFilter))) ||
+        (Date.parse(resp.logout_time) < Number(Date.parse(maxFilter)) &&
+        Date.parse(resp.logout_time) > Number(Date.parse(minFilter))
+      )
+      ) {
         userdata[resp.user.username] = {
           ...userdata[resp.user.username],
           data: [userdata[resp.user.username].data[0] + 1],
         };
+      }
       }
     });
     Object.values(userdata).forEach((usr) => {
@@ -157,6 +181,13 @@ const Statistics = () => {
     );
   };
 
+  const handleMaxFilterChange = (event) => {
+    setMaxFilter(event.target.value);
+  };
+  const handleMinFilterChange = (event) => {
+    setMinFilter(event.target.value);
+  };
+
   const date = getCurrentDateTime();
 
   if (userRole === 5 || userRole == null) {
@@ -165,9 +196,25 @@ const Statistics = () => {
 
   return (
     <div>
-      <button type="button" onClick={handleCSV}>
+      <div>
+      <p>Hae aikavälillä</p>
+      <input type="hidden" id="timezone" name="timezone" value="03:00" />
+      <input
+        value={minFilter}
+        onChange={handleMinFilterChange}
+        type="datetime-local"
+      />
+      <input
+        value={maxFilter}
+        onChange={handleMaxFilterChange}
+        type="datetime-local"
+      />
+      </div>
+      <div
+      style={{float: "right"}}>
+      <Button type="button" variant="contained" onClick={handleCSV}>
         Lataa CSV-tiedosto tapahtumista
-      </button>
+      </Button>
       {shouldDownload && CSVdata && (
         <CSVDownload
           data={CSVdata}
@@ -175,23 +222,32 @@ const Statistics = () => {
           target="_blank"
         />
       )}
-      <h2>YKV-kirjausten määrä järjestöittäin</h2>
-      <PieChart
+      </div>
+
+      <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+        <Grid item xs={6}>
+        <h2>YKV-kirjausten määrä järjestöittäin</h2>
+        <PieChart
         series={[
-          {
-            data: orgStatsData,
-          },
+        {
+          data: orgStatsData,
+        },
         ]}
         width={400}
         height={200}
-      />
-      <h2>YKV-kirjausten määrä käyttäjittäin</h2>
-      <BarChart
+      />  
+        </Grid>
+        <Grid item xs={6}>
+        <h2>YKV-kirjausten määrä käyttäjittäin</h2>
+        <BarChart
         width={500}
         height={300}
         series={allUserStatsData}
         xAxis={[{ data: ["Käyttäjät"], scaleType: "band" }]}
-      />
+        />
+        </Grid>
+      </Grid>
+
     </div>
   );
 };
