@@ -26,6 +26,7 @@ const DefectFault = ({
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [fixedDefects, setFixedDefects] = useState([]);
   const [allDefects, setAllDefects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDefectId, setSelectedDefectId] = useState(null);
@@ -136,6 +137,12 @@ const DefectFault = ({
           repaired: u.repaired == null ? "Ei" : new Date(u.repaired),
         }));
         setAllDefects(defectData);
+        setFixedDefects(
+          defectData.filter(
+            (resp) =>
+              resp.repaired != null
+          ),
+        );
         setLoading(false);
       })
       .catch((error) => console.error(error));
@@ -168,7 +175,7 @@ const DefectFault = ({
           </React.Fragment>
 
         <React.Fragment>
-          <DefectList loggedUser={loggedUser} allDefects={allDefects} handleRepairClick={handleRepairClick} handleEmailClick={handleEmailClick}/>
+          <DefectList loggedUser={loggedUser} allDefects={allDefects} fixedDefects={fixedDefects} handleRepairClick={handleRepairClick} handleEmailClick={handleEmailClick}/>
           <RepairConfirmDialog
             open={confirmRepairOpen}
             handleConfirmClose={handleConfirmRepairClose}
