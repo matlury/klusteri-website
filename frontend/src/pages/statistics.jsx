@@ -20,9 +20,10 @@ const Statistics = () => {
   const [allUserStatsData, setAllUserStatsData] = useState([]);
   const [CSVdata, setCSVdata] = useState(null);
   const [shouldDownload, setShouldDownload] = useState(false);
-  const [minFilter, setMinFilter] = useState("2024-01-01T00:00")
-  const [maxFilter, setMaxFilter] = useState("2029-01-01T00:00")
+  const [minFilter, setMinFilter] = useState("")
+  const [maxFilter, setMaxFilter] = useState("")
   const [fetchedData, setFetchedData] = useState(null)
+  const [logTimesData, setLogTimesData]= useState(null)
 
   useEffect(() => {
     getPermission();
@@ -71,6 +72,18 @@ const Statistics = () => {
     }
   };
 
+  function filtering(login_time, logout_time) {
+    return ((Date.parse(login_time) > Number(Date.parse(minFilter)) && 
+    Date.parse(login_time) < Number(Date.parse(maxFilter))) ||
+    (Date.parse(logout_time) < Number(Date.parse(maxFilter)) &&
+    Date.parse(logout_time) > Number(Date.parse(minFilter))) ||
+    (Date.parse(login_time) > Number(Date.parse(minFilter)) &&
+    maxFilter === "") ||
+    (Date.parse(logout_time) < Number(Date.parse(maxFilter)) &&
+    minFilter === "") || (minFilter === "" && maxFilter ==="")
+    )  
+  }
+
   const processOrgStats = (orgData, responsibilities) => {
     const orgdata = {};
     orgData.forEach((org) => {
@@ -78,12 +91,7 @@ const Statistics = () => {
     });
     responsibilities.forEach((resp) => {
       resp.organizations.forEach((org) => {
-        if ((Date.parse(resp.login_time) > Number(Date.parse(minFilter)) && 
-            Date.parse(resp.login_time) < Number(Date.parse(maxFilter))) ||
-            (Date.parse(resp.logout_time) < Number(Date.parse(maxFilter)) &&
-            Date.parse(resp.logout_time) > Number(Date.parse(minFilter))
-          )
-      ){
+        if (filtering(resp.login_time, resp.logout_time)) {
         orgdata[org.name] = {
           ...orgdata[org.name],
           value: orgdata[org.name].value + 1,
@@ -97,21 +105,21 @@ const Statistics = () => {
 
   const processAllUserStats = (users, responsibilities) => {
     const userdata = {};
+    const logintimesdata = new Array(24).fill(0)
+    const logouttimesdata = new Array(24).fill(0)
     users.forEach((usr) => {
       userdata[usr.username] = { data: [0], label: usr.username };
     });
     responsibilities.forEach((resp) => {
       if (userdata[resp.user.username]) {
-        if ((Date.parse(resp.login_time) > Number(Date.parse(minFilter)) && 
-        Date.parse(resp.login_time) < Number(Date.parse(maxFilter))) ||
-        (Date.parse(resp.logout_time) < Number(Date.parse(maxFilter)) &&
-        Date.parse(resp.logout_time) > Number(Date.parse(minFilter))
-      )
-      ) {
+        if (filtering(resp.login_time, resp.logout_time)) {
         userdata[resp.user.username] = {
           ...userdata[resp.user.username],
           data: [userdata[resp.user.username].data[0] + 1],
         };
+        const hours = new Date(resp.login_time).getHours()
+        logintimesdata[hours] += 1
+        logouttimesdata[hours] += 1
       }
       }
     });
@@ -120,6 +128,8 @@ const Statistics = () => {
         delete userdata[usr.label];
       }
     });
+    const logs = [{data: logintimesdata, label:"Sisäänkirjautuminen", color:'lightGreen'}, {data: logouttimesdata, label:"Uloskirjoutuminen", color:'red'}]
+    setLogTimesData(logs)
     const realdata = Object.values(userdata);
     realdata.sort(
       (a, b) =>
@@ -224,7 +234,7 @@ const Statistics = () => {
       )}
       </div>
 
-      <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+      <Grid container spacing={2}>
         <Grid item xs={6}>
         <h2>YKV-kirjausten määrä järjestöittäin</h2>
         <PieChart
@@ -233,18 +243,26 @@ const Statistics = () => {
           data: orgStatsData,
         },
         ]}
-        width={400}
-        height={200}
-      />  
+        width={1000}
+        height={500}
+        />  
         </Grid>
         <Grid item xs={6}>
         <h2>YKV-kirjausten määrä käyttäjittäin</h2>
         <BarChart
-        width={500}
-        height={300}
+        width={1000}
+        height={500}
         series={allUserStatsData}
         xAxis={[{ data: ["Käyttäjät"], scaleType: "band" }]}
         />
+        </Grid>
+        <Grid>
+        <h2>YKV-kirjausten määrä tunneittain</h2>
+        <BarChart
+        series={logTimesData || []}
+        width={1000}
+        height={500}
+        /> 
         </Grid>
       </Grid>
 
