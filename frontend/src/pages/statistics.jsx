@@ -137,6 +137,7 @@ const Statistics = () => {
         parseFloat(a.data.reduce((partialSum, a) => partialSum + a, 0)),
     );
     setAllUserStatsData(realdata);
+    console.log(realdata)
   };
 
   const handleCSV = async () => {
@@ -206,7 +207,8 @@ const Statistics = () => {
 
   return (
     <div>
-      <div>
+      <div
+      style={{float: "left"}}>
       <p>Hae aikavälillä</p>
       <input type="hidden" id="timezone" name="timezone" value="03:00" />
       <input
@@ -253,7 +255,8 @@ const Statistics = () => {
         width={1000}
         height={500}
         series={allUserStatsData}
-        xAxis={[{ data: ["Käyttäjät"], scaleType: "band" }]}
+        yAxis={[{ data: [""], scaleType: "band", barGapRatio: 0.1 }]}
+        layout="horizontal"
         />
         </Grid>
         <Grid>
@@ -262,6 +265,7 @@ const Statistics = () => {
         series={logTimesData || []}
         width={1000}
         height={500}
+        borderRadius={5}
         /> 
         </Grid>
       </Grid>
