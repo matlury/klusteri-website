@@ -67,3 +67,5 @@ const DefectList = ({ loggedUser, allDefects, handleRepairClick, handleEmailClic
     );
   }
 };
+
+export default DefectList;
