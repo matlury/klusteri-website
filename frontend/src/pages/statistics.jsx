@@ -1,12 +1,13 @@
 /* istanbul ignore file */
 // this file is ignored in the tests because jest doesn't work with the charts
 import "../index.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import axiosClient from "../axios";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { BarChart } from "@mui/x-charts/BarChart";
-import { CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
+import { getCurrentDateTime } from "../utils/timehelpers";
 
 const API_URL = process.env.API_URL;
 
@@ -16,6 +17,7 @@ const Statistics = () => {
   const [orgStatsData, setOrgStatsData] = useState([]);
   const [allUserStatsData, setAllUserStatsData] = useState([]);
   const [CSVdata, setCSVdata] = useState(null);
+  const [shouldDownload, setShouldDownload] = useState(false);
 
   useEffect(() => {
     getPermission();
@@ -132,11 +134,30 @@ const Statistics = () => {
           ]);
         });
         setCSVdata(data);
+        setShouldDownload(true);
       }
     } catch (error) {
       console.error("Error fetching data", error);
     }
   };
+
+  const CSVDownload = (props) => {
+    const btnRef = useRef(null);
+    useEffect(() => {
+      if (btnRef.current) {
+        btnRef.current.click();
+        setShouldDownload(false);
+      }
+    }, [btnRef]);
+
+    return (
+      <CSVLink {...props}>
+        <span ref={btnRef} />
+      </CSVLink>
+    );
+  };
+
+  const date = getCurrentDateTime();
 
   if (userRole === 5 || userRole == null) {
     return <p>Kirjaudu sisään</p>;
@@ -147,7 +168,13 @@ const Statistics = () => {
       <button type="button" onClick={handleCSV}>
         Lataa CSV-tiedosto tapahtumista
       </button>
-      {CSVdata && <CSVDownload data={CSVdata} target="_blank" />}
+      {shouldDownload && CSVdata && (
+        <CSVDownload
+          data={CSVdata}
+          filename={`klusteri-events-${date}.csv`}
+          target="_blank"
+        />
+      )}
       <h2>YKV-kirjausten määrä järjestöittäin</h2>
       <PieChart
         series={[

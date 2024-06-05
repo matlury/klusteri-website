@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Calendar } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import Button from "@mui/material/Button";
@@ -14,6 +14,8 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
+import { CSVLink } from "react-csv";
+import { getCurrentDateTime } from "../utils/timehelpers";
 
 const ReservationsView = ({
   handleAddNewEventClick,
@@ -34,8 +36,91 @@ const ReservationsView = ({
   handleDeleteEvent,
   moment,
 }) => {
+  const [CSVdata, setCSVdata] = useState(null);
+  const [shouldDownload, setShouldDownload] = useState(false);
+
+  let admin = false;
+  const user = JSON.parse(localStorage.getItem("loggedUser"));
+  if (user) {
+    if (user.role < 3) {
+      admin = true;
+    }
+  }
+
+  const handleCSV = async () => {
+    if (events.length > 0) {
+      const data = [
+        [
+          "START",
+          "END",
+          "ORGANIZER",
+          "TITLE",
+          "DESCRIPTION",
+          "RESPONSIBLE",
+          "ROOM",
+          "OPEN",
+        ],
+      ];
+      events.forEach((e) => {
+        data.push([
+          e.start,
+          e.end,
+          e.organizer,
+          e.title,
+          e.description,
+          e.responsible,
+          e.room,
+          e.open,
+        ]);
+      });
+      setCSVdata(data);
+      setShouldDownload(true);
+    }
+  };
+
+  const date = getCurrentDateTime();
+
+  const CSVDownload = (props) => {
+    const btnRef = useRef(null);
+    useEffect(() => {
+      if (btnRef.current) {
+        btnRef.current.click();
+        setShouldDownload(false);
+      }
+    }, [btnRef]);
+
+    return (
+      <CSVLink {...props}>
+        <span ref={btnRef} />
+      </CSVLink>
+    );
+  };
+
   return (
     <div className="textbox">
+      {admin && (
+        <div className="csv-download-button">
+          <Button
+            id="donwloadCSV"
+            variant="contained"
+            onClick={handleCSV}
+            style={{
+              padding: "7px",
+              margin: "10px",
+              float: "right",
+            }}
+          >
+            Lataa tapahtumat CSV-muodossa
+          </Button>
+          {shouldDownload && CSVdata && (
+            <CSVDownload
+              data={CSVdata}
+              filename={`klusteri-events-${date}.csv`}
+              target="_blank"
+            />
+          )}
+        </div>
+      )}
       <Typography variant="h1" component="h1">
         Varauskalenteri
       </Typography>
