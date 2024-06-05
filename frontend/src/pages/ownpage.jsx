@@ -226,17 +226,18 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   };
 
   // Handles organization detail updates
-  const handleOrganizationDetails = (orgId) => {
+  const handleOrganizationDetails = (organization_new_name, organization_new_email, organization_new_homepage, orgId) => {
+    const confirmUpdate = window.confirm(
+      "Oletko varma, että haluat päivittää organisaatiota?",
+    );
+    
     const newOrganizationObject = {
       name: organization_new_name,
       email: organization_new_email,
       homepage: organization_new_homepage,
-      size: organization_new_size,
     };
-    if (organization_new_size == 0 || organization_new_size == 1) {
-      const confirmUpdate = window.confirm(
-        "Oletko varma, että haluat päivittää organisaatiota?",
-      );
+    //if (organization_new_size == 0 || organization_new_size == 1) {
+
 
       if (confirmUpdate) {
         axiosClient
@@ -254,7 +255,10 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             console.error("Error creating account:", error);
           });
       }
-    } else {
+      else {
+        console.log("User cancelled the update.");
+      }
+      {
       setError("Koko täytyy olla 0 tai 1");
       setTimeout(() => setError(""), 5000);
     }
@@ -579,56 +583,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                   padding: "20px",
                 }}
               >
-                <div id="content">
-                  <h2>Avaimen luovutus</h2>
-                  <form onSubmit={handleKeySubmit}>
-                    <div style={{ height: "20px" }}></div>
-                    <div>
-                      <label htmlFor="selectedUser">
-                        Valitse vastaanottaja:
-                      </label>
-                      <select
-                        id="selectedUser"
-                        name="selectedUser"
-                        value={selectedUser}
-                        onChange={handleSelectUser}
-                        className="select-box"
-                      >
-                        <option value="" disabled selected hidden></option>
-                        {allUsers.map((user) => (
-                          <option key={user.id} value={user.id}>
-                            {user.username} : {user.email}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div style={{ height: "20px" }}></div>
-                    <div>
-                      <label htmlFor="selectedOrganization">
-                        Valitse organisaatio:
-                      </label>
-                      <select
-                        id="selectedOrganization"
-                        name="selectedOrganization"
-                        value={selectedOrganization}
-                        onChange={handleSelectOrganization}
-                        className="select-box"
-                      >
-                        <option value="" disabled selected hidden></option>
-                        {organisations.map((org) => (
-                          <option key={org.id} value={org.name}>
-                            {org.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div style={{ height: "20px" }}></div>
-                    <div style={{ height: "20px" }}></div>
-                    <button type="submit" className="create-user-button">
-                      Luovuta <FaKey style={{ marginLeft: "5px" }} />
-                    </button>
-                  </form>
-                </div>
               </div>
             )}
           </div>
