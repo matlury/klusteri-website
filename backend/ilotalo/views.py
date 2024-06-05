@@ -16,7 +16,7 @@ from .serializers import (
 )
 from .models import User, Organization, Event, NightResponsibility, DefectFault
 from .config import Role
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 
 LEPPISPJ = Role.LEPPISPJ.value
@@ -788,7 +788,7 @@ class RepairDefectFaultView(APIView):
         except ObjectDoesNotExist:
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
         
-        defect_to_update.repaired = datetime.now()
+        defect_to_update.repaired = datetime.now(timezone.utc)
 
         defectfault = DefectFaultSerializer(
             instance=defect_to_update, data=request.data, partial=True
@@ -823,7 +823,7 @@ class EmailDefectFaultView(APIView):
         except ObjectDoesNotExist:
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
         
-        defect_to_update.email_sent = datetime.now()
+        defect_to_update.email_sent = datetime.now(timezone.utc)
 
         defectfault = DefectFaultSerializer(
             instance=defect_to_update, data=request.data, partial=True
