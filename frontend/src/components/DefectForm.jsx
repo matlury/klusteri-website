@@ -27,10 +27,6 @@ const DefectForm = ({ open, handleClose, handleFormSubmit }) => {
     PaperProps={{
       component: "form",
       onSubmit: onSubmit,
-      sx: { 
-        maxWidth: 'lg',
-        width: '35%',
-      }
     }}
 >
       <DialogTitle>Kirjaa vika</DialogTitle>
