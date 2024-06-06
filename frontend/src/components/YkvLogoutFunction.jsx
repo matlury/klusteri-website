@@ -104,9 +104,10 @@ const YkvLogoutFunction = ({
         setactiveUsers(
           userData.filter(
             (resp) =>
-              resp.present === true &&
-              resp.Vastuuhenkilö == loggedUser.username ||
-              resp.created_by == loggedUser.username,
+              resp.present === true 
+              // &&
+              // resp.Vastuuhenkilö == loggedUser.username ||
+              // resp.created_by == loggedUser.username,
           ),
         );
         setLoading(false);
