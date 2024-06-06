@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
 
-// countdown timer for automatic logout (30 minutes), because access tokens are only valid for 30 minutes
-function CountdownTimer({ onExpire }) {
+function CountdownTimer({ onExpire, onExtend }) {
   const initialTime =
-    parseInt(localStorage.getItem("countdownTime"), 10) || 30 * 60; // Read initial time from local storage
+    parseInt(localStorage.getItem("countdownTime"), 10) || 30 * 60; // 30 minutes in seconds
   const [timeLeft, setTimeLeft] = useState(initialTime);
   const [intervalId, setIntervalId] = useState(null); // State to hold the interval ID
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
-    // Timer logic to decrement timeLeft every second
     const id = setInterval(() => {
       setTimeLeft((prevTimeLeft) => {
         if (prevTimeLeft === 0) {
@@ -16,31 +16,62 @@ function CountdownTimer({ onExpire }) {
           onExpire(); // Trigger logout when timer expires
           return 0;
         }
+        if (prevTimeLeft === 5 * 60) { // 5 minutes in seconds
+          setIsDialogOpen(true); // Open the dialog 5 minutes before timeout
+        }
         return prevTimeLeft - 1;
       });
     }, 1000);
 
-    // Save the interval ID to state
     setIntervalId(id);
 
     return () => {
-      clearInterval(intervalId); // Clear the interval on component unmount
+      clearInterval(id);
     };
   }, [onExpire]);
 
-  // Save remaining time to local storage every time it changes
   useEffect(() => {
     localStorage.setItem("countdownTime", timeLeft.toString());
   }, [timeLeft]);
 
-  // Convert seconds to MM:SS format
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
-  return <div>{formatTime(timeLeft)}</div>;
+  const handleExtend = () => {
+    setTimeLeft(30 * 60); // Reset timer to 30 minutes
+    setIsDialogOpen(false); // Close the dialog
+    onExtend(); // Notify parent component that the session was extended
+  };
+
+  const handleSignOut = () => {
+    clearInterval(intervalId); // Stop the timer
+    onExpire(); // Trigger logout
+  };
+
+  return (
+    <div>
+      {formatTime(timeLeft)}
+      <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
+        <DialogTitle>Automaattinen uloskirjaus</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Kirjaamme sinut ulos automaattisesti 5 minuutin kuluttua. Haluatko jatkaa istuntoasi?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleSignOut} color="primary">
+            Kirjaudu ulos
+          </Button>
+          <Button onClick={handleExtend} color="primary" autoFocus>
+            Jatka istuntoa
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
 }
 
 export default CountdownTimer;
