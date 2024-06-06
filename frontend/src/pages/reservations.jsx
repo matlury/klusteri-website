@@ -165,8 +165,8 @@ const MyCalendar = () => {
       }
 
       const newEvent = {
-        start,
-        end,
+        start: new Date(start),
+        end: new Date(end),
         title,
         organizer,
         description,
