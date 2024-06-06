@@ -6,17 +6,17 @@ import axios from "axios";
 import axiosClient from "../axios";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { BarChart } from "@mui/x-charts/BarChart";
-import { LineChart } from '@mui/x-charts/LineChart';
+import { LineChart } from "@mui/x-charts/LineChart";
 import { Grid } from "@mui/material";
 import { CSVLink } from "react-csv";
 import { getCurrentDateTime } from "../utils/timehelpers";
 import Button from "@mui/material/Button";
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import DownloadIcon from '@mui/icons-material/Download';
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
+import DownloadIcon from "@mui/icons-material/Download";
 
 const API_URL = process.env.API_URL;
 
@@ -36,9 +36,9 @@ const Statistics = () => {
   const [columnWidth, setColumnWidth] = useState(6);
   const [widthDivider, setWidthDivider] = useState(2.5);
   const [logsPerWeekDayData, setLogsPerWeekDayData] = useState([]);
-  const [orgMembersData, setOrgMembersData] = useState([])
-  const [orgLateData, setOrgLateData] = useState([])
-  const [pieChartData, setPieChartData] = useState([])
+  const [orgMembersData, setOrgMembersData] = useState([]);
+  const [orgLateData, setOrgLateData] = useState([]);
+  const [pieChartData, setPieChartData] = useState([]);
 
   useEffect(() => {
     getPermission();
@@ -50,7 +50,7 @@ const Statistics = () => {
       processAllUserStats(
         fetchedData.userResponse.data,
         fetchedData.responsibilitiesResponse.data,
-        fetchedData.orgResponse.data
+        fetchedData.orgResponse.data,
       );
     } else if (localStorage.getItem("ACCESS_TOKEN")) {
       fetchData().then(setFetchedData);
@@ -70,7 +70,7 @@ const Statistics = () => {
       processAllUserStats(
         fetchedData.userResponse.data,
         fetchedData.responsibilitiesResponse.data,
-        fetchedData.orgResponse.data
+        fetchedData.orgResponse.data,
       );
     }
   }, [minFilter, maxFilter, fetchedData]);
@@ -142,16 +142,16 @@ const Statistics = () => {
   const processOrgStats = (orgData, responsibilities) => {
     const orgdata = {};
 
-    const orgmemdata = {}
+    const orgmemdata = {};
 
     orgData.forEach((org) => {
       orgdata[org.name] = { value: 0, label: org.name };
-      orgmemdata[org.name] = { value: org.user_set.length, label:org.name }
+      orgmemdata[org.name] = { value: org.user_set.length, label: org.name };
     });
 
-    setOrgMembersData(Object.values(orgmemdata))
+    setOrgMembersData(Object.values(orgmemdata));
 
-    setPieChartData(Object.values(orgmemdata))
+    setPieChartData(Object.values(orgmemdata));
 
     responsibilities.forEach((resp) => {
       resp.organizations.forEach((org) => {
@@ -170,8 +170,8 @@ const Statistics = () => {
   const processAllUserStats = (users, responsibilities, orgdata) => {
     const userdata = {};
 
-    const latedata = {}
-    
+    const latedata = {};
+
     const logintimesdata = new Array(24).fill(0);
     const logouttimesdata = new Array(24).fill(0);
 
@@ -181,7 +181,7 @@ const Statistics = () => {
 
     orgdata.forEach((org) => {
       latedata[org.name] = { value: 0, label: org.name };
-    })
+    });
     users.forEach((usr) => {
       userdata[usr.username] = { data: [0], label: usr.username };
     });
@@ -202,14 +202,14 @@ const Statistics = () => {
 
           if (resp.late) {
             resp.organizations.forEach((org) => {
-              latedata[org.name].value += 1
-            })
+              latedata[org.name].value += 1;
+            });
           }
         }
       }
     });
 
-    setOrgLateData(Object.values(latedata))
+    setOrgLateData(Object.values(latedata));
 
     Object.values(userdata).forEach((usr) => {
       if (usr.data.reduce((partialSum, a) => partialSum + a, 0) === 0) {
@@ -223,11 +223,12 @@ const Statistics = () => {
         color: "lightGreen",
         showMark: ({ index }) => index === -1,
       },
-      { data: logouttimesdata, 
-        label: "Uloskirjautuminen", 
+      {
+        data: logouttimesdata,
+        label: "Uloskirjautuminen",
         color: "red",
-        showMark: ({ index }) => index === -1 ,
-      }
+        showMark: ({ index }) => index === -1,
+      },
     ];
     setLogTimesData(logs);
 
@@ -306,11 +307,11 @@ const Statistics = () => {
 
   const handleChange = (event) => {
     if (event.target.value == 1) {
-      setPieChartData(orgMembersData)
+      setPieChartData(orgMembersData);
     } else if (event.target.value == 2) {
-      setPieChartData(orgStatsData)
+      setPieChartData(orgStatsData);
     } else if (event.target.value == 3) {
-      setPieChartData(orgLateData)
+      setPieChartData(orgLateData);
     }
   };
 
@@ -339,8 +340,12 @@ const Statistics = () => {
         </Grid>
         <Grid item xs={columnWidth}>
           <div style={{ float: "right" }}>
-            <Button type="button" variant="contained" onClick={handleCSV}
-            startIcon={<DownloadIcon />}>
+            <Button
+              type="button"
+              variant="contained"
+              onClick={handleCSV}
+              startIcon={<DownloadIcon />}
+            >
               Lataa CSV-tiedosto tapahtumista
             </Button>
             {shouldDownload && CSVdata && (
@@ -353,31 +358,43 @@ const Statistics = () => {
           </div>
         </Grid>
         <Grid item xs={columnWidth}>
-        <h2>Järjestötilastot</h2>
-        <FormControl>
-          <FormLabel id="radio-buttons-group" />
-          <RadioGroup
-            row
-            aria-labelledby="radio-buttons-group"
-            name="radio-buttons-group"
-            defaultValue="1"
-            onChange={handleChange}
-          >
-            <FormControlLabel value="1" control={<Radio />} label="Avainten määrä järjestöittäin" />
-            <FormControlLabel value="2" control={<Radio />} label="YKV-kirjausten määrä järjestöittäin" />
-            <FormControlLabel value="3" control={<Radio />} label="Myöhäisten YKV-kirjausten määrä järjestöittäin" />
-          </RadioGroup>
+          <h2>Järjestötilastot</h2>
+          <FormControl>
+            <FormLabel id="radio-buttons-group" />
+            <RadioGroup
+              row
+              aria-labelledby="radio-buttons-group"
+              name="radio-buttons-group"
+              defaultValue="1"
+              onChange={handleChange}
+            >
+              <FormControlLabel
+                value="1"
+                control={<Radio />}
+                label="Avainten määrä järjestöittäin"
+              />
+              <FormControlLabel
+                value="2"
+                control={<Radio />}
+                label="YKV-kirjausten määrä järjestöittäin"
+              />
+              <FormControlLabel
+                value="3"
+                control={<Radio />}
+                label="Myöhäisten YKV-kirjausten määrä järjestöittäin"
+              />
+            </RadioGroup>
           </FormControl>
           <PieChart
             series={[
               {
-                data: pieChartData
-              }
+                data: pieChartData,
+              },
             ]}
             width={winWidth / widthDivider}
             height={winHeight / 2.6}
-        />
-        </Grid> 
+          />
+        </Grid>
         <Grid item xs={columnWidth}>
           <h2>YKV-kirjausten määrä käyttäjittäin</h2>
           <BarChart
