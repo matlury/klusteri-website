@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import OrganizationDetails from "./OrganizationDetails";
 import axiosClient from "../axios.js";
 import { DataGrid } from "@mui/x-data-grid";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
@@ -9,15 +8,12 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
 } from "@mui/material";
 
 const OrganisationPage = ({
-  selectedOrg,
   hasPermissionOrg,
   handleOrganizationDetails,
-  hasPermission,
   handleDeleteOrganization
 
 }) => {
