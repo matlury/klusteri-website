@@ -5,26 +5,22 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-export default function OrgSelect({data}) {
-  const [org, setOrg] = React.useState('');
-
-  const handleChange = (event) => {
-    setOrg(event.target.value);
-  };
+export default function OrgSelect({data, value, handleChange}) {
 
   return (
     <Box sx={{ minWidth: 120 }}>
       <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">Järjestö</InputLabel>
+        <InputLabel id="demo-simple-select-label">Järjestäjä</InputLabel>
         <Select
-          labelId="organization-select-label"
-          id="organization-simple-select"
-          value={org}
-          label="Järjestö"
+          id="organizerName"
+          value={value}
+          label="Järjestäjä"
           onChange={handleChange}
         >
           {data.map((organization) => (
-            <MenuItem value={organization}>{organization.name}</MenuItem>
+            <MenuItem key={organization} value={organization.id}>
+            {organization.name}
+          </MenuItem>
           ))}
         </Select>
       </FormControl>

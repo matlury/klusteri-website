@@ -20,12 +20,11 @@ const localizer = momentLocalizer(moment);
 
 moment.locale("fi");
 
-const organization_data = (await axiosClient.get("/listobjects/organizations/")).data;
-
 // The main calendar component
 const MyCalendar = () => {
   // State variables for event data and modals
   const [events, setEvents] = useState([]);
+  const [organizations, setOrganizations] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [eventDetails, setEventDetails] = useState({
@@ -62,6 +61,22 @@ const MyCalendar = () => {
       })
       .catch((error) => {
         console.error("Virhe tapahtumien hakemisessa:", error);
+      });
+  };
+
+  useEffect(() => {
+    getOrganizations();
+  }, []);
+
+  const getOrganizations = () => {
+    axios
+      .get(`${API_URL}/api/listobjects/organizations/`)
+      .then((response) => {
+        const organizations = response.data;
+        setOrganizations(organizations);
+      })
+      .catch((error) => {
+        console.error("Virhe järjestöjen hakemisessa:", error);
       });
   };
 
@@ -203,8 +218,6 @@ const MyCalendar = () => {
         .catch((error) => {
           console.error("Virhe tapahtuman poistamisessa:", error);
         });
-    } else {
-      console.log("ei id:tä");
     }
   };
 
@@ -272,7 +285,7 @@ const MyCalendar = () => {
       selectedEvent={selectedEvent}
       handleDeleteEvent={handleDeleteEvent}
       moment={moment}
-      organization_data={organization_data}
+      organizations={organizations}
     />
   );
 };

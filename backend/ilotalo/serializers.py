@@ -136,7 +136,14 @@ class UserNoPasswordSerializer(serializers.ModelSerializer):
 class EventSerializer(serializers.ModelSerializer):
     """Serializes an Event object as JSON"""
 
-    organizer = OrganizationSerializer(many=True, read_only=True)
+    organizer = OrganizationSerializer(read_only=True)
+
+    class Meta:
+        model = Event
+        fields = '__all__'
+
+class CreateEventSerializer(serializers.ModelSerializer):
+    """Serializes an Event object as JSON"""
 
     class Meta:
         model = Event
