@@ -112,6 +112,8 @@ const AllUsers = ({
         <Button
           variant="contained"
           color="primary"
+          className="modify_user"
+          id="modify_user"
           onClick={() => toggleUserDetails(params.id)}
         >
           <EditOutlinedIcon />
@@ -189,7 +191,10 @@ const AllUsers = ({
                         }}
                         renderInput={(params) => <TextField {...params} label="Valitse organisaatio" />}
                       />
-                      <Button variant="contained" onClick={() => handleKeySubmit(userDetailsId, selectedOrganization.Organisaatio)}>Luovuta avain</Button>
+                      <Button 
+                      variant="contained"
+                      className="submit-key-button" 
+                      onClick={() => handleKeySubmit(userDetailsId, selectedOrganization.Organisaatio)}>Luovuta avain</Button>
                     </AccordionDetails>
             </Accordion>
 

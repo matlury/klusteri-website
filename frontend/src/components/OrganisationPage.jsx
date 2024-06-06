@@ -89,6 +89,8 @@ const OrganisationPage = ({
         <Button
           variant="contained"
           color="primary"
+          className="modify_org"
+          id="modify_org"
           onClick={() => toggleOrgDetails(params.id)}
         >
           <EditOutlinedIcon />
@@ -150,6 +152,8 @@ const OrganisationPage = ({
             type="submit"
             variant="contained"
             color="primary"
+            id="confirm_org_change"
+            className="confirm_org_change"
           >
             Vahvista muutokset
           </Button>
