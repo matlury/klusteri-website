@@ -69,11 +69,16 @@ const OrganisationPage = ({
       .catch((error) => console.error(error));
   }, []);
 
-   const handleFormSubmit = (event) => {
+  const handleFormSubmit = (event) => {
      event.preventDefault();
      handleOrganizationDetails(organisation_new_name, organisation_new_email, organisation_new_homepage, organisation_id);
      handleClose();
    };
+
+  const handleDelete = (organisation_id) => {
+    handleDeleteOrganization(organisation_id);
+    handleClose();
+  }
 
   const columns = [
     {
@@ -91,7 +96,7 @@ const OrganisationPage = ({
       ),
     },
     { field: "Organisaatio", headerName: "Nimi", width: 150 },
-    { field: "Kotisivu", headerName: "Kotisivu", width: 200 },
+    { field: "kotisivu", headerName: "Kotisivu", width: 200 },
     { field: "email", headerName: "Sähköposti", width: 200 },
     { field: "Avaimia", headerName: "Avaimia", width: 80 },    
   ];
@@ -107,6 +112,7 @@ const OrganisationPage = ({
           rowsPerPageOptions={[5, 10, 20]}
         />
       </div>
+     {hasPermissionOrg === true && (
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Muokkaa järjestöä</DialogTitle>
         <DialogContent>
@@ -147,12 +153,20 @@ const OrganisationPage = ({
           >
             Vahvista muutokset
           </Button>
+          <Button 
+            variant="contained"
+            color="secondary"
+            className="delete-org-button"
+            onClick={() => handleDelete(organisation_id)}
+            >Poista järjestö
+            </Button>
         </DialogActions>
         </form> 
         </DialogContent>
       </Dialog>
-    </div>
-  );
+       )}
+      </div>
+  )
 };
 
 
