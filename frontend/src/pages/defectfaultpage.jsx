@@ -103,12 +103,12 @@ const DefectFault = ({
     axiosClient
       .put(`defects/email_defect/${id}/`, {})
       .then((response) => {
-        setSuccess("Sähköpostin lähetys onnistui");
+        setSuccess("Merkitseminen lähetetyksi onnistui");
         setTimeout(() => setSuccess(""), 5000);
         fetchDefects();
       })
       .catch((error) => {
-        setError("Sähköpostin lähetys epäonnistui");
+        setError("Merkitseminen lähetetyksi epäonnistui");
         setTimeout(() => setError(""), 5000);
       });
   };
@@ -163,18 +163,6 @@ const DefectFault = ({
       })
       .catch((error) => console.error(error));
   };
-
-  const fetchActiveDefects= () =>
-    axiosClient
-      .get(`listobjects/defects/`)
-      .then((response) => {
-        setAllDefects(response.data);
-        const active = response.data.filter((item) => item.repaired === null);
-        setActiveDefects(active);
-      })
-      .catch((error) => {
-        console.error("Error fetching defects", error);
-      });
 
   return (
     <div className="textbox">
