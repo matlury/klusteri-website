@@ -9,7 +9,6 @@ class UserTestCase(TestCase):
             name="TKO-äly",
             email="tko@aly.fi",
             homepage="tekis.fi",
-            size=1,
         )
         self.user = User.objects.create(
             username="admin",
@@ -34,7 +33,6 @@ class OrganizationTestCase(TestCase):
             name="TKO-äly",
             email="tko@aly.fi",
             homepage="tekis.fi",
-            size=1,
         )
 
     # Testing the creation of a NightResponsibility object and the correctness of its attributes
@@ -52,7 +50,6 @@ class NightResponsibilityTestCase(TestCase):
             name="TKO-äly",
             email="tko@aly.fi",
             homepage="tekis.fi",
-            size=1,
         )
         self.user = User.objects.create(
             username="admin",
