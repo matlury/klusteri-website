@@ -9,18 +9,6 @@ const DefectFault = ({
   isLoggedIn: propIsLoggedIn,
   loggedUser: propLoggedUser,
 }) => {
-  
-  useEffect(() => {
-    setIsLoggedIn(propIsLoggedIn);
-    if (propIsLoggedIn) {
-      const storedUser = JSON.parse(localStorage.getItem("loggedUser"));
-      if (storedUser) {
-        setLoggedUser(storedUser);
-      }
-    }
-    
-  }, [propIsLoggedIn]);
-
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
   const [loggedUser, setLoggedUser] = useState(propLoggedUser);
   const [open, setOpen] = useState(false);
@@ -33,6 +21,26 @@ const DefectFault = ({
   const [buttonPopup, setButtonPopup] = useState(false);
   const [confirmRepairOpen, setConfirmRepairOpen] = useState(false);
   const [confirmEmailOpen, setConfirmEmailOpen] = useState(false);
+
+  useEffect(() => {
+    setIsLoggedIn(propIsLoggedIn);
+    if (propIsLoggedIn) {
+      const storedUser = JSON.parse(localStorage.getItem("loggedUser"));
+      if (storedUser) {
+        setLoggedUser(storedUser);
+      }
+    }
+    
+  }, [propIsLoggedIn]);
+
+  useEffect(() => {
+    if (isLoggedIn && loggedUser) {
+      fetchDefects();
+      fetchActiveDefects();
+      console.log(fixedDefects)
+    }
+  }, []);
+
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -75,6 +83,7 @@ const DefectFault = ({
         setSuccess("Vian korjaus onnistui");
         setTimeout(() => setSuccess(""), 5000);
         fetchDefects();
+        fetchActiveDefects();
       })
       .catch((error) => {
         setError("Vian korjaus epäonnistui");
@@ -90,6 +99,7 @@ const DefectFault = ({
         setSuccess("Sähköpostin lähetys onnistui");
         setTimeout(() => setSuccess(""), 5000);
         fetchDefects();
+        fetchActiveDefects();
       })
       .catch((error) => {
         setError("Sähköpostin lähetys epäonnistui");
@@ -140,7 +150,7 @@ const DefectFault = ({
         setFixedDefects(
           defectData.filter(
             (resp) =>
-              resp.repaired != null
+              resp.repaired === "Ei"
           ),
         );
         setLoading(false);
@@ -148,11 +158,18 @@ const DefectFault = ({
       .catch((error) => console.error(error));
   };
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      fetchDefects();
-    }
-  }, []);
+  const fetchActiveDefects= () =>
+    axiosClient
+      .get(`listobjects/defects/`)
+      .then((response) => {
+        setAllDefects(response.data);
+        console.log(fixedDefects)
+        const active = response.data.filter((item) => item.repaired === null);
+        setFixedDefects(active);
+      })
+      .catch((error) => {
+        console.error("Error fetching defects", error);
+      });
 
   return (
     <div className="textbox">
@@ -173,9 +190,13 @@ const DefectFault = ({
             </Button>
             <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
           </React.Fragment>
-
         <React.Fragment>
-          <DefectList loggedUser={loggedUser} allDefects={allDefects} fixedDefects={fixedDefects} handleRepairClick={handleRepairClick} handleEmailClick={handleEmailClick}/>
+          <DefectList 
+            loggedUser={loggedUser} 
+            allDefects={allDefects} 
+            fixedDefects={fixedDefects} 
+            handleRepairClick={handleRepairClick} 
+            handleEmailClick={handleEmailClick}/>
           <RepairConfirmDialog
             open={confirmRepairOpen}
             handleConfirmClose={handleConfirmRepairClose}
