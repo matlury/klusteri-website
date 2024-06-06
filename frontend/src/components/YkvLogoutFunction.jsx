@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { lighten, styled } from '@mui/material/styles';
+import { lighten, darken, styled } from '@mui/material/styles';
 import CheckIcon from '@mui/icons-material/Check';
 
 const YkvLogoutFunction = ({
@@ -28,44 +28,18 @@ const YkvLogoutFunction = ({
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [selectedUserName, setSelectedUserName] = useState("");
   const [search, setSearch] = useState("");
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleConfirmClose = () => {
-    setConfirmOpen(false);
-  };
-
-  const [activeUsers, setactiveUsers] = useState([]);
+  const [activeUsers, setActiveUsers] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const handleRemove = (id) => {
-    handleYkvLogout(id);
-    setactiveUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
-    setConfirmOpen(false);
-  };
+  const handleClickOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const handleConfirmClose = () => setConfirmOpen(false);
 
-  const handleLogoutClick = (id, name) => {
-    setSelectedUserId(id);
-    setSelectedUserName(name);
-    setConfirmOpen(true);
-  };
-
-  const getBackgroundColor = (color) =>
-    lighten(color, 0.7);
-  
-  const getHoverBackgroundColor = (color) =>
-    lighten(color, 0.6);
-
+  const getBackgroundColor = (color) => lighten(color, 0.7);
+  const getHoverBackgroundColor = (color) => lighten(color, 0.6);
   const getSelectedBackgroundColor = (color, mode) =>
     mode === 'dark' ? darken(color, 0.5) : lighten(color, 0.5);
-  
   const getSelectedHoverBackgroundColor = (color, mode) =>
     mode === 'dark' ? darken(color, 0.4) : lighten(color, 0.4);
 
@@ -73,42 +47,26 @@ const YkvLogoutFunction = ({
     '& .late': {
       backgroundColor: getBackgroundColor(theme.palette.error.main),
       transition: 'background-color 0.1s ease',
-      '&:hover': {
-        backgroundColor: getHoverBackgroundColor(theme.palette.error.main),
-      },
+      '&:hover': { backgroundColor: getHoverBackgroundColor(theme.palette.error.main) },
       '&.Mui-selected': {
-        backgroundColor: getSelectedBackgroundColor(theme.palette.error.main),
-        '&:hover': {
-          backgroundColor: getSelectedHoverBackgroundColor(theme.palette.error.main),
-        },
+        backgroundColor: getSelectedBackgroundColor(theme.palette.error.main, theme.palette.mode),
+        '&:hover': { backgroundColor: getSelectedHoverBackgroundColor(theme.palette.error.main, theme.palette.mode) },
       },
     },
     '& .on-time': {
       backgroundColor: getBackgroundColor(theme.palette.success.main),
       transition: 'background-color 0.1s ease',
-      '&:hover': {
-        backgroundColor: getHoverBackgroundColor(theme.palette.success.main),
-      },
+      '&:hover': { backgroundColor: getHoverBackgroundColor(theme.palette.success.main) },
       '&.Mui-selected': {
-        backgroundColor: getSelectedBackgroundColor(theme.palette.success.main),
-        '&:hover': {
-          backgroundColor: getSelectedHoverBackgroundColor(theme.palette.success.main),
-        },
+        backgroundColor: getSelectedBackgroundColor(theme.palette.success.main, theme.palette.mode),
+        '&:hover': { backgroundColor: getSelectedHoverBackgroundColor(theme.palette.success.main, theme.palette.mode) },
       },
     },
   }));
 
   const columns = [
-    {
-      field: "actions",
-      headerName: "Uloskirjaus",
-      width: 90,
-      renderCell: (params) => (
-        <Button
-          variant="outlined"
-          onClick={() => handleLogoutClick(params.id, params.row.Vastuussa)}
-          id="removeresp"
-        >
+    { field: "actions", headerName: "Uloskirjaus", width: 90, renderCell: (params) => (
+        <Button variant="outlined" onClick={() => handleLogoutClick(params.id, params.row.Vastuussa)} id="removeresp">
           <LogoutOutlinedIcon />
         </Button>
       ),
@@ -127,37 +85,27 @@ const YkvLogoutFunction = ({
     { field: "logout_time", headerName: "Uloskirjaus", width: 200 },
     { field: "Organisaatiot", headerName: "Järjestöt", width: 200 },
     { field: "late", headerName: "Myöhässä", width: 200, renderCell: (params) => (
-      params.row.late ? <AccessTimeIcon /> : <CheckIcon />
-    ) },
+        params.row.late ? <AccessTimeIcon /> : <CheckIcon />
+      ),
+    },
   ];
 
   useEffect(() => {
-    axiosClient
-      .get("/listobjects/nightresponsibilities/")
+    axiosClient.get("/listobjects/nightresponsibilities/")
       .then((res) => {
-        const userData = res.data.map((u, index) => ({
-          id: u.id, // DataGrid requires a unique 'id' for each row
+        const userData = res.data.map((u) => ({
+          id: u.id,
           Vastuuhenkilö: u.user.username,
           Vastuussa: u.responsible_for,
-          YKV_sisäänkirjaus: new Date(u.login_time), // Assuming login_time is available
-          Organisaatiot: u.organizations.map(
-            (organization) => organization.name,
-          ), // Assuming login_time is available
+          YKV_sisäänkirjaus: new Date(u.login_time),
+          Organisaatiot: u.organizations.map((organization) => organization.name),
           present: u.present,
           created_by: u.created_by,
           logout_time: u.present ? null : new Date(u.logout_time),
           late: u.late,        
         }));
         setAllUsers(userData);
-        setactiveUsers(
-          userData.filter(
-            (resp) =>
-              resp.present === true 
-              // &&
-              // resp.Vastuuhenkilö == loggedUser.username ||
-              // resp.created_by == loggedUser.username,
-          ),
-        );
+        setActiveUsers(userData.filter((resp) => resp.present === true));
         setLoading(false);
       })
       .catch((error) => console.error(error));
@@ -169,31 +117,24 @@ const YkvLogoutFunction = ({
     const formJson = Object.fromEntries(formData.entries());
     const email = formJson.email;
     console.log(email);
-    handleYkvLogin(); // Call handleYkvLogin if needed
-    handleClose(); // Close the dialog
+    handleYkvLogin();
+    handleClose();
   };
 
-  const filteredUsers = allUsers.filter(
-    (user) =>
-      user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
-      user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase()),
+  const filteredUsers = allUsers.filter((user) =>
+    user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
+    user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase())
   );
 
-  const ownUsers = allUsers
-    .filter(
-      (user) =>
-        user.Vastuuhenkilö === loggedUser.username ||
-        user.created_by === loggedUser.username,
-    )
-    .filter(
-      (user) =>
-        user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
-        user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase()),
-    );
+  const ownUsers = allUsers.filter(
+    (user) => user.Vastuuhenkilö === loggedUser.username ||
+              user.created_by === loggedUser.username
+  ).filter((user) =>
+    user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
+    user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase())
+  );
 
-  const getRowClassName = (params) => {
-    return params.row.late ? 'late' : 'on-time';
-  };
+  const getRowClassName = (params) => params.row.late ? 'late' : 'on-time';
 
   return loading ? (
     <div>Lataa...</div>
@@ -201,29 +142,11 @@ const YkvLogoutFunction = ({
     <div style={{ height: 600, width: "100%" }}>
       <h2>Aktiiviset</h2>
       <React.Fragment>
-        <Button
-          variant="contained"
-          className="login-button"
-          color="primary"
-          onClick={handleClickOpen}
-          data-testid="opencreateform"
-        >
-          + Ota vastuu
-        </Button>
-
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          PaperProps={{
-            component: "form",
-            onSubmit: handleFormSubmit,
-          }}
-        >
+        <Button variant="contained" className="login-button" color="primary" onClick={handleClickOpen} data-testid="opencreateform">+ Ota vastuu</Button>
+        <Dialog open={open} onClose={handleClose} PaperProps={{ component: "form", onSubmit: handleFormSubmit }}>
           <DialogTitle>Ota vastuu</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              Kirjaa sisään YKV-valvontaan henkilöitä ja ota vastuu.
-            </DialogContentText>
+            <DialogContentText>Kirjaa sisään YKV-valvontaan henkilöitä ja ota vastuu.</DialogContentText>
             <TextField
               autoFocus
               required
@@ -237,7 +160,6 @@ const YkvLogoutFunction = ({
               onChange={(e) => setResponsibility(e.target.value)}
               data-testid="responsibilityfield"
             />
-
             <Autocomplete
               id="combo-box-demo"
               options={allUsers}
@@ -305,7 +227,7 @@ const YkvLogoutFunction = ({
         </div>
       )}
 
-      {loggedUser.role !== 1 && loggedUser.role !== 5 && (
+      {(loggedUser.role !== 1 && loggedUser.role !== 5) && (
         <div>
           <h2>Omat vastuut</h2>
           <StyledDataGrid
@@ -335,3 +257,4 @@ const YkvLogoutFunction = ({
 };
 
 export default YkvLogoutFunction;
+
