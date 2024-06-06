@@ -9,8 +9,6 @@ const CreateOrganization = ({
   setOrganizationEmail,
   organization_homepage,
   setOrganizationHomePage,
-  organization_size,
-  setOrganizationSize,
   handleCreateOrganization,
 }) => {
   return (

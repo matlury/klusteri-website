@@ -8,7 +8,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Autocomplete,
 } from "@mui/material";
@@ -59,7 +58,6 @@ const AllUsers = ({
     setuserDetailsOrganizations(showThisUser.Jäsenyydet.join(", "))
     handleClickOpen();
   };
-
 
   useEffect(() => {
     axiosClient
