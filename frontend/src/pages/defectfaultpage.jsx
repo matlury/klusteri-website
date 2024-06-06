@@ -169,7 +169,6 @@ const DefectFault = ({
       .get(`listobjects/defects/`)
       .then((response) => {
         setAllDefects(response.data);
-        console.log(activeDefects)
         const active = response.data.filter((item) => item.repaired === null);
         setActiveDefects(active);
       })
