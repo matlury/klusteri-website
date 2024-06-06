@@ -307,7 +307,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           axiosClient
             .post("organizations/create", organizationObject)
             .then((response) => {
-              console.log(response);
               console.log("Organization created successfully!");
               setSuccess("Järjestö luotu onnistuneesti!");
               setTimeout(() => setSuccess(""), 5000);

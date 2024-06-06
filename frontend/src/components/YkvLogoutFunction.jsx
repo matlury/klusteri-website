@@ -119,7 +119,6 @@ const YkvLogoutFunction = ({
     const formData = new FormData(event.currentTarget);
     const formJson = Object.fromEntries(formData.entries());
     const email = formJson.email;
-    console.log(email);
     handleYkvLogin(); // Call handleYkvLogin if needed
     handleClose(); // Close the dialog
   };

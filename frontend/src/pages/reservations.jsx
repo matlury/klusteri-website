@@ -207,7 +207,6 @@ const MyCalendar = () => {
 
   // Handles deleting an event with the event id
   const handleDeleteEvent = (eventId) => {
-    console.log(selectedEvent);
     if (eventId) {
       axiosClient
         .delete(`events/delete_event/${eventId}/`)
