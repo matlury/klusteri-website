@@ -11,6 +11,12 @@ import { Grid } from "@mui/material";
 import { CSVLink } from "react-csv";
 import { getCurrentDateTime } from "../utils/timehelpers";
 import Button from "@mui/material/Button";
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import DownloadIcon from '@mui/icons-material/Download';
 
 const API_URL = process.env.API_URL;
 
@@ -31,6 +37,8 @@ const Statistics = () => {
   const [widthDivider, setWidthDivider] = useState(2.5);
   const [logsPerWeekDayData, setLogsPerWeekDayData] = useState([]);
   const [orgMembersData, setOrgMembersData] = useState([])
+  const [orgLateData, setOrgLateData] = useState([])
+  const [pieChartData, setPieChartData] = useState([])
 
   useEffect(() => {
     getPermission();
@@ -42,6 +50,7 @@ const Statistics = () => {
       processAllUserStats(
         fetchedData.userResponse.data,
         fetchedData.responsibilitiesResponse.data,
+        fetchedData.orgResponse.data
       );
     } else if (localStorage.getItem("ACCESS_TOKEN")) {
       fetchData().then(setFetchedData);
@@ -61,6 +70,7 @@ const Statistics = () => {
       processAllUserStats(
         fetchedData.userResponse.data,
         fetchedData.responsibilitiesResponse.data,
+        fetchedData.orgResponse.data
       );
     }
   }, [minFilter, maxFilter, fetchedData]);
@@ -141,6 +151,8 @@ const Statistics = () => {
 
     setOrgMembersData(Object.values(orgmemdata))
 
+    setPieChartData(Object.values(orgmemdata))
+
     responsibilities.forEach((resp) => {
       resp.organizations.forEach((org) => {
         if (filtering(resp.login_time, resp.logout_time)) {
@@ -155,8 +167,10 @@ const Statistics = () => {
     setOrgStatsData(realdata);
   };
 
-  const processAllUserStats = (users, responsibilities) => {
+  const processAllUserStats = (users, responsibilities, orgdata) => {
     const userdata = {};
+
+    const latedata = {}
     
     const logintimesdata = new Array(24).fill(0);
     const logouttimesdata = new Array(24).fill(0);
@@ -165,6 +179,9 @@ const Statistics = () => {
 
     const numberdayweek = [6, 0, 1, 2, 3, 4, 5];
 
+    orgdata.forEach((org) => {
+      latedata[org.name] = { value: 0, label: org.name };
+    })
     users.forEach((usr) => {
       userdata[usr.username] = { data: [0], label: usr.username };
     });
@@ -182,9 +199,18 @@ const Statistics = () => {
 
           const day = new Date(resp.login_time).getDay();
           lpddata[numberdayweek[day]] += 1;
+
+          if (resp.late) {
+            resp.organizations.forEach((org) => {
+              latedata[org.name].value += 1
+            })
+          }
         }
       }
     });
+
+    setOrgLateData(Object.values(latedata))
+
     Object.values(userdata).forEach((usr) => {
       if (usr.data.reduce((partialSum, a) => partialSum + a, 0) === 0) {
         delete userdata[usr.label];
@@ -278,6 +304,16 @@ const Statistics = () => {
 
   const date = getCurrentDateTime();
 
+  const handleChange = (event) => {
+    if (event.target.value == 1) {
+      setPieChartData(orgMembersData)
+    } else if (event.target.value == 2) {
+      setPieChartData(orgStatsData)
+    } else if (event.target.value == 3) {
+      setPieChartData(orgLateData)
+    }
+  };
+
   if (userRole === 5 || userRole == null) {
     return <p>Kirjaudu sisään</p>;
   }
@@ -303,7 +339,8 @@ const Statistics = () => {
         </Grid>
         <Grid item xs={columnWidth}>
           <div style={{ float: "right" }}>
-            <Button type="button" variant="contained" onClick={handleCSV}>
+            <Button type="button" variant="contained" onClick={handleCSV}
+            startIcon={<DownloadIcon />}>
               Lataa CSV-tiedosto tapahtumista
             </Button>
             {shouldDownload && CSVdata && (
@@ -316,29 +353,31 @@ const Statistics = () => {
           </div>
         </Grid>
         <Grid item xs={columnWidth}>
-        <h2>Avainten määrä järjestöittäin</h2>
+        <h2>Järjestötilastot</h2>
+        <FormControl>
+          <FormLabel id="radio-buttons-group" />
+          <RadioGroup
+            row
+            aria-labelledby="radio-buttons-group"
+            name="radio-buttons-group"
+            defaultValue="1"
+            onChange={handleChange}
+          >
+            <FormControlLabel value="1" control={<Radio />} label="Avainten määrä järjestöittäin" />
+            <FormControlLabel value="2" control={<Radio />} label="YKV-kirjausten määrä järjestöittäin" />
+            <FormControlLabel value="3" control={<Radio />} label="Myöhäisten YKV-kirjausten määrä järjestöittäin" />
+          </RadioGroup>
+          </FormControl>
           <PieChart
             series={[
               {
-                data: orgMembersData
+                data: pieChartData
               }
             ]}
             width={winWidth / widthDivider}
             height={winHeight / 2.6}
         />
-        </Grid>
-        <Grid item xs={columnWidth}>
-          <h2>YKV-kirjausten määrä järjestöittäin</h2>
-          <PieChart
-            series={[
-              {
-                data: orgStatsData
-              }
-            ]}
-            width={winWidth / widthDivider}
-            height={winHeight / 2.6}
-          />
-        </Grid>
+        </Grid> 
         <Grid item xs={columnWidth}>
           <h2>YKV-kirjausten määrä käyttäjittäin</h2>
           <BarChart

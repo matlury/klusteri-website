@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { CSVLink } from "react-csv";
 import { getCurrentDateTime } from "../utils/timehelpers";
+import DownloadIcon from '@mui/icons-material/Download';
 
 const ReservationsView = ({
   handleAddNewEventClick,
@@ -109,6 +110,7 @@ const ReservationsView = ({
               margin: "10px",
               float: "right",
             }}
+            startIcon={<DownloadIcon />}
           >
             Lataa tapahtumat CSV-muodossa
           </Button>
