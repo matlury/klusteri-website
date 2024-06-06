@@ -20,6 +20,8 @@ const localizer = momentLocalizer(moment);
 
 moment.locale("fi");
 
+const organization_data = (await axiosClient.get("/listobjects/organizations/")).data;
+
 // The main calendar component
 const MyCalendar = () => {
   // State variables for event data and modals
@@ -270,6 +272,7 @@ const MyCalendar = () => {
       selectedEvent={selectedEvent}
       handleDeleteEvent={handleDeleteEvent}
       moment={moment}
+      organization_data={organization_data}
     />
   );
 };

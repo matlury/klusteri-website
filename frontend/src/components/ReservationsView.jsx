@@ -14,6 +14,7 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
+import OrgSelect from "./OrganizationChooseBox";
 
 const ReservationsView = ({
   handleAddNewEventClick,
@@ -33,6 +34,7 @@ const ReservationsView = ({
   selectedEvent,
   handleDeleteEvent,
   moment,
+  organization_data,
 }) => {
   return (
     <div className="textbox">
@@ -129,6 +131,9 @@ const ReservationsView = ({
               onChange={handleInputChange}
               fullWidth
               margin="normal"
+            />
+            <OrgSelect
+              data={organization_data}
             />
             <TextField
               id="responsibleName"
