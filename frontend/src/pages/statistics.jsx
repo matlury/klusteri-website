@@ -28,7 +28,8 @@ const Statistics = () => {
   const [winWidth, setWinWidth] = useState(window.innerWidth);
   const [columnWidth, setColumnWidth] = useState(6);
   const [widthDivider, setWidthDivider] = useState(2.5);
-  const [logsPerWeekDayData, setLogsPerWeekDayData] = useState(null);
+  const [logsPerWeekDayData, setLogsPerWeekDayData] = useState([]);
+  const [orgMembersData, setOrgMembersData] = useState([])
 
   useEffect(() => {
     getPermission();
@@ -129,9 +130,16 @@ const Statistics = () => {
 
   const processOrgStats = (orgData, responsibilities) => {
     const orgdata = {};
+
+    const orgmemdata = {}
+
     orgData.forEach((org) => {
       orgdata[org.name] = { value: 0, label: org.name };
+      orgmemdata[org.name] = { value: org.user_set.length, label:org.name }
     });
+
+    setOrgMembersData(Object.values(orgmemdata))
+
     responsibilities.forEach((resp) => {
       resp.organizations.forEach((org) => {
         if (filtering(resp.login_time, resp.logout_time)) {
@@ -148,7 +156,7 @@ const Statistics = () => {
 
   const processAllUserStats = (users, responsibilities) => {
     const userdata = {};
-
+    
     const logintimesdata = new Array(24).fill(0);
     const logouttimesdata = new Array(24).fill(0);
 
@@ -190,11 +198,9 @@ const Statistics = () => {
       { data: logouttimesdata, label: "Uloskirjautuminen", color: "red" },
     ];
     setLogTimesData(logs);
-    console.log(logs);
 
     const logsperday = [{ data: lpddata }];
     setLogsPerWeekDayData(logsperday);
-    console.log(logsperday);
 
     const realdata = Object.values(userdata);
     realdata.sort(
@@ -203,7 +209,6 @@ const Statistics = () => {
         parseFloat(a.data.reduce((partialSum, a) => partialSum + a, 0)),
     );
     setAllUserStatsData(realdata);
-    console.log(realdata);
   };
 
   const handleCSV = async () => {
@@ -305,33 +310,37 @@ const Statistics = () => {
           </div>
         </Grid>
         <Grid item xs={columnWidth}>
+        <h2>Avainten määrä järjestöittäin</h2>
+          <PieChart
+            series={[
+              {
+                data: orgMembersData
+              }
+            ]}
+            width={winWidth / widthDivider}
+            height={winHeight / 2.6}
+        />
+        </Grid>
+        <Grid item xs={columnWidth}>
           <h2>YKV-kirjausten määrä järjestöittäin</h2>
           <PieChart
             series={[
               {
-                data: orgStatsData,
-              },
+                data: orgStatsData
+              }
             ]}
             width={winWidth / widthDivider}
-            height={winHeight / 2.5}
+            height={winHeight / 2.6}
           />
         </Grid>
         <Grid item xs={columnWidth}>
           <h2>YKV-kirjausten määrä käyttäjittäin</h2>
           <BarChart
             width={winWidth / widthDivider}
-            height={winHeight / 2.5}
+            height={winHeight / 2.6}
             series={allUserStatsData}
             yAxis={[{ data: [""], scaleType: "band", barGapRatio: 0.1 }]}
             layout="horizontal"
-          />
-        </Grid>
-        <Grid item xs={columnWidth}>
-          <h2>YKV-kirjausten määrä tunneittain</h2>
-          <BarChart
-            series={logTimesData || []}
-            width={winWidth / widthDivider}
-            height={winHeight / 2.5}
             borderRadius={5}
           />
         </Grid>
@@ -346,7 +355,16 @@ const Statistics = () => {
               },
             ]}
             width={winWidth / widthDivider}
-            height={winHeight / 2.5}
+            height={winHeight / 2.6}
+            borderRadius={5}
+          />
+        </Grid>
+        <Grid item xs={columnWidth}>
+          <h2>YKV-kirjausten määrä tunneittain</h2>
+          <BarChart
+            series={logTimesData || []}
+            width={winWidth / widthDivider}
+            height={winHeight / 2.6}
             borderRadius={5}
           />
         </Grid>
