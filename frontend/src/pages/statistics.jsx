@@ -6,6 +6,7 @@ import axios from "axios";
 import axiosClient from "../axios";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { BarChart } from "@mui/x-charts/BarChart";
+import { LineChart } from '@mui/x-charts/LineChart';
 import { Grid } from "@mui/material";
 import { CSVLink } from "react-csv";
 import { getCurrentDateTime } from "../utils/timehelpers";
@@ -194,8 +195,13 @@ const Statistics = () => {
         data: logintimesdata,
         label: "Sisäänkirjautuminen",
         color: "lightGreen",
+        showMark: ({ index }) => index === -1,
       },
-      { data: logouttimesdata, label: "Uloskirjautuminen", color: "red" },
+      { data: logouttimesdata, 
+        label: "Uloskirjautuminen", 
+        color: "red",
+        showMark: ({ index }) => index === -1 ,
+      }
     ];
     setLogTimesData(logs);
 
@@ -345,7 +351,7 @@ const Statistics = () => {
           />
         </Grid>
         <Grid item xs={columnWidth}>
-          <h2>YKV-kirjausten määrä viikoinpäivittäin</h2>
+          <h2>YKV-kirjausten määrä viikonpäivittäin</h2>
           <BarChart
             series={logsPerWeekDayData || []}
             xAxis={[
@@ -361,7 +367,7 @@ const Statistics = () => {
         </Grid>
         <Grid item xs={columnWidth}>
           <h2>YKV-kirjausten määrä tunneittain</h2>
-          <BarChart
+          <LineChart
             series={logTimesData || []}
             width={winWidth / widthDivider}
             height={winHeight / 2.6}
