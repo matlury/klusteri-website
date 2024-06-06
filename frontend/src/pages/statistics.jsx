@@ -28,6 +28,7 @@ const Statistics = () => {
   const [winWidth, setWinWidth] = useState(window.innerWidth)
   const [columnWidth, setColumnWidth] = useState(6)
   const [widthDivider, setWidthDivider] = useState(2.5)
+  const [logsPerWeekDayData, setLogsPerWeekDayData] = useState(null)
 
   useEffect(() => {
     getPermission();
@@ -133,8 +134,12 @@ const Statistics = () => {
 
   const processAllUserStats = (users, responsibilities) => {
     const userdata = {};
+    
     const logintimesdata = new Array(24).fill(0)
     const logouttimesdata = new Array(24).fill(0)
+    
+    const lpddata = new Array(7).fill(0)
+    
     users.forEach((usr) => {
       userdata[usr.username] = { data: [0], label: usr.username };
     });
@@ -145,9 +150,13 @@ const Statistics = () => {
           ...userdata[resp.user.username],
           data: [userdata[resp.user.username].data[0] + 1],
         };
-        const hours = new Date(resp.login_time).getHours()
-        logintimesdata[hours] += 1
-        logouttimesdata[hours] += 1
+        const loginhours = new Date(resp.login_time).getHours()
+        const logouthours = new Date(resp.logout_time).getHours()
+        logintimesdata[loginhours] += 1
+        logouttimesdata[logouthours] += 1
+        
+        const loginweekday = new Date(resp.login_time).getDay()
+        lpddata[loginweekday] += 1
       }
       }
     });
@@ -158,6 +167,12 @@ const Statistics = () => {
     });
     const logs = [{data: logintimesdata, label:"Sisäänkirjautuminen", color:'lightGreen'}, {data: logouttimesdata, label:"Uloskirjautuminen", color:'red'}]
     setLogTimesData(logs)
+    console.log(logs)
+    
+    const logsperday = [{ data: lpddata}]
+    setLogsPerWeekDayData(logsperday)
+    console.log(logsperday)
+    
     const realdata = Object.values(userdata);
     realdata.sort(
       (a, b) =>
@@ -165,6 +180,7 @@ const Statistics = () => {
         parseFloat(a.data.reduce((partialSum, a) => partialSum + a, 0)),
     );
     setAllUserStatsData(realdata);
+    console.log(realdata)
   };
 
   const handleCSV = async () => {
@@ -292,6 +308,29 @@ const Statistics = () => {
         <h2>YKV-kirjausten määrä tunneittain</h2>
         <BarChart
         series={logTimesData || []}
+        width={winWidth / widthDivider}
+        height={winHeight / 2.5}
+        borderRadius={5}
+        />
+        </Grid>
+        <Grid item xs={columnWidth}>
+        <h2>YKV-kirjausten määrä viikoinpäivittäin</h2>
+        <BarChart
+        series={logsPerWeekDayData || []}
+        xAxis={[
+          {
+            scaleType: 'band',
+            data: [
+              "ma",
+              "ti",
+              "ke",
+              "to",
+              "pe",
+              "las",
+              "su"
+            ],
+          }
+        ]}
         width={winWidth / widthDivider}
         height={winHeight / 2.5}
         borderRadius={5}
