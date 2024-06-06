@@ -23,7 +23,11 @@ const Statistics = () => {
   const [minFilter, setMinFilter] = useState("")
   const [maxFilter, setMaxFilter] = useState("")
   const [fetchedData, setFetchedData] = useState(null)
-  const [logTimesData, setLogTimesData]= useState(null)
+  const [logTimesData, setLogTimesData] = useState(null)
+  const [winHeight, setWinHeight] = useState(window.innerHeight)
+  const [winWidth, setWinWidth] = useState(window.innerWidth)
+  const [columnWidth, setColumnWidth] = useState(6)
+  const [widthDivider, setWidthDivider] = useState(2.5)
 
   useEffect(() => {
     getPermission();
@@ -33,6 +37,10 @@ const Statistics = () => {
     } else if (localStorage.getItem("ACCESS_TOKEN")) {
       fetchData().then(setFetchedData);
     }
+    if (window.innerWidth <= window.innerHeight) {
+      setColumnWidth(12)
+      setWidthDivider(1.2)
+    }
   }, []);
 
   useEffect(() => {
@@ -41,6 +49,26 @@ const Statistics = () => {
       processAllUserStats(fetchedData.userResponse.data, fetchedData.responsibilitiesResponse.data);
     }
   }, [minFilter, maxFilter, fetchedData]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWinWidth(window.innerWidth);
+      setWinHeight(window.innerHeight);
+      if (window.innerWidth <= window.innerHeight) {
+        setColumnWidth(12)
+        setWidthDivider(1.2)
+      } else {
+        setColumnWidth(6)
+        setWidthDivider(2.5)
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -128,7 +156,7 @@ const Statistics = () => {
         delete userdata[usr.label];
       }
     });
-    const logs = [{data: logintimesdata, label:"Sisäänkirjautuminen", color:'lightGreen'}, {data: logouttimesdata, label:"Uloskirjoutuminen", color:'red'}]
+    const logs = [{data: logintimesdata, label:"Sisäänkirjautuminen", color:'lightGreen'}, {data: logouttimesdata, label:"Uloskirjautuminen", color:'red'}]
     setLogTimesData(logs)
     const realdata = Object.values(userdata);
     realdata.sort(
@@ -137,7 +165,6 @@ const Statistics = () => {
         parseFloat(a.data.reduce((partialSum, a) => partialSum + a, 0)),
     );
     setAllUserStatsData(realdata);
-    console.log(realdata)
   };
 
   const handleCSV = async () => {
@@ -207,37 +234,39 @@ const Statistics = () => {
 
   return (
     <div>
-      <div
-      style={{float: "left"}}>
-      <p>Hae aikavälillä</p>
-      <input type="hidden" id="timezone" name="timezone" value="03:00" />
-      <input
-        value={minFilter}
-        onChange={handleMinFilterChange}
-        type="datetime-local"
-      />
-      <input
-        value={maxFilter}
-        onChange={handleMaxFilterChange}
-        type="datetime-local"
-      />
-      </div>
-      <div
-      style={{float: "right"}}>
-      <Button type="button" variant="contained" onClick={handleCSV}>
-        Lataa CSV-tiedosto tapahtumista
-      </Button>
-      {shouldDownload && CSVdata && (
-        <CSVDownload
-          data={CSVdata}
-          filename={`klusteri-events-${date}.csv`}
-          target="_blank"
-        />
-      )}
-      </div>
-
       <Grid container spacing={2}>
-        <Grid item xs={6}>
+        <Grid item xs={columnWidth}>
+        <div>
+        <p>Hae aikavälillä</p>
+        <input type="hidden" id="timezone" name="timezone" value="03:00" />
+        <input
+          value={minFilter}
+          onChange={handleMinFilterChange}
+          type="datetime-local"
+        />
+        <input
+          value={maxFilter}
+          onChange={handleMaxFilterChange}
+          type="datetime-local"
+        />
+        </div>
+        </Grid>
+        <Grid item xs={columnWidth}>
+        <div
+        style={{float: "right"}}>
+        <Button type="button" variant="contained" onClick={handleCSV}>
+          Lataa CSV-tiedosto tapahtumista
+        </Button>
+        {shouldDownload && CSVdata && (
+          <CSVDownload
+            data={CSVdata}
+            filename={`klusteri-events-${date}.csv`}
+            target="_blank"
+          />
+        )}
+        </div>
+        </Grid>
+        <Grid item xs={columnWidth}>
         <h2>YKV-kirjausten määrä järjestöittäin</h2>
         <PieChart
         series={[
@@ -245,28 +274,28 @@ const Statistics = () => {
           data: orgStatsData,
         },
         ]}
-        width={1000}
-        height={500}
-        />  
+        width={winWidth / widthDivider}
+        height={winHeight / 2.5}
+        />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={columnWidth}>
         <h2>YKV-kirjausten määrä käyttäjittäin</h2>
         <BarChart
-        width={1000}
-        height={500}
+        width={winWidth / widthDivider}
+        height={winHeight / 2.5}
         series={allUserStatsData}
         yAxis={[{ data: [""], scaleType: "band", barGapRatio: 0.1 }]}
         layout="horizontal"
         />
         </Grid>
-        <Grid>
+        <Grid item xs={columnWidth}>
         <h2>YKV-kirjausten määrä tunneittain</h2>
         <BarChart
         series={logTimesData || []}
-        width={1000}
-        height={500}
+        width={winWidth / widthDivider}
+        height={winHeight / 2.5}
         borderRadius={5}
-        /> 
+        />
         </Grid>
       </Grid>
 
