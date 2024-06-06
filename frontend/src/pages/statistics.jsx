@@ -39,6 +39,7 @@ const Statistics = () => {
   const [orgMembersData, setOrgMembersData] = useState([]);
   const [orgLateData, setOrgLateData] = useState([]);
   const [pieChartData, setPieChartData] = useState([]);
+  const [selectedPie, setSelectedPie] = useState(1)
 
   useEffect(() => {
     getPermission();
@@ -151,8 +152,6 @@ const Statistics = () => {
 
     setOrgMembersData(Object.values(orgmemdata));
 
-    setPieChartData(Object.values(orgmemdata));
-
     responsibilities.forEach((resp) => {
       resp.organizations.forEach((org) => {
         if (filtering(resp.login_time, resp.logout_time)) {
@@ -165,6 +164,12 @@ const Statistics = () => {
     });
     const realdata = Object.values(orgdata);
     setOrgStatsData(realdata);
+
+    if (selectedPie == 1) {
+        setPieChartData(Object.values(orgmemdata));
+    } else if (selectedPie == 2) {
+      setPieChartData(Object.values(orgdata));
+    }
   };
 
   const processAllUserStats = (users, responsibilities, orgdata) => {
@@ -242,6 +247,10 @@ const Statistics = () => {
         parseFloat(a.data.reduce((partialSum, a) => partialSum + a, 0)),
     );
     setAllUserStatsData(realdata);
+
+    if (selectedPie == 3) {
+      setPieChartData(Object.values(latedata));
+  }
   };
 
   const handleCSV = async () => {
@@ -308,10 +317,13 @@ const Statistics = () => {
   const handleChange = (event) => {
     if (event.target.value == 1) {
       setPieChartData(orgMembersData);
+      setSelectedPie(1)
     } else if (event.target.value == 2) {
       setPieChartData(orgStatsData);
+      setSelectedPie(2)
     } else if (event.target.value == 3) {
       setPieChartData(orgLateData);
+      setSelectedPie(3)
     }
   };
 
