@@ -447,7 +447,7 @@ describe("Ownpage", () => {
 
     });
 
-  it("Create new organization works", function () {
+  it("Create new organization works for permitted users", function () {
     cy.on("uncaught:exception", () => {
       return false;
     });
@@ -480,9 +480,175 @@ describe("Ownpage", () => {
     cy.get("#homepage").type("www.teekkarit.fi");
     cy.contains("Luo järjestö").click();
     cy.contains("Onnistui: Järjestö luotu onnistuneesti!");
-    cy.contains("Teekkarit (avaimia: 0)");
+    cy.reload();
+    cy.contains("Teekkarit");
+    cy.contains("teekkarit@mail.com");
 
     });
+
+
+  it("Modifying organization works for permitted users", function () {
+    cy.on("uncaught:exception", () => {
+      return false;
+    });
+    const body = {
+      username: "super_prof",
+      password: "salasana123",
+      email: "super@gmail.com",
+      telegram: "",
+      role: 1,
+    };
+    let user_id;
+    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+      (response) => {
+        user_id = response.body.id;
+        expect(response.body).to.have.property("username", "super_prof");
+      },
+    );
+    cy.wait(1000);
+    cy.contains("Kirjaudu").click();
+    cy.get("#email").type("super@gmail.com");
+    cy.get("#password").type("salasana123");
+    cy.get(".login-button").click();
+    cy.contains("Talon latinankielinen nimi");
+
+    cy.wait(500);
+    cy.contains("Omat tiedot").click();
+
+    cy.get("#name").type("Teekkarit");
+    cy.get(".organization-email").type("teekkarit@mail.com");
+    cy.get("#homepage").type("www.teekkarit.fi");
+    cy.contains("Luo järjestö").click();
+    cy.contains("Onnistui: Järjestö luotu onnistuneesti!");
+    cy.reload();
+    cy.contains("Teekkarit");
+    cy.contains("teekkarit@mail.com");
+
+    cy.get(".modify_org").click()
+    cy.get("#organization_name").type("123");
+    cy.contains("Vahvista muutokset"). click()
+    cy.reload();
+    cy.contains("Teekkarit123");
+    });  
+
+  it("Deleting organization works for permitted users", function () {
+    cy.on("uncaught:exception", () => {
+      return false;
+    });
+    const body = {
+      username: "super_prof",
+      password: "salasana123",
+      email: "super@gmail.com",
+      telegram: "",
+      role: 1,
+    };
+    let user_id;
+    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+      (response) => {
+        user_id = response.body.id;
+        expect(response.body).to.have.property("username", "super_prof");
+      },
+    );
+    cy.wait(1000);
+    cy.contains("Kirjaudu").click();
+    cy.get("#email").type("super@gmail.com");
+    cy.get("#password").type("salasana123");
+    cy.get(".login-button").click();
+    cy.contains("Talon latinankielinen nimi");
+
+    cy.wait(500);
+    cy.contains("Omat tiedot").click();
+
+    cy.get("#name").type("Teekkarit");
+    cy.get(".organization-email").type("teekkarit@mail.com");
+    cy.get("#homepage").type("www.teekkarit.fi");
+    cy.contains("Luo järjestö").click();
+    cy.contains("Onnistui: Järjestö luotu onnistuneesti!");
+    cy.reload();
+
+    cy.get(".modify_org").click()
+    cy.contains("Poista järjestö"). click()
+    cy.reload();
+    cy.contains("Teekkarit").should("not.exist");
+
+    });     
+
+    // it("Modifying user works for permitted users", function () {
+    //   cy.on("uncaught:exception", () => {
+    //     return false;
+    //   });
+    //   const body = {
+    //     username: "Mr. Perus",
+    //     password: "salasana123",
+    //     email: "perus@gmail.com",
+    //     telegram: "",
+    //     role: 5,
+    //   };
+    //   let user_id;
+    //   cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+    //     (response) => {
+    //       user_id = response.body.id;
+    //       expect(response.body).to.have.property("username", "Mr. Perus");
+    //     },
+    //   );
+    //   cy.wait(1000);
+    //   cy.contains("Kirjaudu").click();
+    //   cy.get("#email").type("perus@gmail.com");
+    //   cy.get("#password").type("salasana123");
+    //   cy.get(".login-button").click();
+    //   cy.contains("Talon latinankielinen nimi");
+  
+    //   cy.wait(500);
+    //   cy.contains("Omat tiedot").click();
+    //   cy.contains("Kirjaudu ulos").click();
+    //   cy.reload()
+
+    //   const body2 = {
+    //     username: "super_prof",
+    //     password: "salasana123",
+    //     email: "super@gmail.com",
+    //     telegram: "",
+    //     role: 1,
+    //   };
+
+    //   let user_id2;
+    //   cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+    //     (response) => {
+    //       user_id2 = response.body.id;
+    //       expect(response.body).to.have.property("username", "super_prof");
+    //     },
+    //   );
+    //   cy.wait(1000);
+    //   cy.contains("Kirjaudu").click();
+    //   cy.get("#email").type("super@gmail.com");
+    //   cy.get("#password").type("salasana123");
+    //   cy.get(".login-button").click();
+    //   cy.contains("Talon latinankielinen nimi");
+  
+    //   cy.wait(500);
+    //   cy.contains("Omat tiedot").click();
+
+
+    //   // cy.get("#name").type("Teekkarit");
+    //   // cy.get(".organization-email").type("teekkarit@mail.com");
+    //   // cy.get("#homepage").type("www.teekkarit.fi");
+    //   // cy.contains("Luo järjestö").click();
+    //   // cy.contains("Onnistui: Järjestö luotu onnistuneesti!");
+    //   // cy.reload();
+
+    //   cy.contains("Mr.Perustyyppi").click();
+  
+    //   cy.get(".modify_user").click()
+    //   cy.get(".user_new_telegram").type("PerustyyppiTG")
+    //   cy.get("Tallenna").click()
+    //   cy.reload();
+    //   cy.contains("PerustyyppiTG");
+
+    //   cy.get("#organization_name").type("123");
+    //   cy.contains("Vahvista muutokset"). click()
+    //   cy.reload();
+    //   cy.contains("Teekkarit123");
+    //   });  
 
   })
 
