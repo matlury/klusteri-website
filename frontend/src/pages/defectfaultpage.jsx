@@ -14,7 +14,7 @@ const DefectFault = ({
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-  const [fixedDefects, setFixedDefects] = useState([]);
+  const [activeDefects, setActiveDefects] = useState([]);
   const [allDefects, setAllDefects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDefectId, setSelectedDefectId] = useState(null);
@@ -36,10 +36,18 @@ const DefectFault = ({
   useEffect(() => {
     if (isLoggedIn && loggedUser) {
       fetchDefects();
-      fetchActiveDefects();
-      console.log(fixedDefects)
     }
-  }, []);
+  }, [isLoggedIn, loggedUser]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (loggedUser) {
+        await fetchDefects();
+      }
+    };
+
+    fetchData();
+  }, [loggedUser]);
 
 
   const handleClickOpen = () => {
@@ -83,7 +91,6 @@ const DefectFault = ({
         setSuccess("Vian korjaus onnistui");
         setTimeout(() => setSuccess(""), 5000);
         fetchDefects();
-        fetchActiveDefects();
       })
       .catch((error) => {
         setError("Vian korjaus epäonnistui");
@@ -99,7 +106,6 @@ const DefectFault = ({
         setSuccess("Sähköpostin lähetys onnistui");
         setTimeout(() => setSuccess(""), 5000);
         fetchDefects();
-        fetchActiveDefects();
       })
       .catch((error) => {
         setError("Sähköpostin lähetys epäonnistui");
@@ -147,7 +153,7 @@ const DefectFault = ({
           repaired: u.repaired == null ? "Ei" : new Date(u.repaired),
         }));
         setAllDefects(defectData);
-        setFixedDefects(
+        setActiveDefects(
           defectData.filter(
             (resp) =>
               resp.repaired === "Ei"
@@ -163,9 +169,9 @@ const DefectFault = ({
       .get(`listobjects/defects/`)
       .then((response) => {
         setAllDefects(response.data);
-        console.log(fixedDefects)
+        console.log(activeDefects)
         const active = response.data.filter((item) => item.repaired === null);
-        setFixedDefects(active);
+        setActiveDefects(active);
       })
       .catch((error) => {
         console.error("Error fetching defects", error);
@@ -194,7 +200,7 @@ const DefectFault = ({
           <DefectList 
             loggedUser={loggedUser} 
             allDefects={allDefects} 
-            fixedDefects={fixedDefects} 
+            activeDefects={activeDefects} 
             handleRepairClick={handleRepairClick} 
             handleEmailClick={handleEmailClick}/>
           <RepairConfirmDialog

@@ -4,7 +4,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 
-const DefectList = ({ loggedUser, allDefects, fixedDefects, handleRepairClick, handleEmailClick }) => {
+const DefectList = ({ loggedUser, allDefects, activeDefects, handleRepairClick, handleEmailClick }) => {
   const columns = [
     { field: "description", headerName: "Kuvaus", width: 400 },
     { field: "time", headerName: "Aika", width: 200 },
@@ -43,8 +43,6 @@ const DefectList = ({ loggedUser, allDefects, fixedDefects, handleRepairClick, h
   const columns_buttonless = [
     { field: "description", headerName: "Kuvaus", width: 400 },
     { field: "time", headerName: "Aika", width: 200 },
-    { field: "email", headerName: "Sähköposti lähetetty", width: 200 },
-    { field: "repaired", headerName: "Korjattu", width: 200 },
   ];
 
   if (loggedUser && loggedUser.role === 1) {
@@ -59,7 +57,7 @@ const DefectList = ({ loggedUser, allDefects, fixedDefects, handleRepairClick, h
   } else {
     return (
       <DataGrid
-        rows={fixedDefects}
+        rows={activeDefects}
         columns={columns_buttonless}
         pageSize={5}
         rowsPerPageOptions={[5, 10, 20]}
