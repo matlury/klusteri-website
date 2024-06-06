@@ -30,7 +30,6 @@ import matlu from "./matlu.png";
 
 import FrontPage from "./pages/frontpage";
 import LoginPage from "./pages/loginpage";
-import NewAccountPage from "./pages/createpage";
 import ChristinaRegina from "./pages/christina_regina";
 import OwnPage from "./pages/ownpage";
 import PrivacyPolicy from "./pages/privacypolicy";
