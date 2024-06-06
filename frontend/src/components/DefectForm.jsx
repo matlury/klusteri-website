@@ -21,14 +21,18 @@ const DefectForm = ({ open, handleClose, handleFormSubmit }) => {
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      PaperProps={{
-        component: "form",
-        onSubmit: onSubmit,
-      }}
-    >
+  <Dialog
+    open={open}
+    onClose={handleClose}
+    PaperProps={{
+      component: "form",
+      onSubmit: onSubmit,
+      sx: { 
+        maxWidth: 'lg',
+        width: '35%',
+      }
+    }}
+>
       <DialogTitle>Kirjaa vika</DialogTitle>
       <DialogContent>
         <DialogContentText>Kirjaa Klusteriin liittyviä vikoja.</DialogContentText>

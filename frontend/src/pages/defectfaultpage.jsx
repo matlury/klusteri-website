@@ -171,7 +171,7 @@ const DefectFault = ({
         <div>
           {error && <p style={{ color: "red" }}>{error}</p>}
           {success && <p style={{ color: "green" }}>{success}</p>}
-          <h2>Viat</h2>
+          <h2>Puutteet ja viat</h2>
           <React.Fragment>
             <Button
               variant="contained"
