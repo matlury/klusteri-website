@@ -290,11 +290,12 @@ const YkvLogoutFunction = ({
       {loggedUser.role !== 1 && loggedUser.role !== 5 && (
         <div>
           <h2>Omat vastuut</h2>
-          <DataGrid
+          <StyledDataGrid
             rows={ownUsers}
             columns={columns_2}
             pageSize={5}
             rowsPerPageOptions={[5, 10, 20]}
+            getRowClassName={getRowClassName}
           />
         </div>
       )}
