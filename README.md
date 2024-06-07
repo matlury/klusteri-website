@@ -3,7 +3,7 @@
 
 # Klusterin nettisivut
 
-![workflow badge](https://github.com/matlury/klusteri-website/workflows/CI/badge.svg)
+[![Workflow Badge](https://github.com/matlury/klusteri-website/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/matlury/klusteri-website/actions/workflows/main.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![codecov](https://codecov.io/gh/matlury/klusteri-website/branch/main/graph/badge.svg?token=OO3HO2Y8BR)](https://codecov.io/gh/matlury/klusteri-website)
 
