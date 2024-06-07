@@ -211,8 +211,6 @@ const AllUsers = ({
               Vaihda puheenjohtajaksi
             </Button>
 
-          </form>
-        </DialogContent>
         <DialogActions>
           <Button 
             onClick={handleClose}
@@ -229,6 +227,8 @@ const AllUsers = ({
             Tallenna
           </Button>
         </DialogActions>
+        </form>
+        </DialogContent>
       </Dialog>
     </div>
   );
