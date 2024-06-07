@@ -27,6 +27,59 @@ describe("Reservations component", () => {
     fireEvent.click(closeButton);
   });
 
+  it("csv download button works", async () => {
+    const user = {
+      username: 'example_username',
+      email: 'example_email@example.com',
+      telegram: 'example_telegram',
+      role: 1,
+      rights_for_reservation: true
+    };
+
+    localStorage.setItem('loggedUser', JSON.stringify(user))
+    const { getByText } = render(<Reservations />);
+
+    const response = {data: [
+      {
+          "id": 1,
+          "start": "2024-06-03T07:26:24.237284Z",
+          "end": "2024-06-03T07:26:24.237298Z",
+          "title": "Tapahtuma",
+          "organizer": "Järjestäjä",
+          "description": "Kuvaus",
+          "responsible": "Vastuuhenkilö",
+          "open": true,
+          "room": "Kokoushuone"
+      },
+      {
+          "id": 2,
+          "start": "2024-06-03T07:30:22.141739Z",
+          "end": "2024-06-03T07:30:22.141755Z",
+          "title": "Tapahtuma",
+          "organizer": "Järjestäjä",
+          "description": "Kuvaus",
+          "responsible": "Vastuuhenkilö",
+          "open": false,
+          "room": "Kerhotila"
+      }]
+    }
+
+    await waitFor(() => {
+      mockAxios.mockResponseFor(
+        { url: "undefined/api/listobjects/events/" },
+        response,
+      );
+    })
+
+    await waitFor(() => {
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        "undefined/api/listobjects/events/",
+      )
+      const reservationButton = getByText("Lataa tapahtumat CSV-muodossa");
+      fireEvent.click(reservationButton);
+    })
+  }) 
+
   // it('booking with role 1', async () => {
   //   const { getByText, getByPlaceholderText, queryByText } = render(<Reservations />)
 

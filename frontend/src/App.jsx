@@ -13,6 +13,7 @@ import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlin
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
+import BarChartIcon from '@mui/icons-material/BarChart';
 import FormatColorResetOutlinedIcon from '@mui/icons-material/FormatColorResetOutlined';
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -39,6 +40,7 @@ import DefectFault from "./pages/defectfaultpage";
 import Rules_and_Instructions from "./pages/rules_instructions";
 import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
+import Statistics from "./pages/statistics";
 
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 
@@ -107,6 +109,7 @@ const App = (props) => {
 
   // Removes localstorage value if someone logs out
   const handleLogout = () => {
+    localStorage.removeItem("ACCESS_TOKEN");
     localStorage.removeItem("loggedUser");
     localStorage.removeItem("isLoggedIn");
     setLoggedUser(null);
@@ -128,6 +131,7 @@ const App = (props) => {
     <CalendarMonthOutlinedIcon />,
     <KeyOutlinedIcon />,
     <ManageAccountsOutlinedIcon />,
+    <BarChartIcon />,
     <LocationOnOutlinedIcon />,
     <FormatColorResetOutlinedIcon/>,
     <FactCheckOutlinedIcon />,
@@ -146,6 +150,7 @@ const App = (props) => {
           "Varaukset",
           "Omat avaimet",
           "Omat tiedot",
+          "Tilastot",
           "Yhteystiedot",
           "Viat",
           "Säännöt ja ohjeet",
@@ -277,11 +282,12 @@ const App = (props) => {
               path="/omat_tiedot"
               element={<OwnPage isLoggedIn={isLoggedIn} />}
             />
+            <Route path="/tilastot" element={<Statistics />}/>
+            <Route path="/yhteystiedot" element={<Contacts />} />
             <Route
               path="/viat"
               element={<DefectFault isLoggedIn={isLoggedIn} loggedUser={loggedUser} />}
             />
-            <Route path="/yhteystiedot" element={<Contacts />} />
             <Route
               path="/saannot_ja_ohjeet"
               element={<Rules_and_Instructions />}

@@ -565,4 +565,72 @@ describe("Ownpage", () => {
       });
     });
 
+describe("Statistics page", () => {
+  beforeEach(function () {
+     cy.request("POST", "http://localhost:8000/api/testing/reset");
+     cy.visit("http://localhost:5173/");
+   });
+ 
+  it("Statistics don't render with role 5", function () {
+    cy.on("uncaught:exception", () => {
+      return false;
+    });
+    const body = {
+      username: "proffa",
+      password: "salasana123",
+      email: "proffa@gmail.com",
+      telegram: "",
+      role: 5,
+    };
+    let user_id;
+    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+      (response) => {
+        user_id = response.body.id;
+        expect(response.body).to.have.property("username", "proffa");
+      },
+    );
+    cy.wait(1000);
+    cy.contains("Kirjaudu").click();
+    cy.get("#email").type("proffa@gmail.com");
+    cy.get("#password").type("salasana123");
+    cy.get(".login-button").click();
+    cy.contains("Tilastot").click();
+    cy.contains("Kirjaudu sisään")
+  })
+
+  it("Statistics render with role 1", function () {
+    cy.on("uncaught:exception", () => {
+      return false;
+    });
+    const body = {
+      username: "milhouse",
+      password: "salasana123",
+      email: "milhouse@gmail.com",
+      telegram: "",
+      role: 1,
+    };
+    let user_id;
+    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+      (response) => {
+        user_id = response.body.id;
+        expect(response.body).to.have.property("username", "milhouse");
+      },
+    );
+    cy.wait(1000);
+    cy.contains("Kirjaudu").click();
+    cy.get("#email").type("milhouse@gmail.com");
+    cy.get("#password").type("salasana123");
+    cy.get(".login-button").click();
+    cy.wait(500)
+    cy.reload();
+    cy.wait(500)
+    cy.contains("Tilastot").click();
+    cy.contains("YKV-kirjausten määrä järjestöittäin")
+  })
+  
+
+
+
+})
+
 Cypress.on;
