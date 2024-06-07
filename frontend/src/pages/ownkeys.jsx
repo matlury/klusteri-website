@@ -210,7 +210,7 @@ const OwnKeys = ({
         });
       })
       .catch((error) => {
-        setError("YKV-uloskirjaus epäonnistui");
+        setError("YKV-uskirjaus epäonnistui");
         setTimeout(() => setError(""), 5000);
         console.error("Ykv-uloskirjaus epäonnistui", error);
       });

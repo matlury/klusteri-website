@@ -221,7 +221,7 @@ const YkvLogoutFunction = ({
           <DialogTitle>Ota vastuu</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Kirjaa sisään YKV-valvontaan henkilöitä ja ota vastuu.
+              Kirjaa yökäyttövastuu henkilöstä.
             </DialogContentText>
             <TextField
               autoFocus
@@ -291,7 +291,6 @@ const YkvLogoutFunction = ({
           </Button>
         </DialogActions>
       </Dialog>
-
       {loggedUser.role !== 5 && (
         <div>
           <TextField

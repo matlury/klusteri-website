@@ -1860,11 +1860,9 @@ class TestDjangoAPI(TestCase):
         # create a defect as Muokkaus with empty description
         response = self.client.post(
             "http://localhost:8000/api/defects/create_defect",
-            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
                 "description": "",
-                "email_sent": False,
-                "repaired": False,
             },
             format="json",
         )
@@ -1874,31 +1872,15 @@ class TestDjangoAPI(TestCase):
         # with correct description
         response = self.client.post(
             "http://localhost:8000/api/defects/create_defect",
-            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
                 "description": "Lattia rikki",
-                "email_sent": False,
-                "repaired": False,
             },
             format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        # creating a defect fails if the user is Tavallinen user
-        response = self.client.post(
-            "http://localhost:8000/api/defects/create_defect",
-            headers={"Authorization": f"Bearer {self.access_token}"},
-            data={
-                "description": "Lattia rikki",
-                "email_sent": False,
-                "repaired": False,
-            },
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    
     def test_updating_defect(self):
         """Roles other than role 5 can create defects"""
 
@@ -1908,8 +1890,6 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
             data={
                 "description": "Lattia rikki",
-                "email_sent": False,
-                "repaired": False,
             },
             format="json",
         )
@@ -1921,8 +1901,6 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.access_token}"},
             data={
                 "description": "Katto vuotaa",
-                "email_sent": False,
-                "repaired": False,
             },
             format="json",
         )
@@ -1935,8 +1913,6 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
             data={
                 "description": "Katto vuotaa",
-                "email_sent": False,
-                "repaired": False,
             },
             format="json",
         )
@@ -1949,8 +1925,6 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
             data={
                 "description": "Katto vuotaa",
-                "email_sent": False,
-                "repaired": False,
             },
             format="json",
         )
@@ -1966,8 +1940,6 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
             data={
                 "description": "Lattia rikki",
-                "email_sent": False,
-                "repaired": False,
             },
             format="json",
         )

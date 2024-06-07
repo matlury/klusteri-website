@@ -13,6 +13,7 @@ import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlin
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
+import FormatColorResetOutlinedIcon from '@mui/icons-material/FormatColorResetOutlined';
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -34,6 +35,7 @@ import ChristinaRegina from "./pages/christina_regina";
 import OwnPage from "./pages/ownpage";
 import PrivacyPolicy from "./pages/privacypolicy";
 import Contacts from "./pages/contacts";
+import DefectFault from "./pages/defectfaultpage";
 import Rules_and_Instructions from "./pages/rules_instructions";
 import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
@@ -127,6 +129,7 @@ const App = (props) => {
     <KeyOutlinedIcon />,
     <ManageAccountsOutlinedIcon />,
     <LocationOnOutlinedIcon />,
+    <FormatColorResetOutlinedIcon/>,
     <FactCheckOutlinedIcon />,
     <AdminPanelSettingsOutlinedIcon />,
   ];
@@ -144,6 +147,7 @@ const App = (props) => {
           "Omat avaimet",
           "Omat tiedot",
           "Yhteystiedot",
+          "Viat",
           "Säännöt ja ohjeet",
           "Tietosuojaseloste",
         ].map((text, index) => (
@@ -272,6 +276,10 @@ const App = (props) => {
             <Route
               path="/omat_tiedot"
               element={<OwnPage isLoggedIn={isLoggedIn} />}
+            />
+            <Route
+              path="/viat"
+              element={<DefectFault isLoggedIn={isLoggedIn} loggedUser={loggedUser} />}
             />
             <Route path="/yhteystiedot" element={<Contacts />} />
             <Route
