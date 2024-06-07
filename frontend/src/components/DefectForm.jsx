@@ -37,6 +37,7 @@ const DefectForm = ({ open, handleClose, handleFormSubmit }) => {
           required
           margin="dense"
           data-testid="description"
+          id="description"
           value={description}
           type="text"
           label="Kuvaile vika"
@@ -47,7 +48,11 @@ const DefectForm = ({ open, handleClose, handleFormSubmit }) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Peruuta</Button>
-        <Button type="submit" data-testid="createdefect">
+        <Button 
+          type="submit" 
+          data-testid="createdefect"
+          id="addfault"
+          >
           Kirjaa vika
         </Button>
       </DialogActions>

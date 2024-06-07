@@ -483,7 +483,45 @@ describe("Ownpage", () => {
 
     });
 
-  })
+    describe("Defectfaultpage", () => {
+      beforeEach(function () {
+        cy.request("POST", "http://localhost:8000/api/testing/reset");
+        cy.visit("http://localhost:5173");
+      });
+      it("Create fault works", function () {
+        cy.on("uncaught:exception", () => {
+          return false;
+        });
+        const body = {
+          username: "leppis",
+          password: "salasana123",
+          email: "pj@gmail.com",
+          telegram: "pjtg",
+          role: 1,
+        };
+        let user_id;
+        cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+          (response) => {
+            user_id = response.body.id;
+            expect(response.body).to.have.property("username", "leppis");
+          },
+        );
+        cy.wait(1000);
+        cy.contains("Kirjaudu").click();
+        cy.get("#email").type("pj@gmail.com");
+        cy.get("#password").type("salasana123");
+        cy.get(".login-button").click();
+    
+        cy.contains("Viat").click();
+        cy.contains("+ Lisää vika").click();
+        cy.get("#description").type("Vessan ovenkahva irronnut");
+        cy.get("#addfault").click();
+        cy.contains("Peruuta").click();
+        cy.reload();
+        cy.contains("Vessan ovenkahva irronnut");
+      });
+    });
+  });
 
 Cypress.on;
   
