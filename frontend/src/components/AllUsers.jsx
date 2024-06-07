@@ -49,13 +49,12 @@ const AllUsers = ({
 
   const toggleUserDetails = (userId) => {
     const showThisUser = allUsers.find((user) => user.id === userId);
-    setUserDetailsUsername(showThisUser.Käyttäjänimi)
-    setuserDetailsEmail(showThisUser.email)
-    setuserDetailsTelegram(showThisUser.Telegram)
-    setuserDetailsRole(showThisUser.Rooli)
-    setuserDetailsId(showThisUser.id)
-    console.log("showuserID", showThisUser.id, userDetailsId)
-    setuserDetailsOrganizations(showThisUser.Jäsenyydet.join(", "))
+    setUserDetailsUsername(showThisUser.Käyttäjänimi);
+    setuserDetailsEmail(showThisUser.email);
+    setuserDetailsTelegram(showThisUser.Telegram);
+    setuserDetailsRole(showThisUser.Rooli);
+    setuserDetailsId(showThisUser.id);
+    setuserDetailsOrganizations(showThisUser.Jäsenyydet.join(", "));
     handleClickOpen();
   };
 
@@ -72,7 +71,6 @@ const AllUsers = ({
           Jäsenyydet: u.keys.map((organization) => organization.name),
         }));
         setAllUsers(userData);
-        
       })
       .catch((error) => console.error(error));
   }, []);
@@ -97,7 +95,7 @@ const AllUsers = ({
   const handleFormSubmit = (event) => {
     event.preventDefault();
     handleUpdateAnotherUser(userDetailsId, userDetailsUsername, userDetailsEmail, userDetailsTelegram, userDetailsRole,
-      userDetailsOrganizations.split(", ").map(org => org.trim()),);
+      userDetailsOrganizations.split(", ").map(org => org.trim()));
     handleClose();
   };
 
@@ -111,7 +109,7 @@ const AllUsers = ({
           variant="contained"
           color="primary"
           className="modify_user"
-          id="modify_user"
+          data-testid={`edit-button-${params.id}`}
           onClick={() => toggleUserDetails(params.id)}
         >
           <EditOutlinedIcon />
@@ -147,6 +145,7 @@ const AllUsers = ({
               value={userDetailsUsername}
               onChange={(e) => setUserDetailsUsername(e.target.value)}
               fullWidth
+              data-testid="username-input"
             />
             <TextField
               label="Sähköposti"
@@ -154,6 +153,7 @@ const AllUsers = ({
               value={userDetailsEmail}
               onChange={(e) => setuserDetailsEmail(e.target.value)}
               fullWidth
+              data-testid="email-input"
             />
             <TextField
               label="Telegram"
@@ -161,6 +161,7 @@ const AllUsers = ({
               value={userDetailsTelegram}
               onChange={(e) => setuserDetailsTelegram(e.target.value)}
               fullWidth
+              data-testid="telegram-input"
             />
             <TextField
               label="Rooli"
@@ -168,58 +169,66 @@ const AllUsers = ({
               value={userDetailsRole}
               onChange={(e) => setuserDetailsRole(e.target.value)}
               fullWidth
+              data-testid="role-input"
             />
 
             <Accordion>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel1-content"
-                  id="panel1-header"
+                aria-controls="panel1-content"
+                id="panel1-header"
+                data-testid="expand-key-accordion"
+              >
+                Luovuta avain
+              </AccordionSummary>
+              <AccordionDetails>
+                <Autocomplete
+                  id="combo-box-org"
+                  options={allOrganisations}
+                  getOptionLabel={(option) => option.Organisaatio}
+                  style={{ width: 300 }}
+                  onChange={(event, newValue) => {
+                    setSelectedOrganization(newValue);
+                  }}
+                  renderInput={(params) => <TextField {...params} label="Valitse organisaatio" />}
+                  data-testid="organization-autocomplete"
+                />
+                <Button 
+                  variant="contained"
+                  className="submit-key-button"
+                  data-testid="submit-key-button"
+                  onClick={() => handleKeySubmit(userDetailsId, selectedOrganization.Organisaatio)}
                 >
                   Luovuta avain
-                  </AccordionSummary>
-                    <AccordionDetails>
-                      <Autocomplete
-                        id="combo-box-org"
-                        options={allOrganisations}
-                        getOptionLabel={(option) => option.Organisaatio}
-                        style={{ width: 300 }}
-                        onChange={(event, newValue) => {
-                          setSelectedOrganization(newValue);
-                        }}
-                        renderInput={(params) => <TextField {...params} label="Valitse organisaatio" />}
-                      />
-                      <Button 
-                      variant="contained"
-                      className="submit-key-button" 
-                      onClick={() => handleKeySubmit(userDetailsId, selectedOrganization.Organisaatio)}>Luovuta avain</Button>
-                    </AccordionDetails>
+                </Button>
+              </AccordionDetails>
             </Accordion>
 
-            <Button onClick={() => handlePJChange(userDetailsId)}>Vaihda puheenjohtajaksi</Button>
+            <Button 
+              onClick={() => handlePJChange(userDetailsId)}
+              data-testid="change-pj-button"
+            >
+              Vaihda puheenjohtajaksi
+            </Button>
 
-            {/* <TextField
-              label="Jäsenyydet"
-              // value={organizations}
-              // onChange={(e) => setOrganizations(e.target.value)}
-              value={userDetailsOrganizations}
-              onChange={(e) => setuserDetailsOrganizations(e.target.value)}
-              fullWidth
-            /> */}
-          {/* </form> */}
-        {/* </DialogContent> */}
+          </form>
+        </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Peruuta</Button>
+          <Button 
+            onClick={handleClose}
+            data-testid="cancel-button"
+          >
+            Peruuta
+          </Button>
           <Button
             type="submit"
             variant="contained"
             color="primary"
+            data-testid="save-button"
           >
             Tallenna
           </Button>
         </DialogActions>
-        </form>
-        </DialogContent>
       </Dialog>
     </div>
   );
