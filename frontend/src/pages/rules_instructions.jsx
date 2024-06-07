@@ -1,67 +1,29 @@
 import React, { useState } from "react";
+import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const Rules_and_Instructions = () => {
-  const [showRules, setShowRules] = useState(false);
-  const [showCleaningRules, setShowCleaningRules] = useState(false);
-  const [showSafetyRules, setShowSafetyRules] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
-  const handleClick = () => {
-    setShowRules(true);
-    setShowCleaningRules(false);
-    setShowSafetyRules(false);
-  };
-
-  const handleShowCleaningRules = () => {
-    setShowRules(false);
-    setShowCleaningRules(true);
-    setShowSafetyRules(false);
-  };
-
-  const handleShowSafetyRules = () => {
-    setShowRules(false);
-    setShowCleaningRules(false);
-    setShowSafetyRules(true);
-  };
-
-  const handleClose = () => {
-    setShowRules(false);
-    setShowCleaningRules(false);
-    setShowSafetyRules(false);
+  const handleChange = (panel) => (event, isExpanded) => {
+    setExpanded(isExpanded ? panel : false);
   };
 
   return (
-    <div className="textbox">
-      <h1
-        style={{
-          color: "#333",
-          borderBottom: "2px solid #333",
-          paddingBottom: "10px",
-        }}
-      >
-        Säännöt ja ohjeet{" "}
+    <div>
+      <h1>
+        Säännöt ja ohjeet
       </h1>
-      {showRules || showCleaningRules || showSafetyRules ? (
-        <button onClick={handleClose}>Sulje</button>
-      ) : (
-        <div>
-          <button onClick={handleClick}>Klusterin käyttösäännöt</button>
-          <br />
-          <br />
-          <button onClick={handleShowCleaningRules}>Siivoussäännöt</button>
-          <br />
-          <br />
-          <button onClick={handleShowSafetyRules}>
-            Matlu-klusterin turvallisen tilan periaatteet
-          </button>
-        </div>
-      )}
-      {showRules && (
-        <div className="rules">
+
+      <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <h2 style={{ color: "#555", marginTop: "30px" }}>
             Matlu-klusterin käyttösäännöt
           </h2>
+        </AccordionSummary>
+        <AccordionDetails>
           <div className="rule-section">
-            <h3>1§ Määräysala</h3>
+          <h3>1§ Määräysala</h3>
             <p>
               Nämä säännöt koskevat Domus Gaudiumin klusteritila Christina
               Reginan (myöhemmin klusteri) käyttöä. Ne täydentävät Helsingin
@@ -434,96 +396,103 @@ const Rules_and_Instructions = () => {
               Leppätalokomitea.
             </p>
           </div>
-        </div>
-      )}
-      {showCleaningRules && (
-        <div className="cleaning-rules">
-          <h2 style={{ color: "#555", marginTop: "30px" }}>Siivoussäännöt</h2>
-          <div>
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <h2 style={{ color: "#555", marginTop: "30px" }}>
+            Siivoussäännöt
+          </h2>
+        </AccordionSummary>
+        <AccordionDetails>
+          <div className="rule-section">
             <h3>Tapahtuman jälkeinen siivous</h3>
             <ul>
-              <li>- Huonekalut paikoilleen</li>
-              <li>- Sälä paikoilleen</li>
-              <li>- Astioiden tiskaus & keittiön tasojen pyyhintä</li>
-              <li>- Tölkkien ja pullojen keruu</li>
-              <li>- Keräysastioiden tyhjennys</li>
-              <li>- Tarvittaessa lattioiden lakaisu</li>
-              <li>- Mahdollisten kurajälkien poispesu</li>
-              <li>- Mahdollisten tahmalaikkujen pyyhintä pöydiltä</li>
+              <li>Huonekalut paikoilleen</li>
+              <li>Sälä paikoilleen</li>
+              <li>Astioiden tiskaus & keittiön tasojen pyyhintä</li>
+              <li>Tölkkien ja pullojen keruu</li>
+              <li>Keräysastioiden tyhjennys</li>
+              <li>Tarvittaessa lattioiden lakaisu</li>
+              <li>Mahdollisten kurajälkien poispesu</li>
+              <li>Mahdollisten tahmalaikkujen pyyhintä pöydiltä</li>
               <li>
-                - Klusterin ulkopuolinen aula ja ulko-oven edusta (roskat,
+                Klusterin ulkopuolinen aula ja ulko-oven edusta (roskat,
                 tumpit, pullot…)
               </li>
               <li>
-                - Ilmoita, jos siivousvälineissä on puutteita
+                Ilmoita, jos siivousvälineissä on puutteita
                 (leppis-list@helsinki.fi)
               </li>
-              <li>- Klusterin yleisilme SIISTI</li>
+              <li>Klusterin yleisilme SIISTI</li>
             </ul>
           </div>
           <div>
             <h3>Viikkosiivouksen tshek-lista</h3>
             <ul>
-              <li>- Siivoa sekä yleistila, kerhohuone että kokoushuone</li>
+              <li>Siivoa sekä yleistila, kerhohuone että kokoushuone</li>
               <li>
-                - Sälä pois sieltä minne ei kuulu (mutta eihän semmoista ole,
+                Sälä pois sieltä minne ei kuulu (mutta eihän semmoista ole,
                 eihän?)
               </li>
               <li>
-                - Tölkkien ja pullojen keruu (tölkit ei sekajätteen sekaan vaan
+                Tölkkien ja pullojen keruu (tölkit ei sekajätteen sekaan vaan
                 metallikeräykseen)
               </li>
               <li>
-                - Lattioiden imurointi/lakaisu (imuroi myös matot ja niiden
+                Lattioiden imurointi/lakaisu (imuroi myös matot ja niiden
                 aluset)
               </li>
               <li>
-                - Lattioiden pesu (ota moppi, ämpäri, vettä ja pesuainetta, MYÖS
+                Lattioiden pesu (ota moppi, ämpäri, vettä ja pesuainetta, MYÖS
                 SOHVIEN TAKAA)
               </li>
-              <li>- Pöytien pyyhintä</li>
+              <li>Pöytien pyyhintä</li>
               <li>
-                - Likatahrat, runsaat käpälän jäljet tms pois seinistä ja ovista
+                Likatahrat, runsaat käpälän jäljet tms pois seinistä ja ovista
               </li>
               <li>
-                - Tiskaus & keittiön siivous (paitsi eihän tiskiä ole, kun jengi
+                Tiskaus & keittiön siivous (paitsi eihän tiskiä ole, kun jengi
                 on ne ite hoitanu)
               </li>
               <li>
-                - Vessat (pönttöjen pesu, lattioiden lakaisu & pesu, peilin
+                Vessat (pönttöjen pesu, lattioiden lakaisu & pesu, peilin
                 pyyhintä, lavuaarin puhdistus, roskisten tyhjennys, paperin
                 täyttö)
               </li>
-              <li>- Kuramattojen pudistelu</li>
-              <li>- Puhdista sohvat tarpeen vaatiessa</li>
+              <li>Kuramattojen pudistelu</li>
+              <li>Puhdista sohvat tarpeen vaatiessa</li>
               <li>
-                - Tarpeen mukaan myös klusterin ulkopuolisen aulan ja ulko-oven
+                Tarpeen mukaan myös klusterin ulkopuolisen aulan ja ulko-oven
                 edustan siivous
               </li>
-              <li>- Rättien pesu ja asiallisesti kuivumaan jättö</li>
+              <li>Rättien pesu ja asiallisesti kuivumaan jättö</li>
               <li>
-                - Roskien vienti jätehuoneeseen (energia, bio, paperi, pahvi,
+                Roskien vienti jätehuoneeseen (energia, bio, paperi, pahvi,
                 metalli, seka. Jätehuone löytyy kun kävelet ulos talosta ja
                 kierrät nurkan taa myötäpäivää.)
               </li>
               <li>
-                - Ilmoita, jos siivousvälineissä on puutteita
+                Ilmoita, jos siivousvälineissä on puutteita
                 (leppis-list@helsinki.fi)
               </li>
               <li>
-                - Ilmoita, jos klusteri saastainen (leppis-list@helsinki.fi)
+                Ilmoita, jos klusteri saastainen (leppis-list@helsinki.fi)
               </li>
             </ul>
           </div>
-        </div>
-      )}
+        </AccordionDetails>
+      </Accordion>
 
-      {showSafetyRules && (
-        <div className="safety-rules">
+      <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <h2 style={{ color: "#555", marginTop: "30px" }}>
-            Turvallisen tilan periaatteet
+            Matlu-klusterin turvallisen tilan periaatteet
           </h2>
-          <div>
+        </AccordionSummary>
+        <AccordionDetails>
+        <div>
             <h3 style={{ color: "red", fontSize: "1.2em" }}>
               Hätätilanteessa soita yleiseen hätänumeroon 112.
             </h3>
@@ -594,25 +563,24 @@ const Rules_and_Instructions = () => {
             <h3>Yhteystietoja:</h3>
             <ul>
               <li>
-                Leppätalokomitean puheenjohtaja Vili Järvinen, vilijarvinen2311
-                (at) gmail.com
+                Leppätalokomitean puheenjohtaja Vili Järvinen, <a href="mailto:vilijarvinen2311@gmail.com">vilijarvinen2311@gmail.com</a>
               </li>
               <li>
-                Matlun häirintäyhdyshenkilöt (hairinta@matlu.fi):
+                Matlun häirintäyhdyshenkilöt <a href="mailto:hairinta@matlu.fi">hairinta@matlu.fi</a>
                 <ul>
-                  <li>Niclas Forsman, etunimi.sukunimi@helsinki.fi</li>
-                  <li>Jenna Vahtera, etunimi.sukunimi@helsinki.fi</li>
-                  <li>Anna Monni, etunimi.sukunimi@helsinki.fi</li>
-                  <li>Markus Holopainen, etunimi.x.sukunimi@helsinki.fi</li>
+                  <li>Niclas Forsman, <a href="mailto:niklas.forsman@helsinki.fi">niklas.forsman@helsinki.fi</a></li>
+                  <li>Jenna Vahtera, <a href="mailto:jenna.vahtera@helsinki.fi">jenna.vahtera@helsinki.fi</a></li>
+                  <li>Anna Monni, <a href="mailto:anna.monni@helsinki.fi">anna.monni@helsinki.fi</a></li>
+                  <li>Markus Holopainen, <a href="mailto:markus.x.holopainen@helsinki.fi">markus.x.holopainen@helsinki.fi</a></li>
                 </ul>
               </li>
               <li>
-                Leppätalokomitean sähköpostilista, leppis-list@helsinki.fi
+                Leppätalokomitean sähköpostilista, <a href="mailto:leppis-list@helsinki.fi">leppis-list@helsinki.fi</a>
               </li>
             </ul>
           </div>
-        </div>
-      )}
+        </AccordionDetails>
+      </Accordion>
     </div>
   );
 };

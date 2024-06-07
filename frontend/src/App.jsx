@@ -21,11 +21,15 @@ import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import matlu from "./matlu.png";
 
 import FrontPage from "./pages/frontpage";
 import LoginPage from "./pages/loginpage";
-import NewAccountPage from "./pages/createpage";
 import ChristinaRegina from "./pages/christina_regina";
 import OwnPage from "./pages/ownpage";
 import PrivacyPolicy from "./pages/privacypolicy";
@@ -35,11 +39,23 @@ import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
 
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import { Button } from "react-bootstrap";
 
 const drawerWidth = 240;
 
-// Next constants are used for UI eg. toggle the navigation menu.
+const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>Kirjaudu sisään</DialogTitle>
+      <DialogContent>
+        <LoginPage onLogin={onLogin} onCreateNewUser={onCreateNewUser} />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Peruuta</Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 const App = (props) => {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -51,7 +67,8 @@ const App = (props) => {
     JSON.parse(localStorage.getItem("loggedUser")) || null,
   );
 
-  // Checks whether a user is logged in
+  const [loginDialogOpen, setLoginDialogOpen] = React.useState(false);
+
   React.useEffect(() => {
     const loggedInStatus = localStorage.getItem("isLoggedIn");
     if (loggedInStatus === "true") {
@@ -83,6 +100,7 @@ const App = (props) => {
   const handleLogin = () => {
     setIsLoggedIn(true);
     localStorage.setItem("isLoggedIn", "true");
+    setLoginDialogOpen(false); // Close the dialog upon successful login
   };
 
   // Removes localstorage value if someone logs out
@@ -92,6 +110,14 @@ const App = (props) => {
     setLoggedUser(null);
     setIsLoggedIn(false);
     localStorage.removeItem("isLoggedIn");
+  };
+
+  const openLoginDialog = () => {
+    setLoginDialogOpen(true);
+  };
+
+  const closeLoginDialog = () => {
+    setLoginDialogOpen(false);
   };
 
   const icons = [
@@ -104,6 +130,7 @@ const App = (props) => {
     <FactCheckOutlinedIcon />,
     <AdminPanelSettingsOutlinedIcon />,
   ];
+
   const drawer = (
     <div>
       <img src={matlu} alt="logo" style={{ height: "auto" }} />{" "}
@@ -178,7 +205,7 @@ const App = (props) => {
                 Kirjaudu ulos{" "}
               </Button>
             ) : (
-              <Button variant="primary" href="/login">
+              <Button variant="contained" onClick={openLoginDialog}>
                 Kirjaudu
               </Button>
             )}
@@ -252,21 +279,14 @@ const App = (props) => {
               element={<Rules_and_Instructions />}
             />
             <Route path="/tietosuojaseloste" element={<PrivacyPolicy />} />
-            <Route
-              path="/login"
-              element={
-                showLoginPage ? (
-                  <LoginPage
-                    onLogin={handleLogin}
-                    onLogout={handleLogout}
-                    onCreateNewUser={handleCreateNewUser}
-                  />
-                ) : (
-                  <NewAccountPage onAccountCreated={handleCreateNewUser} />
-                )
-              }
-            />
+            
           </Routes>
+          <LoginDialog
+            open={loginDialogOpen}
+            onClose={closeLoginDialog}
+            onLogin={handleLogin}
+            onCreateNewUser={handleCreateNewUser}
+          />
         </Box>
       </Box>
     </Router>

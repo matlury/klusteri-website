@@ -26,7 +26,6 @@ const ReservationsView = ({
   eventDetails,
   handleAddEvent,
   showInfoModal,
-  activeResponsibilities,
   localizer,
   events,
   startRef,
