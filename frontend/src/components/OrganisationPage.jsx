@@ -46,11 +46,12 @@ const OrganisationPage = ({
 
   const toggleOrgDetails = (orgId) => {
     const showThisOrg = allOrganisations.find((org) => org.id === orgId);
+    console.log(showThisOrg);
 
     setOrganisationNewName(showThisOrg.Organisaatio)
     setOrganisationNewHomePage(showThisOrg.kotisivu)
     setOrganisationNewEmail(showThisOrg.email)
-    setOrganisationNewColor(showThisOrg.color)
+    setOrganizationNewColor(showThisOrg.color)
     setOrganisationId(showThisOrg.id)
     setOrganisationKeys(showThisOrg.Avaimia)
     handleClickOpen();
@@ -65,6 +66,7 @@ const OrganisationPage = ({
           Organisaatio: u.name,
           email: u.email,
           kotisivu: u.homepage,
+          color: u.color,
           Avaimia: u.user_set.length,
 
         }));
@@ -154,7 +156,7 @@ const OrganisationPage = ({
               id="organization_new_color"
               type="organ"
               value={organization_new_color}
-              onChange={(e) => setOrganisationNewHomePage(e.target.value)}
+              onChange={(e) => setOrganizationNewColor(e.target.value)}
               fullWidth
             />
           {/* </form> */}
