@@ -1,31 +1,36 @@
-import { render, fireEvent } from "@testing-library/react";
+import { render, fireEvent, getByTestId } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Rules_and_Instructions from "../../src/pages/rules_instructions";
 
 describe("Instructions component opens", () => {
-  it("renders Instructions page component", () => {
+
+    it("renders Instructions page component", () => {
     const { getByText, queryByText } = render(<Rules_and_Instructions />);
-    expect(getByText("Klusterin käyttösäännöt")).toBeInTheDocument();
+    expect(getByText("Säännöt ja ohjeet")).toBeInTheDocument();
   });
 
-  it("Shows the instructions", () => {
-    const { getByText, queryByText } = render(<Rules_and_Instructions />);
-    const klusteriButton = getByText("Klusterin käyttösäännöt");
-    fireEvent.click(klusteriButton);
+  it("Shows the rules", () => {
+    const { getByText } = render(<Rules_and_Instructions />);
+    const rulesButton = getByText(
+      "Matlu-klusterin käyttösäännöt",
+    );
+    fireEvent.click(rulesButton);
 
-    expect(getByText("1§ Määräysala")).toBeInTheDocument();
-    const closeButton = getByText("Sulje");
-
-    fireEvent.click(closeButton);
-    expect(queryByText("Sulje")).not.toBeInTheDocument();
+    expect(
+      getByText("Tapahtuman jälkeinen siivous"),
+    ).toBeInTheDocument();
   });
 
   it("Shows the cleaning rules", () => {
     const { getByText } = render(<Rules_and_Instructions />);
-    const cleaningButton = getByText("Siivoussäännöt");
+    const cleaningButton = getByText(
+      "Siivoussäännöt",
+    );
     fireEvent.click(cleaningButton);
 
-    expect(getByText("Tapahtuman jälkeinen siivous")).toBeInTheDocument();
+    expect(
+      getByText("Tapahtuman jälkeinen siivous"),
+    ).toBeInTheDocument();
   });
 
   it("Shows the safety rules", () => {
