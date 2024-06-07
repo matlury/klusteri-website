@@ -318,6 +318,7 @@ describe("Reservations", () => {
   });
 
   describe("Creating and deleting", () => {
+    let org_id;
     beforeEach(function () {
       cy.viewport(2560, 1440);
       cy.on("uncaught:exception", () => {
@@ -343,6 +344,32 @@ describe("Reservations", () => {
       cy.get("#password").type("salasana123");
       cy.get(".login-button").click();
       cy.wait(500);
+
+      cy.window()
+        .its("localStorage")
+        .invoke("getItem", "ACCESS_TOKEN")
+        .should("not.be.null")
+        .then((token) => {
+          const req = {
+            email: "sahkoposti@tko-aly.fi",
+            homepage: "tko-aly.fi",
+            name: "tko-äly",
+            color: "",
+          };
+
+          cy.request({
+            method: "POST",
+            url: "http://localhost:8000/api/organizations/create",
+            body: req,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }).then((response) => {
+            expect(response.body).to.have.property("name", "tko-äly");
+            org_id = response.body.id;
+          });
+        });
+
       cy.contains("Varaukset").click();
     });
     it("Creating event works", function () {
@@ -352,7 +379,8 @@ describe("Reservations", () => {
       cy.get("#startTime").type(dates[0]);
       cy.get("#endTime").click().type(dates[1]);
       cy.get("#eventName").type("Test Event");
-      cy.get("#organizerName").type("Tester Mann");
+      cy.get("#organizerName").click();
+      cy.contains("tko-äly").click();
       cy.get("#responsibleName").type("Mr Responsible");
       cy.get("#eventDescription").type("This is a testing event");
       cy.get("#eventOpen").click();
@@ -361,28 +389,34 @@ describe("Reservations", () => {
       cy.contains("Kokoushuone").click();
       cy.get("#confirmCreate").click();
       cy.wait(500);
+      cy.reload();
       cy.contains("Test Event").click();
       cy.contains(checkdate);
       cy.contains("Test Event");
-      cy.contains("Järjestäjä: Tester Mann");
+      cy.contains("Järjestäjä: tko-äly");
       cy.contains("Vastuuhenkilö: Mr Responsible");
       cy.contains("Kuvaus: This is a testing event");
       cy.contains("Tila: Avoin");
       cy.contains("Huone: Kokoushuone");
     });
+
     it("Deleting event works", function () {
       const dates = getTestTimes();
       const body = {
         start: dates[0],
         end: dates[1],
         title: "Test Event 2",
-        organizer: "Tester Mannen",
+        organizer: org_id,
         description: "Testing event",
         responsible: "Mr Irresponsible",
         open: false,
         room: "Kerhotila",
       };
       const token = localStorage.getItem("ACCESS_TOKEN");
+      cy.wrap(null).then(() => {
+        expect(org_id).to.exist;
+        cy.log("Organization ID:", org_id);
+      });
       cy.request({
         method: "POST",
         url: "http://localhost:8000/api/events/create_event",
@@ -405,7 +439,6 @@ describe("Reservations", () => {
     });
   });
 });
-
 
 describe("Ownpage", () => {
   beforeEach(function () {
@@ -444,8 +477,7 @@ describe("Ownpage", () => {
     cy.get("#telegram").type("ProffaTG");
     cy.contains("Tallenna").click();
     cy.contains("Onnistui: Tiedot päivitetty onnistuneesti!");
-
-    });
+  });
 
   it("Create new organization works for permitted users", function () {
     cy.on("uncaught:exception", () => {
@@ -480,6 +512,7 @@ describe("Ownpage", () => {
     cy.get("#homepage").type("www.teekkarit.fi");
     cy.contains("Luo järjestö").click();
     cy.contains("Onnistui: Järjestö luotu onnistuneesti!");
+<<<<<<< HEAD
     cy.reload();
     cy.contains("Teekkarit");
     cy.contains("teekkarit@mail.com");
@@ -638,6 +671,10 @@ describe("Ownpage", () => {
   //     });  
 
  })
+=======
+    cy.contains("Teekkarit (avaimia: 0)");
+  });
+});
+>>>>>>> dbb52ad8a9108fe108d4a8278251da04ee8df8a1
 
 Cypress.on;
-  
