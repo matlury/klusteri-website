@@ -12,6 +12,9 @@ import {
   Autocomplete,
 } from "@mui/material";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import { lighten, styled } from '@mui/material/styles';
+import CheckIcon from '@mui/icons-material/Check';
 
 const YkvLogoutFunction = ({
   handleYkvLogin,
@@ -54,6 +57,47 @@ const YkvLogoutFunction = ({
     setConfirmOpen(true);
   };
 
+  const getBackgroundColor = (color) =>
+    lighten(color, 0.7);
+  
+  const getHoverBackgroundColor = (color) =>
+    lighten(color, 0.6);
+
+  const getSelectedBackgroundColor = (color) =>
+    lighten(color, 0.5);
+  
+  const getSelectedHoverBackgroundColor = (color) =>
+    lighten(color, 0.4);
+
+  const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
+    '& .late': {
+      backgroundColor: getBackgroundColor(theme.palette.error.main),
+      transition: 'background-color 0.1s ease',
+      '&:hover': {
+        backgroundColor: getHoverBackgroundColor(theme.palette.error.main),
+      },
+      '&.Mui-selected': {
+        backgroundColor: getSelectedBackgroundColor(theme.palette.error.main),
+        '&:hover': {
+          backgroundColor: getSelectedHoverBackgroundColor(theme.palette.error.main),
+        },
+      },
+    },
+    '& .on-time': {
+      backgroundColor: getBackgroundColor(theme.palette.success.main),
+      transition: 'background-color 0.1s ease',
+      '&:hover': {
+        backgroundColor: getHoverBackgroundColor(theme.palette.success.main),
+      },
+      '&.Mui-selected': {
+        backgroundColor: getSelectedBackgroundColor(theme.palette.success.main),
+        '&:hover': {
+          backgroundColor: getSelectedHoverBackgroundColor(theme.palette.success.main),
+        },
+      },
+    },
+  }));
+
   const columns = [
     {
       field: "actions",
@@ -82,6 +126,9 @@ const YkvLogoutFunction = ({
     { field: "YKV_sisäänkirjaus", headerName: "Sisäänkirjaus", width: 200 },
     { field: "logout_time", headerName: "Uloskirjaus", width: 200 },
     { field: "Organisaatiot", headerName: "Järjestöt", width: 200 },
+    { field: "late", headerName: "Myöhässä", width: 200, renderCell: (params) => (
+      params.row.late ? <AccessTimeIcon /> : <CheckIcon />
+    ) },
   ];
 
   useEffect(() => {
@@ -99,14 +146,16 @@ const YkvLogoutFunction = ({
           present: u.present,
           created_by: u.created_by,
           logout_time: u.present ? null : new Date(u.logout_time),
+          late: u.late,        
         }));
         setAllUsers(userData);
         setactiveUsers(
           userData.filter(
             (resp) =>
-              resp.present === true &&
-              resp.Vastuuhenkilö == loggedUser.username ||
-              resp.created_by == loggedUser.username,
+              resp.present === true 
+              // &&
+              // resp.Vastuuhenkilö == loggedUser.username ||
+              // resp.created_by == loggedUser.username,
           ),
         );
         setLoading(false);
@@ -141,6 +190,10 @@ const YkvLogoutFunction = ({
         user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
         user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase()),
     );
+
+  const getRowClassName = (params) => {
+    return params.row.late ? 'late' : 'on-time';
+  };
 
   return loading ? (
     <div>Lataa...</div>
@@ -255,11 +308,12 @@ const YkvLogoutFunction = ({
       {loggedUser.role !== 1 && loggedUser.role !== 5 && (
         <div>
           <h2>Omat vastuut</h2>
-          <DataGrid
+          <StyledDataGrid
             rows={ownUsers}
             columns={columns_2}
             pageSize={5}
             rowsPerPageOptions={[5, 10, 20]}
+            getRowClassName={getRowClassName}
           />
         </div>
       )}
@@ -267,11 +321,12 @@ const YkvLogoutFunction = ({
       {loggedUser.role === 1 && (
         <div>
           <h2>Kaikki vastuut</h2>
-          <DataGrid
+          <StyledDataGrid
             rows={filteredUsers}
             columns={columns_2}
             pageSize={5}
             rowsPerPageOptions={[5, 10, 20]}
+            getRowClassName={getRowClassName}
           />
         </div>
       )}

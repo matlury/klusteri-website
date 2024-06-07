@@ -9,8 +9,6 @@ const CreateOrganization = ({
   setOrganizationEmail,
   organization_homepage,
   setOrganizationHomePage,
-  organization_size,
-  setOrganizationSize,
   handleCreateOrganization,
 }) => {
   return (
@@ -28,7 +26,7 @@ const CreateOrganization = ({
         <TextField
           id="email"
           label="Sähköposti"
-          class="organization-email"
+          className="organization-email"
           value={organization_email}
           onChange={(e) => setOrganizationEmail(e.target.value)}
         />
@@ -39,15 +37,6 @@ const CreateOrganization = ({
           label="Kotisivu"
           value={organization_homepage}
           onChange={(e) => setOrganizationHomePage(e.target.value)}
-        />
-      </div>
-      <div>
-        <FormControlLabel control={<Switch />} label="Iso järjestö" />
-        <TextField
-          id="size"
-          label="Koko"
-          value={organization_size}
-          onChange={(e) => setOrganizationSize(e.target.value)}
         />
       </div>
       <Button

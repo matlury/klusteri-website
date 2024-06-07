@@ -42,7 +42,7 @@ describe("Frontpage", () => {
   });
 
   it("error message if password input is too short", function () {
-    cy.visit("http://localhost:5173/login");
+    cy.contains("Kirjaudu").click();
     cy.wait(1000);
     cy.contains("Luo tili").click();
     cy.get("#usernameInput").type("testuser");
@@ -50,12 +50,12 @@ describe("Frontpage", () => {
     cy.get("#confirmPasswordInput").type("s");
     cy.get("#emailInput").type("testuser@gmail.com");
     cy.get("#telegramInput").type("testtg");
-    cy.contains("Luo tili").click();
+    cy.get(".create-user-button").click();
     cy.contains("Salasanan tulee olla 8-20 merkkiä pitkä.");
   });
 
   it("error message if password input is too long", function () {
-    cy.visit("http://localhost:5173/login");
+    cy.contains("Kirjaudu").click();
     cy.contains("Luo tili").click();
     cy.contains("Telegram (valinnainen)"); //get
     cy.get("#usernameInput").type("testuser");
@@ -63,12 +63,13 @@ describe("Frontpage", () => {
     cy.get("#confirmPasswordInput").type("1234567890salasanaaaaaaaa");
     cy.get("#emailInput").type("testuser@gmail.com");
     cy.get("#telegramInput").type("testtg");
-    cy.contains("Luo tili").click();
+    cy.get(".create-user-button").click();
+
     cy.contains("Salasanan tulee olla 8-20 merkkiä pitkä.");
   });
 
   it("error message if passwords dont match", function () {
-    cy.visit("http://localhost:5173/login");
+    cy.contains("Kirjaudu").click();
     cy.contains("Luo tili").click();
     cy.contains("Telegram (valinnainen)");
     cy.get("#usernameInput").type("testuser");
@@ -76,12 +77,12 @@ describe("Frontpage", () => {
     cy.get("#confirmPasswordInput").type("salasana234");
     cy.get("#emailInput").type("testuser@gmail.com");
     cy.get("#telegramInput").type("testtg");
-    cy.contains("Luo tili").click();
+    cy.get(".create-user-button").click();
     cy.contains("Salasanat eivät täsmää.");
   });
 
   it("error message if password only contains numbers", function () {
-    cy.visit("http://localhost:5173/login");
+    cy.contains("Kirjaudu").click();
     cy.contains("Luo tili").click();
     cy.contains("Telegram (valinnainen)");
     cy.get("#usernameInput").type("testuser");
@@ -89,26 +90,26 @@ describe("Frontpage", () => {
     cy.get("#confirmPasswordInput").type("1234567890");
     cy.get("#emailInput").type("testuser@gmail.com");
     cy.get("#telegramInput").type("testtg");
-    cy.contains("Luo tili").click();
+    cy.get(".create-user-button").click();
     cy.contains("Salasana ei saa sisältää pelkkiä numeroita tai kirjaimia.");
   });
 
   it("error message if a field is missing", function () {
-    cy.visit("http://localhost:5173/login");
+    cy.contains("Kirjaudu").click();
     cy.contains("Luo tili").click();
     cy.contains("Telegram (valinnainen)");
     cy.get("#passwordInput").type("1234567890");
     cy.get("#confirmPasswordInput").type("1234567890");
     cy.get("#emailInput").type("testuser@gmail.com");
     cy.get("#telegramInput").type("testtg");
-    cy.contains("Luo tili").click();
+    cy.get(".create-user-button").click();
     cy.contains(
       "Käyttäjänimi, salasana, sähköposti ja vahvista salasana ovat pakollisia kenttiä.",
     );
   });
 
   it("a user can be created", function () {
-    cy.visit("http://localhost:5173/login");
+    cy.contains("Kirjaudu").click();
     cy.contains("Luo tili").click();
     cy.contains("Telegram (valinnainen)");
     cy.get("#usernameInput").type("testuser");
@@ -116,7 +117,7 @@ describe("Frontpage", () => {
     cy.get("#confirmPasswordInput").type("salasana123");
     cy.get("#emailInput").type("testuser@gmail.com");
     cy.get("#telegramInput").type("testtg");
-    cy.contains("Luo tili").click();
+    cy.get(".create-user-button").click();
     cy.contains("Käyttäjä luotu onnistuneesti!");
   });
 
@@ -133,8 +134,7 @@ describe("Frontpage", () => {
     cy.get("#confirmPasswordInput").type("salasana123");
     cy.get("#emailInput").type("testuser@gmail.com");
     cy.get("#telegramInput").type("testtg");
-    cy.contains("Luo tili").click();
-
+    cy.get(".create-user-button").click();
     cy.wait(500);
     cy.contains("Etusivu");
 
@@ -302,6 +302,7 @@ describe("Ownkeys", () => {
     cy.reload();
     cy.contains("+ Ota vastuu").click();
     cy.get("#responsibility").type("fuksit");
+    cy.wait(500);
     cy.get("#takeresp").click();
     cy.reload();
     cy.get("#removeresp").click();
@@ -446,7 +447,7 @@ describe("Ownpage", () => {
 
     });
 
-  it("Create new organization works", function () {
+  it("Create new organization works for permitted users", function () {
     cy.on("uncaught:exception", () => {
       return false;
     });
@@ -479,11 +480,164 @@ describe("Ownpage", () => {
     cy.get("#homepage").type("www.teekkarit.fi");
     cy.contains("Luo järjestö").click();
     cy.contains("Onnistui: Järjestö luotu onnistuneesti!");
-    cy.contains("Teekkarit (avaimia: 0)");
+    cy.reload();
+    cy.contains("Teekkarit");
+    cy.contains("teekkarit@mail.com");
 
     });
 
-  })
+
+  it("Modifying organization works for permitted users", function () {
+    cy.on("uncaught:exception", () => {
+      return false;
+    });
+    const body = {
+      username: "super_prof",
+      password: "salasana123",
+      email: "super@gmail.com",
+      telegram: "",
+      role: 1,
+    };
+    let user_id;
+    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+      (response) => {
+        user_id = response.body.id;
+        expect(response.body).to.have.property("username", "super_prof");
+      },
+    );
+    cy.wait(1000);
+    cy.contains("Kirjaudu").click();
+    cy.get("#email").type("super@gmail.com");
+    cy.get("#password").type("salasana123");
+    cy.get(".login-button").click();
+    cy.contains("Talon latinankielinen nimi");
+
+    cy.wait(500);
+    cy.contains("Omat tiedot").click();
+
+    cy.get("#name").type("Teekkarit");
+    cy.get(".organization-email").type("teekkarit@mail.com");
+    cy.get("#homepage").type("www.teekkarit.fi");
+    cy.contains("Luo järjestö").click();
+    cy.contains("Onnistui: Järjestö luotu onnistuneesti!");
+    cy.reload();
+    cy.contains("Teekkarit");
+    cy.contains("teekkarit@mail.com");
+
+    cy.get(".modify_org").click()
+    cy.get("#organization_name").type("123");
+    cy.contains("Vahvista muutokset"). click()
+    cy.reload();
+    cy.contains("Teekkarit123");
+    });  
+
+  it("Deleting organization works for permitted users", function () {
+    cy.on("uncaught:exception", () => {
+      return false;
+    });
+    const body = {
+      username: "super_prof",
+      password: "salasana123",
+      email: "super@gmail.com",
+      telegram: "",
+      role: 1,
+    };
+    let user_id;
+    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+      (response) => {
+        user_id = response.body.id;
+        expect(response.body).to.have.property("username", "super_prof");
+      },
+    );
+    cy.wait(1000);
+    cy.contains("Kirjaudu").click();
+    cy.get("#email").type("super@gmail.com");
+    cy.get("#password").type("salasana123");
+    cy.get(".login-button").click();
+    cy.contains("Talon latinankielinen nimi");
+
+    cy.wait(500);
+    cy.contains("Omat tiedot").click();
+
+    cy.get("#name").type("Teekkarit");
+    cy.get(".organization-email").type("teekkarit@mail.com");
+    cy.get("#homepage").type("www.teekkarit.fi");
+    cy.contains("Luo järjestö").click();
+    cy.contains("Onnistui: Järjestö luotu onnistuneesti!");
+    cy.reload();
+
+    cy.get(".modify_org").click()
+    cy.contains("Poista järjestö"). click()
+    cy.reload();
+    cy.contains("Teekkarit").should("not.exist");
+
+    });     
+
+  //   it("Modifying user works for permitted users", function () {
+  //     cy.on("uncaught:exception", () => {
+  //       return false;
+  //     });
+  //     cy.contains("Kirjaudu").click();
+  //     cy.contains("Luo tili").click();
+  //     cy.contains("Telegram (valinnainen)");
+  //     cy.get("#usernameInput").type("Mr.Perus");
+  //     cy.get("#passwordInput").type("salasana123");
+  //     cy.get("#confirmPasswordInput").type("salasana123");
+  //     cy.get("#emailInput").type("perus@gmail.com");
+  //     cy.get(".create-user-button").click();
+  //     cy.wait(500);
+  //     cy.contains("Etusivu");
+  
+  //     cy.wait(500);
+  //     cy.contains("Peruuta"). click();
+
+  //     const body2 = {
+  //       username: "super_prof",
+  //       password: "salasana123",
+  //       email: "super@gmail.com",
+  //       telegram: "",
+  //       role: 1,
+  //     };
+
+  //     let user_id2;
+  //     cy.request("POST", "http://localhost:8000/api/users/register", body2).then(
+  //       (response) => {
+  //         user_id2 = response.body.id;
+  //         expect(response.body).to.have.property("username", "super_prof");
+  //       },
+  //     );
+  //     cy.wait(1000);
+  //     cy.contains("Kirjaudu").click();
+  //     cy.get("#email").type("super@gmail.com");
+  //     cy.get("#password").type("salasana123");
+  //     cy.get(".login-button").click();
+  //     cy.contains("Talon latinankielinen nimi");
+  
+  //     cy.wait(500);
+  //     cy.contains("Omat tiedot").click();
+  //     cy.wait(500);
+
+  //     //cy.contains("Mr.Perus");
+  
+  //     //cy.get(".modify_user").first().click()
+
+  //     // Ensure the DataGrid is fully loaded and visible
+  //     cy.get('.MuiDataGrid-root').eq(1).within(() => {
+  //       // Find the cell containing 'Mr. Perus'
+  //       cy.contains('.MuiDataGrid-cell', 'Mr. Perus', { timeout: 10000 })
+  //         .should('exist') // Ensure the cell exists
+  //         .parents('div.MuiDataGrid-row') // Navigate to the parent row
+  //         .find('.modify_user') // Find the modify button within that row
+  //         .click(); // Click the button
+  //     });
+  //     cy.get(".user_new_telegram").type("PerustyyppiTG")
+  //     cy.get("Tallenna").click()
+  //     cy.reload();
+  //     cy.contains("PerustyyppiTG");
+
+  //     });  
+
+ })
 
 Cypress.on;
   
