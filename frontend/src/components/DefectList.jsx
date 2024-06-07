@@ -18,6 +18,7 @@ const DefectList = ({ loggedUser, allDefects, activeDefects, handleRepairClick, 
           variant="outlined"
           onClick={() => handleEmailClick(params.id)}
           data-testid={`email-button-${params.id}`}
+          id="emailfault"
         >
           <CheckIcon />
         </Button>
@@ -33,6 +34,7 @@ const DefectList = ({ loggedUser, allDefects, activeDefects, handleRepairClick, 
           variant="outlined"
           onClick={() => handleRepairClick(params.id)}
           data-testid={`repair-button-${params.id}`}
+          id="repairfault"
         >
           <CheckIcon />
         </Button>

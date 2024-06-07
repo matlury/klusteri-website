@@ -23,6 +23,7 @@ const RepairConfirmDialog = ({ open, handleConfirmClose, handleRepairFault, sele
           color="primary"
           variant="contained"
           data-testid="confirmlogout"
+          id="confirmremove"
         >
           Vahvista
         </Button>

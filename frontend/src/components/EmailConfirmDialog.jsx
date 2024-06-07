@@ -23,6 +23,7 @@ const EmailConfirmDialog = ({ open, handleConfirmClose, handleMarkEmailSent, sel
           color="primary"
           variant="contained"
           data-testid="confirmlogout"
+          id="confirmemail"
         >
           Vahvista
         </Button>

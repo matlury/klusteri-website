@@ -482,13 +482,14 @@ describe("Ownpage", () => {
     cy.contains("Teekkarit (avaimia: 0)");
 
     });
+  });
 
     describe("Defectfaultpage", () => {
       beforeEach(function () {
         cy.request("POST", "http://localhost:8000/api/testing/reset");
         cy.visit("http://localhost:5173");
       });
-      it("Create fault works", function () {
+      it("Creating fault works", function () {
         cy.on("uncaught:exception", () => {
           return false;
         });
@@ -519,9 +520,16 @@ describe("Ownpage", () => {
         cy.contains("Peruuta").click();
         cy.reload();
         cy.contains("Vessan ovenkahva irronnut");
+
+        cy.get("#repairfault").click();
+        cy.get("#confirmremove").click();
+        cy.contains("Vian korjaus onnistui");
+
+        cy.get("#emailfault").click();
+        cy.get("#confirmemail").click();
+        cy.contains("Merkitseminen lähetetyksi onnistui");
       });
     });
-  });
 
 Cypress.on;
   
