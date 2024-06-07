@@ -46,10 +46,10 @@ const UserPage = ({
       >
         Tallenna{" "}
       </Button>
-      <br />
+
       <div>Käyttäjän rooli: {role}</div>
 
-      <br />
+
     </form>
   );
 };

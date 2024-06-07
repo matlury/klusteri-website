@@ -21,10 +21,8 @@ const Contacts = () => {
       <p>Klusterille voi soittaa numeroon 044 9556085</p>
       <h1>Leppätalokomitea</h1>
       <p>Klusterin viihtyvyydestä ja säännöistä vastaa Leppätalokomitea.</p>
-      <br />
       Vuonna 2023 puheenjohtajana toimii Tomas Terälä (tomas.terala (at)
       helsinki.fi)
-      <br />
       <h1>Järjestöjen yhteyshenkilöt</h1>
     </div>
   );

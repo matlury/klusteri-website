@@ -19,7 +19,7 @@ class Organization(models.Model):
     name = models.CharField(max_length=50, default="", unique=True)
     email = models.EmailField(max_length=100, default="", unique=True)
     homepage = models.CharField(max_length=100, default="")
-    size = models.IntegerField(default=0)
+    color = models.CharField(max_length=7, blank=True, null=True)
 
 class UserAccountManager(BaseUserManager):
     """
@@ -68,6 +68,7 @@ class User(AbstractBaseUser):
     telegram = models.CharField(max_length=100, default="", blank=True)
     role = models.IntegerField(default=5)
     keys = models.ManyToManyField(Organization)
+    rights_for_reservation = models.BooleanField(default=False)
 
     objects = UserAccountManager()
 
@@ -83,15 +84,13 @@ class Event(models.Model):
 
     # Fields for event attributes
     start = models.DateTimeField(
-        auto_now_add = True,
         blank = True
     )
     end = models.DateTimeField(
-        auto_now = True,
         blank = True,
     )
     title = models.CharField(max_length=100, default="") # Name of the event
-    organizer = models.CharField(max_length=100, default="") # Organization responsible for the event
+    organizer = models.ForeignKey(Organization, on_delete=models.CASCADE, default=0) # Organization responsible for the event
     description = models.CharField(max_length=500, default="")  # Description of the event
     responsible = models.CharField(max_length=100, default="")  # Person responsible for the event
     open = models.BooleanField(default=True)  # Indicates whether the event is open or not
@@ -109,7 +108,6 @@ class NightResponsibility(models.Model):
     responsible_for = models.CharField(max_length=500, default="")
     login_time = models.DateTimeField(
         auto_now_add = True,
-        blank = True
     )
     logout_time = models.DateTimeField(
         auto_now = True,
@@ -122,6 +120,24 @@ class NightResponsibility(models.Model):
 class DefectFault(models.Model):
     """Model for defects and faults in Klusteri."""
 
+    id = models.AutoField(primary_key=True)
     description = models.CharField(max_length=300, default="")
-    email_sent = models.BooleanField(default=False)
-    repaired = models.BooleanField(default=False)
+    """
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        default = 0
+        )
+    """
+    time = models.DateTimeField(
+        auto_now_add = True,
+    )
+    email_sent = models.DateTimeField(
+        blank = True,
+        null = True
+    )
+    repaired = models.DateTimeField(
+        blank = True,
+        null = True
+    )
+

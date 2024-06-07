@@ -1,65 +1,192 @@
-import React from "react";
-import OrganizationDetails from "./OrganizationDetails";
+import React, { useState, useEffect } from "react";
+import axiosClient from "../axios.js";
+import { DataGrid } from "@mui/x-data-grid";
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import {
+  Button,
+  TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 
 const OrganisationPage = ({
-  organisations,
-  selectedOrg,
   hasPermissionOrg,
   organization_new_name,
   setOrganizationNewName,
-  organization_new_size,
-  setOrganizationNewSize,
   organization_new_homepage,
   setOrganizationNewHomePage,
   organization_new_email,
   setOrganizationNewEmail,
+  organization_new_color,
+  setOrganizationNewColor,
   handleOrganizationDetails,
-  hasPermission,
-  handleDeleteOrganization,
-  toggleOrgDetails,
+  handleDeleteOrganization
+
 }) => {
+
+  const [allOrganisations, setAllOrganisations] = useState([]);
+  const [open, setOpen] = useState(false);
+  
+  const [organisation_new_name, setOrganisationNewName] = useState("");
+  const [organisation_new_homepage, setOrganisationNewHomePage] = useState("");
+  const [organisation_new_email, setOrganisationNewEmail] = useState("");
+  const [organisation_id, setOrganisationId] = useState("");
+  const [organisation_keys, setOrganisationKeys] = useState("");
+
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const toggleOrgDetails = (orgId) => {
+    const showThisOrg = allOrganisations.find((org) => org.id === orgId);
+    console.log(showThisOrg);
+
+    setOrganisationNewName(showThisOrg.Organisaatio)
+    setOrganisationNewHomePage(showThisOrg.kotisivu)
+    setOrganisationNewEmail(showThisOrg.email)
+    setOrganizationNewColor(showThisOrg.color)
+    setOrganisationId(showThisOrg.id)
+    setOrganisationKeys(showThisOrg.Avaimia)
+    handleClickOpen();
+  };
+
+  useEffect(() => {
+    axiosClient
+      .get("listobjects/organizations/")
+      .then((res) => {
+        const orgData = res.data.map((u) => ({
+          id: u.id,
+          Organisaatio: u.name,
+          email: u.email,
+          kotisivu: u.homepage,
+          color: u.color,
+          Avaimia: u.user_set.length,
+
+        }));
+        setAllOrganisations(orgData);
+        
+      })
+      .catch((error) => console.error(error));
+  }, []);
+
+  const handleFormSubmit = (event) => {
+     event.preventDefault();
+     handleOrganizationDetails(organisation_new_name, organisation_new_email, organisation_new_homepage, organisation_id);
+     handleClose();
+   };
+
+  const handleDelete = (organisation_id) => {
+    handleDeleteOrganization(organisation_id);
+    handleClose();
+  }
+
+  const columns = [
+    {
+      field: "actions",
+      headerName: "Muokkaa",
+      width: 200,
+      renderCell: (params) => (
+        <Button
+          variant="contained"
+          color="primary"
+          className="modify_org"
+          id="modify_org"
+          onClick={() => toggleOrgDetails(params.id)}
+        >
+          <EditOutlinedIcon />
+        </Button>
+      ),
+    },
+    { field: "Organisaatio", headerName: "Nimi", width: 150 },
+    { field: "kotisivu", headerName: "Kotisivu", width: 200 },
+    { field: "email", headerName: "Sähköposti", width: 200 },
+    { field: "Avaimia", headerName: "Avaimia", width: 80 },    
+  ];
+
   return (
     <div>
-      <p></p>
-      <h2>Järjestöt</h2>
-      <ul style={{ listStyleType: "none", padding: 0 }}>
-        {organisations.map((org) => (
-          <li key={org.id}>
-            {org.name}
-            {" (avaimia: "}
-            {org.user_set.length}
-            {")"}
-            <button
-              className="login-button"
-              data-testid="orgdetailsbutton"
-              onClick={() => toggleOrgDetails(org.id)}
-            >
-              View
-            </button>
-            {
-              <OrganizationDetails
-                organisations={organisations}
-                selectedOrg={selectedOrg}
-                orgId={org.id}
-                hasPermissionOrg={hasPermissionOrg}
-                organization_new_name={organization_new_name}
-                setOrganizationNewName={setOrganizationNewName}
-                setOrganizationNewSize={setOrganizationNewSize}
-                organization_new_homepage={organization_new_homepage}
-                setOrganizationNewHomePage={setOrganizationNewHomePage}
-                organization_new_email={organization_new_email}
-                setOrganizationNewEmail={setOrganizationNewEmail}
-                handleOrganizationDetails={handleOrganizationDetails}
-                hasPermission={hasPermission}
-                handleDeleteOrganization={handleDeleteOrganization}
-                organization_new_size={organization_new_size}
-              />
-            }
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+      <h4>Järjestöt</h4>
+      <div>
+        <DataGrid
+          rows={allOrganisations}
+          columns={columns}
+          pageSize={5}
+          rowsPerPageOptions={[5, 10, 20]}
+        />
+      </div>
+     {hasPermissionOrg === true && (
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Muokkaa järjestöä</DialogTitle>
+        <DialogContent>
+          <form onSubmit={handleFormSubmit}>
+            <TextField
+              label="Organisaation nimi"
+              id="organization_name"
+              type="organ"
+              value={organisation_new_name}
+              onChange={(e) => setOrganisationNewName(e.target.value)}
+              fullWidth
+            />
+            <TextField
+              label="Sähköposti"
+              id="organization_new_email"
+              type="organ"
+              value={organisation_new_email}
+              onChange={(e) => setOrganisationNewEmail(e.target.value)}
+              fullWidth
+
+            />
+            <TextField
+              label="Kotisivu"
+              id="organization_homepage"
+              type="organ"
+              value={organisation_new_homepage}
+              onChange={(e) => setOrganisationNewHomePage(e.target.value)}
+              fullWidth
+            />
+            <TextField
+              label="Organisaation väri"
+              id="organization_new_color"
+              type="organ"
+              value={organization_new_color}
+              onChange={(e) => setOrganizationNewColor(e.target.value)}
+              fullWidth
+            />
+          {/* </form> */}
+        {/* </DialogContent> */}
+        <DialogActions>
+          <Button onClick={handleClose}>Peruuta</Button>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            id="confirm_org_change"
+            className="confirm_org_change"
+          >
+            Vahvista muutokset
+          </Button>
+          <Button 
+            variant="contained"
+            color="secondary"
+            className="delete-org-button"
+            onClick={() => handleDelete(organisation_id)}
+            >Poista järjestö
+            </Button>
+        </DialogActions>
+        </form> 
+        </DialogContent>
+      </Dialog>
+       )}
+      </div>
+  )
 };
+
 
 export default OrganisationPage;

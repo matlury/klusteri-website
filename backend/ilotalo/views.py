@@ -10,13 +10,14 @@ from .serializers import (
     UserNoPasswordSerializer,
     UserUpdateSerializer,
     EventSerializer,
+    CreateEventSerializer,
     NightResponsibilitySerializer,
     CreateNightResponsibilitySerializer,
     DefectFaultSerializer,
 )
 from .models import User, Organization, Event, NightResponsibility, DefectFault
 from .config import Role
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 
 LEPPISPJ = Role.LEPPISPJ.value
@@ -394,7 +395,6 @@ class CreateEventView(APIView):
             LEPPISPJ,
             LEPPISVARAPJ,
             MUOKKAUS,
-            AVAIMELLINEN,
             JARJESTOPJ,
             JARJESTOVARAPJ
         ]:
@@ -403,7 +403,7 @@ class CreateEventView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        serializer = EventSerializer(data=request.data)
+        serializer = CreateEventSerializer(data=request.data)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -755,20 +755,6 @@ class CreateDefectFaultView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        user = UserSerializer(request.user)
-
-        if user.data["role"] not in [
-            LEPPISPJ,
-            LEPPISVARAPJ,
-            MUOKKAUS,
-            AVAIMELLINEN,
-            JARJESTOPJ,
-            JARJESTOVARAPJ
-        ]:
-            return Response(
-                "You can't create new defect reports",
-                status=status.HTTP_400_BAD_REQUEST,
-            )
 
         serializer = DefectFaultSerializer(data=request.data)
 
@@ -777,6 +763,76 @@ class CreateDefectFaultView(APIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+class RepairDefectFaultView(APIView):
+    """View for updating a DefectFault object at <baseurl>/api/defects/repair_defect/<defect.id>/"""
+
+    # IsAuthenticated will deny access if request has no access token
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, pk=None):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ,
+            MUOKKAUS,
+        ]:
+            return Response(
+                "You can't edit this",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            defect_to_update = DefectFault.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            return Response("Not found", status=status.HTTP_404_NOT_FOUND)
+        
+        defect_to_update.repaired = datetime.now(timezone.utc)
+
+        defectfault = DefectFaultSerializer(
+            instance=defect_to_update, data=request.data, partial=True
+        )
+
+        if defectfault.is_valid():
+            defectfault.save()
+            return Response(defectfault.data, status=status.HTTP_200_OK)
+        return Response(defectfault.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class EmailDefectFaultView(APIView):
+    """View for updating a DefectFault object at <baseurl>/api/defects/email_defect/<defect.id>/"""
+
+    # IsAuthenticated will deny access if request has no access token
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, pk=None):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ,
+            MUOKKAUS,
+        ]:
+            return Response(
+                "You can't edit this",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            defect_to_update = DefectFault.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            return Response("Not found", status=status.HTTP_404_NOT_FOUND)
+        
+        defect_to_update.email_sent = datetime.now(timezone.utc)
+
+        defectfault = DefectFaultSerializer(
+            instance=defect_to_update, data=request.data, partial=True
+        )
+
+        if defectfault.is_valid():
+            defectfault.save()
+            return Response(defectfault.data, status=status.HTTP_200_OK)
+        return Response(defectfault.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UpdateDefectFaultView(APIView):
     """View for updating a DefectFault object at <baseurl>/api/defects/update_defect/<defect.id>/"""
@@ -791,9 +847,6 @@ class UpdateDefectFaultView(APIView):
             LEPPISPJ,
             LEPPISVARAPJ,
             MUOKKAUS,
-            AVAIMELLINEN,
-            JARJESTOPJ,
-            JARJESTOVARAPJ
         ]:
             return Response(
                 "You can't edit defects",

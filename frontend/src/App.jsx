@@ -14,6 +14,7 @@ import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import BarChartIcon from '@mui/icons-material/BarChart';
+import FormatColorResetOutlinedIcon from '@mui/icons-material/FormatColorResetOutlined';
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -22,26 +23,43 @@ import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import matlu from "./matlu.png";
 
 import FrontPage from "./pages/frontpage";
 import LoginPage from "./pages/loginpage";
-import NewAccountPage from "./pages/createpage";
 import ChristinaRegina from "./pages/christina_regina";
 import OwnPage from "./pages/ownpage";
 import PrivacyPolicy from "./pages/privacypolicy";
 import Contacts from "./pages/contacts";
+import DefectFault from "./pages/defectfaultpage";
 import Rules_and_Instructions from "./pages/rules_instructions";
 import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
 import Statistics from "./pages/statistics";
 
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import { Button } from "react-bootstrap";
 
 const drawerWidth = 240;
 
-// Next constants are used for UI eg. toggle the navigation menu.
+const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>Kirjaudu sisään</DialogTitle>
+      <DialogContent>
+        <LoginPage onLogin={onLogin} onCreateNewUser={onCreateNewUser} />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Peruuta</Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 const App = (props) => {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -53,7 +71,8 @@ const App = (props) => {
     JSON.parse(localStorage.getItem("loggedUser")) || null,
   );
 
-  // Checks whether a user is logged in
+  const [loginDialogOpen, setLoginDialogOpen] = React.useState(false);
+
   React.useEffect(() => {
     const loggedInStatus = localStorage.getItem("isLoggedIn");
     if (loggedInStatus === "true") {
@@ -85,6 +104,7 @@ const App = (props) => {
   const handleLogin = () => {
     setIsLoggedIn(true);
     localStorage.setItem("isLoggedIn", "true");
+    setLoginDialogOpen(false); // Close the dialog upon successful login
   };
 
   // Removes localstorage value if someone logs out
@@ -97,6 +117,14 @@ const App = (props) => {
     localStorage.removeItem("isLoggedIn");
   };
 
+  const openLoginDialog = () => {
+    setLoginDialogOpen(true);
+  };
+
+  const closeLoginDialog = () => {
+    setLoginDialogOpen(false);
+  };
+
   const icons = [
     <HomeOutlinedIcon />,
     <InfoOutlinedIcon />,
@@ -105,12 +133,14 @@ const App = (props) => {
     <ManageAccountsOutlinedIcon />,
     <BarChartIcon />,
     <LocationOnOutlinedIcon />,
+    <FormatColorResetOutlinedIcon/>,
     <FactCheckOutlinedIcon />,
     <AdminPanelSettingsOutlinedIcon />,
   ];
+
   const drawer = (
     <div>
-      <img src={matlu} alt="logo" style={{ height: "22.9%" }} />{" "}
+      <img src={matlu} alt="logo" style={{ height: "auto" }} />{" "}
       {/* ADD PADDING TO LOGO */}
       <Divider />
       <List>
@@ -122,6 +152,7 @@ const App = (props) => {
           "Omat tiedot",
           "Tilastot",
           "Yhteystiedot",
+          "Viat",
           "Säännöt ja ohjeet",
           "Tietosuojaseloste",
         ].map((text, index) => (
@@ -183,7 +214,7 @@ const App = (props) => {
                 Kirjaudu ulos{" "}
               </Button>
             ) : (
-              <Button variant="primary" href="/login">
+              <Button variant="contained" onClick={openLoginDialog}>
                 Kirjaudu
               </Button>
             )}
@@ -254,25 +285,22 @@ const App = (props) => {
             <Route path="/tilastot" element={<Statistics />}/>
             <Route path="/yhteystiedot" element={<Contacts />} />
             <Route
+              path="/viat"
+              element={<DefectFault isLoggedIn={isLoggedIn} loggedUser={loggedUser} />}
+            />
+            <Route
               path="/saannot_ja_ohjeet"
               element={<Rules_and_Instructions />}
             />
             <Route path="/tietosuojaseloste" element={<PrivacyPolicy />} />
-            <Route
-              path="/login"
-              element={
-                showLoginPage ? (
-                  <LoginPage
-                    onLogin={handleLogin}
-                    onLogout={handleLogout}
-                    onCreateNewUser={handleCreateNewUser}
-                  />
-                ) : (
-                  <NewAccountPage onAccountCreated={handleCreateNewUser} />
-                )
-              }
-            />
+            
           </Routes>
+          <LoginDialog
+            open={loginDialogOpen}
+            onClose={closeLoginDialog}
+            onLogin={handleLogin}
+            onCreateNewUser={handleCreateNewUser}
+          />
         </Box>
       </Box>
     </Router>

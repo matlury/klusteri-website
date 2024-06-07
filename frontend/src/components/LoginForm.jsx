@@ -1,5 +1,5 @@
 import React from "react";
-import { TextField, Button } from "@mui/material";
+import { TextField, Button, FormGroup } from "@mui/material";
 
 const LoginForm = ({
   email,
@@ -12,16 +12,15 @@ const LoginForm = ({
 }) => {
   return (
     <form>
-      <h3>Sisäänkirjautuminen</h3>
-      <div className="form-group">
+      <FormGroup>
         <TextField
           id="email"
           label="Sähköposti"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-      </div>
-      <div className="form-group">
+      </FormGroup>
+      <FormGroup>
         <TextField
           id="password"
           label="Salasana"
@@ -29,27 +28,32 @@ const LoginForm = ({
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+      </FormGroup>
+
+      <div style={{ marginTop: 10 }}>
+        <Button
+          variant="contained"
+          className="login-button"
+          color="primary"
+          type="button"
+          onClick={handleLogin}
+        >
+          Kirjaudu sisään
+        </Button>
       </div>
 
-      <Button
-        variant="text"
-        className="create-user-button"
-        color="primary"
-        type="submit"
-        onClick={handleCreateUser}
-      >
-        Luo tili
-      </Button>
+      <div style={{ marginTop: 10 }}>
+        <Button
+          variant="text"
+          className="create-user-button"
+          color="primary"
+          type="button"
+          onClick={handleCreateUser}
+        >
+          Luo tili
+        </Button>
+      </div>
 
-      <Button
-        variant="contained"
-        className="login-button"
-        color="primary"
-        type="submit"
-        onClick={handleLogin}
-      >
-        Kirjaudu sisään
-      </Button>
       {error && <div style={{ color: "red" }}>{error}</div>}
     </form>
   );

@@ -850,11 +850,13 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/events/create_event",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "room": "Kerhotila",
-                "title": "varaus",
-                "organizer": "Matrix",
+                "room": "Kattilahuone",
+                "start": datetime.now(),
+                "end": datetime.now(),
+                "organizer": self.tko_aly_id,
+                "title": "Varaus suunnitteluun",
                 "description": "",
-                "responsible": "Matti",
+                "responsible": "Pete",
                 "open": True,
             },
             format="json",
@@ -867,11 +869,13 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/events/create_event",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "room": "Kerhotila",
-                "title": "varaus",
-                "organizer": "Matrix",
-                "description": "Pidetään hauskaa",
-                "responsible": "Matti",
+                "room": "Kattilahuone",
+                "start": datetime.now(),
+                "end": datetime.now(),
+                "organizer": self.tko_aly_id,
+                "title": "Varaus suunnitteluun",
+                "description": "Suunnitellaan juhlia",
+                "responsible": "Pete",
                 "open": True,
             },
             format="json",
@@ -884,11 +888,13 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/events/create_event",
             headers={"Authorization": f"Bearer {self.access_token}"},
             data={
-                "room": "varasto",
-                "title": "varaus",
-                "organizer": "Matrix",
-                "description": "kahvihetki",
-                "responsible": "Matti",
+                "room": "Kattilahuone",
+                "start": datetime.now(),
+                "end": datetime.now(),
+                "organizer": self.tko_aly_id,
+                "title": "Varaus suunnitteluun",
+                "description": "Suunnitellaan juhlia",
+                "responsible": "Pete",
                 "open": True,
             },
             format="json",
@@ -905,6 +911,9 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
                 "room": "Kattilahuone",
+                "start": datetime.now(),
+                "end": datetime.now(),
+                "organizer": self.tko_aly_id,
                 "title": "Varaus suunnitteluun",
                 "description": "Suunnitellaan juhlia",
                 "responsible": "Pete",
@@ -924,7 +933,8 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["room"], "Toinen huone")
-    
+
+    # FIX THIS TEST WHEN RESERVATION RIGHTS ARE FIXED (copy data from above test)
     def test_create_event_no_rights(self):
         """An unauthorized user can not create an event"""
 
@@ -959,10 +969,12 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
                 "room": "Kerhotila",
-                "title": "varaus",
-                "organizer": "Matrix",
-                "description": "Pidetään hauskaa",
-                "responsible": "Matti",
+                "start": datetime.now(),
+                "end": datetime.now(),
+                "organizer": self.tko_aly_id,
+                "title": "Varaus suunnitteluun",
+                "description": "Suunnitellaan juhlia",
+                "responsible": "Pete",
                 "open": True,
             },
             format="json",
@@ -1001,6 +1013,9 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
                 "room": "Kattilahuone",
+                "start": datetime.now(),
+                "end": datetime.now(),
+                "organizer": self.tko_aly_id,
                 "title": "Varaus suunnitteluun",
                 "description": "Suunnitellaan juhlia",
                 "responsible": "Pete",
@@ -1094,11 +1109,13 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/events/create_event",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "room": "Kerhotila",
-                "title": "varaus",
-                "organizer": "Matrix",
-                "description": "Pidetään hauskaa",
-                "responsible": "Matti",
+                "room": "Kattilahuone",
+                "start": datetime.now(),
+                "end": datetime.now(),
+                "organizer": self.tko_aly_id,
+                "title": "Varaus suunnitteluun",
+                "description": "Suunnitellaan juhlia",
+                "responsible": "Pete",
                 "open": True,
             },
             format="json",
@@ -1120,11 +1137,13 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/events/create_event",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "room": "Kerhotila",
-                "title": "varaus",
-                "organizer": "Matrix",
-                "description": "Pidetään hauskaa",
-                "responsible": "Matti",
+                "room": "Kattilahuone",
+                "start": datetime.now(),
+                "end": datetime.now(),
+                "organizer": self.tko_aly_id,
+                "title": "Varaus suunnitteluun",
+                "description": "Suunnitellaan juhlia",
+                "responsible": "Pete",
                 "open": True,
             },
             format="json",
@@ -1841,11 +1860,9 @@ class TestDjangoAPI(TestCase):
         # create a defect as Muokkaus with empty description
         response = self.client.post(
             "http://localhost:8000/api/defects/create_defect",
-            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
                 "description": "",
-                "email_sent": False,
-                "repaired": False,
             },
             format="json",
         )
@@ -1855,31 +1872,15 @@ class TestDjangoAPI(TestCase):
         # with correct description
         response = self.client.post(
             "http://localhost:8000/api/defects/create_defect",
-            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
                 "description": "Lattia rikki",
-                "email_sent": False,
-                "repaired": False,
             },
             format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        # creating a defect fails if the user is Tavallinen user
-        response = self.client.post(
-            "http://localhost:8000/api/defects/create_defect",
-            headers={"Authorization": f"Bearer {self.access_token}"},
-            data={
-                "description": "Lattia rikki",
-                "email_sent": False,
-                "repaired": False,
-            },
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    
     def test_updating_defect(self):
         """Roles other than role 5 can create defects"""
 
@@ -1889,8 +1890,6 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
             data={
                 "description": "Lattia rikki",
-                "email_sent": False,
-                "repaired": False,
             },
             format="json",
         )
@@ -1902,8 +1901,6 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.access_token}"},
             data={
                 "description": "Katto vuotaa",
-                "email_sent": False,
-                "repaired": False,
             },
             format="json",
         )
@@ -1916,8 +1913,6 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
             data={
                 "description": "Katto vuotaa",
-                "email_sent": False,
-                "repaired": False,
             },
             format="json",
         )
@@ -1930,8 +1925,6 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
             data={
                 "description": "Katto vuotaa",
-                "email_sent": False,
-                "repaired": False,
             },
             format="json",
         )
@@ -1947,8 +1940,6 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
             data={
                 "description": "Lattia rikki",
-                "email_sent": False,
-                "repaired": False,
             },
             format="json",
         )
