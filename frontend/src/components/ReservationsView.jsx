@@ -14,6 +14,7 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
+import OrgSelect from "./OrganizationChooseBox";
 
 const ReservationsView = ({
   handleAddNewEventClick,
@@ -32,6 +33,7 @@ const ReservationsView = ({
   selectedEvent,
   handleDeleteEvent,
   moment,
+  organizations,
 }) => {
   return (
     <div className="textbox">
@@ -87,7 +89,6 @@ const ReservationsView = ({
               label="Alkaa"
               type="datetime-local"
               name="start"
-              inputRef={startRef}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
@@ -100,7 +101,6 @@ const ReservationsView = ({
               label="Päättyy"
               type="datetime-local"
               name="end"
-              inputRef={endRef}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
@@ -120,12 +120,17 @@ const ReservationsView = ({
               fullWidth
               margin="normal"
             />
-            <TextField
-              id="organizerName"
-              name="organizer"
-              label="Järjestäjä"
+            <OrgSelect
+              data={organizations}
               value={eventDetails.organizer}
-              onChange={handleInputChange}
+              handleChange={(event) =>
+                handleInputChange({
+                  target: {
+                    name: "organizer",
+                    value: event.target.value,
+                  },
+                })
+              }
               fullWidth
               margin="normal"
             />
@@ -159,7 +164,6 @@ const ReservationsView = ({
                 onChange={handleInputChange}
                 label="Avoimuus"
               >
-                <MenuItem value="tyhjä">Valitse avoimuus</MenuItem>
                 <MenuItem value="avoin">Avoin tapahtuma</MenuItem>
                 <MenuItem value="suljettu">Vain jäsenille</MenuItem>
               </Select>
@@ -174,7 +178,6 @@ const ReservationsView = ({
                 onChange={handleInputChange}
                 label="Huone"
               >
-                <MenuItem value="tyhjä">Valitse huone</MenuItem>
                 <MenuItem value="Kokoushuone">Kokoushuone</MenuItem>
                 <MenuItem value="Kerhotila">Kerhotila</MenuItem>
                 <MenuItem value="Oleskelutila">Oleskelutila</MenuItem>
@@ -209,7 +212,7 @@ const ReservationsView = ({
                 Päättyy: {moment(selectedEvent.end).format("YYYY-MM-DD HH:mm")}
               </Typography>
               <Typography variant="body1">
-                Järjestäjä: {selectedEvent.organizer}
+                Järjestäjä: {selectedEvent.organizer.name}
               </Typography>
               <Typography variant="body1">
                 Vastuuhenkilö: {selectedEvent.responsible}

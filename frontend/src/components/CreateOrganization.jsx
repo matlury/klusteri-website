@@ -9,6 +9,8 @@ const CreateOrganization = ({
   setOrganizationEmail,
   organization_homepage,
   setOrganizationHomePage,
+  organization_color,
+  setOrganizationColor,
   handleCreateOrganization,
 }) => {
   return (
@@ -37,6 +39,14 @@ const CreateOrganization = ({
           label="Kotisivu"
           value={organization_homepage}
           onChange={(e) => setOrganizationHomePage(e.target.value)}
+        />
+      </div>
+      <div>
+        <TextField
+          id="color"
+          label="Järjestön väri"
+          value={organization_color}
+          onChange={(e) => setOrganizationColor(e.target.value)}
         />
       </div>
       <Button

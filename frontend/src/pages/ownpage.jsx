@@ -30,12 +30,12 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const [organization_email, setOrganizationEmail] = useState("");
   const [organization_name, setOrganizationName] = useState("");
   const [organization_homepage, setOrganizationHomePage] = useState("");
-  const [organization_size, setOrganizationSize] = useState("1");
+  const [organization_color, setOrganizationColor] = useState("");
 
   const [organization_new_email, setOrganizationNewEmail] = useState("");
   const [organization_new_name, setOrganizationNewName] = useState("");
   const [organization_new_homepage, setOrganizationNewHomePage] = useState("");
-  const [organization_new_size, setOrganizationNewSize] = useState("1");
+  const [organization_new_color, setOrganizationNewColor] = useState("");
 
   const [allUsers, setAllUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -216,7 +216,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     setOrganizationNewName(organization.name);
     setOrganizationNewEmail(organization.email);
     setOrganizationNewHomePage(organization.homepage);
-    setOrganizationNewSize(organization.size);
     setSelectedOrg((prevSelectedOrg) => {
       if (prevSelectedOrg === orgId) {
         return null;
@@ -235,9 +234,12 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       name: organization_new_name,
       email: organization_new_email,
       homepage: organization_new_homepage,
+      color: organization_new_color,
     };
-    //if (organization_new_size == 0 || organization_new_size == 1) {
-
+    if (true) {
+      const confirmUpdate = window.confirm(
+        "Oletko varma, että haluat päivittää organisaatiota?",
+      );
 
       if (confirmUpdate) {
         axiosClient
@@ -256,12 +258,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           });
       }
       else {
-        console.log("User cancelled the update.");
+        setTimeout(() => setError(""), 5000);
       }
-      {
-      setError("Koko täytyy olla 0 tai 1");
-      setTimeout(() => setError(""), 5000);
-    }
+    };
   };
 
   // Handles deletion of organization
@@ -286,7 +285,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   };
 
   // Handles the creation of organizations
-  const handleCreateOrganization = () =>
+  const handleCreateOrganization = () => {
     axios
       .get(
         `${API_URL}/api/listobjects/organizations/?email=${organization_email}`,
@@ -309,13 +308,12 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             name: organization_name,
             email: organization_email,
             homepage: organization_homepage,
-            size: organization_size,
+            color: organization_color,
           };
           console.log(organizationObject);
           axiosClient
             .post("organizations/create", organizationObject)
             .then((response) => {
-              console.log(response);
               console.log("Organization created successfully!");
               setSuccess("Järjestö luotu onnistuneesti!");
               setTimeout(() => setSuccess(""), 5000);
@@ -329,6 +327,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       .catch((error) => {
         console.error("Error checking email:", error);
       });
+  };
 
   // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION FOR ALL USERS (ONLY VISIBLE FOR LEPPIS PJ)
 
@@ -525,15 +524,15 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                     hasPermissionOrg={hasPermissionOrg}
                     organization_new_name={organization_new_name}
                     setOrganizationNewName={setOrganizationNewName}
-                    setOrganizationNewSize={setOrganizationNewSize}
                     organization_new_homepage={organization_new_homepage}
                     setOrganizationNewHomePage={setOrganizationNewHomePage}
                     organization_new_email={organization_new_email}
                     setOrganizationNewEmail={setOrganizationNewEmail}
+                    organization_new_color={organization_new_color}
+                    setOrganizationNewColor={setOrganizationNewColor}
                     handleOrganizationDetails={handleOrganizationDetails}
                     hasPermission={hasPermission}
                     handleDeleteOrganization={handleDeleteOrganization}
-                    organization_new_size={organization_new_size}
                     toggleOrgDetails={toggleOrgDetails}
                   />
                 }
@@ -545,8 +544,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                     setOrganizationEmail={setOrganizationEmail}
                     organization_homepage={organization_homepage}
                     setOrganizationHomePage={setOrganizationHomePage}
-                    organization_size={organization_size}
-                    setOrganizationSize={setOrganizationSize}
+                    organization_color={organization_color}
+                    setOrganizationColor={setOrganizationColor}
                     handleCreateOrganization={handleCreateOrganization}
                   />
                 )}

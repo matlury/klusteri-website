@@ -10,6 +10,7 @@ from .serializers import (
     UserNoPasswordSerializer,
     UserUpdateSerializer,
     EventSerializer,
+    CreateEventSerializer,
     NightResponsibilitySerializer,
     CreateNightResponsibilitySerializer,
     DefectFaultSerializer,
@@ -394,7 +395,6 @@ class CreateEventView(APIView):
             LEPPISPJ,
             LEPPISVARAPJ,
             MUOKKAUS,
-            AVAIMELLINEN,
             JARJESTOPJ,
             JARJESTOVARAPJ
         ]:
@@ -403,7 +403,7 @@ class CreateEventView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        serializer = EventSerializer(data=request.data)
+        serializer = CreateEventSerializer(data=request.data)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
