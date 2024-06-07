@@ -126,7 +126,7 @@ const YkvLogoutFunction = ({
     { field: "YKV_sisäänkirjaus", headerName: "Sisäänkirjaus", width: 200 },
     { field: "logout_time", headerName: "Uloskirjaus", width: 200 },
     { field: "Organisaatiot", headerName: "Järjestöt", width: 200 },
-    { field: "late", headerName: "Myöhässä", width: 200, renderCell: (params) => (
+    { field: "late", headerName: "Aktiivinen / Myöhässä", width: 200, renderCell: (params) => (
       params.row.late ? <AccessTimeIcon /> : <CheckIcon />
     ) },
   ];
