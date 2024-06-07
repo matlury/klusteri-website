@@ -573,84 +573,71 @@ describe("Ownpage", () => {
 
     });     
 
-    // it("Modifying user works for permitted users", function () {
-    //   cy.on("uncaught:exception", () => {
-    //     return false;
-    //   });
-    //   const body = {
-    //     username: "Mr. Perus",
-    //     password: "salasana123",
-    //     email: "perus@gmail.com",
-    //     telegram: "",
-    //     role: 5,
-    //   };
-    //   let user_id;
-    //   cy.request("POST", "http://localhost:8000/api/users/register", body).then(
-    //     (response) => {
-    //       user_id = response.body.id;
-    //       expect(response.body).to.have.property("username", "Mr. Perus");
-    //     },
-    //   );
-    //   cy.wait(1000);
-    //   cy.contains("Kirjaudu").click();
-    //   cy.get("#email").type("perus@gmail.com");
-    //   cy.get("#password").type("salasana123");
-    //   cy.get(".login-button").click();
-    //   cy.contains("Talon latinankielinen nimi");
+  //   it("Modifying user works for permitted users", function () {
+  //     cy.on("uncaught:exception", () => {
+  //       return false;
+  //     });
+  //     cy.contains("Kirjaudu").click();
+  //     cy.contains("Luo tili").click();
+  //     cy.contains("Telegram (valinnainen)");
+  //     cy.get("#usernameInput").type("Mr.Perus");
+  //     cy.get("#passwordInput").type("salasana123");
+  //     cy.get("#confirmPasswordInput").type("salasana123");
+  //     cy.get("#emailInput").type("perus@gmail.com");
+  //     cy.get(".create-user-button").click();
+  //     cy.wait(500);
+  //     cy.contains("Etusivu");
   
-    //   cy.wait(500);
-    //   cy.contains("Omat tiedot").click();
-    //   cy.contains("Kirjaudu ulos").click();
-    //   cy.reload()
+  //     cy.wait(500);
+  //     cy.contains("Peruuta"). click();
 
-    //   const body2 = {
-    //     username: "super_prof",
-    //     password: "salasana123",
-    //     email: "super@gmail.com",
-    //     telegram: "",
-    //     role: 1,
-    //   };
+  //     const body2 = {
+  //       username: "super_prof",
+  //       password: "salasana123",
+  //       email: "super@gmail.com",
+  //       telegram: "",
+  //       role: 1,
+  //     };
 
-    //   let user_id2;
-    //   cy.request("POST", "http://localhost:8000/api/users/register", body).then(
-    //     (response) => {
-    //       user_id2 = response.body.id;
-    //       expect(response.body).to.have.property("username", "super_prof");
-    //     },
-    //   );
-    //   cy.wait(1000);
-    //   cy.contains("Kirjaudu").click();
-    //   cy.get("#email").type("super@gmail.com");
-    //   cy.get("#password").type("salasana123");
-    //   cy.get(".login-button").click();
-    //   cy.contains("Talon latinankielinen nimi");
+  //     let user_id2;
+  //     cy.request("POST", "http://localhost:8000/api/users/register", body2).then(
+  //       (response) => {
+  //         user_id2 = response.body.id;
+  //         expect(response.body).to.have.property("username", "super_prof");
+  //       },
+  //     );
+  //     cy.wait(1000);
+  //     cy.contains("Kirjaudu").click();
+  //     cy.get("#email").type("super@gmail.com");
+  //     cy.get("#password").type("salasana123");
+  //     cy.get(".login-button").click();
+  //     cy.contains("Talon latinankielinen nimi");
   
-    //   cy.wait(500);
-    //   cy.contains("Omat tiedot").click();
+  //     cy.wait(500);
+  //     cy.contains("Omat tiedot").click();
+  //     cy.wait(500);
 
-
-    //   // cy.get("#name").type("Teekkarit");
-    //   // cy.get(".organization-email").type("teekkarit@mail.com");
-    //   // cy.get("#homepage").type("www.teekkarit.fi");
-    //   // cy.contains("Luo järjestö").click();
-    //   // cy.contains("Onnistui: Järjestö luotu onnistuneesti!");
-    //   // cy.reload();
-
-    //   cy.contains("Mr.Perustyyppi").click();
+  //     //cy.contains("Mr.Perus");
   
-    //   cy.get(".modify_user").click()
-    //   cy.get(".user_new_telegram").type("PerustyyppiTG")
-    //   cy.get("Tallenna").click()
-    //   cy.reload();
-    //   cy.contains("PerustyyppiTG");
+  //     //cy.get(".modify_user").first().click()
 
-    //   cy.get("#organization_name").type("123");
-    //   cy.contains("Vahvista muutokset"). click()
-    //   cy.reload();
-    //   cy.contains("Teekkarit123");
-    //   });  
+  //     // Ensure the DataGrid is fully loaded and visible
+  //     cy.get('.MuiDataGrid-root').eq(1).within(() => {
+  //       // Find the cell containing 'Mr. Perus'
+  //       cy.contains('.MuiDataGrid-cell', 'Mr. Perus', { timeout: 10000 })
+  //         .should('exist') // Ensure the cell exists
+  //         .parents('div.MuiDataGrid-row') // Navigate to the parent row
+  //         .find('.modify_user') // Find the modify button within that row
+  //         .click(); // Click the button
+  //     });
+  //     cy.get(".user_new_telegram").type("PerustyyppiTG")
+  //     cy.get("Tallenna").click()
+  //     cy.reload();
+  //     cy.contains("PerustyyppiTG");
 
-  })
+  //     });  
+
+ })
 
 Cypress.on;
   
