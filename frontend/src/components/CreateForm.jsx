@@ -26,7 +26,7 @@ const CreateForm = ({
   handleCreateAccount,
 }) => (
   <FormGroup>
-    <h3>Luo uusi käyttäjä</h3>
+    <h3>Luo tili</h3>
     {error && <p style={{ color: "red" }}>{error}</p>}
     <div className="input-fields">
       <div>
@@ -81,25 +81,28 @@ const CreateForm = ({
       </div>
     </div>
     <div className="button-container">
-      <Button
-        variant="text"
-        className="login-button"
-        color="primary"
-        type="button"
-        onClick={handleBackToLogin}
-      >
-        Takaisin
-      </Button>
-
-      <Button
-        variant="contained"
-        className="create-user-button"
-        color="primary"
-        type="button"
-        onClick={handleCreateAccount}
-      >
-        Luo tili
-      </Button>
+      <div>
+        <Button
+          variant="contained"
+          className="create-user-button"
+          color="primary"
+          type="button"
+          onClick={handleCreateAccount}
+        >
+          Luo tili
+        </Button>
+      </div>
+      <div>
+        <Button
+          variant="text"
+          className="login-button"
+          color="primary"
+          type="button"
+          onClick={handleBackToLogin}
+        >
+          Takaisin
+        </Button>
+      </div> 
     </div>
   </FormGroup>
 );

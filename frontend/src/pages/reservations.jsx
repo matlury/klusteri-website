@@ -24,6 +24,7 @@ moment.locale("fi");
 const MyCalendar = () => {
   // State variables for event data and modals
   const [events, setEvents] = useState([]);
+  const [organizations, setOrganizations] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [eventDetails, setEventDetails] = useState({
@@ -60,6 +61,22 @@ const MyCalendar = () => {
       })
       .catch((error) => {
         console.error("Virhe tapahtumien hakemisessa:", error);
+      });
+  };
+
+  useEffect(() => {
+    getOrganizations();
+  }, []);
+
+  const getOrganizations = () => {
+    axios
+      .get(`${API_URL}/api/listobjects/organizations/`)
+      .then((response) => {
+        const organizations = response.data;
+        setOrganizations(organizations);
+      })
+      .catch((error) => {
+        console.error("Virhe järjestöjen hakemisessa:", error);
       });
   };
 
@@ -148,8 +165,8 @@ const MyCalendar = () => {
       }
 
       const newEvent = {
-        start,
-        end,
+        start: new Date(start),
+        end: new Date(end),
         title,
         organizer,
         description,
@@ -190,7 +207,6 @@ const MyCalendar = () => {
 
   // Handles deleting an event with the event id
   const handleDeleteEvent = (eventId) => {
-    console.log(selectedEvent);
     if (eventId) {
       axiosClient
         .delete(`events/delete_event/${eventId}/`)
@@ -201,8 +217,6 @@ const MyCalendar = () => {
         .catch((error) => {
           console.error("Virhe tapahtuman poistamisessa:", error);
         });
-    } else {
-      console.log("ei id:tä");
     }
   };
 
@@ -227,29 +241,6 @@ const MyCalendar = () => {
     });
   };
 
-  const [allResponsibilities, setAllResponsibilities] = useState([]);
-  const [activeResponsibilities, setActiveResponsibilities] = useState([]);
-
-  // Gets current night responsibilities from the backend
-  useEffect(() => {
-    const fetchResponsibilities = async () => {
-      if (localStorage.getItem("loggedUser") != "null") {
-        try {
-          const response = await axiosClient.get(
-            "listobjects/nightresponsibilities/",
-          );
-          setAllResponsibilities(response.data);
-          const active = response.data.filter((item) => item.present === true);
-          setActiveResponsibilities(active);
-        } catch (error) {
-          console.error("Error fetching responsibilities", error);
-        }
-      }
-    };
-
-    fetchResponsibilities();
-  }, []);
-
   // Renders the calendar view, event modals and possible night responsibilities
   return (
     <ReservationsView
@@ -262,7 +253,6 @@ const MyCalendar = () => {
       eventDetails={eventDetails}
       handleAddEvent={handleAddEvent}
       showInfoModal={showInfoModal}
-      activeResponsibilities={activeResponsibilities}
       localizer={localizer}
       events={events}
       startRef={startRef}
@@ -270,6 +260,7 @@ const MyCalendar = () => {
       selectedEvent={selectedEvent}
       handleDeleteEvent={handleDeleteEvent}
       moment={moment}
+      organizations={organizations}
     />
   );
 };
