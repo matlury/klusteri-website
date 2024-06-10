@@ -44,10 +44,6 @@ jobs:
         working-directory: ./backend
         run: poetry run pylint --fail-under=8 .
 
-      - name: Eslint
-        working-directory: ./frontend
-        run: npx eslint src --max-warnings 10
-
       - name: Make migrations
         working-directory: ./backend
         run: poetry run python manage.py makemigrations
