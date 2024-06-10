@@ -8,16 +8,19 @@ import {
   DialogTitle,
   Button,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const EmailConfirmDialog = ({ open, handleConfirmClose, handleMarkEmailSent, selectedDefectId }) => {
+  const { t } = useTranslation();
+
   return (
     <Dialog open={open} onClose={handleConfirmClose}>
-      <DialogTitle>Merkitse sähköposti lähetetyksi</DialogTitle>
+      <DialogTitle>{t("confirm_defect_email")}</DialogTitle>
       <DialogContent>
-        <DialogContentText>Oletko varma, että haluat merkitä sähköpostin lähetetyksi?</DialogContentText>
+        <DialogContentText>{t("confirm_defect_email_2")}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleConfirmClose}>Peruuta</Button>
+        <Button onClick={handleConfirmClose}>{t("cancel")}</Button>
         <Button
           onClick={() => handleMarkEmailSent(selectedDefectId)}
           color="primary"
@@ -25,7 +28,7 @@ const EmailConfirmDialog = ({ open, handleConfirmClose, handleMarkEmailSent, sel
           data-testid="confirmlogout"
           id="confirmemail"
         >
-          Vahvista
+          {t("confirm")}
         </Button>
       </DialogActions>
     </Dialog>

@@ -1,29 +1,30 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const Contacts = () => {
   const OpenChristinaRegina = () => {
     const christinaregina_url = "/christina_regina";
     window.open(christinaregina_url, "_self");
   };
+  const { t } = useTranslation();
   return (
     <div className="textbox">
       <h1>Domus Gaudium</h1>
       <p>
-        Domus Gaudium sijaitsee osoitteessa Leppäsuonkatu 11A, 00100 Helsinki.
+        {t("contacts_1")}
       </p>
       <a href="/christina_regina">
         <h1 onClick={OpenChristinaRegina}>Christina Regina</h1>
       </a>
       <p>
-        Christina Regina sijaitsee Domus Gaudiumin ensimmäisessä kerroksessa.
+        {t("contacts_2")}
       </p>
-      <h1>Klusterikännykkä</h1>
-      <p>Klusterille voi soittaa numeroon 044 9556085</p>
-      <h1>Leppätalokomitea</h1>
-      <p>Klusterin viihtyvyydestä ja säännöistä vastaa Leppätalokomitea.</p>
-      Vuonna 2023 puheenjohtajana toimii Tomas Terälä (tomas.terala (at)
-      helsinki.fi)
-      <h1>Järjestöjen yhteyshenkilöt</h1>
+      <h1>{t("contacts_3")}</h1>
+      <p>{t("contacts_4")}</p>
+      <h1>{t("contacts_5")}</h1>
+      <p>{t("contacts_6")}</p>
+      <p>{t("contacts_7")}</p>
+      <h1>{t("contacts_8")}</h1>
     </div>
   );
 };

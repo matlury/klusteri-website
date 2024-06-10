@@ -8,16 +8,19 @@ import {
   DialogTitle,
   Button,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const RepairConfirmDialog = ({ open, handleConfirmClose, handleRepairFault, selectedDefectId }) => {
+  const { t } = useTranslation();
+
   return (
     <Dialog open={open} onClose={handleConfirmClose}>
-      <DialogTitle>Merkitse vika korjatuksi</DialogTitle>
+      <DialogTitle>{t("confirm_defect_fixed")}</DialogTitle>
       <DialogContent>
-        <DialogContentText>Oletko varma, että haluat merkitä vian korjatuksi?</DialogContentText>
+        <DialogContentText>{t("confirm_defect_fixed_2")}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleConfirmClose}>Peruuta</Button>
+        <Button onClick={handleConfirmClose}>{t("cancel")}</Button>
         <Button
           onClick={() => handleRepairFault(selectedDefectId)}
           color="primary"
@@ -25,7 +28,7 @@ const RepairConfirmDialog = ({ open, handleConfirmClose, handleRepairFault, sele
           data-testid="confirmlogout"
           id="confirmremove"
         >
-          Vahvista
+          {t("confirm")}
         </Button>
       </DialogActions>
     </Dialog>

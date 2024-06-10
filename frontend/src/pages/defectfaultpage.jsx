@@ -5,6 +5,7 @@ import DefectForm from "../components/DefectForm";
 import DefectList from "../components/DefectList";
 import RepairConfirmDialog from "../components/RepairConfirmDialog.jsx";
 import EmailConfirmDialog from "../components/EmailConfirmDialog.jsx";
+import { useTranslation } from "react-i18next";
 const DefectFault = ({
   isLoggedIn: propIsLoggedIn,
   loggedUser: propLoggedUser,
@@ -21,6 +22,8 @@ const DefectFault = ({
   const [buttonPopup, setButtonPopup] = useState(false);
   const [confirmRepairOpen, setConfirmRepairOpen] = useState(false);
   const [confirmEmailOpen, setConfirmEmailOpen] = useState(false);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     setIsLoggedIn(propIsLoggedIn);
@@ -166,12 +169,12 @@ const DefectFault = ({
 
   return (
     <div className="textbox">
-      {!isLoggedIn && <h3>Kirjaudu sisään</h3>}
+      {!isLoggedIn && <h3>{t("loginsuggest")}</h3>}
       {isLoggedIn && (
         <div>
           {error && <p style={{ color: "red" }}>{error}</p>}
           {success && <p style={{ color: "green" }}>{success}</p>}
-          <h2>Puutteet ja viat</h2>
+          <h2>{t("defectfaults")}</h2>
           <React.Fragment>
             <Button
               variant="contained"
@@ -179,7 +182,7 @@ const DefectFault = ({
               onClick={handleClickOpen}
               data-testid="defectfaultdialog"
             >
-              + Lisää vika
+              + {t("add_defect")}
             </Button>
             <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
           </React.Fragment>

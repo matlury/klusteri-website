@@ -9,6 +9,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const DefectForm = ({ open, handleClose, handleFormSubmit }) => {
   const [description, setDescription] = useState("");
@@ -20,6 +21,8 @@ const DefectForm = ({ open, handleClose, handleFormSubmit }) => {
     handleClose();
   };
 
+  const { t } = useTranslation();
+
   return (
   <Dialog
     open={open}
@@ -29,9 +32,9 @@ const DefectForm = ({ open, handleClose, handleFormSubmit }) => {
       onSubmit: onSubmit,
     }}
 >
-      <DialogTitle>Kirjaa vika</DialogTitle>
+      <DialogTitle>{t("writedefect")}</DialogTitle>
       <DialogContent>
-        <DialogContentText>Kirjaa Klusteriin liittyviä vikoja.</DialogContentText>
+        <DialogContentText>{t("writedefect_desc")}</DialogContentText>
         <TextField
           autoFocus
           required
@@ -40,20 +43,20 @@ const DefectForm = ({ open, handleClose, handleFormSubmit }) => {
           id="description"
           value={description}
           type="text"
-          label="Kuvaile vika"
+          label={t("defect_desc")}
           fullWidth
           variant="standard"
           onChange={(e) => setDescription(e.target.value)}
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Peruuta</Button>
+        <Button onClick={handleClose}>{t("cancel")}</Button>
         <Button 
           type="submit" 
           data-testid="createdefect"
           id="addfault"
           >
-          Kirjaa vika
+          {t("save_defect")}
         </Button>
       </DialogActions>
     </Dialog>
