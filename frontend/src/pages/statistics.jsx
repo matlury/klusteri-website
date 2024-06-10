@@ -128,13 +128,13 @@ const Statistics = () => {
 
   function filtering(login_time, logout_time) {
     return (
-      (Date.parse(login_time) > Number(Date.parse(minFilter)) &&
-        Date.parse(login_time) < Number(Date.parse(maxFilter))) ||
-      (Date.parse(logout_time) < Number(Date.parse(maxFilter)) &&
-        Date.parse(logout_time) > Number(Date.parse(minFilter))) ||
-      (Date.parse(login_time) > Number(Date.parse(minFilter)) &&
+      (Date.parse(login_time) >= Number(Date.parse(minFilter)) &&
+        Date.parse(login_time) <= Number(Date.parse(maxFilter))) ||
+      (Date.parse(logout_time) <= Number(Date.parse(maxFilter)) &&
+        Date.parse(logout_time) >= Number(Date.parse(minFilter))) ||
+      (Date.parse(login_time) >= Number(Date.parse(minFilter)) &&
         maxFilter === "") ||
-      (Date.parse(logout_time) < Number(Date.parse(maxFilter)) &&
+      (Date.parse(logout_time) <= Number(Date.parse(maxFilter)) &&
         minFilter === "") ||
       (minFilter === "" && maxFilter === "")
     );
@@ -270,6 +270,7 @@ const Statistics = () => {
           ],
         ];
         events.data.forEach((e) => {
+          if (filtering(e.start, e.end)) {
           data.push([
             e.start,
             e.end,
@@ -280,6 +281,7 @@ const Statistics = () => {
             e.room,
             e.open,
           ]);
+          }
         });
         setCSVdata(data);
         setShouldDownload(true);
