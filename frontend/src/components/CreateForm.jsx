@@ -7,6 +7,7 @@ import {
   Button,
   FormGroup,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const CreateForm = ({
   error,
@@ -24,15 +25,17 @@ const CreateForm = ({
   setTelegram,
   handleBackToLogin,
   handleCreateAccount,
-}) => (
+}) => {
+  const { t } = useTranslation();
+  return (
   <FormGroup>
-    <h3>Luo tili</h3>
+    <h3>{t("createacc")}</h3>
     {error && <p style={{ color: "red" }}>{error}</p>}
     <div className="input-fields">
       <div>
         <TextField
           id="usernameInput"
-          label="Käyttäjänimi"
+          label={t("username")}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
@@ -40,7 +43,7 @@ const CreateForm = ({
       <div>
         <TextField
           id="passwordInput"
-          label="Salasana"
+          label={t("password")}
           type={showPasswords ? "text" : "password"}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -49,7 +52,7 @@ const CreateForm = ({
       <div>
         <TextField
           id="confirmPasswordInput"
-          label="Vahvista"
+          label={t("confirmpassword")}
           type={showPasswords ? "text" : "password"}
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
@@ -60,13 +63,13 @@ const CreateForm = ({
           control={
             <Checkbox checked={showPasswords} onChange={toggleShowPasswords} />
           }
-          label="Näytä salasana"
+          label={t("showpassword")}
         />
       </div>
       <div>
         <TextField
           id="emailInput"
-          label="Sähköposti"
+          label={t("email")}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -74,7 +77,7 @@ const CreateForm = ({
       <div>
         <TextField
           id="telegramInput"
-          label="Telegram (valinnainen)"
+          label={t("telegram")}
           value={telegram}
           onChange={(e) => setTelegram(e.target.value)}
         />
@@ -89,7 +92,7 @@ const CreateForm = ({
           type="button"
           onClick={handleCreateAccount}
         >
-          Luo tili
+          {t("createacc")}
         </Button>
       </div>
       <div>
@@ -100,11 +103,11 @@ const CreateForm = ({
           type="button"
           onClick={handleBackToLogin}
         >
-          Takaisin
+          {t("goback")}
         </Button>
       </div> 
     </div>
   </FormGroup>
-);
+)};
 
 export default CreateForm;

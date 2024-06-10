@@ -28,6 +28,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import { FormControl, Select, MenuItem } from "@mui/material";
 import matlu from "./matlu.png";
 
 import FrontPage from "./pages/frontpage";
@@ -44,21 +45,10 @@ import Statistics from "./pages/statistics";
 
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 
-const drawerWidth = 240;
+import { useTranslation } from "react-i18next";
+import i18n from "../i18n";
 
-const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
-  return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Kirjaudu sisään</DialogTitle>
-      <DialogContent>
-        <LoginPage onLogin={onLogin} onCreateNewUser={onCreateNewUser} />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Peruuta</Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
+const drawerWidth = 240;
 
 const App = (props) => {
   const { window } = props;
@@ -73,7 +63,12 @@ const App = (props) => {
 
   const [loginDialogOpen, setLoginDialogOpen] = React.useState(false);
 
+  const [language, setLanguage] = React.useState(
+    localStorage.getItem("lang") || "fi"
+  )
+
   React.useEffect(() => {
+    i18n.changeLanguage(localStorage.getItem("lang") || "fi")
     const loggedInStatus = localStorage.getItem("isLoggedIn");
     if (loggedInStatus === "true") {
       setIsLoggedIn(true);
@@ -125,6 +120,19 @@ const App = (props) => {
     setLoginDialogOpen(false);
   };
 
+  const handleLangChange = (event) => {
+    event.preventDefault();
+    setLanguage(event.target.value)
+    i18n.changeLanguage(event.target.value)
+    localStorage.setItem("lang", event.target.value)
+  }
+
+  const { t, i18n } = useTranslation();
+
+  React.useEffect(() => {
+    i18n.changeLanguage(language);
+  }, [language]);
+
   const icons = [
     <HomeOutlinedIcon />,
     <InfoOutlinedIcon />,
@@ -138,46 +146,68 @@ const App = (props) => {
     <AdminPanelSettingsOutlinedIcon />,
   ];
 
+  const listItems = [
+    { key: "front_sidebar_1", path: "etusivu", icon: icons[0] },
+    { key: "front_sidebar_2", path: "christina_regina", icon: icons[1] },
+    { key: "front_sidebar_3", path: "varaukset", icon: icons[2]},
+    { key: "front_sidebar_4", path: "omat_avaimet", icon: icons[3]},
+    { key: "front_sidebar_5", path: "omat_tiedot", icon: icons[4]},
+    { key: "front_sidebar_6", path: "tilastot", icon: icons[5]},
+    { key: "front_sidebar_7", path: "yhteystiedot", icon: icons[6]},
+    { key: "front_sidebar_8", path: "viat", icon: icons[7]},
+    { key: "front_sidebar_9", path: "saannot_ja_ohjeet", icon: icons[8]},
+    { key: "front_sidebar_10", path: "tietosuojaseloste", icon: icons[9]}
+  ];
+
   const drawer = (
     <div>
       <img src={matlu} alt="logo" style={{ height: "auto" }} />{" "}
       {/* ADD PADDING TO LOGO */}
       <Divider />
       <List>
-        {[
-          "Etusivu",
-          "Christina Regina",
-          "Varaukset",
-          "Omat avaimet",
-          "Omat tiedot",
-          "Tilastot",
-          "Yhteystiedot",
-          "Viat",
-          "Säännöt ja ohjeet",
-          "Tietosuojaseloste",
-        ].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton
-              key={text}
-              component={Link}
-              to={`/${text
-                .toLowerCase()
-                .replace(/\s+/g, "_")
-                .replace(/ä/g, "a")
-                .replace(/ö/g, "o")}`}
-            >
-              <ListItemIcon>{icons[index]}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+      {listItems.map(({ key, path, icon }) => (
+        <ListItem key={t(key)} disablePadding>
+          <ListItemButton
+            component={Link}
+            to={`/${`${path}`}`}
+          >
+            <ListItemIcon>{icon}</ListItemIcon>
+            <ListItemText primary={t(key)} />
+          </ListItemButton>
+        </ListItem>
+      ))}
+    </List>
       <Divider />
+      <FormControl variant="standard"
+        style={{ padding: '10px' }} fullWidth>
+          <Select
+            value={language}
+            label="Kieli"
+            onChange={handleLangChange}
+          >
+          <MenuItem value={"fi"}>Suomi</MenuItem>
+          <MenuItem value={"en"}>English</MenuItem>
+          </Select>
+      </FormControl>
     </div>
   );
 
   const container =
     window !== undefined ? () => window().document.body : undefined;
+
+  const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
+    return (
+      <Dialog open={open} onClose={onClose}>
+        <DialogTitle>{t("login")}</DialogTitle>
+        <DialogContent>
+          <LoginPage onLogin={onLogin} onCreateNewUser={onCreateNewUser} />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose}>{t("cancel")}</Button>
+        </DialogActions>
+      </Dialog>
+    );
+  };
 
   return (
     <Router>
@@ -211,11 +241,11 @@ const App = (props) => {
                 className="logout-button"
                 onClick={handleLogout}
               >
-                Kirjaudu ulos{" "}
+                {t("logout")}{" "}
               </Button>
             ) : (
               <Button variant="contained" onClick={openLoginDialog}>
-                Kirjaudu
+                {t("login")}
               </Button>
             )}
           </Toolbar>

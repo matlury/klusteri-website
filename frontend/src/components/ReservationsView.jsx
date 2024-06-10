@@ -18,6 +18,7 @@ import { CSVLink } from "react-csv";
 import { getCurrentDateTime } from "../utils/timehelpers";
 import DownloadIcon from '@mui/icons-material/Download';
 import OrgSelect from "./OrganizationChooseBox";
+import { useTranslation } from "react-i18next";
 
 const ReservationsView = ({
   handleAddNewEventClick,
@@ -98,6 +99,8 @@ const ReservationsView = ({
     );
   };
 
+  const { t } = useTranslation();
+
   return (
     <div className="textbox">
       {admin && (
@@ -113,7 +116,7 @@ const ReservationsView = ({
             }}
             startIcon={<DownloadIcon />}
           >
-            Lataa tapahtumat CSV-muodossa
+            {t("csvdownload")}
           </Button>
           {shouldDownload && CSVdata && (
             <CSVDownload
@@ -125,7 +128,7 @@ const ReservationsView = ({
         </div>
       )}
       <Typography variant="h1" component="h1">
-        Varauskalenteri
+        {t("reservations_res")}
       </Typography>
       <div className="add-event-button">
         <Button
@@ -137,7 +140,7 @@ const ReservationsView = ({
             margin: "10px",
           }}
         >
-          Lisää uusi tapahtuma
+          {t("reservations_add")}
         </Button>
       </div>
       <Calendar
@@ -167,13 +170,13 @@ const ReservationsView = ({
         <DialogTitle>{"Lisää tapahtuma"}</DialogTitle>
         <DialogContent>
           <div>
-            <Typography variant="body1">Varauksen tiedot:</Typography>
+            <Typography variant="body1">{t("reservations_det")}</Typography>
             <Typography variant="body2" color="textSecondary">
-              Voit tehdä enimmillään 24 tunnin varauksen.
+              {t("reservations_info")}
             </Typography>
             <TextField
               id="startTime"
-              label="Alkaa"
+              label={t("reservations_starts")}
               type="datetime-local"
               name="start"
               onChange={handleInputChange}
@@ -185,7 +188,7 @@ const ReservationsView = ({
             />
             <TextField
               id="endTime"
-              label="Päättyy"
+              label={t("reservations_ends")}
               type="datetime-local"
               name="end"
               onChange={handleInputChange}
@@ -196,12 +199,12 @@ const ReservationsView = ({
               }}
             />
             <Typography variant="body2" color="error">
-              Huomioithan yökäyttösäännöt klo 00-08.
+              {t("reservations_noti")}
             </Typography>
             <TextField
               id="eventName"
               name="title"
-              label="Tapahtuman nimi"
+              label={t("reservations_name")}
               value={eventDetails.title}
               onChange={handleInputChange}
               fullWidth
@@ -224,7 +227,7 @@ const ReservationsView = ({
             <TextField
               id="responsibleName"
               name="responsible"
-              label="Vastuuhenkilö"
+              label={t("reservations_resp")}
               value={eventDetails.responsible}
               onChange={handleInputChange}
               fullWidth
@@ -233,7 +236,7 @@ const ReservationsView = ({
             <TextField
               id="eventDescription"
               name="description"
-              label="Tapahtuman kuvaus"
+              label={t("reservations_desc")}
               value={eventDetails.description}
               onChange={handleInputChange}
               multiline
@@ -242,21 +245,21 @@ const ReservationsView = ({
               margin="normal"
             />
             <FormControl fullWidth margin="normal">
-              <InputLabel id="eventOpen-label">Avoimuus</InputLabel>
+              <InputLabel id="eventOpen-label">{t("reservations_openness")}</InputLabel>
               <Select
                 labelId="eventOpen-label"
                 id="eventOpen"
                 name="isOpen"
                 value={eventDetails.isOpen}
                 onChange={handleInputChange}
-                label="Avoimuus"
+                label={t("reservations_openness")}
               >
-                <MenuItem value="avoin">Avoin tapahtuma</MenuItem>
-                <MenuItem value="suljettu">Vain jäsenille</MenuItem>
+                <MenuItem value="avoin">{t("reservations_open")}</MenuItem>
+                <MenuItem value="suljettu">{t("reservations_closed")}</MenuItem>
               </Select>
             </FormControl>
             <FormControl fullWidth margin="normal">
-              <InputLabel id="eventRoom-label">Huone</InputLabel>
+              <InputLabel id="eventRoom-label">{t("reservations_room")}</InputLabel>
               <Select
                 labelId="eventRoom-label"
                 id="eventRoom"
@@ -265,9 +268,9 @@ const ReservationsView = ({
                 onChange={handleInputChange}
                 label="Huone"
               >
-                <MenuItem value="Kokoushuone">Kokoushuone</MenuItem>
-                <MenuItem value="Kerhotila">Kerhotila</MenuItem>
-                <MenuItem value="Oleskelutila">Oleskelutila</MenuItem>
+                <MenuItem value="Kokoushuone">{t("Kokoushuone")}</MenuItem>
+                <MenuItem value="Kerhotila">{t("Kerhotila")}</MenuItem>
+                <MenuItem value="Oleskelutila">{t("Oleskelutila")}</MenuItem>
                 <MenuItem value="ChristinaRegina">ChristinaRegina</MenuItem>
               </Select>
             </FormControl>
@@ -275,14 +278,14 @@ const ReservationsView = ({
         </DialogContent>
         <DialogActions>
           <Button variant="outlined" onClick={handleCloseModal}>
-            Sulje
+            {t("close")}
           </Button>
           <Button
             id="confirmCreate"
             variant="contained"
             onClick={handleAddEvent}
           >
-            Tallenna
+            {t("save")}
           </Button>
         </DialogActions>
       </Dialog>
@@ -293,25 +296,25 @@ const ReservationsView = ({
           {selectedEvent && (
             <>
               <Typography variant="body1">
-                Alkaa: {moment(selectedEvent.start).format("YYYY-MM-DD HH:mm")}
+                {t("reservations_starts")}: {moment(selectedEvent.start).format("YYYY-MM-DD HH:mm")}
               </Typography>
               <Typography variant="body1">
-                Päättyy: {moment(selectedEvent.end).format("YYYY-MM-DD HH:mm")}
+                {t("reservations_ends")}: {moment(selectedEvent.end).format("YYYY-MM-DD HH:mm")}
               </Typography>
               <Typography variant="body1">
-                Järjestäjä: {selectedEvent.organizer.name}
+                {t("reservations_org")}: {selectedEvent.organizer.name}
               </Typography>
               <Typography variant="body1">
-                Vastuuhenkilö: {selectedEvent.responsible}
+                {t("reservations_resp")}: {selectedEvent.responsible}
               </Typography>
               <Typography variant="body1">
-                Kuvaus: {selectedEvent.description}
+                {t("reservations_desc")}: {selectedEvent.description}
               </Typography>
               <Typography variant="body1">
-                Tila: {selectedEvent.open === true ? "Avoin" : "Suljettu"}
+                {t("reservations_openness")}: {selectedEvent.open === true ? t("reservations_open") : t("reservations_closed")}
               </Typography>
               <Typography variant="body1">
-                Huone: {selectedEvent.room}
+                {t("reservations_room")}: {t(selectedEvent.room)}
               </Typography>
             </>
           )}
@@ -323,10 +326,10 @@ const ReservationsView = ({
             color="error"
             onClick={() => handleDeleteEvent(selectedEvent.id)}
           >
-            Poista tapahtuma
+            {t("remove_event")}
           </Button>
           <Button id="closeEvent" variant="outlined" onClick={handleCloseModal}>
-            Sulje
+            {t("close")}
           </Button>
         </DialogActions>
       </Dialog>
