@@ -42,7 +42,7 @@ jobs:
 
       - name: Pylint
         working-directory: ./backend
-        run: poetry run pylint --fail-under=8 .
+        run: poetry run pylint --fail-under=8 backend ilotalo scheduler tests
 
       - name: Make migrations
         working-directory: ./backend
