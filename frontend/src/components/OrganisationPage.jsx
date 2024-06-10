@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const OrganisationPage = ({
   hasPermissionOrg,
@@ -35,6 +36,7 @@ const OrganisationPage = ({
   const [organisation_id, setOrganisationId] = useState("");
   const [organisation_keys, setOrganisationKeys] = useState("");
 
+  const { t } = useTranslation();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -90,7 +92,7 @@ const OrganisationPage = ({
   const columns = [
     {
       field: "actions",
-      headerName: "Muokkaa",
+      headerName: t("edit"),
       width: 200,
       renderCell: (params) => (
         <Button
@@ -104,15 +106,15 @@ const OrganisationPage = ({
         </Button>
       ),
     },
-    { field: "Organisaatio", headerName: "Nimi", width: 150 },
-    { field: "kotisivu", headerName: "Kotisivu", width: 200 },
-    { field: "email", headerName: "Sähköposti", width: 200 },
-    { field: "Avaimia", headerName: "Avaimia", width: 80 },    
+    { field: "Organisaatio", headerName: t("name"), width: 150 },
+    { field: "kotisivu", headerName: t("homepage"), width: 200 },
+    { field: "email", headerName: t("email"), width: 200 },
+    { field: "Avaimia", headerName: t("keys"), width: 80 },    
   ];
 
   return (
     <div>
-      <h4>Järjestöt</h4>
+      <h4>{t("resp_orgs")}</h4>
       <div>
         <DataGrid
           rows={allOrganisations}
@@ -123,11 +125,11 @@ const OrganisationPage = ({
       </div>
      {hasPermissionOrg === true && (
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Muokkaa järjestöä</DialogTitle>
+        <DialogTitle>{t("editorg")}</DialogTitle>
         <DialogContent>
           <form onSubmit={handleFormSubmit}>
             <TextField
-              label="Organisaation nimi"
+              label={t("name")}
               id="organization_name"
               type="organ"
               value={organisation_new_name}
@@ -135,7 +137,7 @@ const OrganisationPage = ({
               fullWidth
             />
             <TextField
-              label="Sähköposti"
+              label={t("email")}
               id="organization_new_email"
               type="organ"
               value={organisation_new_email}
@@ -144,7 +146,7 @@ const OrganisationPage = ({
 
             />
             <TextField
-              label="Kotisivu"
+              label={t("homepage")}
               id="organization_homepage"
               type="organ"
               value={organisation_new_homepage}
@@ -152,7 +154,7 @@ const OrganisationPage = ({
               fullWidth
             />
             <TextField
-              label="Organisaation väri"
+              label={t("color")}
               id="organization_new_color"
               type="organ"
               value={organization_new_color}
@@ -162,7 +164,7 @@ const OrganisationPage = ({
           {/* </form> */}
         {/* </DialogContent> */}
         <DialogActions>
-          <Button onClick={handleClose}>Peruuta</Button>
+          <Button onClick={handleClose}>{t("cancel")}</Button>
           <Button
             type="submit"
             variant="contained"
@@ -170,14 +172,14 @@ const OrganisationPage = ({
             id="confirm_org_change"
             className="confirm_org_change"
           >
-            Vahvista muutokset
+            {t("confirmchanges")}
           </Button>
           <Button 
             variant="contained"
             color="secondary"
             className="delete-org-button"
             onClick={() => handleDelete(organisation_id)}
-            >Poista järjestö
+            >{t("deleteorg")}
             </Button>
         </DialogActions>
         </form> 

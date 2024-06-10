@@ -16,6 +16,7 @@ import AccordionActions from '@mui/material/AccordionActions';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useTranslation } from "react-i18next";
 
 const AllUsers = ({
   handleUpdateAnotherUser,
@@ -38,6 +39,8 @@ const AllUsers = ({
   const [userDetailsId, setuserDetailsId] = useState("");
 
   const [selectedOrganization, setSelectedOrganization] = useState(null);
+
+  const { t } = useTranslation();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -102,7 +105,7 @@ const AllUsers = ({
   const columns = [
     {
       field: "actions",
-      headerName: "Muokkaa",
+      headerName: t("edit"),
       width: 130,
       renderCell: (params) => (
         <Button
@@ -116,17 +119,17 @@ const AllUsers = ({
         </Button>
       ),
     },
-    { field: "Käyttäjänimi", headerName: "Käyttäjänimi", width: 150 },
-    { field: "email", headerName: "Sähköposti", width: 200 },
+    { field: "Käyttäjänimi", headerName: t("username"), width: 150 },
+    { field: "email", headerName: t("email"), width: 200 },
     { field: "Telegram", headerName: "Telegram", width: 200 },
-    { field: "Rooli", headerName: "Rooli", width: 80 },
-    { field: "Jäsenyydet", headerName: "Jäsenyydet", width: 200 },
+    { field: "Rooli", headerName: t("role"), width: 80 },
+    { field: "Jäsenyydet", headerName: t("resp_orgs"), width: 200 },
     
   ];
 
   return (
     <div>
-      <h2>Käyttäjät</h2>
+      <h2>{t("users")}</h2>
       <div>
         <DataGrid
           rows={allUsers}
@@ -136,11 +139,11 @@ const AllUsers = ({
         />
       </div>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Muokkaa käyttäjää</DialogTitle>
+        <DialogTitle>{t("edituser")}</DialogTitle>
         <DialogContent>
           <form onSubmit={handleFormSubmit}>
             <TextField
-              label="Käyttäjänimi"
+              label={t("username")}
               id="user_new_username"
               value={userDetailsUsername}
               onChange={(e) => setUserDetailsUsername(e.target.value)}
@@ -148,7 +151,7 @@ const AllUsers = ({
               data-testid="username-input"
             />
             <TextField
-              label="Sähköposti"
+              label={t("email")}
               id="user_new_email"
               value={userDetailsEmail}
               onChange={(e) => setuserDetailsEmail(e.target.value)}
@@ -164,7 +167,7 @@ const AllUsers = ({
               data-testid="telegram-input"
             />
             <TextField
-              label="Rooli"
+              label={t("role")}
               id="user_new_role"
               value={userDetailsRole}
               onChange={(e) => setuserDetailsRole(e.target.value)}
@@ -179,7 +182,7 @@ const AllUsers = ({
                 id="panel1-header"
                 data-testid="expand-key-accordion"
               >
-                Luovuta avain
+                {t("givekey")}
               </AccordionSummary>
               <AccordionDetails>
                 <Autocomplete
@@ -190,7 +193,7 @@ const AllUsers = ({
                   onChange={(event, newValue) => {
                     setSelectedOrganization(newValue);
                   }}
-                  renderInput={(params) => <TextField {...params} label="Valitse organisaatio" />}
+                  renderInput={(params) => <TextField {...params} label={t("chooseorg")} />}
                   data-testid="organization-autocomplete"
                 />
                 <Button 
@@ -199,7 +202,7 @@ const AllUsers = ({
                   data-testid="submit-key-button"
                   onClick={() => handleKeySubmit(userDetailsId, selectedOrganization.Organisaatio)}
                 >
-                  Luovuta avain
+                  {t("givekey")}
                 </Button>
               </AccordionDetails>
             </Accordion>
@@ -208,7 +211,7 @@ const AllUsers = ({
               onClick={() => handlePJChange(userDetailsId)}
               data-testid="change-pj-button"
             >
-              Vaihda puheenjohtajaksi
+              {t("changepj")}
             </Button>
 
         <DialogActions>
@@ -216,7 +219,7 @@ const AllUsers = ({
             onClick={handleClose}
             data-testid="cancel-button"
           >
-            Peruuta
+            {t("cancel")}
           </Button>
           <Button
             type="submit"
@@ -224,7 +227,7 @@ const AllUsers = ({
             color="primary"
             data-testid="save-button"
           >
-            Tallenna
+            {t("save")}
           </Button>
         </DialogActions>
         </form>

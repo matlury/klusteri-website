@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, TextField, Switch, FormControlLabel } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 // Form for organization creation
 const CreateOrganization = ({
@@ -13,13 +14,14 @@ const CreateOrganization = ({
   setOrganizationColor,
   handleCreateOrganization,
 }) => {
+  const { t } = useTranslation();
   return (
     <form>
-      <h4>Luo uusi järjestö</h4>
+      <h4>{t("createneworg")}</h4>
       <div>
         <TextField
           id="name"
-          label="Järjestön nimi"
+          label={t("name")}
           value={organization_name}
           onChange={(e) => setOrganizationName(e.target.value)}
         />
@@ -27,7 +29,7 @@ const CreateOrganization = ({
       <div>
         <TextField
           id="email"
-          label="Sähköposti"
+          label={t("email")}
           className="organization-email"
           value={organization_email}
           onChange={(e) => setOrganizationEmail(e.target.value)}
@@ -36,7 +38,7 @@ const CreateOrganization = ({
       <div>
         <TextField
           id="homepage"
-          label="Kotisivu"
+          label={t("homepage")}
           value={organization_homepage}
           onChange={(e) => setOrganizationHomePage(e.target.value)}
         />
@@ -44,7 +46,7 @@ const CreateOrganization = ({
       <div>
         <TextField
           id="color"
-          label="Järjestön väri"
+          label={t("color")}
           value={organization_color}
           onChange={(e) => setOrganizationColor(e.target.value)}
         />
@@ -54,7 +56,7 @@ const CreateOrganization = ({
         variant="contained"
         className="create-user-button"
       >
-        Luo järjestö
+        {t("createorg")}
       </Button>
     </form>
   );

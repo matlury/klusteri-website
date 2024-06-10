@@ -65,7 +65,25 @@
         "resp_act": "Aktiivinen / Myöhässä",
         "resp_createdby": "Luonut",
         "allresps": "Kaikki vastuut",
-        "ownresps": "Omat vastuut"
+        "ownresps": "Omat vastuut",
+        "owninfo": "Omat tiedot",
+        "userrole": "Käyttäjän rooli",
+        "edit": "Muokkaa",
+        "name": "Nimi",
+        "homepage": "Kotisivu",
+        "keys": "Avaimia",
+        "editorg": "Muokkaa järjestöä",
+        "color": "Väri",
+        "confirmchanges": "Vahvista muutokset",
+        "deleteorg": "Poista järjestö",
+        "createneworg": "Luo uusi järjestö",
+        "createorg": "Luo järjestö",
+        "users": "Käyttäjät",
+        "role": "Rooli",
+        "edituser": "Muokkaa käyttäjää",
+        "givekey": "Luovuta avain",
+        "chooseorg": "Valitse organisaatio",
+        "changepj": "Vaihda puheenjohtajaksi"
       }
     },
     "en": {
@@ -134,7 +152,25 @@
         "resp_act": "Active / Late",
         "resp_createdby": "Created by",
         "allresps": "All responsibilities",
-        "ownresps": "Own responsibilities"
+        "ownresps": "Own responsibilities",
+        "owninfo": "My information",
+        "userrole": "User role",
+        "edit": "Edit",
+        "name": "Name",
+        "homepage": "Homepage",
+        "keys": "Keys",
+        "editorg": "Edit organization",
+        "color": "Color",
+        "confirmchanges": "Confirm changes",
+        "deleteorg": "Delete organization",
+        "createneworg": "Create a new organization",
+        "createorg": "Create organization",
+        "users": "Users",
+        "role": "Role",
+        "edituser": "Edit user",
+        "givekey": "Give key",
+        "chooseorg": "Choose organization",
+        "changepj": "Change to chairman"
       }
     }
 }
