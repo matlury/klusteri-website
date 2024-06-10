@@ -148,8 +148,8 @@ const App = (props) => {
           "Etusivu",
           "Christina Regina",
           "Varaukset",
-          "Omat avaimet",
-          "Omat tiedot",
+          "YKV",
+          "Hallinnointi",
           "Tilastot",
           "Yhteystiedot",
           "Viat",
@@ -273,13 +273,13 @@ const App = (props) => {
             <Route path="/christina_regina" element={<ChristinaRegina />} />
             <Route path="/varaukset" element={<Reservations />} />
             <Route
-              path="/omat_avaimet"
+              path="/ykv"
               element={
                 <OwnKeys isLoggedIn={isLoggedIn} loggedUser={loggedUser} />
               }
             />
             <Route
-              path="/omat_tiedot"
+              path="/hallinnointi"
               element={<OwnPage isLoggedIn={isLoggedIn} />}
             />
             <Route path="/tilastot" element={<Statistics />}/>
