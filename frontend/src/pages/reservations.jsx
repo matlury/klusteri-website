@@ -51,6 +51,17 @@ const MyCalendar = () => {
   const startRef = useRef(0);
   const endRef = useRef(0);
 
+  const [startTime, setStartTime] = useState(startRef.current.value);
+  const [endTime, setEndTime] = useState(endRef.current.value);
+
+  useEffect(() => {
+    setStartTime(startRef.current.value);
+  }, [startRef.current.value]);
+
+  useEffect(() => {
+    setEndTime(endRef.current.value);
+  }, [endRef.current.value]);
+
   // Gets all created events from backend
   const getEvents = () => {
     axios
@@ -119,6 +130,11 @@ const MyCalendar = () => {
   // Handles input changes when creating an event
   const handleInputChange = (event) => {
     const { name, value } = event.target;
+    if (name === "start") {
+      setStartTime(value);
+    } else if (name === "end") {
+      setEndTime(value);
+    }
     setEventDetails({ ...eventDetails, [name]: value });
   };
 
@@ -263,8 +279,8 @@ const MyCalendar = () => {
       showInfoModal={showInfoModal}
       localizer={localizer}
       events={events}
-      startRef={startRef}
-      endRef={endRef}
+      startRef={startTime}
+      endRef={endTime}
       selectedEvent={selectedEvent}
       handleDeleteEvent={handleDeleteEvent}
       moment={moment}
