@@ -45,4 +45,5 @@ urlpatterns = [
     path("api/keys/", include("ilotalo.urls")),
     path("api/testing/", include("ilotalo.urls")),
     path("api/defects/", include("ilotalo.urls")),
+    path("api/cleaning/", include("ilotalo.urls")),
 ]

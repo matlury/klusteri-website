@@ -15,6 +15,8 @@ from .serializers import (
     NightResponsibilitySerializer,
     CreateNightResponsibilitySerializer,
     DefectFaultSerializer,
+    CleaningSerializer,
+    CreateCleaningSerializer,
 )
 from .models import User, Organization, Event, NightResponsibility, DefectFault
 from .config import Role
@@ -897,6 +899,31 @@ class RemoveDefectFaultView(APIView):
         defect_to_remove.delete()
 
         return Response(f"Defect {defect_to_remove.description} successfully removed", status=status.HTTP_200_OK)
+
+class CleaningView(viewsets.ReadOnlyModelViewSet):
+    """
+    Displays a list of all cleaning objects at <baseurl>/cleaning/
+    Only supports list and retrieve actions (read-only)
+    """
+
+    serializer_class = CleaningSerializer
+    queryset = DefectFault.objects.all()
+
+class CreateCleaningView(APIView):
+    """View for creating a new defect/fault report <baseurl>/api/cleaning/create_cleaning"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+
+        serializer = CreateCleaningSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 def force_logout_ykv_logins():
     try:
