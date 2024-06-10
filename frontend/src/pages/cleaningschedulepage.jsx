@@ -4,6 +4,7 @@ import { Button } from "@mui/material";
 import DefectForm from "../components/DefectForm";
 import CleanersList from "../components/CleanersList.jsx";
 import DownloadIcon from "@mui/icons-material/Download";
+import moment from "moment";
 
 const CleaningSchedule = ({
   isLoggedIn: propIsLoggedIn,
@@ -88,6 +89,7 @@ const CleaningSchedule = ({
         const cleaningData = res.data.map((u, index) => ({
           id: u.id, // DataGrid requires a unique 'id' for each row
           week: u.week,
+          date: moment().day("Monday").week(u.week),
           big: u.big.name,
           small: u.small.name,
         }));
