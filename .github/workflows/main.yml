@@ -46,7 +46,7 @@ jobs:
 
       - name: Eslint
         working-directory: ./frontend
-        run: npx eslint src
+        run: npx eslint src --max-warnings 10
 
       - name: Make migrations
         working-directory: ./backend
