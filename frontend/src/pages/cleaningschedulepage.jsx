@@ -14,7 +14,7 @@ const CleaningSchedule = ({
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-
+  
   useEffect(() => {
     setIsLoggedIn(propIsLoggedIn);
     if (propIsLoggedIn) {
@@ -28,14 +28,14 @@ const CleaningSchedule = ({
 
   useEffect(() => {
     if (isLoggedIn && loggedUser) {
-      fetchDefects();
+      fetchCleaning();
     }
   }, [isLoggedIn, loggedUser]);
 
   useEffect(() => {
     const fetchData = async () => {
       if (loggedUser) {
-        await fetchDefects();
+        await fetchCleaning();
       }
     };
 
@@ -51,10 +51,12 @@ const CleaningSchedule = ({
     setOpen(false);
   };
 
+
   const handleFormSubmit = async (description) => {
     const defectFaultObject = {
       description: description,
     };
+    const cleaningdata = await axiosClient.get("/listobjects/cleaning/")
 
     confirmDefectFault(defectFaultObject);
 
@@ -65,7 +67,7 @@ const CleaningSchedule = ({
           .then((response) => {
             setSuccess("Vian kirjaus onnistui");
             setTimeout(() => setSuccess(""), 5000);
-            fetchDefects();
+            fetchCleaning();
           })
           .catch((error) => {
             setError("Vian kirjaus epäonnistui");
@@ -76,20 +78,21 @@ const CleaningSchedule = ({
     }
   };
 
-  const fetchDefects = () => {
+  const fetchCleaning = () => {
     axiosClient
-      .get("/listobjects/defects/")
+      .get("/listobjects/cleaning/")
       .then((res) => {
-        const defectData = res.data.map((u, index) => ({
+        const cleaningData = res.data.map((u, index) => ({
           id: u.id, // DataGrid requires a unique 'id' for each row
-          description: u.description,
-          time: new Date(u.time),
-          email: u.email_sent == null ? "Ei" : new Date(u.email_sent),
-          repaired: u.repaired == null ? "Ei" : new Date(u.repaired),
+          week: u.week,
+          // time: new Date(u.time),
+          // email: u.email_sent == null ? "Ei" : new Date(u.email_sent),
+          // repaired: u.repaired == null ? "Ei" : new Date(u.repaired),
         }));
-        setAllDefects(defectData);
+        console.log("cleaning data json", cleaningData)
+        setAllDefects(cleaningData);
         setActiveDefects(
-          defectData.filter(
+          cleaningData.filter(
             (resp) =>
               resp.repaired === "Ei"
           ),

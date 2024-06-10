@@ -31,6 +31,7 @@ router.register(r"organizations", views.OrganizationView, "organisaatiot")
 router.register(r"events", views.EventView, "events")
 router.register(r"nightresponsibilities", views.NightResponsibilityView, "nightresponsibilities")
 router.register(r"defects", views.DefectFaultView, "defects")
+router.register(r"cleaning", views.CleaningView, "cleaning")
 
 urlpatterns = [
     path("admin/", admin.site.urls),

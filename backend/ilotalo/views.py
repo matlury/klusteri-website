@@ -18,7 +18,7 @@ from .serializers import (
     CleaningSerializer,
     CreateCleaningSerializer,
 )
-from .models import User, Organization, Event, NightResponsibility, DefectFault
+from .models import User, Organization, Event, NightResponsibility, DefectFault, Cleaning
 from .config import Role
 from datetime import datetime, timezone
 
@@ -907,7 +907,7 @@ class CleaningView(viewsets.ReadOnlyModelViewSet):
     """
 
     serializer_class = CleaningSerializer
-    queryset = DefectFault.objects.all()
+    queryset = Cleaning.objects.all()
 
 class CreateCleaningView(APIView):
     """View for creating a new defect/fault report <baseurl>/api/cleaning/create_cleaning"""
