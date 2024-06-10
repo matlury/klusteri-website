@@ -1,7 +1,6 @@
 import { render, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Reservations from "../../src/pages/reservations";
-import React from "react";
 import mockAxios from "../../__mocks__/axios.js";
 
 afterEach(() => {

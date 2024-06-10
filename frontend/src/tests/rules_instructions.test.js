@@ -1,11 +1,11 @@
-import { render, fireEvent, getByTestId } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Rules_and_Instructions from "../../src/pages/rules_instructions";
 
 describe("Instructions component opens", () => {
 
     it("renders Instructions page component", () => {
-    const { getByText, queryByText } = render(<Rules_and_Instructions />);
+    const { getByText } = render(<Rules_and_Instructions />);
     expect(getByText("Säännöt ja ohjeet")).toBeInTheDocument();
   });
 

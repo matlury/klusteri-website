@@ -102,7 +102,7 @@ test("logging in with valid credentials works", async () => {
 });
 
 test("switching to create account works", async () => {
-  const { getByLabelText, queryByText, getByText } = render(
+  const { getByText } = render(
     <LoginPage
       onLogin={jest.fn()}
       onLogout={jest.fn()}
