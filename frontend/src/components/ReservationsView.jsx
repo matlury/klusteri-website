@@ -67,7 +67,7 @@ const ReservationsView = ({
         data.push([
           e.start,
           e.end,
-          e.organizer,
+          e.organizer.name,
           e.title,
           e.description,
           e.responsible,

@@ -6,7 +6,6 @@ import {
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import DefectFault from "../../src/pages/defectfaultpage";
-import React from "react";
 import mockAxios from "../../__mocks__/axios";
 
 afterEach(() => {

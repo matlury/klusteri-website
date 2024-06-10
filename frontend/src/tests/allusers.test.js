@@ -1,5 +1,4 @@
-import React from "react";
-import { render, fireEvent, waitFor, screen, within } from "@testing-library/react";
+import { render, fireEvent, waitFor, screen } from "@testing-library/react";
 import '@testing-library/jest-dom';
 import axiosClient from "../axios.js";
 import AllUsers from "../components/AllUsers";

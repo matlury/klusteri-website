@@ -1,3 +1,4 @@
+import os
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -18,7 +19,6 @@ from .serializers import (
 from .models import User, Organization, Event, NightResponsibility, DefectFault
 from .config import Role
 from datetime import datetime, timezone
-import os
 
 LEPPISPJ = Role.LEPPISPJ.value
 LEPPISVARAPJ = Role.LEPPISVARAPJ.value
@@ -116,7 +116,7 @@ class UpdateUserView(APIView):
                 user_to_update = User.objects.get(id=pk)
             except ObjectDoesNotExist:
                 return Response("User not found", status=status.HTTP_404_NOT_FOUND)
-            
+
             user_serializer = UserUpdateSerializer(
                 instance=user_to_update, data=request.data, partial=True
             )
@@ -125,7 +125,7 @@ class UpdateUserView(APIView):
                 user_serializer.save()
                 return Response(user_serializer.data, status=status.HTTP_200_OK)
             return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
         user = UserSerializer(request.user)
 
         # Leppispj and Leppisvarapj can edit all users
@@ -134,7 +134,7 @@ class UpdateUserView(APIView):
                 user_to_update = User.objects.get(id=pk)
             except ObjectDoesNotExist:
                 return Response("User not found", status=status.HTTP_404_NOT_FOUND)
-            
+
             user = UserUpdateSerializer(
                 instance=user_to_update, data=request.data, partial=True
             )
@@ -142,14 +142,14 @@ class UpdateUserView(APIView):
                 user.save()
                 return Response(user.data, status=status.HTTP_200_OK)
             return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
         # Muokkaus users can only edit users that have role 4 or 5 and belong to the same organization
         elif user.data["role"] == MUOKKAUS:
             try:
                 user_to_update = User.objects.get(id=pk)
             except ObjectDoesNotExist:
                 return Response("User not found", status=status.HTTP_404_NOT_FOUND)
-            
+
             if user_to_update.role in [AVAIMELLINEN, TAVALLINEN]:
                 # Check if user Muokkaus and the user being edited belong to the same organization
                 if belongs_to_same_org(request.user, user_to_update):
@@ -167,7 +167,7 @@ class UpdateUserView(APIView):
 
         else:
             return Response("You are not allowed to edit users", status=status.HTTP_400_BAD_REQUEST)
-        
+
 def belongs_to_same_org(user, user_to_update):
     """Check if two users are members of the same organization"""
     for key, value in user.organization.items():
@@ -284,13 +284,13 @@ class UpdateOrganizationView(APIView):
                 "You can't edit organizations",
                 status=status.HTTP_400_BAD_REQUEST,
             )
-    
+
     def get_organization(self, pk):
         try:
             return Organization.objects.get(id=pk)
         except ObjectDoesNotExist:
             return None
-    
+
     def update_organization(self, request, pk):
         organization_to_update = self.get_organization(pk)
 
@@ -312,7 +312,7 @@ class AddUserOrganizationView(APIView):
     Only Leppispj and Leppisvarapj can add users to organizations for now, data needed to add user
     to organization: user id and organization id
     """
-    
+
     permission_classes = [permissions.IsAuthenticated]
 
     def put(self, request, pk=None):
@@ -341,7 +341,7 @@ class AddUserOrganizationView(APIView):
                 "You can't add members to organizations",
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         try:
             user_to_update = User.objects.get(id=pk)
             organization_name = request.data["organization_name"]
@@ -360,7 +360,7 @@ class AddUserOrganizationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        
+
         # Update the user's key list
         users_organizations = user_to_update.organization
         users_organizations[organization_name] = True
@@ -541,7 +541,7 @@ class UpdateNightResponsibilityView(APIView):
             responsibility_to_update = NightResponsibility.objects.get(id=pk)
         except ObjectDoesNotExist:
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
-        
+
         if responsibility_to_update.user_id == user.data["id"] or responsibility_to_update.created_by == user.data["username"]:
             pass
         else:
@@ -549,7 +549,7 @@ class UpdateNightResponsibilityView(APIView):
                 "Not allowed for this user",
                 status=status.HTTP_400_BAD_REQUEST,
             )
-            
+
         responsibility = NightResponsibilitySerializer(
             instance=responsibility_to_update, data=request.data, partial=True
         )
@@ -558,7 +558,7 @@ class UpdateNightResponsibilityView(APIView):
             responsibility.save()
             return Response(responsibility.data, status=status.HTTP_200_OK)
         return Response(responsibility.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 class LogoutNightResponsibilityView(APIView):
     """View for logout for NightResponsibility object at <baseurl>/api/ykv/logout_responsibility/<responsibility.id>/"""
 
@@ -583,11 +583,11 @@ class LogoutNightResponsibilityView(APIView):
             responsibility_to_update = NightResponsibility.objects.get(id=pk)
         except ObjectDoesNotExist:
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
-        
+
         logout_time = request.data.get("logout_time")
         if not logout_time:
             return Response("Logout time not provided", status=status.HTTP_400_BAD_REQUEST)
-        
+
         if responsibility_to_update.user_id == user.data["id"] or responsibility_to_update.created_by == user.data["username"]:
             pass
         else:
@@ -609,7 +609,7 @@ class LogoutNightResponsibilityView(APIView):
             request.data["late"] = False
 
         request.data["present"] = False
-            
+
         responsibility = NightResponsibilitySerializer(
             instance=responsibility_to_update, data=request.data, partial=True
         )
@@ -658,12 +658,12 @@ class ResetDatabaseView(APIView):
             Event.objects.all().delete()
 
             return Response("Resetting database successful", status=status.HTTP_200_OK)
-        
+
         return Response(
             "This endpoint is for Cypress tests only",
             status=status.HTTP_403_FORBIDDEN
         )
-    
+
 class HandOverKeyView(APIView):
     """View for handing over a Klusteri key at <baseurl>/api/keys/hand_over_key/<user.id>/"""
 
@@ -704,13 +704,13 @@ class HandOverKeyView(APIView):
             return Response(
                 "You can only hand over a Klusteri key through this endpoint",
                 status=status.HTTP_400_BAD_REQUEST
-            )        
+            )
 
         try:
             user_to_update = User.objects.get(id=pk)
         except ObjectDoesNotExist:
             return Response("User not found", status=status.HTTP_404_NOT_FOUND)
-        
+
         try:
             organization_to_update = Organization.objects.get(name=request.data["organization_name"])
         except ObjectDoesNotExist:
@@ -739,7 +739,7 @@ class HandOverKeyView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 class DefectFaultView(viewsets.ReadOnlyModelViewSet):
     """
     Displays a list of all DefectFault objects at <baseurl>/defects/
@@ -763,7 +763,7 @@ class CreateDefectFaultView(APIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
+
 class RepairDefectFaultView(APIView):
     """View for updating a DefectFault object at <baseurl>/api/defects/repair_defect/<defect.id>/"""
 
@@ -787,7 +787,7 @@ class RepairDefectFaultView(APIView):
             defect_to_update = DefectFault.objects.get(id=pk)
         except ObjectDoesNotExist:
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
-        
+
         defect_to_update.repaired = datetime.now(timezone.utc)
 
         defectfault = DefectFaultSerializer(
@@ -798,7 +798,7 @@ class RepairDefectFaultView(APIView):
             defectfault.save()
             return Response(defectfault.data, status=status.HTTP_200_OK)
         return Response(defectfault.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 class EmailDefectFaultView(APIView):
     """View for updating a DefectFault object at <baseurl>/api/defects/email_defect/<defect.id>/"""
 
@@ -822,7 +822,7 @@ class EmailDefectFaultView(APIView):
             defect_to_update = DefectFault.objects.get(id=pk)
         except ObjectDoesNotExist:
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
-        
+
         defect_to_update.email_sent = datetime.now(timezone.utc)
 
         defectfault = DefectFaultSerializer(
@@ -857,7 +857,7 @@ class UpdateDefectFaultView(APIView):
             defect_to_update = DefectFault.objects.get(id=pk)
         except ObjectDoesNotExist:
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
-            
+
         defect = DefectFaultSerializer(
             instance=defect_to_update, data=request.data, partial=True
         )
@@ -887,7 +887,7 @@ class RemoveDefectFaultView(APIView):
                 "You can't remove defects",
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         try:
             defect_to_remove = DefectFault.objects.get(id=pk)
         except ObjectDoesNotExist:
@@ -902,13 +902,13 @@ def force_logout_ykv_logins():
     try:
         responsibility_to_update = NightResponsibility.objects.filter(present=True)
         if len(responsibility_to_update) == 0:
-            return "Nothing to log out" 
+            return "Nothing to log out"
     except ObjectDoesNotExist:
         return "Nothing to log out"
 
     datetime_format = "%Y-%m-%d %H:%M"
     logout_time = datetime.strptime(str(datetime.now())[:-10], datetime_format)
-    
+
     for resp in responsibility_to_update:
         data = {'late': True,
                 'present': False, 
@@ -918,5 +918,5 @@ def force_logout_ykv_logins():
         )
         if responsibility.is_valid():
             responsibility.save()
-    
+
     return "logged out users"

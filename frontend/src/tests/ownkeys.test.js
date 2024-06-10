@@ -1,12 +1,10 @@
 import {
-  getByLabelText,
   render,
   fireEvent,
   waitFor,
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import OwnKeys from "../../src/pages/ownkeys";
-import React from "react";
 import mockAxios from "../../__mocks__/axios";
 
 afterEach(() => {
@@ -34,7 +32,7 @@ describe("OwnKeys Component", () => {
 
     localStorage.setItem("loggedUser", JSON.stringify(user));
 
-    const { getByText, getByLabelText } = render(
+    const { getByText } = render(
       <OwnKeys isLoggedIn={true} loggedUser={user} />,
     );
     waitFor(() => {
@@ -141,7 +139,7 @@ describe("OwnKeys Component", () => {
     localStorage.setItem("ACCESS_TOKEN", "example_token");
     localStorage.setItem("loggeduser", JSON.stringify(user));
 
-    const { getByText, getByLabelText, queryAllByText } = render(
+    const { getByText, getByTestId, queryByText} = render(
       <OwnKeys isLoggedIn={true} loggedUser={user} />,
     );
 

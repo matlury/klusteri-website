@@ -40,6 +40,10 @@ jobs:
           cd ../frontend
           npm install
 
+      - name: Pylint
+        working-directory: ./backend
+        run: poetry run pylint --fail-under=8 backend ilotalo scheduler tests
+
       - name: Make migrations
         working-directory: ./backend
         run: poetry run python manage.py makemigrations
