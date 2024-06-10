@@ -48,7 +48,24 @@
         "close": "Sulje",
         "save": "Tallenna",
         "remove_event": "Poista tapahtuma",
-        "csvdownload": "Lataa tapahtumat CSV-muodossa"
+        "csvdownload": "Lataa tapahtumat CSV-muodossa",
+        "loading": "Lataa",
+        "ykv_active": "Aktiiviset",
+        "take_resp": "Ota vastuu",
+        "resp_desc": "Kirjaa yökäyttövastuu henkilöstä.",
+        "resp_who": "Kenestä otat vastuun?",
+        "resp_for_other": "Kirjaa toisen käyttäjän puolesta",
+        "resp_confirm_logout": "Vahvista YKV uloskirjaus",
+        "resp_confirm_logout_2": "Oletko varma, että haluat kirjata ulos henkilön",
+        "confirm": "Vahvista",
+        "resp_logout": "Ulokirjaus",
+        "resp_respfor": "Vastuussa",
+        "resp_login": "Sisäänkirjaus",
+        "resp_orgs": "Järjestöt",
+        "resp_act": "Aktiivinen / Myöhässä",
+        "resp_createdby": "Luonut",
+        "allresps": "Kaikki vastuut",
+        "ownresps": "Omat vastuut"
       }
     },
     "en": {
@@ -100,7 +117,24 @@
         "close": "Close",
         "save": "Save",
         "remove_event": "Remove event",
-        "csvdownload": "Download event data as a CSV-file"
+        "csvdownload": "Download event data as a CSV-file",
+        "loading": "Loading",
+        "ykv_active": "Active",
+        "take_resp": "Take responsibility",
+        "resp_desc": "Submit a night responsibility for a person.",
+        "resp_who": "Who are you taking responsibility for?",
+        "resp_for_other": "Submit on behalf of another user",
+        "resp_confirm_logout": "Confirm YKV logout",
+        "resp_confirm_logout_2": "Are you sure you want to log out person",
+        "confirm": "Confirm",
+        "resp_logout": "Logout",
+        "resp_respfor": "Responsible for",
+        "resp_login": "Login",
+        "resp_orgs": "Organizations",
+        "resp_act": "Active / Late",
+        "resp_createdby": "Created by",
+        "allresps": "All responsibilities",
+        "ownresps": "Own responsibilities"
       }
     }
 }

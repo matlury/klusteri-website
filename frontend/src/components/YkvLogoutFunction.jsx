@@ -15,6 +15,7 @@ import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { lighten, styled } from '@mui/material/styles';
 import CheckIcon from '@mui/icons-material/Check';
+import { useTranslation } from "react-i18next";
 
 const YkvLogoutFunction = ({
   handleYkvLogin,
@@ -28,6 +29,8 @@ const YkvLogoutFunction = ({
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [selectedUserName, setSelectedUserName] = useState("");
   const [search, setSearch] = useState("");
+
+  const { t } = useTranslation();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -101,7 +104,7 @@ const YkvLogoutFunction = ({
   const columns = [
     {
       field: "actions",
-      headerName: "Uloskirjaus",
+      headerName: t("resp_logout"),
       width: 90,
       renderCell: (params) => (
         <Button
@@ -113,20 +116,20 @@ const YkvLogoutFunction = ({
         </Button>
       ),
     },
-    { field: "Vastuuhenkilö", headerName: "Vastuuhenkilö", width: 170 },
-    { field: "Vastuussa", headerName: "Vastuussa", width: 200 },
-    { field: "YKV_sisäänkirjaus", headerName: "Sisäänkirjaus", width: 200 },
-    { field: "Organisaatiot", headerName: "Järjestöt", width: 200 },
+    { field: "Vastuuhenkilö", headerName: t("reservations_resp"), width: 170 },
+    { field: "Vastuussa", headerName: t("resp_respfor"), width: 200 },
+    { field: "YKV_sisäänkirjaus", headerName: t("resp_login"), width: 200 },
+    { field: "Organisaatiot", headerName: t("resp_orgs"), width: 200 },
   ];
 
   const columns_2 = [
-    { field: "Vastuuhenkilö", headerName: "Vastuuhenkilö", width: 170 },
-    { field: "created_by", headerName: "Luonut", width: 200 },
-    { field: "Vastuussa", headerName: "Vastuussa", width: 200 },
-    { field: "YKV_sisäänkirjaus", headerName: "Sisäänkirjaus", width: 200 },
-    { field: "logout_time", headerName: "Uloskirjaus", width: 200 },
-    { field: "Organisaatiot", headerName: "Järjestöt", width: 200 },
-    { field: "late", headerName: "Aktiivinen / Myöhässä", width: 200, renderCell: (params) => (
+    { field: "Vastuuhenkilö", headerName: t("reservations_resp"), width: 170 },
+    { field: "created_by", headerName: t("resp_createdby"), width: 200 },
+    { field: "Vastuussa", headerName: t("resp_respfor"), width: 200 },
+    { field: "YKV_sisäänkirjaus", headerName: t("resp_login"), width: 200 },
+    { field: "logout_time", headerName: t("resp_logout"), width: 200 },
+    { field: "Organisaatiot", headerName: t("resp_orgs"), width: 200 },
+    { field: "late", headerName: t("resp_act"), width: 200, renderCell: (params) => (
       params.row.late ? <AccessTimeIcon /> : <CheckIcon />
     ) },
   ];
@@ -195,10 +198,10 @@ const YkvLogoutFunction = ({
   };
 
   return loading ? (
-    <div>Lataa...</div>
+    <div>{t("loading")}...</div>
   ) : (
     <div style={{ height: 600, width: "100%" }}>
-      <h2>Aktiiviset</h2>
+      <h2>{t("ykv_active")}</h2>
       <React.Fragment>
         <Button
           variant="contained"
@@ -207,7 +210,7 @@ const YkvLogoutFunction = ({
           onClick={handleClickOpen}
           data-testid="opencreateform"
         >
-          + Ota vastuu
+          + {t("take_resp")}
         </Button>
 
         <Dialog
@@ -218,10 +221,10 @@ const YkvLogoutFunction = ({
             onSubmit: handleFormSubmit,
           }}
         >
-          <DialogTitle>Ota vastuu</DialogTitle>
+          <DialogTitle>{t("take_resp")}</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Kirjaa yökäyttövastuu henkilöstä.
+              {t("resp_desc")}
             </DialogContentText>
             <TextField
               autoFocus
@@ -229,7 +232,7 @@ const YkvLogoutFunction = ({
               margin="dense"
               id="responsibility"
               type="text"
-              label="Kenestä otat vastuun?"
+              label={t("resp_who")}
               value={responsibility}
               fullWidth
               variant="standard"
@@ -245,21 +248,21 @@ const YkvLogoutFunction = ({
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Kirjaa toisen käyttäjän puolesta"
+                  label={t("resp_for_other")}
                   variant="standard"
                 />
               )}
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose}>Peruuta</Button>
+            <Button onClick={handleClose}>{t("cancel")}</Button>
             <Button
               type="submit"
               className="create-user-button"
               data-testid="createresponsibility"
               id="takeresp"
             >
-              Ota vastuu
+              {t("take_resp")}
             </Button>
           </DialogActions>
         </Dialog>
@@ -273,21 +276,21 @@ const YkvLogoutFunction = ({
       />
 
       <Dialog open={confirmOpen} onClose={handleConfirmClose}>
-        <DialogTitle>Vahvista YKV uloskirjaus</DialogTitle>
+        <DialogTitle>{t("resp_confirm_logout")}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Oletko varma, että haluat kirjata ulos henkilön {selectedUserName}?
+            {t("resp_confirm_logout_2")} {selectedUserName}?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleConfirmClose}>Peruuta</Button>
+          <Button onClick={handleConfirmClose}>{t("cancel")}</Button>
           <Button
             onClick={() => handleRemove(selectedUserId)}
             color="primary"
             variant="contained"
             id="confirmlogout"
           >
-            Vahvista
+            {t("confirm")}
           </Button>
         </DialogActions>
       </Dialog>
@@ -305,7 +308,7 @@ const YkvLogoutFunction = ({
 
       {loggedUser.role !== 1 && loggedUser.role !== 5 && (
         <div>
-          <h2>Omat vastuut</h2>
+          <h2>{t("ownresps")}</h2>
           <StyledDataGrid
             rows={ownUsers}
             columns={columns_2}
@@ -318,7 +321,7 @@ const YkvLogoutFunction = ({
 
       {loggedUser.role === 1 && (
         <div>
-          <h2>Kaikki vastuut</h2>
+          <h2>{t("allresps")}</h2>
           <StyledDataGrid
             rows={filteredUsers}
             columns={columns_2}
