@@ -3,6 +3,8 @@ import axiosClient from "../axios.js";
 import { Button } from "@mui/material";
 import DefectForm from "../components/DefectForm";
 import CleanersList from "../components/CleanersList.jsx";
+import DownloadIcon from "@mui/icons-material/Download";
+
 const CleaningSchedule = ({
   isLoggedIn: propIsLoggedIn,
   loggedUser: propLoggedUser,
@@ -107,6 +109,7 @@ const CleaningSchedule = ({
           <h2>Siivousvuorot</h2>
           <React.Fragment>
             <Button
+              startIcon={<DownloadIcon />}
               variant="contained"
               color="primary"
               onClick={handleClickOpen}
