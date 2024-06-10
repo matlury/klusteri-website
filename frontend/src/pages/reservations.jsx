@@ -48,7 +48,7 @@ const MyCalendar = () => {
     getEvents();
   }, []);
 
-  const startRef = useRef(null);
+  const startRef = useRef(null)
   const endRef = useRef(null);
 
   // Gets all created events from backend
@@ -56,10 +56,10 @@ const MyCalendar = () => {
     axios
       .get(`${API_URL}/api/listobjects/events/`)
       .then((response) => {
-        const events = response.data.map(event => ({
+        const events = response.data.map((event) => ({
           ...event,
           start: new Date(event.start),
-          end: new Date(event.end)
+          end: new Date(event.end),
         }));
         setEvents(events);
       })
@@ -96,7 +96,10 @@ const MyCalendar = () => {
 
   // Sets an initial time slot based on the local time when creating a new event after clicking on a day slot in the calendar
   useEffect(() => {
-    if (startRef.current != null && showCreateModal && selectedSlot) {
+    if ((showCreateModal && selectedSlot) && (!startRef.current || !endRef.current)) {
+          startRef.current = { value: "" };
+          endRef.current = { value: "" };
+      }
       startRef.current.value = moment(selectedSlot.start).format(
         "YYYY-MM-DDTHH:mm",
       );

@@ -176,6 +176,7 @@ const ReservationsView = ({
               label="Alkaa"
               type="datetime-local"
               name="start"
+              value={startRef.current.value}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
@@ -188,6 +189,7 @@ const ReservationsView = ({
               label="Päättyy"
               type="datetime-local"
               name="end"
+              value={endRef.current.value}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
