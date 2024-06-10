@@ -1,7 +1,7 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from rest_framework import serializers
-from .models import User, Organization, Event, NightResponsibility, DefectFault
+from .models import User, Organization, Event, NightResponsibility, DefectFault, Cleaning
 
 
 """
@@ -160,7 +160,7 @@ class NightResponsibilitySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CreateNightResponsibilitySerializer(serializers.ModelSerializer):
-    """Used for saving NightResponsibility object to the database"""
+    """Used for saving a NightResponsibility object to the database"""
 
     class Meta:
         model = NightResponsibility
@@ -173,4 +173,21 @@ class DefectFaultSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DefectFault
+        fields = '__all__'
+
+class CreateCleaningSerializer(serializers.ModelSerializer):
+    """Used for saving a Cleaning object to the database"""
+
+    class Meta:
+        model = Cleaning
+        fields = '__all__'
+
+class CleaningSerializer(serializers.ModelSerializer):
+    """Used for saving a Cleaning object to the database"""
+
+    big = OrganizationSerializer(read_only=True)
+    small = OrganizationSerializer(read_only=True)
+
+    class Meta:
+        model = Cleaning
         fields = '__all__'
