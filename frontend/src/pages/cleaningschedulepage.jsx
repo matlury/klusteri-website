@@ -14,6 +14,9 @@ const CleaningSchedule = ({
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+
+  const [allCleaning, setAllCleaning] = useState([]);
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     setIsLoggedIn(propIsLoggedIn);
@@ -85,18 +88,10 @@ const CleaningSchedule = ({
         const cleaningData = res.data.map((u, index) => ({
           id: u.id, // DataGrid requires a unique 'id' for each row
           week: u.week,
-          // time: new Date(u.time),
-          // email: u.email_sent == null ? "Ei" : new Date(u.email_sent),
-          // repaired: u.repaired == null ? "Ei" : new Date(u.repaired),
+          big: u.big.name,
+          small: u.small.name,
         }));
-        console.log("cleaning data json", cleaningData)
-        setAllDefects(cleaningData);
-        setActiveDefects(
-          cleaningData.filter(
-            (resp) =>
-              resp.repaired === "Ei"
-          ),
-        );
+        setAllCleaning(cleaningData);
         setLoading(false);
       })
       .catch((error) => console.error(error));
@@ -122,7 +117,7 @@ const CleaningSchedule = ({
             <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
           </React.Fragment>
         <React.Fragment>
-          <CleanersList allCleaners={[]}/>
+          <CleanersList allCleaners={allCleaning}/>
         </React.Fragment>
       </div>
        )}
