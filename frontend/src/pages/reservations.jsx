@@ -48,8 +48,8 @@ const MyCalendar = () => {
     getEvents();
   }, []);
 
-  const startRef = useRef(null)
-  const endRef = useRef(null);
+  const startRef = useRef(0);
+  const endRef = useRef(0);
 
   // Gets all created events from backend
   const getEvents = () => {
@@ -96,7 +96,8 @@ const MyCalendar = () => {
 
   // Sets an initial time slot based on the local time when creating a new event after clicking on a day slot in the calendar
   useEffect(() => {
-    if ((showCreateModal && selectedSlot) && (!startRef.current || !endRef.current)) {
+    if (showCreateModal && selectedSlot) {
+      if (!startRef.current || !endRef.current) {
           startRef.current = { value: "" };
           endRef.current = { value: "" };
       }
