@@ -83,12 +83,29 @@
         "edituser": "Muokkaa käyttäjää",
         "givekey": "Luovuta avain",
         "chooseorg": "Valitse organisaatio",
-        "changepj": "Vaihda puheenjohtajaksi"
+        "changepj": "Vaihda puheenjohtajaksi",
+        "timefilter": "Hae aikavälillä",
+        "orgstats": "Järjestötilastot",
+        "orgstats_1": "Avainten määrä järjestöittäin",
+        "orgstats_2": "YKV-kirjausten määrä järjestöittäin",
+        "orgstats_3": "Myöhäisten YKV-kirjausten määrä järjestöittäin",
+        "userstats_1": "YKV-kirjausten määrä käyttäjittäin",
+        "userstats_2": "YKV-kirjausten määrä viikonpäivittäin",
+        "userstats_3": "YKV-kirjausten määrä tunneittain",
+        "statslogin": "Sisäänkirjautumiset",
+        "statslogout": "Uloskirjautumiset",
+        "monday": "Ma",
+        "tuesday": "Ti",
+        "wednesday": "Ke",
+        "thursday": "To",
+        "friday": "Pe",
+        "saturday": "La",
+        "sunday": "Su"
       }
     },
     "en": {
       "translation": {
-        "front_1": "The name of the house in Latin, Domus Gaudium, stands for a house named Joy or Glee. It references the joys of studying and student life and continues the academic tradition and fits in with the rest of the names of the place, such as Domus Academica.",
+        "front_1": "The Latin name of the building, Domus Gaudium, means the House of Joy. It naturally refers to the joys of studying and student life and continues the academic tradition and fits into the other nomenclature of the place, such as Domus Academica.",
         "front_2": "The building also got its own slogan, 'sub hoc Tecto cives academici excoluntur', which in English means 'under the shelter of this building academic citizens are made'.",
         "front_sidebar_1": "Frontpage",
         "front_sidebar_2": "Christina Regina",
@@ -170,7 +187,24 @@
         "edituser": "Edit user",
         "givekey": "Give key",
         "chooseorg": "Choose organization",
-        "changepj": "Change to chairman"
+        "changepj": "Change to chairman",
+        "timefilter": "Search by timeframe",
+        "orgstats": "Organization stats",
+        "orgstats_1": "Keys by organization",
+        "orgstats_2": "YKV logs by organization",
+        "orgstats_3": "Late YKV logs by organization",
+        "userstats_1": "YKV logs leaderboard",
+        "userstats_2": "YKV logs by weekday",
+        "userstats_3": "YKV-logs by hour",
+        "statslogin": "Logins",
+        "statslogout": "Logouts",
+        "monday": "Mon",
+        "tuesday": "Tue",
+        "wednesday": "Wed",
+        "thursday": "Thu",
+        "friday": "Fri",
+        "saturday": "Sat",
+        "sunday": "Sun"
       }
     }
 }

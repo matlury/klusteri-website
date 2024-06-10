@@ -7,6 +7,7 @@ import {
   fetchAllUsersWithKeys,
 } from "../utils/keyuserhelpers.js";
 import YkvLogoutFunction from "../components/YkvLogoutFunction.jsx";
+import { useTranslation } from "react-i18next";
 
 const OwnKeys = ({
   isLoggedIn: propIsLoggedIn,
@@ -79,6 +80,8 @@ const OwnKeys = ({
 
     fetchData();
   }, [loggedUser]);
+
+  const { t } = useTranslation();
 
   // THE FOLLOWING FUNCTIONS HANDLES TAKING THE YKV-RESPONSIBILITIES
 
@@ -236,7 +239,7 @@ const OwnKeys = ({
 
   return (
     <div id="left_content">
-      {!isLoggedIn && <h3>Kirjaudu sisään</h3>}
+      {!isLoggedIn && <h3>{t("login")}</h3>}
       {isLoggedIn && (
         <div id="leftleft_content">
           {error && <p style={{ color: "red" }}>{error}</p>}
