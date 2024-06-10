@@ -92,7 +92,7 @@ const MyCalendar = () => {
 
   // Sets an initial time slot based on the local time when creating a new event after clicking on a day slot in the calendar
   useEffect(() => {
-    if (showCreateModal && selectedSlot) {
+    if (startRef.current.value != null && showCreateModal && selectedSlot) {
       startRef.current.value = moment(selectedSlot.start).format(
         "YYYY-MM-DDTHH:mm",
       );
