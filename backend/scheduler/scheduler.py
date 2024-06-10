@@ -1,9 +1,10 @@
-from apscheduler.schedulers.background import BackgroundScheduler
-from django_apscheduler.jobstores import DjangoJobStore, register_events
-from apscheduler.triggers.cron import CronTrigger
-from django.utils import timezone
-from django_apscheduler.models import DjangoJobExecution, DjangoJob
 import sys
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+from django_apscheduler.jobstores import DjangoJobStore, register_events
+from django_apscheduler.models import DjangoJobExecution, DjangoJob
+from django.utils import timezone
+
 from ilotalo.views import force_logout_ykv_logins
 
 def force_logout_ykv():

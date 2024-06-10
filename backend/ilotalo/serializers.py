@@ -25,7 +25,7 @@ class UserNoPasswordSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         exclude = ('password',)
-        
+
 class OrganizationSerializer(serializers.ModelSerializer):
     """Serializes an Organization object as JSON"""
 
@@ -151,7 +151,7 @@ class CreateEventSerializer(serializers.ModelSerializer):
 
 class NightResponsibilitySerializer(serializers.ModelSerializer):
     """Serializes a NightResponsibility object as JSON"""
-    
+
     organizations = OrganizationSerializer(many=True, read_only=True)
     user = UserNoPasswordSerializer(read_only=True)
 

@@ -140,4 +140,3 @@ class DefectFault(models.Model):
         blank = True,
         null = True
     )
-
