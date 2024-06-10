@@ -56,7 +56,11 @@ const MyCalendar = () => {
     axios
       .get(`${API_URL}/api/listobjects/events/`)
       .then((response) => {
-        const events = response.data;
+        const events = response.data.map(event => ({
+          ...event,
+          start: new Date(event.start),
+          end: new Date(event.end)
+        }));
         setEvents(events);
       })
       .catch((error) => {
