@@ -52,7 +52,11 @@ const drawerWidth = 240;
 
 const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      PaperProps={{ style: { minWidth: '400px' } }} // Set minimum width
+    >
       <DialogTitle>Kirjaudu sisään</DialogTitle>
       <DialogContent>
         <LoginPage onLogin={onLogin} onCreateNewUser={onCreateNewUser} />
@@ -63,6 +67,7 @@ const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
     </Dialog>
   );
 };
+
 
 const App = (props) => {
   const { window } = props;

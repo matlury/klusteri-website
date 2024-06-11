@@ -12,7 +12,7 @@ const LoginForm = ({
 }) => {
   return (
     <form>
-      <FormGroup>
+      <FormGroup sx={{ marginBottom: 2 }}>
         <TextField
           id="email"
           label="Sähköposti"
@@ -20,7 +20,7 @@ const LoginForm = ({
           onChange={(e) => setEmail(e.target.value)}
         />
       </FormGroup>
-      <FormGroup>
+      <FormGroup sx={{ marginBottom: 2 }}>
         <TextField
           id="password"
           label="Salasana"
