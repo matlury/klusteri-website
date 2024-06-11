@@ -34,6 +34,7 @@ const LoginForm = ({
 
       <div style={{ marginTop: 10 }}>
         <Button
+          id="login-button"
           variant="contained"
           className="login-button"
           color="primary"

@@ -18,9 +18,9 @@ describe("Frontpage", () => {
   });
 
   it("rules and instructions can be accessed", function () {
-    cy.contains("Säännöt ja ohjeet").click();
+    cy.contains("Säännöt ja Ohjeet").click();
     cy.url().should("include", "/saannot_ja_ohjeet");
-    cy.contains("Säännöt ja ohjeet");
+    cy.contains("Säännöt ja Ohjeet");
   });
 
   it("privacy policy can be accessed", function () {
@@ -45,6 +45,7 @@ describe("Frontpage", () => {
     cy.contains("Kirjaudu").click();
     cy.wait(1000);
     cy.contains("Luo tili").click();
+    cy.contains("Luo tili").click();
     cy.get("#usernameInput").type("testuser");
     cy.get("#passwordInput").type("s");
     cy.get("#confirmPasswordInput").type("s");
@@ -56,6 +57,7 @@ describe("Frontpage", () => {
 
   it("error message if password input is too long", function () {
     cy.contains("Kirjaudu").click();
+    cy.contains("Luo tili").click();
     cy.contains("Luo tili").click();
     cy.contains("Telegram (valinnainen)"); //get
     cy.get("#usernameInput").type("testuser");
@@ -71,6 +73,7 @@ describe("Frontpage", () => {
   it("error message if passwords dont match", function () {
     cy.contains("Kirjaudu").click();
     cy.contains("Luo tili").click();
+    cy.contains("Luo tili").click();
     cy.contains("Telegram (valinnainen)");
     cy.get("#usernameInput").type("testuser");
     cy.get("#passwordInput").type("salasana123");
@@ -84,6 +87,7 @@ describe("Frontpage", () => {
   it("error message if password only contains numbers", function () {
     cy.contains("Kirjaudu").click();
     cy.contains("Luo tili").click();
+    cy.contains("Luo tili").click();
     cy.contains("Telegram (valinnainen)");
     cy.get("#usernameInput").type("testuser");
     cy.get("#passwordInput").type("1234567890");
@@ -96,6 +100,7 @@ describe("Frontpage", () => {
 
   it("error message if a field is missing", function () {
     cy.contains("Kirjaudu").click();
+    cy.contains("Luo tili").click();
     cy.contains("Luo tili").click();
     cy.contains("Telegram (valinnainen)");
     cy.get("#passwordInput").type("1234567890");
@@ -111,6 +116,7 @@ describe("Frontpage", () => {
   it("a user can be created", function () {
     cy.contains("Kirjaudu").click();
     cy.contains("Luo tili").click();
+    cy.contains("Luo tili").click();
     cy.contains("Telegram (valinnainen)");
     cy.get("#usernameInput").type("testuser");
     cy.get("#passwordInput").type("salasana123");
@@ -118,7 +124,7 @@ describe("Frontpage", () => {
     cy.get("#emailInput").type("testuser@gmail.com");
     cy.get("#telegramInput").type("testtg");
     cy.get(".create-user-button").click();
-    cy.contains("Käyttäjä luotu onnistuneesti!");
+    cy.contains("Käyttäjä luotu onnistuneesti");
   });
 
   it("a user can log in", function () {
@@ -128,7 +134,8 @@ describe("Frontpage", () => {
 
     cy.contains("Kirjaudu").click();
     cy.contains("Luo tili").click();
-    cy.contains("Telegram (valinnainen)");
+    cy.contains("Luo tili").click();
+    cy.contains("Telegram");
     cy.get("#usernameInput").type("testuser");
     cy.get("#passwordInput").type("salasana123");
     cy.get("#confirmPasswordInput").type("salasana123");
@@ -140,7 +147,7 @@ describe("Frontpage", () => {
 
     cy.get("#email").type("testuser@gmail.com");
     cy.get("#password").type("salasana123");
-    cy.contains("Kirjaudu sisään").click();
+    cy.get("#login-button").click();
     //cy.contains("Hei testuser!");
   });
 });
@@ -219,11 +226,10 @@ describe("Ownkeys", () => {
         });
       });
 
-    cy.contains("Omat avaimet").click();
+    cy.contains("YKV").click();
     cy.contains("+ Ota vastuu").click();
     cy.get("#responsibility").type("fuksit");
     cy.get("#takeresp").click();
-    cy.contains("Peruuta").click();
     cy.reload();
     cy.contains("fuksit");
     cy.contains("leppis");
@@ -298,7 +304,7 @@ describe("Ownkeys", () => {
         });
       });
 
-    cy.contains("Omat avaimet").click();
+    cy.contains("YKV").click();
     cy.reload();
     cy.contains("+ Ota vastuu").click();
     cy.get("#responsibility").type("fuksit");
@@ -396,7 +402,7 @@ describe("Reservations", () => {
       cy.contains("Järjestäjä: tko-äly");
       cy.contains("Vastuuhenkilö: Mr Responsible");
       cy.contains("Kuvaus: This is a testing event");
-      cy.contains("Tila: Avoin");
+      cy.contains("Avoimuus: Avoin tapahtuma");
       cy.contains("Huone: Kokoushuone");
     });
 
@@ -472,7 +478,7 @@ describe("Ownpage", () => {
     cy.contains("Talon latinankielinen nimi");
 
     cy.wait(500);
-    cy.contains("Omat tiedot").click();
+    cy.contains("Omat Tiedot").click();
 
     cy.get("#telegram").type("ProffaTG");
     cy.contains("Tallenna").click();
@@ -505,7 +511,7 @@ describe("Ownpage", () => {
     cy.contains("Talon latinankielinen nimi");
 
     cy.wait(500);
-    cy.contains("Omat tiedot").click();
+    cy.contains("Omat Tiedot").click();
 
     cy.get("#name").type("Teekkarit");
     cy.get(".organization-email").type("teekkarit@mail.com");
@@ -542,7 +548,7 @@ describe("Ownpage", () => {
       cy.get(".login-button").click();
       cy.contains("Talon latinankielinen nimi");
       cy.wait(500);
-      cy.contains("Omat tiedot").click();
+      cy.contains("Omat Tiedot").click();
       cy.get("#name").type("Teekkarit");
       cy.get(".organization-email").type("teekkarit@mail.com");
       cy.get("#homepage").type("www.teekkarit.fi");
@@ -584,7 +590,7 @@ describe("Ownpage", () => {
       cy.get(".login-button").click();
       cy.contains("Talon latinankielinen nimi");
       cy.wait(500);
-      cy.contains("Omat tiedot").click();
+      cy.contains("Omat Tiedot").click();
       cy.get("#name").type("Teekkarit");
       cy.get(".organization-email").type("teekkarit@mail.com");
       cy.get("#homepage").type("www.teekkarit.fi");
@@ -675,7 +681,7 @@ describe("Statistics page", () => {
     cy.get("#password").type("salasana123");
     cy.get(".login-button").click();
     cy.contains("Tilastot").click();
-    cy.contains("Kirjaudu sisään")
+    cy.contains("Kirjaudu")
   })
 
   it("Statistics render with role 1", function () {
