@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import FrontPage from "../../src/pages/frontpage";
-import i18n from "../../i18n.js";
+import i18n from "../i18n.js";
 
 localStorage.setItem("lang", "fi")
 

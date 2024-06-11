@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 import { render, fireEvent, waitFor } from "@testing-library/react";
 import LoginPage from "../pages/loginpage";
 import axiosClient from "../axios.js";
-import i18n from "../../i18n.js";
+import i18n from "../i18n.js";
 
 localStorage.setItem("lang", "fi")
 

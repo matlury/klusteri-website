@@ -7,7 +7,7 @@ import {
 import "@testing-library/jest-dom";
 import DefectFault from "../../src/pages/defectfaultpage";
 import mockAxios from "../../__mocks__/axios";
-import i18n from "../../i18n.js";
+import i18n from "../i18n.js";
 
 localStorage.setItem("lang", "fi")
 

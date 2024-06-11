@@ -1,7 +1,7 @@
 import { render, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Contacts from "../../src/pages/contacts";
-import i18n from "../../i18n.js";
+import i18n from "../i18n.js";
 
 localStorage.setItem("lang", "fi")
 

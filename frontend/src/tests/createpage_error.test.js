@@ -1,7 +1,7 @@
 import { render, fireEvent, waitFor } from "@testing-library/react";
 import NewAccountPage from "../../src/pages/createpage";
 import "@testing-library/jest-dom";
-import i18n from "../../i18n.js";
+import i18n from "../i18n.js";
 
 localStorage.setItem("lang", "fi")
 
