@@ -8,6 +8,7 @@ import UserPage from "../components/UserPage.jsx";
 import OrganisationPage from "../components/OrganisationPage.jsx";
 import CreateOrganization from "../components/CreateOrganization.jsx";
 import AllUsers from "../components/AllUsers.jsx";
+import { useTranslation } from "react-i18next";
 
 const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const { user, setUser } = useStateContext();
@@ -46,6 +47,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const { t } = useTranslation();
 
   const API_URL = process.env.API_URL;
   // Writes down if a user is logged in
@@ -88,7 +91,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     const user_id = loggedUser.id;
 
     if (!username || !email) {
-      setError("Käyttäjänimi ja sähköposti ovat pakollisia kenttiä.");
+      setError(t("usereditmandfields"));
       setTimeout(() => setError(""), 5000);
       return;
     }
@@ -103,7 +106,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
               (user) => user.telegram === telegram && user.id !== loggedUser.id,
             )
           ) {
-            setError("Telegram on jo käytössä.");
+            setError(t("telegraminuse"));
             setTimeout(() => setError(""), 5000);
             return;
           }
@@ -119,7 +122,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             (user) => user.email === email && user.id !== loggedUser.id,
           )
         ) {
-          setError("Sähköposti on jo käytössä.");
+          setError(t("emailinuse"));
           setTimeout(() => setError(""), 5000);
           return;
         }
@@ -128,7 +131,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
     function confirmupdate() {
       const confirmUpdate = window.confirm(
-        "Oletko varma, että haluat päivittää käyttäjätietojasi?",
+        t("usereditconfirm"),
       );
 
       if (confirmUpdate) {
@@ -137,11 +140,11 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           .then((response) => {
             localStorage.setItem("loggedUser", JSON.stringify(response.data));
             setUser(response.data);
-            setSuccess("Tiedot päivitetty onnistuneesti!");
+            setSuccess(t("usereditsuccess"));
             setTimeout(() => setSuccess(""), 5000);
           })
           .catch((error) => {
-            console.error("Error updating user details:", error);
+            console.error(t("usereditfail"), error);
           });
       } else {
         console.log("User cancelled the update.");
@@ -159,7 +162,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     //event.preventDefault();
 
     const confirmUpdate = window.confirm(
-      `Oletko varma, että haluat päivittää tämän tietoja?`,
+      t("usereditforother"),
     );
 
     const updatedValues = {
@@ -174,9 +177,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       axiosClient
         .put(`/users/update/${userDetailsId}/`, updatedValues)
         .then((response) => {
-          console.log("User details updated successfully:", response.data);
+          console.log(t("usereditsuccess"), response.data);
 
-          setSuccess("Tiedot päivitetty onnistuneesti!");
+          setSuccess(t("usereditsuccess"));
           setTimeout(() => setSuccess(""), 5000);
           getAllUsers();
 
@@ -186,8 +189,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           }
         })
         .catch((error) => {
-          console.error("Error updating user details:", error);
-          setError("Tietojen päivittäminen epäonnistui");
+          console.error(t("usereditfail"), error);
+          setError(t("usereditfail"));
           setTimeout(() => setError(""), 5000);
         });
     } else {
@@ -227,7 +230,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // Handles organization detail updates
   const handleOrganizationDetails = (organization_new_name, organization_new_email, organization_new_homepage, orgId) => {
     const confirmUpdate = window.confirm(
-      "Oletko varma, että haluat päivittää organisaatiota?",
+      t("orgeditconfirm"),
     );
     
     const newOrganizationObject = {
@@ -238,7 +241,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     };
     if (true) {
       const confirmUpdate = window.confirm(
-        "Oletko varma, että haluat päivittää organisaatiota?",
+        t("orgeditconfirm"),
       );
 
       if (confirmUpdate) {
@@ -248,13 +251,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             newOrganizationObject,
           )
           .then((response) => {
-            console.log("Organization created successfully!", response.data);
-            setSuccess("Järjestö muokattu onnistuneesti!");
+            console.log(t("orgeditsuccess"), response.data);
+            setSuccess(t("orgeditsuccess"));
             setTimeout(() => setSuccess(""), 5000);
             getOrganisations();
           })
           .catch((error) => {
-            console.error("Error creating account:", error);
+            console.error(t("orgeditfail"), error);
           });
       }
       else {
@@ -266,20 +269,20 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // Handles deletion of organization
   const handleDeleteOrganization = (orgId) => {
     const confirmUpdate = window.confirm(
-      "Oletko varma, että haluat poistaa tämän järjestön?",
+      t("orgdeleteconfirm"),
     );
 
     if (confirmUpdate) {
       axiosClient
         .delete(`/organizations/remove/${orgId}/`)
         .then((response) => {
-          console.log("Organization deleted successfully:", response.data);
+          console.log(t("orgdeletesuccess"), response.data);
           getOrganisations();
-          setSuccess("Järjestö poistettu onnistuneesti!");
+          setSuccess(t("orgdeletesuccess"));
           setTimeout(() => setSuccess(""), 5000);
         })
         .catch((error) => {
-          console.error("Error deleting organization:", error);
+          console.error(t("orgdelelefail"), error);
         });
     }
   };
@@ -295,13 +298,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         if (
           existingOrganizations.some((org) => org.name === organization_name)
         ) {
-          setError("Nimi on jo käytössä");
+          setError(t("orgcreatenamefail"));
           setTimeout(() => setError(""), 5000);
         }
         if (
           existingOrganizations.some((org) => org.email === organization_email)
         ) {
-          setError("Sähköposti on jo käytössä.");
+          setError(t("emailinuse"));
           setTimeout(() => setError(""), 5000);
         } else {
           const organizationObject = {
@@ -315,7 +318,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             .post("organizations/create", organizationObject)
             .then((response) => {
               console.log("Organization created successfully!");
-              setSuccess("Järjestö luotu onnistuneesti!");
+              setSuccess(t("orgcreatesuccess"));
               setTimeout(() => setSuccess(""), 5000);
               getOrganisations();
             })
@@ -376,7 +379,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
     function confirmupdate() {
       const confirmUpdate = window.confirm(
-        "Oletko varma, että haluat siirtää PJ-oikeudet?",
+        t("pjchange"),
       );
 
       if (confirmUpdate) {
@@ -391,7 +394,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             console.log("Role updated successfully", response.data);
             localStorage.setItem("loggedUser", JSON.stringify(response.data));
             setUser(response.data);
-            setSuccess("Tiedot päivitetty onnistuneesti!");
+            setSuccess(t("usereditsuccess"));
             setTimeout(() => setSuccess(""), 5000);
           })
           .catch((error) => {
@@ -415,7 +418,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
     // Display a confirmation dialog before handing over the key
     const confirmKeyHandover = window.confirm(
-      "Oletko varma että haluat luovuttaa avaimen?",
+      t("handoverkeyconfirm")
     );
 
     if (!confirmKeyHandover) {
@@ -438,7 +441,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       // Check the response and update the UI accordingly
       if (response.status === 200) {
         // Successful key handover
-        setSuccess("Avaimen luovutus onnistui!");
+        setSuccess(t("handoverkeysuccess"));
         setTimeout(() => {
           setSuccess("");
         }, 5000);
@@ -448,7 +451,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       }
     } catch (error) {
       console.error("Error in key handover:", error);
-      setError("Avaimen luovutus epäonnistui!");
+      setError(t("handoverkeyfail"));
     }
   };
 

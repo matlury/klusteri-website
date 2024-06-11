@@ -309,7 +309,25 @@
         "ykvlogoutsuccess": "YKV-uloskirjaus onnistui",
         "ykvlogoutfail": "YKV-uloskirjaus epäonnistui",
         "ykveditsuccess": "YKV-muokkaus onnistui",
-        "ykveditfail": "YKV-muokkaus epäonnistui"
+        "ykveditfail": "YKV-muokkaus epäonnistui",
+        "usereditmandfields": "Käyttäjänimi ja sähköposti ovat pakollisia kenttiä.",
+        "usereditconfirm": "Oletko varma, että haluat päivittää käyttäjätietojasi?",
+        "usereditsuccess": "Tiedot päivitetty onnistuneesti!",
+        "usereditforother": "Oletko varma, että haluat päivittää tämän käyttäjän tietoja?",
+        "usereditfail": "Tietojen päivittäminen epäonnistui",
+        "orgeditconfirm": "Oletko varma, että haluat päivittää järjestön tietoja?",
+        "orgeditsuccess": "Järjestöä muokattu onnistuneesti!",
+        "orgeditfail": "Järjestön päivittäminen epäonnistui",
+        "orgdeleteconfirm": "Oletko varma, että haluat poistaa tämän järjestön?",
+        "orgdeletesuccess": "Järjestö poistettu onnistuneesti!",
+        "orgdeletefail": "Järjestön poistaminen epäonnistui",
+        "orgcreatenamefail": "Nimi on jo käytössä",
+        "orgcreatesuccess": "Järjestö luotu onnistuneesti!",
+        "orgcreatefail": "Järjestön luominen epäonnistui",
+        "pjchange": "Oletko varma, että haluat siirtää PJ-oikeudet",
+        "handoverkeyconfirm": "Oletko varma että haluat luovuttaa avaimen?",
+        "handoverkeysuccess": "Avaimen luovutus onnistui!",
+        "handoverkeyfail": "Avaimen luovutus epäonnistui"
       }
     },
     "en": {
@@ -622,7 +640,25 @@
         "ykvlogoutsuccess": "YKV logout successful",
         "ykvlogoutfail": "YKV logout failed",
         "ykveditsuccess": "YKV edit successful",
-        "ykveditfail": "YKV edit failed"
+        "ykveditfail": "YKV edit failed",
+        "usereditmandfields": "Username and email are mandatory fields.",
+        "usereditconfirm": "Are you sure you want to update your information?",
+        "usereditsuccess": "User information updated successfully!",
+        "usereditforother": "Are you sure you want to update the information for this user?",
+        "usereditfail": "User information update failed",
+        "orgeditconfirm": "Are you sure you want to update this organization?",
+        "orgeditsuccess": "Organization updated successfully!",
+        "orgeditfail": "Organization update failed",
+        "orgdeleteconfirm": "Are you sure you want to delete this organization?",
+        "orgdeletesuccess": "Organization deleted successfully!",
+        "orgdeletefail": "Organization deletion failed",
+        "orgcreatenamefail": "Organization name is already in use",
+        "orgcreatesuccess": "Organization created successfully!",
+        "orgcreatefail": "Organization creation failed",
+        "pjchange": "Are you sure you want to change the chairman?",
+        "handoverkeyconfirm": "Are you sure you want to hand over key?",
+        "handoverkeysuccess": "Key handed over successfully",
+        "handoverkeyfail": "Key handover failed"
       }
     }
 }
