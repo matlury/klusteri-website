@@ -226,83 +226,70 @@ const Rules_and_Instructions = () => {
       <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <h2 style={{ color: "#555", marginTop: "30px" }}>
-            Siivoussäännöt
+          {t("rules_68")}
           </h2>
         </AccordionSummary>
         <AccordionDetails>
           <div className="rule-section">
-            <h3>Tapahtuman jälkeinen siivous</h3>
+            <h3>{t("rules_69")}</h3>
             <ul>
-              <li>Huonekalut paikoilleen</li>
-              <li>Sälä paikoilleen</li>
-              <li>Astioiden tiskaus & keittiön tasojen pyyhintä</li>
-              <li>Tölkkien ja pullojen keruu</li>
-              <li>Keräysastioiden tyhjennys</li>
-              <li>Tarvittaessa lattioiden lakaisu</li>
-              <li>Mahdollisten kurajälkien poispesu</li>
-              <li>Mahdollisten tahmalaikkujen pyyhintä pöydiltä</li>
+              <li>{t("rules_70")}</li>
+              <li>{t("rules_71")}</li>
+              <li>{t("rules_72")}</li>
+              <li>{t("rules_73")}</li>
+              <li>{t("rules_74")}</li>
+              <li>{t("rules_75")}</li>
+              <li>{t("rules_76")}</li>
+              <li>{t("rules_77")}</li>
               <li>
-                Klusterin ulkopuolinen aula ja ulko-oven edusta (roskat,
-                tumpit, pullot…)
+              {t("rules_78")}
               </li>
               <li>
-                Ilmoita, jos siivousvälineissä on puutteita
-                (leppis-list@helsinki.fi)
+              {t("rules_79")}
               </li>
-              <li>Klusterin yleisilme SIISTI</li>
+              <li>{t("rules_80")}</li>
             </ul>
           </div>
           <div>
-            <h3>Viikkosiivouksen tshek-lista</h3>
+            <h3>{t("rules_81")}</h3>
             <ul>
-              <li>Siivoa sekä yleistila, kerhohuone että kokoushuone</li>
+              <li>{t("rules_82")}</li>
               <li>
-                Sälä pois sieltä minne ei kuulu (mutta eihän semmoista ole,
-                eihän?)
+              {t("rules_83")}
               </li>
               <li>
-                Tölkkien ja pullojen keruu (tölkit ei sekajätteen sekaan vaan
-                metallikeräykseen)
+              {t("rules_84")}
               </li>
               <li>
-                Lattioiden imurointi/lakaisu (imuroi myös matot ja niiden
-                aluset)
+              {t("rules_85")}
               </li>
               <li>
-                Lattioiden pesu (ota moppi, ämpäri, vettä ja pesuainetta, MYÖS
-                SOHVIEN TAKAA)
+              {t("rules_86")}
               </li>
-              <li>Pöytien pyyhintä</li>
+              <li>{t("rules_87")}</li>
               <li>
-                Likatahrat, runsaat käpälän jäljet tms pois seinistä ja ovista
-              </li>
-              <li>
-                Tiskaus & keittiön siivous (paitsi eihän tiskiä ole, kun jengi
-                on ne ite hoitanu)
+              {t("rules_88")}
               </li>
               <li>
-                Vessat (pönttöjen pesu, lattioiden lakaisu & pesu, peilin
-                pyyhintä, lavuaarin puhdistus, roskisten tyhjennys, paperin
-                täyttö)
-              </li>
-              <li>Kuramattojen pudistelu</li>
-              <li>Puhdista sohvat tarpeen vaatiessa</li>
-              <li>
-                Tarpeen mukaan myös klusterin ulkopuolisen aulan ja ulko-oven
-                edustan siivous
-              </li>
-              <li>Rättien pesu ja asiallisesti kuivumaan jättö</li>
-              <li>
-                Roskien vienti jätehuoneeseen (energia, bio, paperi, pahvi,
-                metalli, seka. Jätehuone löytyy kun kävelet ulos talosta ja
-                kierrät nurkan taa myötäpäivää.)
+              {t("rules_89")}
               </li>
               <li>
-                Ilmoita, jos siivousvälineissä on puutteita
-                (leppis-list@helsinki.fi)
+              {t("rules_90")}
+              </li>
+              <li>{t("rules_91")}</li>
+              <li>{t("rules_92")}</li>
+              <li>
+              {t("rules_93")}
+              </li>
+              <li>{t("rules_94")}</li>
+              <li>
+              {t("rules_95")}
               </li>
               <li>
-                Ilmoita, jos klusteri saastainen (leppis-list@helsinki.fi)
+              {t("rules_96")}
+              </li>
+              <li>
+              {t("rules_97")}
               </li>
             </ul>
           </div>
@@ -312,85 +299,56 @@ const Rules_and_Instructions = () => {
       <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <h2 style={{ color: "#555", marginTop: "30px" }}>
-            Matlu-klusterin turvallisen tilan periaatteet
+          {t("rules_98")}
           </h2>
         </AccordionSummary>
         <AccordionDetails>
         <div>
             <h3 style={{ color: "red", fontSize: "1.2em" }}>
-              Hätätilanteessa soita yleiseen hätänumeroon 112.
+            {t("rules_99")}
             </h3>
           </div>
           <div>
-            <h3>Kunnioita toisia ja heidän omaa tilaa sekä koskemattomuutta</h3>
+            <h3>{t("rules_100")}</h3>
             <p>
-              Pidä huolta ilmapiiristä kunnioittamalla muita ihmisiä. Älä syrji,
-              ahdistele, kiusaa, painosta tai käy käsiksi. Älä tee oletuksia
-              toisen identiteetistä, sukupuolesta, terveydentilasta tai
-              seksuaalisesta suuntautumisesta tai siitä, mistä he ovat kotoisin.
+            {t("rules_101")}
               <br />
               <br />
-              Älä koskettele muita ilman heidän lupaansa. Muista, ettet voi
-              tietää ihmisen rajoja ellet kysy. Minkäänlaista seksuaalista
-              häirintää sen eri muodoin ei hyväksytä.
+              {t("rules_102")}
               <br />
               <br />
-              Minkäänlaista häiritsevää, seksististä, rasistista, homo- tai
-              transfobista, loukkaavaa tai väkivaltaista tai puhetta tai
-              käytöstä ei hyväksytä. Muista, että vaikka jokin on sinusta
-              esimerkiksi hauskaa tai vitsikästä, se voi jostain toisesta tuntua
-              epämiellyttävältä tai ahdistavalta.
+              {t("rules_103")}
               <br />
               <br />
-              Mikäli koet itse tai havaitset muiden harjoittamaa häirintää, mene
-              väliin tai ilmoita asiasta vastuuhenkilöille. Raportoi
-              väkivaltaisesta käytöksestä tai vakavasta häirinnästä välittömästi
-              eteenpäin tapahtumajärjestäjälle, vastuuhenkilölle,
-              häirintäyhdyshenkilöille tai Leppätalokomitean puheenjohtajalle.
+              {t("rules_104")}
               <br />
               <br />
-              Vastuuhenkilö on kuka tahansa klusterin kulkuluvallinen henkilö.
-              Klo 00-07 on olemassa erityisessä yökäyttövastuussa olevia
-              henkilöitä, jotka voit selvittää kysymällä. Jos itse vastuuhenkilö
-              on osa ongelmaa, ota yhteyttä toiseen vastuuhenkilöön tai
-              tarvittaessa Leppätalokomitean puheenjohtajaan.
+              {t("rules_105")}
             </p>
           </div>
           <div>
-            <h3>Välitä ja pidä huolta</h3>
+            <h3>{t("rules_106")}</h3>
             <p>
-              Pidä huolta itsestäsi. Älä saata itseäsi tarkoituksella sellaiseen
-              tilaan, ettet pystyisi esimerkiksi pääsemään kotiin millä tahansa
-              hetkellä. Jos et jostain syystä pysty huolehtimaan itsestäsi,
-              pyydäthän rohkeasti apua.
+            {t("rules_107")}
               <br />
               <br />
-              Pidä huolta muista. Jos huomaat, ettei joku pysty pitämään huolta
-              itsestään, älä jätä häntä heitteille. Mikäli joku pyytää sinulta
-              apua, auta parhaasi mukaan. Huolehdi, että hän saa apua
-              esimerkiksi ilmoittamalla asiasta vastuuhenkilöille.
+              {t("rules_108")}
             </p>
           </div>
           <div>
-            <h3>Kommunikoi</h3>
+            <h3>{t("rules_109")}</h3>
             <p>
-              Olemalla avoin ja ystävällinen, luot ympäristöä, jossa
-              kommunikoiminen on helpompaa. Jos jokin ei ole mukavaa, sanothan
-              siitä. Mikäli omasta käytöksestäsi huomautetaan, otathan
-              palautteen vastaan rakentavasti. Käytöksestäsi huomauttavat eivät
-              loukkaa sinua ihmisenä, vaan auttavat sinua kehittymään.
-              Jokaisella on jotain opittavaa, vahingossa törppöilystä selviää
-              usein ymmärtäväisyydellä ja anteeksipyynnöllä.
+            {t("rules_110")}
             </p>
           </div>
           <div>
-            <h3>Yhteystietoja:</h3>
+            <h3>{t("rules_111")}</h3>
             <ul>
               <li>
-                Leppätalokomitean puheenjohtaja Vili Järvinen, <a href="mailto:vilijarvinen2311@gmail.com">vilijarvinen2311@gmail.com</a>
+              {t("rules_112")} Vili Järvinen, <a href="mailto:vilijarvinen2311@gmail.com">vilijarvinen2311@gmail.com</a>
               </li>
               <li>
-                Matlun häirintäyhdyshenkilöt <a href="mailto:hairinta@matlu.fi">hairinta@matlu.fi</a>
+              {t("rules_113")} <a href="mailto:hairinta@matlu.fi">hairinta@matlu.fi</a>
                 <ul>
                   <li>Niclas Forsman, <a href="mailto:niklas.forsman@helsinki.fi">niklas.forsman@helsinki.fi</a></li>
                   <li>Jenna Vahtera, <a href="mailto:jenna.vahtera@helsinki.fi">jenna.vahtera@helsinki.fi</a></li>
@@ -399,7 +357,7 @@ const Rules_and_Instructions = () => {
                 </ul>
               </li>
               <li>
-                Leppätalokomitean sähköpostilista, <a href="mailto:leppis-list@helsinki.fi">leppis-list@helsinki.fi</a>
+              {t("rules_114")}, <a href="mailto:leppis-list@helsinki.fi">leppis-list@helsinki.fi</a>
               </li>
             </ul>
           </div>
