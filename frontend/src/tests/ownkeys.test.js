@@ -6,6 +6,9 @@ import {
 import "@testing-library/jest-dom";
 import OwnKeys from "../../src/pages/ownkeys";
 import mockAxios from "../../__mocks__/axios";
+import i18n from "../../i18n.js";
+
+localStorage.setItem("lang", "fi")
 
 afterEach(() => {
   // cleaning up the mess left behind the previous test
@@ -15,7 +18,7 @@ afterEach(() => {
 describe("OwnKeys Component", () => {
   it("opens without logging in", () => {
     const { getByText } = render(<OwnKeys isLoggedIn={false} />);
-    expect(getByText("Kirjaudu sisään")).toBeInTheDocument();
+    expect(getByText("Kirjaudu")).toBeInTheDocument();
   });
 
   it("opens with role 1", async () => {

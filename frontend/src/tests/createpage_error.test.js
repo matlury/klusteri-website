@@ -1,6 +1,9 @@
 import { render, fireEvent, waitFor } from "@testing-library/react";
 import NewAccountPage from "../../src/pages/createpage";
 import "@testing-library/jest-dom";
+import i18n from "../../i18n.js";
+
+localStorage.setItem("lang", "fi")
 
 jest.mock('../utils/newaccountcheck.js', () => ({
     __esModule: true,
@@ -13,7 +16,7 @@ test("unexpected error", async () => {
     const usernameInput = getByLabelText("Käyttäjänimi");
     const emailInput = getByLabelText("Sähköposti");
     const passwordInput = getByLabelText("Salasana");
-    const password2Input = getByLabelText("Vahvista");
+    const password2Input = getByLabelText("Vahvista Salasana");
 
     fireEvent.change(emailInput, { target: { value: "example_email@example.com" } });
     fireEvent.change(passwordInput, { target: { value: "salasana1" } });

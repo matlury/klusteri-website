@@ -1,6 +1,9 @@
 import { render, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Rules_and_Instructions from "../../src/pages/rules_instructions";
+import i18n from "../../i18n.js";
+
+localStorage.setItem("lang", "fi")
 
 describe("Instructions component opens", () => {
 

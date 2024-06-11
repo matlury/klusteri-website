@@ -3,6 +3,9 @@ import NewAccountPage from "../../src/pages/createpage";
 import axiosClient from "../axios.js";
 import mockAxios from "../../__mocks__/axios";
 import "@testing-library/jest-dom";
+import i18n from "../../i18n.js";
+
+localStorage.setItem("lang", "fi")
 
 describe("NewAccountPage", () => {
   beforeEach(() => {
@@ -34,7 +37,7 @@ describe("NewAccountPage", () => {
     const usernameInput = getByLabelText("Käyttäjänimi");
     const emailInput = getByLabelText("Sähköposti");
     const passwordInput = getByLabelText("Salasana");
-    const password2Input = getByLabelText("Vahvista");
+    const password2Input = getByLabelText("Vahvista Salasana");
 
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
     fireEvent.change(passwordInput, { target: { value: "password123" } });
@@ -54,7 +57,7 @@ describe("NewAccountPage", () => {
     const usernameInput = getByLabelText("Käyttäjänimi");
     const emailInput = getByLabelText("Sähköposti");
     const passwordInput = getByLabelText("Salasana");
-    const password2Input = getByLabelText("Vahvista");
+    const password2Input = getByLabelText("Vahvista Salasana");
 
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
     fireEvent.change(passwordInput, { target: { value: "password123" } });
@@ -80,7 +83,7 @@ describe("NewAccountPage", () => {
     const usernameInput = getByLabelText("Käyttäjänimi");
     const emailInput = getByLabelText("Sähköposti");
     const passwordInput = getByLabelText("Salasana");
-    const password2Input = getByLabelText("Vahvista");
+    const password2Input = getByLabelText("Vahvista Salasana");
 
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
     fireEvent.change(passwordInput, {
@@ -106,7 +109,7 @@ describe("NewAccountPage", () => {
     const usernameInput = getByLabelText("Käyttäjänimi");
     const emailInput = getByLabelText("Sähköposti");
     const passwordInput = getByLabelText("Salasana");
-    const password2Input = getByLabelText("Vahvista");
+    const password2Input = getByLabelText("Vahvista Salasana");
 
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
     fireEvent.change(passwordInput, { target: { value: "pass12" } });
@@ -128,7 +131,7 @@ describe("NewAccountPage", () => {
     const usernameInput = getByLabelText("Käyttäjänimi");
     const emailInput = getByLabelText("Sähköposti");
     const passwordInput = getByLabelText("Salasana");
-    const password2Input = getByLabelText("Vahvista");
+    const password2Input = getByLabelText("Vahvista Salasana");
 
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
     fireEvent.change(passwordInput, { target: { value: "12345678" } });
@@ -150,7 +153,7 @@ describe("NewAccountPage", () => {
     const usernameInput = getByLabelText("Käyttäjänimi");
     const emailInput = getByLabelText("Sähköposti");
     const passwordInput = getByLabelText("Salasana");
-    const password2Input = getByLabelText("Vahvista");
+    const password2Input = getByLabelText("Vahvista Salasana");
 
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
     fireEvent.change(passwordInput, { target: { value: "salasanaaaaa" } });
@@ -182,7 +185,7 @@ describe("Createpage", () => {
     const usernameInput = getByLabelText("Käyttäjänimi");
     const emailInput = getByLabelText("Sähköposti");
     const passwordInput = getByLabelText("Salasana");
-    const password2Input = getByLabelText("Vahvista");
+    const password2Input = getByLabelText("Vahvista Salasana");
 
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
     fireEvent.change(passwordInput, { target: { value: "salasana1" } });
@@ -226,7 +229,7 @@ describe("Createpage", () => {
     const usernameInput = getByLabelText("Käyttäjänimi");
     const emailInput = getByLabelText("Sähköposti");
     const passwordInput = getByLabelText("Salasana");
-    const password2Input = getByLabelText("Vahvista");
+    const password2Input = getByLabelText("Vahvista Salasana");
 
     fireEvent.change(emailInput, { target: { value: "example_email@example.com" } });
     fireEvent.change(passwordInput, { target: { value: "salasana1" } });
