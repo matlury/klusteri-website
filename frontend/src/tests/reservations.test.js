@@ -1,7 +1,13 @@
-import { render, fireEvent, waitFor } from "@testing-library/react";
-import "@testing-library/jest-dom";
+import {
+  render,
+  fireEvent,
+  waitFor,
+  screen,
+} from "@testing-library/react";import "@testing-library/jest-dom";
 import Reservations from "../../src/pages/reservations";
 import mockAxios from "../../__mocks__/axios.js";
+import { momentLocalizer } from "react-big-calendar";
+import moment from "moment";
 
 afterEach(() => {
   // cleaning up the mess left behind the previous test
@@ -21,6 +27,15 @@ describe("Reservations component", () => {
     fireEvent.click(reservationButton);
 
     expect(queryByText("Lisää tapahtuma")).toBeInTheDocument();
+
+    const startTimeField = getByLabelText("Alkaa");
+    const endTimeField = getByLabelText("Päättyy");
+  
+    fireEvent.change(startTimeField, { target: { value: "2024-06-11T10:00" } });
+    fireEvent.change(endTimeField, { target: { value: "2024-06-11T12:00" } });
+  
+    expect(startTimeField.value).toBe("2024-06-11T10:00");
+    expect(endTimeField.value).toBe("2024-06-11T12:00");
 
     const closeButton = getByText("Sulje");
     fireEvent.click(closeButton);
