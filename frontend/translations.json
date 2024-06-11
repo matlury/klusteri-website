@@ -302,7 +302,14 @@
         "erroreventfields": "Täytä kaikki tiedot ennen tapahtuman lisäämistä.",
         "eventdeleted": "Tapahtuma poistettu:",
         "erroreventdelete": "Virhe tapahtuman poistamisessa:",
-        "eventsaved": "Tapahtuma tallennettu"
+        "eventsaved": "Tapahtuma tallennettu",
+        "ykvsuccess": "YKV-sisäänkirjaus onnistui",
+        "ykvfail": "YKV-sisäänkirjaus epäonnistui",
+        "ykvcancel": "YKV peruttu",
+        "ykvlogoutsuccess": "YKV-uloskirjaus onnistui",
+        "ykvlogoutfail": "YKV-uloskirjaus epäonnistui",
+        "ykveditsuccess": "YKV-muokkaus onnistui",
+        "ykveditfail": "YKV-muokkaus epäonnistui"
       }
     },
     "en": {
@@ -608,7 +615,14 @@
         "erroreventfields": "Fill in all the details before adding an event.",
         "eventdeleted": "Event deleted:",
         "erroreventdelete": "Error deleting event:",
-        "eventsaved": "Event saved"
+        "eventsaved": "Event saved",
+        "ykvsuccess": "YKV login successful",
+        "ykvfail": "YKV login failed",
+        "ykvcancel": "YKV login canceled",
+        "ykvlogoutsuccess": "YKV logout successful",
+        "ykvlogoutfail": "YKV logout failed",
+        "ykveditsuccess": "YKV edit successful",
+        "ykveditfail": "YKV edit failed"
       }
     }
 }

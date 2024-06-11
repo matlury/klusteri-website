@@ -130,18 +130,18 @@ const OwnKeys = ({
         axiosClient
           .post(`/ykv/create_responsibility`, responsibilityObject)
           .then((response) => {
-            setSuccess("YKV-sisäänkirjaus onnistui");
+            setSuccess(t("ykvsuccess"));
             setTimeout(() => setSuccess(""), 5000);
             getResponsibility();
             getActiveResponsibilities();
           })
           .catch((error) => {
-            setError("YKV-sisäänkirjaus epäonnistui");
+            setError(t("ykvfail"));
             setTimeout(() => setError(""), 5000);
-            console.error("Pyyntö ei menny läpi", error);
+            console.error(t("ykvfail"), error);
           });
       } else {
-        console.log("YKV peruttu");
+        console.log(t("ykvcancel"));
       }
     }
     setSelectedForYKV([]);
@@ -200,7 +200,7 @@ const OwnKeys = ({
         logout_time: getCurrentDateTime(),
       })
       .then((response) => {
-        setSuccess("YKV-uloskirjaus onnistui");
+        setSuccess(t("ykvlogoutsuccess"));
         setTimeout(() => setSuccess(""), 5000);
         getResponsibility();
         getActiveResponsibilities();
@@ -213,9 +213,9 @@ const OwnKeys = ({
         });
       })
       .catch((error) => {
-        setError("YKV-uskirjaus epäonnistui");
+        setError(t("ykvlogoutfail"));
         setTimeout(() => setError(""), 5000);
-        console.error("Ykv-uloskirjaus epäonnistui", error);
+        console.error(t("ykvlogoutfail"), error);
       });
   };
 
@@ -225,13 +225,13 @@ const OwnKeys = ({
     axiosClient
       .put(`ykv/update_responsibility/${respId}/`, respToEdit)
       .then((response) => {
-        setSuccess("YKV-muokkaus onnistui");
+        setSuccess(t("ykveditsuccess"));
         setTimeout(() => setSuccess(""), 5000);
         getResponsibility();
         getActiveResponsibilities();
       })
       .catch((error) => {
-        setError("YKV-muokkaus epäonnistui");
+        setError(t("ykveditfail"));
         setTimeout(() => setError(""), 5000);
         console.error("Ykv-muokkaus epäonnistui", error);
       });
