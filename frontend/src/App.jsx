@@ -28,6 +28,8 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import matlu from "./matlu.png";
 
 import FrontPage from "./pages/frontpage";
@@ -41,6 +43,8 @@ import Rules_and_Instructions from "./pages/rules_instructions";
 import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
 import Statistics from "./pages/statistics";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+
 
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 
@@ -72,6 +76,7 @@ const App = (props) => {
   );
 
   const [loginDialogOpen, setLoginDialogOpen] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
   React.useEffect(() => {
     const loggedInStatus = localStorage.getItem("isLoggedIn");
@@ -114,7 +119,6 @@ const App = (props) => {
     localStorage.removeItem("isLoggedIn");
     setLoggedUser(null);
     setIsLoggedIn(false);
-    localStorage.removeItem("isLoggedIn");
   };
 
   const openLoginDialog = () => {
@@ -123,6 +127,14 @@ const App = (props) => {
 
   const closeLoginDialog = () => {
     setLoginDialogOpen(false);
+  };
+
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
 
   const icons = [
@@ -140,8 +152,9 @@ const App = (props) => {
 
   const drawer = (
     <div>
-      <img src={matlu} alt="logo" style={{ height: "auto" }} />{" "}
-      {/* ADD PADDING TO LOGO */}
+      <Box sx={{ padding: "16px", width: "100%" }}>
+      <img src={matlu} alt="logo" style={{ height: "auto", width: "100%" }} />{" "}
+      </Box>
       <Divider />
       <List>
         {[
@@ -184,41 +197,53 @@ const App = (props) => {
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar
-          position="fixed"
-          sx={{
-            bgcolor: "#FFFFFF",
-            width: { sm: `calc(100% - ${drawerWidth}px)` },
-            ml: { sm: `${drawerWidth}px` },
-          }}
+      position="fixed"
+      sx={{
+        bgcolor: "#484644",
+        width: { sm: `calc(100% - ${drawerWidth}px)` },
+        ml: { sm: `${drawerWidth}px` },
+      }}
+    >
+      <Toolbar>
+        <IconButton
+          aria-label="open drawer"
+          edge="start"
+          onClick={handleDrawerToggle}
+          sx={{ mr: 2, display: { sm: "none" }, color: "white" }}  // Change color to white
         >
-          <Toolbar>
-            <IconButton
-              color="primary"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2, display: { sm: "none" } }}
+          <MenuIcon />
+        </IconButton>
+        <Typography variant="h6" noWrap component="div" color={"white"}>
+          Ilotalo 3.0
+        </Typography>
+        <Box sx={{ flexGrow: 1 }} />
+        {isLoggedIn ? (
+          <>
+            <Button
+              aria-controls="simple-menu"
+              aria-haspopup="true"
+              onClick={handleMenuClick}
+              endIcon={<ArrowDropDownIcon />}
+              style={{ color: "white" }}
             >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap component="div" color={"primary"}>
-              Ilotalo 3.0
-            </Typography>
-            <Box sx={{ flexGrow: 1 }} />
-            {isLoggedIn ? (
-              <Button
-                variant="outlined"
-                className="logout-button"
-                onClick={handleLogout}
-              >
-                Kirjaudu ulos{" "}
-              </Button>
-            ) : (
-              <Button variant="contained" onClick={openLoginDialog}>
-                Kirjaudu
-              </Button>
-            )}
-          </Toolbar>
+              {loggedUser ? loggedUser.username : "User"}
+            </Button>
+            <Menu
+              id="simple-menu"
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+            >
+              <MenuItem onClick={handleLogout}>Kirjaudu ulos</MenuItem>
+            </Menu>
+          </>
+        ) : (
+          <Button variant="contained" onClick={openLoginDialog}>
+            Kirjaudu
+          </Button>
+        )}
+      </Toolbar>
         </AppBar>
         <Box
           component="nav"
@@ -239,6 +264,7 @@ const App = (props) => {
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
                 width: drawerWidth,
+                bgcolor: "#E9E9E9",  // Set background color here for temporary drawer
               },
             }}
           >
@@ -251,6 +277,7 @@ const App = (props) => {
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
                 width: drawerWidth,
+                bgcolor: "#E9E9E9",  // Set background color here for permanent drawer
               },
             }}
             open
@@ -293,7 +320,6 @@ const App = (props) => {
               element={<Rules_and_Instructions />}
             />
             <Route path="/tietosuojaseloste" element={<PrivacyPolicy />} />
-            
           </Routes>
           <LoginDialog
             open={loginDialogOpen}
