@@ -6,8 +6,8 @@ const CleanersList = ({ allCleaners}) => {
   const columns = [
     { field: "week", headerName: "Viikko", width: 120 },
     { field: "date", headerName: "Pvm", width: 200 },
-    { field: "big", headerName: "Iso järjestö", width: 200 },
-    { field: "small", headerName: "Pieni järjestö", width: 200 },
+    { field: "big", headerName: "Iso järjestö", width: 120 },
+    { field: "small", headerName: "Pieni järjestö", width: 120 },
   ];
 
     return (

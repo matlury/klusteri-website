@@ -7,6 +7,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import UploadIcon from '@mui/icons-material/Upload';
 import moment from "moment";
 import CleanersListJSONButton from "../components/CleanersListJSONButton.jsx";
+import { all } from "axios";
 
 const CleaningSchedule = ({
   isLoggedIn: propIsLoggedIn,
@@ -56,25 +57,33 @@ const CleaningSchedule = ({
     setOpen(false);
   };
 
-  const handleFormSubmit = async (description) => {
-    const defectFaultObject = {
-      description: description,
+  const handleFormSubmit = async () => {
+    const orgdata = await axiosClient.get("/listobjects/organizations/");
+    console.log(getOrgId("Matrix"));
+
+    confirmCleaning(cleaningObject);
+
+    function getOrgId(orgName) {
+      for (let i = 0; i < orgdata.data.length; i++) {
+        if (orgdata.data[i].name === orgName) {
+          return orgdata.data[i].id;
+        }
+      }
     };
-    const cleaningdata = await axiosClient.get("/listobjects/cleaning/");
 
-    confirmDefectFault(defectFaultObject);
 
-    function confirmDefectFault(defectFaultObject) {
+
+    function confirmCleaning(cleaningObject) {
       if (confirm) {
         axiosClient
-          .post(`/defects/create_defect`, defectFaultObject)
+          .post(`/cleaning/create_cleaning`, cleaningObject)
           .then((response) => {
-            setSuccess("Vian kirjaus onnistui");
+            setSuccess("Siivouksen kirjaus onnistui");
             setTimeout(() => setSuccess(""), 5000);
             fetchCleaning();
           })
           .catch((error) => {
-            setError("Vian kirjaus epäonnistui");
+            setError("Siivouksen kirjaus epäonnistui");
             setTimeout(() => setError(""), 5000);
             console.error("Pyyntö ei menny läpi", error);
           });
@@ -115,11 +124,10 @@ const CleaningSchedule = ({
               startIcon={<UploadIcon />}
               variant="contained"
               color="primary"
-              onClick={handleClickOpen}
+              onClick={handleFormSubmit}
             >
               Vie lista
             </Button>
-            <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
           </React.Fragment>
           <React.Fragment>
             <CleanersList allCleaners={allCleaning} />
