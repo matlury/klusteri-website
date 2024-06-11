@@ -84,7 +84,7 @@ const NewAccountPage = ({ onAccountCreated }) => {
         />
       )}
       {userCreated && (
-        <p style={{ color: "green" }}>Käyttäjä luotu onnistuneesti!</p>
+        <p style={{ color: "green" }}>{t("usersuccess")}</p>
       )}
     </div>
   );

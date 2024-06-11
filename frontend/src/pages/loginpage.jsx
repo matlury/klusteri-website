@@ -4,6 +4,7 @@ import FrontPage from "./frontpage";
 import { useStateContext } from "../context/ContextProvider.jsx";
 import login from "../utils/login.js";
 import LoginForm from "../components/LoginForm.jsx";
+import { useTranslation } from "react-i18next";
 
 const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
   const [email, setEmail] = useState("");
@@ -12,6 +13,8 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
   const { user, setUser, setToken, timeLeft } = useStateContext();
   const [error, setError] = useState("");
 
+  const { t } = useTranslation();
+  
   // Saves the logged user (if there is one)
   useEffect(() => {
     const loggedUser = localStorage.getItem("loggedUser");
@@ -30,7 +33,7 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
   // Handles the login function
   const handleLogin = (event) => {
     event.preventDefault();
-    login({ email, password, setError, setToken, onLogin, setUser });
+    login({ email, password, setError, setToken, onLogin, setUser, t });
   };
 
   // renders the NewAccountPage if the showCreateUser function is true, if the user is logged in, it shows the username and logout-button

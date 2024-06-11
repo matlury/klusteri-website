@@ -290,7 +290,9 @@
         "invalidpass": "Salasana ei saa sisältää pelkkiä numeroita tai kirjaimia.",
         "telegraminuse": "Telegram on jo käytössä.",
         "errortelegram": "Virhe tarkistettaessa telegramia.",
-        "errorusercreate": "Virhe käyttäjän luonnissa."
+        "errorusercreate": "Virhe käyttäjän luonnissa.",
+        "usersuccess": "Käyttäjä luotu onnistuneesti",
+        "faillogin": "Sähköposti tai salasana virheellinen"
       }
     },
     "en": {
@@ -584,7 +586,9 @@
         "invalidpass": "Password cannot contain only numbers or letters.",
         "telegraminuse": "Telegram is already in use.",
         "errortelegram": "Error checking telegram.",
-        "errorusercreate": "Error in user creation."
+        "errorusercreate": "Error in user creation.",
+        "usersuccess": "User created successfully.",
+        "faillogin": "Email or password incorrect."
       }
     }
 }
