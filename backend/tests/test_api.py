@@ -1971,6 +1971,21 @@ class TestDjangoAPI(TestCase):
 
     def test_creating_cleaning(self):
         """Role 1 can create cleanings"""
+        # create another organization first
+        small_organization_created = self.client.post(
+            "http://localhost:8000/api/organizations/create",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "name": "Matrix Ry",
+                "email": "matrix_ry@gmail.com",
+                "homepage": "matrix-ry.fi",
+                "size": 0,
+            },
+            format="json",
+        )
+
+        big_organization_id = Organization.objects.get(name="tko-aly").id
+        small_organization_id = Organization.objects.get(name="Matrix Ry").id
 
         # create cleaning data with correct information
         response = self.client.post(
@@ -1978,10 +1993,22 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
                 "week":1,
-                "big":1,
-                "small":1,
+                "big": big_organization_id,
+                "small": small_organization_id,
             },
             format="json",
         )
-        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # create cleaning data with incorrect information
+        response = self.client.post(
+            "http://localhost:8000/api/cleaning/create_cleaning",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "week":1,
+                "big": big_organization_id,
+                "small": 100,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
