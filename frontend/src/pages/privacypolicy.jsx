@@ -1,122 +1,87 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const PrivacyPolicy = () => {
+  const { t } = useTranslation();
   return (
     <div className="textbox">
-      <h1>Tietosuojaseloste</h1>
+      <h1>{t("privacy_1")}</h1>
       <p>
-        Tämä on EU:n yleisen tietosuoja-asetuksen mukainen rekisteri- ja
-        tietosuojaseloste. Laatimispäivämäärä on 17.5.2018. Viimeisin muutos
-        17.1.2022
+      {t("privacy_2")}
       </p>
-      <h2>1. Rekisterinpitäjä</h2>
+      <h2>{t("privacy_3")}</h2>
       <p>
-        Helsingin yliopiston matemaattis-luonnontieteellisten
-        opiskelijajärjestöjen yhteistyöjärjestö Matlu ry
+      {t("privacy_4")}
       </p>
-      <p>Leppäsuonkatu 11, 00100 Helsinki</p>
-      <h2>2. Yhteyshenkilö rekisteriä koskevissa asioissa</h2>
+      <p>{t("privacy_5")}</p>
+      <h2>{t("privacy_6")}</h2>
       <p>
-        Helsingin yliopiston matemaattis-luonnontieteellisten
-        opiskelijajärjestöjen yhteistyöjärjestö Matly ry:n Leppätalokomitean
-        puheenjohtaja (Olli Keski-Hynnilä vuonna 2022)
-        olli.keski-hynnila@helsinki.fi
+      {t("privacy_7")}
       </p>
-      <h2>Rekisterin nimi</h2>
-      <p>Christina Reginan kulkuavainrekisteri</p>
-      <h2>4. Oikeusperuste ja henkilötietojen käsittelyn tarkoitus</h2>
+      <h2>{t("privacy_8")}</h2>
+      <p>{t("privacy_9")}</p>
+      <h2>{t("privacy_10")}</h2>
       <p>
-        EU:n yleisen tietosuoja-asetuksen mukainen oikeusperuste henkilötietojen
-        käsittelylle ovat rekisterinpitäjän oikeutettu etu ja laillinen
-        velvoite.
+      {t("privacy_11")}
       </p>
       <p>
-        Henkilötietojen käsittelyn tarkoitus on ylläpitää kirjaa avaimellisista
-        sekä huolehtia heidän koulutuksestaan tilan käyttöä varten.{" "}
+      {t("privacy_12")}{" "}
       </p>
-      <h2>5. Rekisterin tietosisältö</h2>
-      <p>Etu- ja sukunimi</p>
+      <h2>{t("privacy_13")}</h2>
+      <p>{t("privacy_14")}</p>
       <br />
-      Sähköpostiosoite
+      {t("privacy_15")}
       <br />
       <br />
-      Järjestö, jonka puolesta on saanut Christina Reginaan kulkuavaimen
+      {t("privacy_16")}
       <br />
       <br />
-      Viimeisin Christina Reginan käyttökulutusvuosi
+      {t("privacy_17")}
       <br />
       <br />
-      *Rike
+      {t("privacy_18")}
       <br />
       <br />
-      *Sanktio
+      {t("privacy_19")}
       <br />
       <br />
-      Käyttökiellon viimeinen päivä
+      {t("privacy_20")}
       <br />
-      <p>(*Tähdellä merkittyjä kenttiä käytetään vain tarvittaessa)</p>
-      <h2>6. Säännönmukaiset tietolähteet</h2>
+      <p>{t("privacy_21")}</p>
+      <h2>{t("privacy_22")}</h2>
       <p>
-        Jäsenjärjestöjen antamat listaukset myönnetyistä Christina Reginan
-        kulkuavaimista.
+      {t("privacy_23")}
       </p>
-      <h2>7. Tietojen säännönmukaiset luovutukset</h2>
+      <h2>{t("privacy_24")}</h2>
       <p>
-        Tietoja luovutetaan Matly ry:n jäsenjärjestöjen puheenjohtajien
-        pyynnöstä sähköpostitse.
+      {t("privacy_25")}
       </p>
-      <h2>8. Tietojen siirto EU:n tai ETA:n ulkopuolelle</h2>
+      <h2>{t("privacy_26")}</h2>
       <p>
-        Tietoja käsitellään Googlen pilvipalveluissa, jolloin käsiteltävät
-        tiedot voivat sijaita EU:n tai ETA:n ulkopuolella. Google on sitoutunut
-        noudattamaan pilvipalvelujensa osalta EU:n yleistä tietosuoja-asetusta
-        ja Privacy Shield -viitekehystä.
+      {t("privacy_27")}
       </p>
       <p>
-        Edellä mainitun lisäksi tietoja ei siirretä Euroopan unionin tai
-        Euroopan talousalueen ulkopuolelle
+      {t("privacy_28")}
       </p>
-      <h2>9. Rekisterin suojauksen periaatteet</h2>
+      <h2>{t("privacy_29")}</h2>
       <p>
-        Tietoja säilytetään Googlen pilvipalveluissa. Pääsy Googlen
-        pilvipalveluihin on yhdistyksen hallituslaisilla, sekä rajatusti
-        yhdistyksen aktiiveilla. Googlen pilvipalveluiden käyttö tapahtuu
-        henkilökohtaisilla käyttäjätunnuksilla ja salasanoilla.
+      {t("privacy_30")}
       </p>
-      <h2>10. Tarkastusoikeus</h2>
+      <h2>{t("privacy_31")}</h2>
       <p>
-        Jokaisella rekisteriin kuuluvalla henkilöllä on oikeus tarkistaa
-        rekisteriin hänestä tallennetut tiedot. Tietojen tarkistuspyyntö tulee
-        lähettää kirjallisesti rekisterinpitäjälle. Rekisterinpitäjällä on
-        tarvittaessa oikeus pyytää pyynnön esittäjää todistamaan
-        henkilöllisyytensä. Rekisterinpitäjä vastaa pyynnön esittäjälle EU:n
-        tietosuoja-asetuksessa säädetyssä ajassa (pääsääntöisesti kuukauden
-        kuluessa). Tarkastaminen on maksutonta kerran vuodessa
+      {t("privacy_32")}
       </p>
-      <h2>11. Oikeus vaatia tiedon korjaamista</h2>
+      <h2>{t("privacy_33")}</h2>
       <p>
-        Jokaisella rekisteriin kuuluvalla henkilöllä on oikeus vaatia
-        rekisteriin hänestä talletettujen tietojen korjausta. Tietojen
-        korjauspyyntö tulee lähettää kirjallisesti rekisterinpitäjälle.
-        Rekisterinpitäjällä on tarvittaessa oikeus pyytää pyynnön esittäjää
-        todistamaan henkilöllisyytensä. Rekisterinpitäjä toteuttaa esittäjän
-        pyynnön EU:n tietosuoja-asetuksessa säädetyssä ajassa (pääsääntöisesti
-        kuukauden kuluessa)
+      {t("privacy_34")}
       </p>
-      <h2>12. Muut henkilötietojen käsittelyyn liittyvät tiedot</h2>
+      <h2>{t("privacy_35")}</h2>
       <p>
-        Tiedot hävitetään vuosittain heti alkuvuodesta siten, että ne, joilla
-        tulee kaksi (2) vuotta viimeisimmästä Christina Reginan
-        käyttökoulutusvuodesta, poistetaan rekisteristä. Tietoja siis
-        säilytetään vähintään kahden vuoden ajan.
+      {t("privacy_36")}
       </p>
-      <h2>Poikkeus:</h2>
+      <h2>{t("privacy_37")}</h2>
       <p>
-        Mikäli rekisteröity on toiminut vastoin sääntöjä ja hänelle on
-        Leppätalokomitean valtuuksilla annettu käyttökielto Christina Reginaan,
-        kirjataan rekisteröidylle rike, sanktio ja käyttökiellon viimeinen
-        päivämäärä. Tietoja säilytetään käyttökiellon viimeiseen päivämäärään
-        saakka tai 10 vuoden ajan, kumpi näistä on lyhyempi.
+      {t("privacy_38")}
       </p>
     </div>
   );
