@@ -923,6 +923,31 @@ class CreateCleaningView(APIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+class RemoveCleaningView(APIView):
+    """View for removing all cleaning <baseurl>/api/cleaning/remove/all/"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+        ]:
+            return Response(
+                "You can't remove cleaners",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            Cleaning.objects.all().delete()
+        except ObjectDoesNotExist:
+            return Response(
+                "Cleaning data not found", status=status.HTTP_404_NOT_FOUND
+            )
+                
+        return Response(f"Cleaners successfully removed", status=status.HTTP_200_OK)
 
 
 def force_logout_ykv_logins():
