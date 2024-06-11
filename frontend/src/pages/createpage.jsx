@@ -3,6 +3,7 @@ import LoginPage from "./loginpage";
 import newaccountcheck from "../utils/newaccountcheck";
 import CreateForm from "../components/CreateForm";
 import createaccount from "../utils/createaccount";
+import { useTranslation } from "react-i18next";
 
 const NewAccountPage = ({ onAccountCreated }) => {
   const [username, setUsername] = useState("");
@@ -17,6 +18,8 @@ const NewAccountPage = ({ onAccountCreated }) => {
 
   const API_URL = process.env.API_URL;
 
+  const { t } = useTranslation();
+
   const handleCreateAccount = async () => {
     const response = await newaccountcheck({
       username,
@@ -25,6 +28,7 @@ const NewAccountPage = ({ onAccountCreated }) => {
       telegram,
       confirmPassword,
       API_URL,
+      t
     });
     if (typeof response === "string") {
       setError(response);
@@ -38,12 +42,13 @@ const NewAccountPage = ({ onAccountCreated }) => {
         setUserCreated,
         setShowLoginPage,
         onAccountCreated,
+        t
       });
       if (typeof resp === "string") {
         setError(resp);
       }
     } else {
-      setError("Virhe käyttäjän luonnissa.");
+      setError(t("errorusercreate"));
     }
   };
 

@@ -7,20 +7,21 @@ const newaccountcheck = ({
   telegram,
   confirmPassword,
   API_URL,
+  t
 }) => {
   /*
     Check that username, password, email
     and confirm password are not empty
     */
   if (!username || !password || !email || !confirmPassword) {
-    return "Käyttäjänimi, salasana, sähköposti ja vahvista salasana ovat pakollisia kenttiä.";
+    return t("mandfields");
   }
 
   /*
     Check that the username are not space
     */
   if (!/^[a-zA-Z0-9.\-_$@*!]{1,20}$/.test(username)) {
-    return "Käyttäjänimen tulee olla enintään 20 merkkiä eikä saa sisältää välilyöntejä.";
+    return t("mincharsusername");
   }
 
   /*
@@ -28,7 +29,7 @@ const newaccountcheck = ({
     confirm password are the same
     */
   if (password !== confirmPassword) {
-    return "Salasanat eivät täsmää.";
+    return t("diffpass");
   }
 
   /*
@@ -39,7 +40,7 @@ const newaccountcheck = ({
       email,
     )
   ) {
-    return "Viheellinen sähköposti osoite.";
+    return t("invalidemail");
   }
 
   /*
@@ -47,7 +48,7 @@ const newaccountcheck = ({
     8-20 characters long
     */
   if (password.length < 8 || password.length > 20) {
-    return "Salasanan tulee olla 8-20 merkkiä pitkä.";
+    return t("mincharspass");
   }
 
   /*
@@ -55,7 +56,7 @@ const newaccountcheck = ({
     only numbers
     */
   if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
-    return "Salasana ei saa sisältää pelkkiä numeroita tai kirjaimia.";
+    return t("invalidpass");
   }
 
   /*
@@ -68,7 +69,7 @@ const newaccountcheck = ({
         .then((response) => {
           const existingUsers = response.data;
           if (existingUsers.some((user) => user.telegram === telegram)) {
-            resolve("Telegram on jo käytössä.");
+            resolve(t("telegraminuse"));
           } else {
             // Proceed with account creation
             resolve(true);
@@ -76,7 +77,7 @@ const newaccountcheck = ({
         })
         .catch((error) => {
           console.error("Error checking telegram:", error);
-          resolve("Virhe tarkistettaessa telegramia.");
+          resolve(t("errortelegram"));
         });
     });
   } else {

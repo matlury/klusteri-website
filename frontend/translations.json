@@ -277,7 +277,20 @@
         "privacy_35": "12. Muut henkilötietojen käsittelyyn liittyvät tiedot",
         "privacy_36": "Tiedot hävitetään vuosittain heti alkuvuodesta siten, että ne, joilla tulee kaksi (2) vuotta viimeisimmästä Christina Reginan käyttökoulutusvuodesta, poistetaan rekisteristä. Tietoja siis säilytetään vähintään kahden vuoden ajan.",
         "privacy_37": "Poikkeus:",
-        "privacy_38": "Mikäli rekisteröity on toiminut vastoin sääntöjä ja hänelle on Leppätalokomitean valtuuksilla annettu käyttökielto Christina Reginaan, kirjataan rekisteröidylle rike, sanktio ja käyttökiellon viimeinen päivämäärä. Tietoja säilytetään käyttökiellon viimeiseen päivämäärään saakka tai 10 vuoden ajan, kumpi näistä on lyhyempi."
+        "privacy_38": "Mikäli rekisteröity on toiminut vastoin sääntöjä ja hänelle on Leppätalokomitean valtuuksilla annettu käyttökielto Christina Reginaan, kirjataan rekisteröidylle rike, sanktio ja käyttökiellon viimeinen päivämäärä. Tietoja säilytetään käyttökiellon viimeiseen päivämäärään saakka tai 10 vuoden ajan, kumpi näistä on lyhyempi.",
+        "emailinuse": "Sähköposti on jo käytössä.",
+        "usernameinuse": "Käyttäjänimi on jo käytössä.",
+        "errorcreate": "Virhe luotaessa käyttäjää.",
+        "erroremail": "Virhe tarkistettaessa sähköpostia.",
+        "mandfields": "Käyttäjänimi, salasana, sähköposti ja vahvista salasana ovat pakollisia kenttiä.",
+        "mincharsusername": "Käyttäjänimen tulee olla enintään 20 merkkiä eikä saa sisältää välilyöntejä.",
+        "diffpass": "Salasanat eivät täsmää.",
+        "invalidemail": "Virheellinen sähköpostiosoite.",
+        "mincharspass": "Salasanan tulee olla 8-20 merkkiä pitkä.",
+        "invalidpass": "Salasana ei saa sisältää pelkkiä numeroita tai kirjaimia.",
+        "telegraminuse": "Telegram on jo käytössä.",
+        "errortelegram": "Virhe tarkistettaessa telegramia.",
+        "errorusercreate": "Virhe käyttäjän luonnissa."
       }
     },
     "en": {
@@ -558,7 +571,20 @@
         "privacy_35": "12. Other information related to the processing of personal data",
         "privacy_36": "The data is destroyed annually at the beginning of the year so that those who have had two (2) years since the last Christina Regina training year are removed from the register. Information is thus stored for at least two years.",
         "privacy_37": "Exception:",
-        "privacy_38": "If the registered person has acted against the rules and has been given a user ban on Christina Regina by the Leppätalo committee, the violation, sanction, and the last day of the user ban are recorded for the registered person. Information is stored until the last day of the user ban or for 10 years, whichever is shorter."
+        "privacy_38": "If the registered person has acted against the rules and has been given a user ban on Christina Regina by the Leppätalo committee, the violation, sanction, and the last day of the user ban are recorded for the registered person. Information is stored until the last day of the user ban or for 10 years, whichever is shorter.",
+        "emailinuse": "Email is already in use.",
+        "usernameinuse": "Username is already in use.",
+        "errorcreate": "Error creating user.",
+        "erroremail": "Error checking email.",
+        "mandfields": "Username, password, email and confirm password are mandatory fields.",
+        "mincharsusername": "Username must be at most 20 characters long and cannot contain spaces.",
+        "diffpass": "Passwords do not match.",
+        "invalidemail": "Invalid email address.",
+        "mincharspass": "Password must be 8-20 characters long.",
+        "invalidpass": "Password cannot contain only numbers or letters.",
+        "telegraminuse": "Telegram is already in use.",
+        "errortelegram": "Error checking telegram.",
+        "errorusercreate": "Error in user creation."
       }
     }
 }
