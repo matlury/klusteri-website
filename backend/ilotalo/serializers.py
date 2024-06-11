@@ -180,7 +180,7 @@ class OrganizationOnlyNameSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Organization
-        fields = ['name', ]
+        fields = ('name',)
 
 class CreateCleaningSerializer(serializers.ModelSerializer):
     """Used for saving a Cleaning object to the database"""
