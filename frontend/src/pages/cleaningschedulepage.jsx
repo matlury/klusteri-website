@@ -9,6 +9,7 @@ import moment from "moment";
 import CleanersListJSONButton from "../components/CleanersListJSONButton.jsx";
 import { all } from "axios";
 import CleanersListUploadButton from "../components/CleanersListUploadButton.jsx";
+import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 
 const CleaningSchedule = ({
   isLoggedIn: propIsLoggedIn,
@@ -131,16 +132,16 @@ const CleaningSchedule = ({
           {success && <p style={{ color: "green" }}>{success}</p>}
           <h2>Siivousvuorot</h2>
           <React.Fragment>
-            <CleanersListJSONButton cleaners={rawCleaningData} /> {/* Pass raw JSON data */}
+            <CleanersListJSONButton cleaners={rawCleaningData} />
+            <CleanersListUploadButton setNewData={setNewData} onClick={() => handleFormSubmit(newData)}/>
             <Button
-              startIcon={<UploadIcon />}
+              startIcon={<SaveOutlinedIcon />}
               variant="contained"
               color="primary"
               onClick={() => handleFormSubmit(newData)}
             >
-              Vie lista
+              Tallenna
             </Button>
-            <CleanersListUploadButton setNewData={setNewData} />
           </React.Fragment>
           <React.Fragment>
             <CleanersList allCleaners={allCleaning} />
