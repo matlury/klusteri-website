@@ -8,6 +8,7 @@ import UploadIcon from '@mui/icons-material/Upload';
 import moment from "moment";
 import CleanersListJSONButton from "../components/CleanersListJSONButton.jsx";
 import { all } from "axios";
+import CleanersListUploadButton from "../components/CleanersListUploadButton.jsx";
 
 const CleaningSchedule = ({
   isLoggedIn: propIsLoggedIn,
@@ -21,6 +22,7 @@ const CleaningSchedule = ({
 
   const [allCleaning, setAllCleaning] = useState([]);
   const [rawCleaningData, setRawCleaningData] = useState(null); // State for raw JSON data
+  const [newData, setNewData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -57,30 +59,8 @@ const CleaningSchedule = ({
     setOpen(false);
   };
 
-  const handleFormSubmit = async () => {
+  const handleFormSubmit = async (json) => {
     const orgdata = await axiosClient.get("/listobjects/organizations/");
-
-    const json =
-    [
-      {
-        "big": {
-          "name": "TKO-äly"
-        },
-        "small": {
-          "name": "Synop"
-        },
-        "week": 1
-      },
-      {
-        "big": {
-          "name": "Matrix"
-        },
-        "small": {
-          "name": "Synop"
-        },
-        "week": 2
-      }
-    ]
 
     iterateThroughJSON(json);
 
@@ -156,10 +136,11 @@ const CleaningSchedule = ({
               startIcon={<UploadIcon />}
               variant="contained"
               color="primary"
-              onClick={handleFormSubmit}
+              onClick={() => handleFormSubmit(newData)}
             >
               Vie lista
             </Button>
+            <CleanersListUploadButton setNewData={setNewData} />
           </React.Fragment>
           <React.Fragment>
             <CleanersList allCleaners={allCleaning} />
