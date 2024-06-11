@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "../axios.js";
-import { Button } from "@mui/material";
+import { Button, Dialog } from "@mui/material";
 import DefectForm from "../components/DefectForm";
 import CleanersList from "../components/CleanersList.jsx";
-import DownloadIcon from "@mui/icons-material/Download";
 import UploadIcon from '@mui/icons-material/Upload';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import moment from "moment";
 import CleanersListJSONButton from "../components/CleanersListJSONButton.jsx";
+import EmptyCleaners from "../components/EmptyCleaners.jsx";
 
 const CleaningSchedule = ({
   isLoggedIn: propIsLoggedIn,
@@ -17,6 +18,7 @@ const CleaningSchedule = ({
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [confirm, setConfirmOpen] = useState(false);
 
   const [allCleaning, setAllCleaning] = useState([]);
   const [rawCleaningData, setRawCleaningData] = useState(null); // State for raw JSON data
@@ -56,6 +58,14 @@ const CleaningSchedule = ({
     setOpen(false);
   };
 
+  const handleClickRemove = () => {
+    setConfirmOpen(true);
+  };
+
+  const handleCloseConfirm = () => {
+    setConfirmOpen(false);
+  };
+
   const handleFormSubmit = async (description) => {
     const defectFaultObject = {
       description: description,
@@ -80,6 +90,21 @@ const CleaningSchedule = ({
           });
       }
     }
+  };
+
+  const handleRemoveFormSubmit = async () => {
+    axiosClient
+      .delete(`/cleaning/remove/all`)
+      .then((response) => {
+        console.log("Cleaners deleted successfully");
+        fetchCleaning();
+        setSuccess("Siivousvuorot poistettu onnistuneesti.");
+        setTimeout(() => setSuccess(""), 5000);
+      })
+      .catch((error) => {
+        console.error("Error deleting cleaners:", error + " " + error.response.data);
+      });
+    setConfirmOpen(false);
   };
 
   const fetchCleaning = () => {
@@ -119,6 +144,19 @@ const CleaningSchedule = ({
             >
               Vie lista
             </Button>
+            </React.Fragment>
+          <React.Fragment>
+            <Button
+              startIcon={<DeleteOutlineIcon />}
+              variant="contained"
+              color="primary"
+              onClick={handleClickRemove}
+            >
+                Tyhjennä
+            </Button>
+            </React.Fragment>
+          <React.Fragment>
+            <EmptyCleaners confirm={confirm} handleCloseConfirm={handleCloseConfirm} handleRemoveFormSubmit={handleRemoveFormSubmit} />
             <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
           </React.Fragment>
           <React.Fragment>
