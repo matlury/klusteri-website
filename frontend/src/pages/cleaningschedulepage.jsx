@@ -9,6 +9,7 @@ import CleanersListJSONButton from "../components/CleanersListJSONButton.jsx";
 import EmptyCleanersDialog from "../components/EmptyCleanersDialog.jsx";
 import CleanersListUploadButton from "../components/CleanersListUploadButton.jsx";
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
+import CleanersListAutomateButton from "../components/CleanersListAutomateButton.jsx";
 import SaveDialog from "../components/SaveDialog"; // Tuodaan uusi komponentti
 import Stack from '@mui/material/Stack';
 
@@ -166,6 +167,7 @@ const CleaningSchedule = ({
           {loggedUser && loggedUser.role === 1 && (
             <React.Fragment>
             <CleanersListUploadButton setNewData={setNewData} onClick={() => handleFormSubmit(newData)}/>
+            <CleanersListAutomateButton threshold={2} updateNewData={setNewData} />
             <Button
               startIcon={<SaveOutlinedIcon />}
               variant="contained"
