@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "../axios.js";
-import { Button, Dialog } from "@mui/material";
+import { Button } from "@mui/material";
 import DefectForm from "../components/DefectForm";
 import CleanersList from "../components/CleanersList.jsx";
-import UploadIcon from '@mui/icons-material/Upload';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import moment from "moment";
 import CleanersListJSONButton from "../components/CleanersListJSONButton.jsx";
-import { all } from "axios";
-import EmptyCleaners from "../components/EmptyCleaners.jsx";
+import EmptyCleanersDialog from "../components/EmptyCleanersDialog.jsx";
 import CleanersListUploadButton from "../components/CleanersListUploadButton.jsx";
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import CleanersListAutomateButton from "../components/CleanersListAutomateButton.jsx";
+import SaveDialog from "../components/SaveDialog"; // Tuodaan uusi komponentti
+import Stack from '@mui/material/Stack';
 
 const CleaningSchedule = ({
   isLoggedIn: propIsLoggedIn,
@@ -23,6 +23,7 @@ const CleaningSchedule = ({
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [confirm, setConfirmOpen] = useState(false);
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false); // Uusi tila dialogille
 
   const [allCleaning, setAllCleaning] = useState([]);
   const [rawCleaningData, setRawCleaningData] = useState(null); // State for raw JSON data
@@ -69,6 +70,14 @@ const CleaningSchedule = ({
 
   const handleCloseConfirm = () => {
     setConfirmOpen(false);
+  };
+
+  const handleSaveClick = () => {
+    setSaveDialogOpen(true);
+  };
+
+  const handleSaveClose = () => {
+    setSaveDialogOpen(false);
   };
   
   const handleFormSubmit = async (json) => {
@@ -153,15 +162,17 @@ const CleaningSchedule = ({
           {error && <p style={{ color: "red" }}>{error}</p>}
           {success && <p style={{ color: "green" }}>{success}</p>}
           <h2>Siivousvuorot</h2>
-          <React.Fragment>
-            <CleanersListJSONButton cleaners={rawCleaningData} />
+            <Stack direction="row" spacing={2}>
+              <CleanersListJSONButton cleaners={rawCleaningData} />
+          {loggedUser && loggedUser.role === 1 && (
+            <React.Fragment>
             <CleanersListUploadButton setNewData={setNewData} onClick={() => handleFormSubmit(newData)}/>
             <CleanersListAutomateButton threshold={2} updateNewData={setNewData} />
             <Button
               startIcon={<SaveOutlinedIcon />}
               variant="contained"
               color="primary"
-              onClick={() => handleFormSubmit(newData)}
+              onClick={handleSaveClick}
             >
               Tallenna
             </Button>
@@ -174,13 +185,17 @@ const CleaningSchedule = ({
                 Tyhjennä
             </Button>
             </React.Fragment>
+          )}
+          </Stack>
           <React.Fragment>
-            <EmptyCleaners confirm={confirm} handleCloseConfirm={handleCloseConfirm} handleRemoveFormSubmit={handleRemoveFormSubmit} />
+            <EmptyCleanersDialog confirm={confirm} handleCloseConfirm={handleCloseConfirm} handleRemoveFormSubmit={handleRemoveFormSubmit} />
             <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
+            <SaveDialog open={saveDialogOpen} handleClose={handleSaveClose} handleSave={handleFormSubmit} newData={newData}/>
           </React.Fragment>
           <React.Fragment>
             <CleanersList allCleaners={allCleaning} />
           </React.Fragment>
+          
         </div>
       )}
     </div>

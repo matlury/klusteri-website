@@ -1968,3 +1968,20 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_creating_cleaning(self):
+        """Role 1 can create cleanings"""
+
+        # create cleaning data with correct information
+        response = self.client.post(
+            "http://localhost:8000/api/cleaning/create_cleaning",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "week":1,
+                "big":1,
+                "small":1,
+            },
+            format="json",
+        )
+        print(response.data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
