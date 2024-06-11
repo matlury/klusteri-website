@@ -10,6 +10,7 @@ import EmptyCleanersDialog from "../components/EmptyCleanersDialog.jsx";
 import CleanersListUploadButton from "../components/CleanersListUploadButton.jsx";
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import SaveDialog from "../components/SaveDialog"; // Tuodaan uusi komponentti
+import Stack from '@mui/material/Stack';
 
 const CleaningSchedule = ({
   isLoggedIn: propIsLoggedIn,
@@ -160,9 +161,8 @@ const CleaningSchedule = ({
           {error && <p style={{ color: "red" }}>{error}</p>}
           {success && <p style={{ color: "green" }}>{success}</p>}
           <h2>Siivousvuorot</h2>
-          <React.Fragment>
-          <CleanersListJSONButton cleaners={rawCleaningData} />
-          </React.Fragment>
+            <Stack direction="row" spacing={2}>
+              <CleanersListJSONButton cleaners={rawCleaningData} />
           {loggedUser && loggedUser.role === 1 && (
             <React.Fragment>
             <CleanersListUploadButton setNewData={setNewData} onClick={() => handleFormSubmit(newData)}/>
@@ -184,6 +184,7 @@ const CleaningSchedule = ({
             </Button>
             </React.Fragment>
           )}
+          </Stack>
           <React.Fragment>
             <EmptyCleanersDialog confirm={confirm} handleCloseConfirm={handleCloseConfirm} handleRemoveFormSubmit={handleRemoveFormSubmit} />
             <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
@@ -192,6 +193,7 @@ const CleaningSchedule = ({
           <React.Fragment>
             <CleanersList allCleaners={allCleaning} />
           </React.Fragment>
+          
         </div>
       )}
     </div>
