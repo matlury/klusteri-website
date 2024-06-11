@@ -87,7 +87,7 @@ const CleaningSchedule = ({
       .get("/listobjects/cleaning/")
       .then((res) => {
         const cleaningData = res.data.map((u, index) => ({
-          id: u.id, // DataGrid requires a unique 'id' for each row
+          id: u.week, // DataGrid requires a unique 'id' for each row
           week: u.week,
           date: moment().day("Monday").week(u.week),
           big: u.big.name,

@@ -175,6 +175,13 @@ class DefectFaultSerializer(serializers.ModelSerializer):
         model = DefectFault
         fields = '__all__'
 
+class OrganizationOnlyNameSerializer(serializers.ModelSerializer):
+    """Serializes an Organization object as JSON"""
+
+    class Meta:
+        model = Organization
+        fields = ['name', ]
+
 class CreateCleaningSerializer(serializers.ModelSerializer):
     """Used for saving a Cleaning object to the database"""
 
@@ -185,9 +192,9 @@ class CreateCleaningSerializer(serializers.ModelSerializer):
 class CleaningSerializer(serializers.ModelSerializer):
     """Used for saving a Cleaning object to the database"""
 
-    big = OrganizationSerializer(read_only=True)
-    small = OrganizationSerializer(read_only=True)
+    big = OrganizationOnlyNameSerializer(read_only=True)
+    small = OrganizationOnlyNameSerializer(read_only=True)
 
     class Meta:
         model = Cleaning
-        fields = '__all__'
+        exclude = ('id',)
