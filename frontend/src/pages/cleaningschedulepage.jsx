@@ -59,6 +59,15 @@ const CleaningSchedule = ({
     setOpen(false);
   };
 
+
+  const handleClickRemove = () => {
+    setConfirmOpen(true);
+  };
+
+  const handleCloseConfirm = () => {
+    setConfirmOpen(false);
+  };
+
   const handleFormSubmit = async (description) => {
     const defectFaultObject = {
       description: description,
