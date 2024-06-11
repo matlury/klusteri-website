@@ -3,12 +3,10 @@ import axiosClient from "../axios.js";
 import { Button } from "@mui/material";
 import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined';
 
-export default function CleanersListAutomateButton({ cleaners, threshold }) {
+export default function CleanersListAutomateButton({ threshold, updateNewData }) {
   const [loading, setLoading] = useState(true);
-  const [newData, setNewData] = useState(cleaners);
 
   useEffect(() => {
-    
     setLoading(false);
   }, []);
 
@@ -37,6 +35,7 @@ export default function CleanersListAutomateButton({ cleaners, threshold }) {
       }
 
       console.log(list);
+      updateNewData(list); // Update newData with the generated list
 
       return list;
     } catch (error) {

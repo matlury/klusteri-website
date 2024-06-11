@@ -156,7 +156,7 @@ const CleaningSchedule = ({
           <React.Fragment>
             <CleanersListJSONButton cleaners={rawCleaningData} />
             <CleanersListUploadButton setNewData={setNewData} onClick={() => handleFormSubmit(newData)}/>
-            <CleanersListAutomateButton threshold={2} />
+            <CleanersListAutomateButton threshold={2} updateNewData={setNewData} />
             <Button
               startIcon={<SaveOutlinedIcon />}
               variant="contained"
