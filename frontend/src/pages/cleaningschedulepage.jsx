@@ -11,6 +11,7 @@ import { all } from "axios";
 import EmptyCleaners from "../components/EmptyCleaners.jsx";
 import CleanersListUploadButton from "../components/CleanersListUploadButton.jsx";
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
+import CleanersListAutomateButton from "../components/CleanersListAutomateButton.jsx";
 
 const CleaningSchedule = ({
   isLoggedIn: propIsLoggedIn,
@@ -155,6 +156,7 @@ const CleaningSchedule = ({
           <React.Fragment>
             <CleanersListJSONButton cleaners={rawCleaningData} />
             <CleanersListUploadButton setNewData={setNewData} onClick={() => handleFormSubmit(newData)}/>
+            <CleanersListAutomateButton threshold={2} />
             <Button
               startIcon={<SaveOutlinedIcon />}
               variant="contained"
