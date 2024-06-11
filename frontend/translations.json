@@ -292,7 +292,17 @@
         "errortelegram": "Virhe tarkistettaessa telegramia.",
         "errorusercreate": "Virhe käyttäjän luonnissa.",
         "usersuccess": "Käyttäjä luotu onnistuneesti",
-        "faillogin": "Sähköposti tai salasana virheellinen"
+        "faillogin": "Sähköposti tai salasana virheellinen",
+        "errorfetchevents": "Virhe tapahtumien hakemisessa:",
+        "errorfetchorg": "Virhe järjestöjen hakemisessa:",
+        "erroreventlogin": "Sinun täytyy kirjautua sisään lisätäksesi tapahtuman.",
+        "errorlongevent": "Varauksen kesto ei voi olla yli 24 tuntia.",
+        "erroreventroom": "Huone on jo varattu valitulle ajankohdalle.",
+        "errorevent": "Virhe tapahtuman tallentamisessa",
+        "erroreventfields": "Täytä kaikki tiedot ennen tapahtuman lisäämistä.",
+        "eventdeleted": "Tapahtuma poistettu:",
+        "erroreventdelete": "Virhe tapahtuman poistamisessa:",
+        "eventsaved": "Tapahtuma tallennettu"
       }
     },
     "en": {
@@ -588,7 +598,17 @@
         "errortelegram": "Error checking telegram.",
         "errorusercreate": "Error in user creation.",
         "usersuccess": "User created successfully.",
-        "faillogin": "Email or password incorrect."
+        "faillogin": "Email or password incorrect.",
+        "errorfetchevents": "Error fetching events:",
+        "errorfetchorg": "Error fetching organizations:",
+        "erroreventlogin": "You must be logged in to add an event.",
+        "errorlongevent": "The duration of the reservation cannot be over 24 hours.",
+        "erroreventroom": "The room is already booked for the selected time.",
+        "errorevent": "Error saving event",
+        "erroreventfields": "Fill in all the details before adding an event.",
+        "eventdeleted": "Event deleted:",
+        "erroreventdelete": "Error deleting event:",
+        "eventsaved": "Event saved"
       }
     }
 }

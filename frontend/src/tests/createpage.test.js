@@ -219,7 +219,7 @@ describe("Createpage", () => {
 
     await waitFor(() => {
       expect(mockAxios.get).toHaveBeenCalledWith("undefined/api/listobjects/users/?email=test@example.com");
-      expect(getByText("Käyttäjä luotu onnistuneesti!")).toBeInTheDocument();
+      expect(getByText("Käyttäjä luotu onnistuneesti")).toBeInTheDocument();
     });
   })
 

@@ -50,7 +50,7 @@ test("error message when logging in with invalid credentials", async () => {
     });
 
     expect(
-      queryByText("Sähköposti tai salasana virheellinen!"),
+      queryByText("Sähköposti tai salasana virheellinen"),
     ).toBeInTheDocument();
     expect(localStorage.getItem("loggedUser")).toBeNull();
     expect(localStorage.getItem("isLoggedIn")).toBeNull();
