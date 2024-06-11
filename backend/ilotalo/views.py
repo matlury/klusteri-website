@@ -656,6 +656,7 @@ class ResetDatabaseView(APIView):
             Organization.objects.all().delete()
             NightResponsibility.objects.all().delete()
             Event.objects.all().delete()
+            DefectFault.objects.all().delete()
 
             return Response("Resetting database successful", status=status.HTTP_200_OK)
 
