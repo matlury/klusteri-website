@@ -23,7 +23,7 @@ export default function CleanersListAutomateButton({ threshold, updateNewData })
       const bigOrgs = getBigOrgs(orgdata);
       const smallOrgs = getSmallOrgs(orgdata);
 
-      const weeks = 52;
+      const weeks = getWeeks(new Date().getFullYear());
 
       const list = [];
 
@@ -49,6 +49,16 @@ export default function CleanersListAutomateButton({ threshold, updateNewData })
 
   function getSmallOrgs(orgdata) {
     return orgdata.filter((org) => org.user_set.length < threshold);
+  }
+
+  function getWeeks(year) {
+    let firstDayOfYear = new Date(year, 0, 1);
+    let lastDayOfYear = new Date(year, 11, 31);
+    let dayOfWeek = firstDayOfYear.getDay(); // 0 (Sunday) to 6 (Saturday)
+    let daysToMonday = (dayOfWeek === 0 ? 7 : dayOfWeek) - 1; // days to subtract to get to the previous Monday
+    firstDayOfYear = new Date(firstDayOfYear.setDate(firstDayOfYear.getDate() - daysToMonday));
+    const daysInYear = (lastDayOfYear - firstDayOfYear) / (1000 * 60 * 60 * 24) + 1;
+    return Math.ceil(daysInYear / 7);
   }
 
   return (
