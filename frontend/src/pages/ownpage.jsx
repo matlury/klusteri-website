@@ -229,10 +229,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   // Handles organization detail updates
   const handleOrganizationDetails = (organization_new_name, organization_new_email, organization_new_homepage, orgId) => {
-    const confirmUpdate = window.confirm(
-      t("orgeditconfirm"),
-    );
-    
+
     const newOrganizationObject = {
       name: organization_new_name,
       email: organization_new_email,
@@ -500,11 +497,11 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   return (
     <div>
-      {!isLoggedIn && <h3>Kirjaudu sisään</h3>}
+      {!isLoggedIn && <h3>{t("loginsuggest")}</h3>}
       {isLoggedIn && (
         <div>
-          {error && <p style={{ color: "red" }}>Virhe: {error}</p>}
-          {success && <p style={{ color: "green" }}>Onnistui: {success}</p>}
+          {error && <p style={{ color: "red" }}>{t("fail")}: {error}</p>}
+          {success && <p style={{ color: "green" }}>{t("success")}: {success}</p>}
           <div style={{ display: "flex" }}>
             <div id="left_content">
               <div id="leftleft_content">

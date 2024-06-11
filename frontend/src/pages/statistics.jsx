@@ -149,8 +149,8 @@ const Statistics = () => {
     const orgmemdata = {};
 
     orgData.forEach((org) => {
-      orgdata[org.name] = { value: 0, label: org.name };
-      orgmemdata[org.name] = { value: org.user_set.length, label: org.name };
+      orgdata[org.name] = { value: 0, label: org.name, ...(org.color ? { color: org.color } : {}) };
+      orgmemdata[org.name] = { value: org.user_set.length, label: org.name, ...(org.color ? { color: org.color } : {}) };
     });
 
     setOrgMembersData(Object.values(orgmemdata));
@@ -188,7 +188,8 @@ const Statistics = () => {
     const numberdayweek = [6, 0, 1, 2, 3, 4, 5];
 
     orgdata.forEach((org) => {
-      latedata[org.name] = { value: 0, label: org.name };
+      latedata[org.name] = { value: 0, label: org.name, ...(org.color ? { color: org.color } : {})};
+      console.log(latedata)
     });
     users.forEach((usr) => {
       userdata[usr.username] = { data: [0], label: usr.username };

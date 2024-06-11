@@ -150,7 +150,7 @@ const App = (props) => {
     { key: "front_sidebar_1", path: "etusivu", icon: icons[0] },
     { key: "front_sidebar_2", path: "christina_regina", icon: icons[1] },
     { key: "front_sidebar_3", path: "varaukset", icon: icons[2]},
-    { key: "front_sidebar_4", path: "omat_avaimet", icon: icons[3]},
+    { key: "front_sidebar_4", path: "ykv", icon: icons[3]},
     { key: "front_sidebar_5", path: "omat_tiedot", icon: icons[4]},
     { key: "front_sidebar_6", path: "tilastot", icon: icons[5]},
     { key: "front_sidebar_7", path: "yhteystiedot", icon: icons[6]},
@@ -303,7 +303,7 @@ const App = (props) => {
             <Route path="/christina_regina" element={<ChristinaRegina />} />
             <Route path="/varaukset" element={<Reservations />} />
             <Route
-              path="/omat_avaimet"
+              path="/ykv"
               element={
                 <OwnKeys isLoggedIn={isLoggedIn} loggedUser={loggedUser} />
               }

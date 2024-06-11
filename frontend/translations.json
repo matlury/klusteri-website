@@ -6,7 +6,7 @@
         "front_sidebar_1": "Etusivu",
         "front_sidebar_2": "Christina Regina",
         "front_sidebar_3": "Varaukset",
-        "front_sidebar_4": "Omat Avaimet",
+        "front_sidebar_4": "YKV",
         "front_sidebar_5": "Omat Tiedot",
         "front_sidebar_6": "Tilastot",
         "front_sidebar_7": "Yhteystiedot",
@@ -331,7 +331,9 @@
         "defectfixfail": "Vian kirjaus epäonnistui",
         "defectfixsuccess": "Vian kirjaus onnistui",
         "defectmailsuccess": "Merkitseminen lähetetyksi onnistui",
-        "defectmailfail": "Merkitseminen lähetetyksi epäonnistui"
+        "defectmailfail": "Merkitseminen lähetetyksi epäonnistui",
+        "success": "Onnistui",
+        "fail": "Virhe"
       }
     },
     "en": {
@@ -341,7 +343,7 @@
         "front_sidebar_1": "Frontpage",
         "front_sidebar_2": "Christina Regina",
         "front_sidebar_3": "Reservations",
-        "front_sidebar_4": "My keys",
+        "front_sidebar_4": "YKV",
         "front_sidebar_5": "My information",
         "front_sidebar_6": "Statistics",
         "front_sidebar_7": "Contacts",
@@ -666,7 +668,9 @@
         "defectfixfail": "Error fixing defect",
         "defectfixsuccess": "Defect fixed successfully",
         "defectmailsuccess": "Email marked as sent",
-        "defectmailfail": "Error marking email as sent"
+        "defectmailfail": "Error marking email as sent",
+        "success": "Success",
+        "fail": "Failed"
       }
     }
 }
