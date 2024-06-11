@@ -327,7 +327,11 @@
         "pjchange": "Oletko varma, että haluat siirtää PJ-oikeudet",
         "handoverkeyconfirm": "Oletko varma että haluat luovuttaa avaimen?",
         "handoverkeysuccess": "Avaimen luovutus onnistui!",
-        "handoverkeyfail": "Avaimen luovutus epäonnistui"
+        "handoverkeyfail": "Avaimen luovutus epäonnistui",
+        "defectfixfail": "Vian kirjaus epäonnistui",
+        "defectfixsuccess": "Vian kirjaus onnistui",
+        "defectmailsuccess": "Merkitseminen lähetetyksi onnistui",
+        "defectmailfail": "Merkitseminen lähetetyksi epäonnistui"
       }
     },
     "en": {
@@ -658,7 +662,11 @@
         "pjchange": "Are you sure you want to change the chairman?",
         "handoverkeyconfirm": "Are you sure you want to hand over key?",
         "handoverkeysuccess": "Key handed over successfully",
-        "handoverkeyfail": "Key handover failed"
+        "handoverkeyfail": "Key handover failed",
+        "defectfixfail": "Error fixing defect",
+        "defectfixsuccess": "Defect fixed successfully",
+        "defectmailsuccess": "Email marked as sent",
+        "defectmailfail": "Error marking email as sent"
       }
     }
 }

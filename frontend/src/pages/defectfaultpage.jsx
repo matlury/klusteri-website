@@ -73,14 +73,14 @@ const DefectFault = ({
         axiosClient
           .post(`/defects/create_defect`, defectFaultObject)
           .then((response) => {
-            setSuccess("Vian kirjaus onnistui");
+            setSuccess(t("defectfixsuccess"));
             setTimeout(() => setSuccess(""), 5000);
             fetchDefects();
           })
           .catch((error) => {
-            setError("Vian kirjaus epäonnistui");
+            setError(t("defectfixfail"));
             setTimeout(() => setError(""), 5000);
-            console.error("Pyyntö ei menny läpi", error);
+            console.error(t("defectfixfail"), error);
           });
       }
     }
@@ -91,12 +91,12 @@ const DefectFault = ({
     axiosClient
       .put(`defects/repair_defect/${id}/`, {})
       .then((response) => {
-        setSuccess("Vian korjaus onnistui");
+        setSuccess(t("defectfixsuccess"));
         setTimeout(() => setSuccess(""), 5000);
         fetchDefects();
       })
       .catch((error) => {
-        setError("Vian korjaus epäonnistui");
+        setError(t("defectfixfail"));
         setTimeout(() => setError(""), 5000);
       });
   };
@@ -106,12 +106,12 @@ const DefectFault = ({
     axiosClient
       .put(`defects/email_defect/${id}/`, {})
       .then((response) => {
-        setSuccess("Merkitseminen lähetetyksi onnistui");
+        setSuccess(t("defectmailsuccess"));
         setTimeout(() => setSuccess(""), 5000);
         fetchDefects();
       })
       .catch((error) => {
-        setError("Merkitseminen lähetetyksi epäonnistui");
+        setError(t("defectmailfail"));
         setTimeout(() => setError(""), 5000);
       });
   };
