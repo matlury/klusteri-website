@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "../axios.js";
-import { Button, Dialog } from "@mui/material";
+import { Button } from "@mui/material";
 import DefectForm from "../components/DefectForm";
 import CleanersList from "../components/CleanersList.jsx";
-import UploadIcon from '@mui/icons-material/Upload';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import moment from "moment";
 import CleanersListJSONButton from "../components/CleanersListJSONButton.jsx";
-import { all } from "axios";
-import EmptyCleaners from "../components/EmptyCleaners.jsx";
+import EmptyCleanersDialog from "../components/EmptyCleanersDialog.jsx";
 import CleanersListUploadButton from "../components/CleanersListUploadButton.jsx";
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
+import SaveDialog from "../components/SaveDialog"; // Tuodaan uusi komponentti
 
 const CleaningSchedule = ({
   isLoggedIn: propIsLoggedIn,
@@ -22,6 +21,7 @@ const CleaningSchedule = ({
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [confirm, setConfirmOpen] = useState(false);
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false); // Uusi tila dialogille
 
   const [allCleaning, setAllCleaning] = useState([]);
   const [rawCleaningData, setRawCleaningData] = useState(null); // State for raw JSON data
@@ -68,6 +68,14 @@ const CleaningSchedule = ({
 
   const handleCloseConfirm = () => {
     setConfirmOpen(false);
+  };
+
+  const handleSaveClick = () => {
+    setSaveDialogOpen(true);
+  };
+
+  const handleSaveClose = () => {
+    setSaveDialogOpen(false);
   };
   
   const handleFormSubmit = async (json) => {
@@ -162,7 +170,7 @@ const CleaningSchedule = ({
               startIcon={<SaveOutlinedIcon />}
               variant="contained"
               color="primary"
-              onClick={() => handleFormSubmit(newData)}
+              onClick={handleSaveClick}
             >
               Tallenna
             </Button>
@@ -177,8 +185,9 @@ const CleaningSchedule = ({
             </React.Fragment>
           )}
           <React.Fragment>
-            <EmptyCleaners confirm={confirm} handleCloseConfirm={handleCloseConfirm} handleRemoveFormSubmit={handleRemoveFormSubmit} />
+            <EmptyCleanersDialog confirm={confirm} handleCloseConfirm={handleCloseConfirm} handleRemoveFormSubmit={handleRemoveFormSubmit} />
             <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
+            <SaveDialog open={saveDialogOpen} handleClose={handleSaveClose} handleSave={handleFormSubmit} newData={newData}/>
           </React.Fragment>
           <React.Fragment>
             <CleanersList allCleaners={allCleaning} />
