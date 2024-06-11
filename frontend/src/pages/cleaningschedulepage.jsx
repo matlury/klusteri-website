@@ -6,6 +6,7 @@ import CleanersList from "../components/CleanersList.jsx";
 import DownloadIcon from "@mui/icons-material/Download";
 import UploadIcon from '@mui/icons-material/Upload';
 import moment from "moment";
+import CleanersListJSONButton from "../components/CleanersListJSONButton.jsx";
 
 const CleaningSchedule = ({
   isLoggedIn: propIsLoggedIn,
@@ -18,8 +19,9 @@ const CleaningSchedule = ({
   const [error, setError] = useState("");
 
   const [allCleaning, setAllCleaning] = useState([]);
+  const [rawCleaningData, setRawCleaningData] = useState(null); // State for raw JSON data
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     setIsLoggedIn(propIsLoggedIn);
     if (propIsLoggedIn) {
@@ -28,7 +30,6 @@ const CleaningSchedule = ({
         setLoggedUser(storedUser);
       }
     }
-    
   }, [propIsLoggedIn]);
 
   useEffect(() => {
@@ -47,7 +48,6 @@ const CleaningSchedule = ({
     fetchData();
   }, [loggedUser]);
 
-
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -56,12 +56,11 @@ const CleaningSchedule = ({
     setOpen(false);
   };
 
-
   const handleFormSubmit = async (description) => {
     const defectFaultObject = {
       description: description,
     };
-    const cleaningdata = await axiosClient.get("/listobjects/cleaning/")
+    const cleaningdata = await axiosClient.get("/listobjects/cleaning/");
 
     confirmDefectFault(defectFaultObject);
 
@@ -87,6 +86,8 @@ const CleaningSchedule = ({
     axiosClient
       .get("/listobjects/cleaning/")
       .then((res) => {
+        setRawCleaningData(res.data); // Store the raw JSON data
+
         const cleaningData = res.data.map((u, index) => ({
           id: u.week, // DataGrid requires a unique 'id' for each row
           week: u.week,
@@ -109,15 +110,7 @@ const CleaningSchedule = ({
           {success && <p style={{ color: "green" }}>{success}</p>}
           <h2>Siivousvuorot</h2>
           <React.Fragment>
-            <Button
-              startIcon={<DownloadIcon />}
-              variant="contained"
-              color="primary"
-              onClick={handleClickOpen}
-            >
-              Tuo lista
-            </Button>
-
+            <CleanersListJSONButton cleaners={rawCleaningData} /> {/* Pass raw JSON data */}
             <Button
               startIcon={<UploadIcon />}
               variant="contained"
@@ -126,14 +119,13 @@ const CleaningSchedule = ({
             >
               Vie lista
             </Button>
-           
             <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
           </React.Fragment>
-        <React.Fragment>
-          <CleanersList allCleaners={allCleaning}/>
-        </React.Fragment>
-      </div>
-       )}
+          <React.Fragment>
+            <CleanersList allCleaners={allCleaning} />
+          </React.Fragment>
+        </div>
+      )}
     </div>
   );
 };
