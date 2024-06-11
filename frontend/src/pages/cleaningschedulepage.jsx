@@ -4,6 +4,7 @@ import { Button } from "@mui/material";
 import DefectForm from "../components/DefectForm";
 import CleanersList from "../components/CleanersList.jsx";
 import DownloadIcon from "@mui/icons-material/Download";
+import UploadIcon from '@mui/icons-material/Upload';
 import moment from "moment";
 
 const CleaningSchedule = ({
@@ -114,8 +115,18 @@ const CleaningSchedule = ({
               color="primary"
               onClick={handleClickOpen}
             >
-              Lataa tiedot
+              Tuo lista
             </Button>
+
+            <Button
+              startIcon={<UploadIcon />}
+              variant="contained"
+              color="primary"
+              onClick={handleClickOpen}
+            >
+              Vie lista
+            </Button>
+           
             <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
           </React.Fragment>
         <React.Fragment>
