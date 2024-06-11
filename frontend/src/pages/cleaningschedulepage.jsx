@@ -153,7 +153,10 @@ const CleaningSchedule = ({
           {success && <p style={{ color: "green" }}>{success}</p>}
           <h2>Siivousvuorot</h2>
           <React.Fragment>
-            <CleanersListJSONButton cleaners={rawCleaningData} />
+          <CleanersListJSONButton cleaners={rawCleaningData} />
+          </React.Fragment>
+          {loggedUser && loggedUser.role === 1 && (
+            <React.Fragment>
             <CleanersListUploadButton setNewData={setNewData} onClick={() => handleFormSubmit(newData)}/>
             <Button
               startIcon={<SaveOutlinedIcon />}
@@ -172,6 +175,7 @@ const CleaningSchedule = ({
                 Tyhjennä
             </Button>
             </React.Fragment>
+          )}
           <React.Fragment>
             <EmptyCleaners confirm={confirm} handleCloseConfirm={handleCloseConfirm} handleRemoveFormSubmit={handleRemoveFormSubmit} />
             <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
