@@ -7,6 +7,7 @@ import UploadIcon from '@mui/icons-material/Upload';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import moment from "moment";
 import CleanersListJSONButton from "../components/CleanersListJSONButton.jsx";
+import { all } from "axios";
 import EmptyCleaners from "../components/EmptyCleaners.jsx";
 
 const CleaningSchedule = ({
@@ -58,14 +59,6 @@ const CleaningSchedule = ({
     setOpen(false);
   };
 
-  const handleClickRemove = () => {
-    setConfirmOpen(true);
-  };
-
-  const handleCloseConfirm = () => {
-    setConfirmOpen(false);
-  };
-
   const handleFormSubmit = async (description) => {
     const defectFaultObject = {
       description: description,
@@ -77,14 +70,14 @@ const CleaningSchedule = ({
     function confirmDefectFault(defectFaultObject) {
       if (confirm) {
         axiosClient
-          .post(`/defects/create_defect`, defectFaultObject)
+          .post(`/cleaning/create_cleaning`, cleaningObject)
           .then((response) => {
-            setSuccess("Vian kirjaus onnistui");
+            setSuccess("Siivouksen kirjaus onnistui");
             setTimeout(() => setSuccess(""), 5000);
             fetchCleaning();
           })
           .catch((error) => {
-            setError("Vian kirjaus epäonnistui");
+            setError("Siivouksen kirjaus epäonnistui");
             setTimeout(() => setError(""), 5000);
             console.error("Pyyntö ei menny läpi", error);
           });
@@ -140,7 +133,7 @@ const CleaningSchedule = ({
               startIcon={<UploadIcon />}
               variant="contained"
               color="primary"
-              onClick={handleClickOpen}
+              onClick={handleFormSubmit}
             >
               Vie lista
             </Button>
