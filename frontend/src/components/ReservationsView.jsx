@@ -173,6 +173,7 @@ const ReservationsView = ({
             </Typography>
             <TextField
               id="startTime"
+              data-testid="startTime"
               label="Alkaa"
               type="datetime-local"
               name="start"
@@ -186,6 +187,7 @@ const ReservationsView = ({
             />
             <TextField
               id="endTime"
+              data-testid="endTime"
               label="Päättyy"
               type="datetime-local"
               name="end"

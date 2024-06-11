@@ -28,9 +28,9 @@ describe("Reservations component", () => {
 
     expect(queryByText("Lisää tapahtuma")).toBeInTheDocument();
 
-    const startTimeField = getByLabelText("Alkaa");
-    const endTimeField = getByLabelText("Päättyy");
-  
+    const startTimeField = screen.getByTestId("startTime").querySelector("input");
+    const endTimeField = screen.getByTestId("endTime").querySelector("input");
+
     fireEvent.change(startTimeField, { target: { value: "2024-06-11T10:00" } });
     fireEvent.change(endTimeField, { target: { value: "2024-06-11T12:00" } });
   
