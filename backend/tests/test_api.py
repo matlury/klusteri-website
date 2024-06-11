@@ -1975,13 +1975,13 @@ class TestDjangoAPI(TestCase):
         # create cleaning data with correct information
         response = self.client.post(
             "http://localhost:8000/api/cleaning/create_cleaning",
-            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
                 "week":1,
                 "big":1,
-                "small":2
+                "small":1,
             },
             format="json",
         )
-
+        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
