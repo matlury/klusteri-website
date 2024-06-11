@@ -59,9 +59,41 @@ const CleaningSchedule = ({
 
   const handleFormSubmit = async () => {
     const orgdata = await axiosClient.get("/listobjects/organizations/");
-    console.log(getOrgId("Matrix"));
 
-    confirmCleaning(cleaningObject);
+    const json =
+    [
+      {
+        "big": {
+          "name": "TKO-äly"
+        },
+        "small": {
+          "name": "Synop"
+        },
+        "week": 1
+      },
+      {
+        "big": {
+          "name": "Matrix"
+        },
+        "small": {
+          "name": "Synop"
+        },
+        "week": 2
+      }
+    ]
+
+    iterateThroughJSON(json);
+
+    function iterateThroughJSON(json) {
+      for (let i = 0; i < json.length; i++) {
+        const cleaningObject = {
+          week: json[i].week,
+          big: getOrgId(json[i].big.name),
+          small: getOrgId(json[i].small.name),
+        };
+        confirmCleaning(cleaningObject);
+      }
+    }
 
     function getOrgId(orgName) {
       for (let i = 0; i < orgdata.data.length; i++) {
