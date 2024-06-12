@@ -12,6 +12,8 @@ const CleanersList = ({ allCleaners}) => {
 
     return (
         <DataGrid
+        initialState={{sorting:{sortModel:[{field:'week', sort:'asc'}],
+          },}}
         rows={allCleaners}   /// tänne muokattu
         columns={columns}
         pageSize={5}
