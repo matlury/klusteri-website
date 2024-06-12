@@ -47,7 +47,7 @@ export default function CleanersListAutomateButton({ threshold, updateNewData })
   }
 
   function getSmallOrgs(orgdata) {
-    return orgdata.filter((org) => org.user_set.length < threshold);
+    return orgdata.filter((org) => org.user_set.length < threshold && org.user_set.length > 0);
   }
 
   function getWeeks(year) {
