@@ -28,8 +28,9 @@ const EmptyCleaners = ({ confirm, handleCloseConfirm, handleRemoveFormSubmit }) 
         <Button onClick={handleCloseConfirm}>Peruuta</Button>
         <Button 
           type="submit" 
-          data-testid="createdefect"
-          id="addfault"
+          data-testid="delete-cleaninglist"
+          id="delete-cleaninglist"
+          className="delete-cleaninglist-button"
           >
           Tyhjennä
         </Button>

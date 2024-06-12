@@ -82,8 +82,7 @@ const CleaningSchedule = ({
   const handleFormSubmit = async (json) => {
     const orgdata = await axiosClient.get("/listobjects/organizations/");
 
-    const cleaningData = allCleaning;
-    if (cleaningData.length > 0) {
+    if (allCleaning.length > 0) {
        setError("Poista siivousvuorot ennen uusien lisäämistä");
        return;
     }
