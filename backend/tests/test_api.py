@@ -1987,25 +1987,26 @@ class TestDjangoAPI(TestCase):
         big_organization_id = Organization.objects.get(name="tko-aly").id
         small_organization_id = Organization.objects.get(name="Matrix Ry").id
 
-        # create cleaning data with correct information
-        response = self.client.post(
-            "http://localhost:8000/api/cleaning/create_cleaning",
-            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={
-                "week":1,
-                "big": big_organization_id,
-                "small": small_organization_id,
-            },
-            format="json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        # Create 53 cleaning data entries
+        for _ in range(53):
+            response = self.client.post(
+                "http://localhost:8000/api/cleaning/create_cleaning",
+                headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+                data={
+                    "week": 1,
+                    "big": big_organization_id,
+                    "small": small_organization_id,
+                },
+                format="json",
+            )
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        # create cleaning data when there is already cleaning data 
+        # Attempt to create the 54th cleaning data entry
         response = self.client.post(
             "http://localhost:8000/api/cleaning/create_cleaning",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "week":1,
+                "week": 1,
                 "big": big_organization_id,
                 "small": small_organization_id,
             },
