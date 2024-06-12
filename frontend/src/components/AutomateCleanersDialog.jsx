@@ -18,7 +18,7 @@ const AutomateCleanersDialog = ({ open, handleClose, handleAutomate }) => {
       <DialogTitle>Luo siivouslista automaattisesti</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Luo siivouslista automaattisesti algoritmin avulla. Anna raja-arvo, jonka mukaan organisaatiot jaetaan suuriin ja pieniin.
+          Luo siivouslista automaattisesti algoritmin avulla. Anna raja-arvo, jonka mukaan järjestöt jaetaan suuriin ja pieniin järjestöihin.
         </DialogContentText>
         <TextField
           autoFocus
