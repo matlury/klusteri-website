@@ -44,6 +44,7 @@ import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
 import Statistics from "./pages/statistics";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { useLocation } from 'react-router-dom';
 
 
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
@@ -156,44 +157,40 @@ const App = (props) => {
   ];
 
   const drawer = (
-    <div>
-      <Box sx={{ padding: "16px", width: "100%" }}>
+  <div>
+    <Box sx={{ padding: "16px", width: "100%" }}>
       <img src={matlu} alt="logo" style={{ height: "auto", width: "100%" }} />{" "}
-      </Box>
-      <Divider />
-      <List>
-        {[
-          "Etusivu",
-          "Christina Regina",
-          "Varaukset",
-          "Omat avaimet",
-          "Omat tiedot",
-          "Tilastot",
-          "Yhteystiedot",
-          "Viat",
-          "Säännöt ja ohjeet",
-          "Tietosuojaseloste",
-        ].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton
-              key={text}
-              component={Link}
-              to={`/${text
-                .toLowerCase()
-                .replace(/\s+/g, "_")
-                .replace(/ä/g, "a")
-                .replace(/ö/g, "o")}`}
-            >
-              <ListItemIcon>{icons[index]}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-    </div>
-  );
-
+    </Box>
+    <Divider />
+    <List>
+      {[
+        { text: "Etusivu", path: "/etusivu" },
+        { text: "Christina Regina", path: "/christina_regina" },
+        { text: "Varaukset", path: "/varaukset" },
+        { text: "Omat avaimet", path: "/omat_avaimet" },
+        { text: "Omat tiedot", path: "/omat_tiedot" },
+        { text: "Tilastot", path: "/tilastot" },
+        { text: "Yhteystiedot", path: "/yhteystiedot" },
+        { text: "Viat", path: "/viat" },
+        { text: "Säännöt ja ohjeet", path: "/saannot_ja_ohjeet" },
+        { text: "Tietosuojaseloste", path: "/tietosuojaseloste" },
+      ].map(({ text, path }, index) => (
+        <ListItem key={text} disablePadding>
+          <ListItemButton
+            key={text}
+            component={Link}
+            to={path}
+            sx={{ backgroundColor: location.pathname === path ? '#bdbdbd' : 'transparent' }}
+          >
+            <ListItemIcon>{icons[index]}</ListItemIcon>
+            <ListItemText primary={text} />
+          </ListItemButton>
+        </ListItem>
+      ))}
+    </List>
+    <Divider />
+  </div>
+);
   const container =
     window !== undefined ? () => window().document.body : undefined;
 
