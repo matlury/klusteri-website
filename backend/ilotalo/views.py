@@ -910,7 +910,7 @@ class CleaningView(viewsets.ReadOnlyModelViewSet):
     queryset = Cleaning.objects.all()
 
 class CreateCleaningView(APIView):
-    """View for creating a new defect/fault report <baseurl>/api/cleaning/create_cleaning"""
+    """View for creating cleaning schedule <baseurl>/api/cleaning/create_cleaning"""
 
     permission_classes = [permissions.IsAuthenticated]
 
@@ -925,7 +925,7 @@ class CreateCleaningView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 class RemoveCleaningView(APIView):
-    """View for removing all cleaning <baseurl>/api/cleaning/remove/all/"""
+    """View for removing the cleaning schedule <baseurl>/api/cleaning/remove/all/"""
 
     permission_classes = [permissions.IsAuthenticated]
 
