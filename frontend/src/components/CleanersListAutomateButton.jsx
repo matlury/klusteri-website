@@ -1,16 +1,23 @@
-import React, { useState, useEffect } from "react";
-import axiosClient from "../axios.js";
+import React, { useState } from "react";
 import { Button } from "@mui/material";
 import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined';
+import axiosClient from "../axios.js";
+import AutomateCleanersDialog from "./AutomateCleanersDialog.jsx";
 
-export default function CleanersListAutomateButton({ threshold, updateNewData }) {
-  const [loading, setLoading] = useState(true);
+export default function CleanersListAutomateButton({ updateNewData }) {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    setLoading(false);
-  }, []);
+  const handleClickOpen = () => {
+    setDialogOpen(true);
+  };
 
-  const buildList = async (event) => {
+  const handleClose = () => {
+    setDialogOpen(false);
+  };
+
+  const handleAutomate = async (threshold) => {
+    setLoading(true);
     try {
       const response = await axiosClient.get("/listobjects/organizations/");
       const orgdata = response.data;
@@ -20,8 +27,8 @@ export default function CleanersListAutomateButton({ threshold, updateNewData })
         throw new Error("Unexpected API response format");
       }
 
-      const bigOrgs = getBigOrgs(orgdata);
-      const smallOrgs = getSmallOrgs(orgdata);
+      const bigOrgs = getBigOrgs(orgdata, threshold);
+      const smallOrgs = getSmallOrgs(orgdata, threshold);
 
       const weeks = getWeeks(new Date().getFullYear());
 
@@ -39,14 +46,16 @@ export default function CleanersListAutomateButton({ threshold, updateNewData })
       return list;
     } catch (error) {
       console.error("Error fetching organization data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  function getBigOrgs(orgdata) {
+  function getBigOrgs(orgdata, threshold) {
     return orgdata.filter((org) => org.user_set.length >= threshold);
   }
 
-  function getSmallOrgs(orgdata) {
+  function getSmallOrgs(orgdata, threshold) {
     return orgdata.filter((org) => org.user_set.length < threshold && org.user_set.length > 0);
   }
 
@@ -61,15 +70,22 @@ export default function CleanersListAutomateButton({ threshold, updateNewData })
   }
 
   return (
-    <Button
-      variant="contained"
-      color="primary"
-      component="label"
-      onClick={buildList}
-      startIcon={<SmartToyOutlinedIcon />}
-      disabled={loading}
-    >
-      Tee lista
-    </Button>
+    <div>
+      <Button
+        variant="contained"
+        color="primary"
+        component="label"
+        onClick={handleClickOpen}
+        startIcon={<SmartToyOutlinedIcon />}
+        disabled={loading}
+      >
+        Tee lista
+      </Button>
+      <AutomateCleanersDialog 
+        open={dialogOpen}
+        handleClose={handleClose}
+        handleAutomate={handleAutomate}
+      />
+    </div>
   );
 }

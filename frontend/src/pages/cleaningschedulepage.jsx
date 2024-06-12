@@ -10,7 +10,7 @@ import EmptyCleanersDialog from "../components/EmptyCleanersDialog.jsx";
 import CleanersListUploadButton from "../components/CleanersListUploadButton.jsx";
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import CleanersListAutomateButton from "../components/CleanersListAutomateButton.jsx";
-import SaveDialog from "../components/SaveDialog"; // Tuodaan uusi komponentti
+import SaveDialog from "../components/SaveDialog";
 import Stack from '@mui/material/Stack';
 
 const CleaningSchedule = ({
@@ -23,10 +23,10 @@ const CleaningSchedule = ({
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [confirm, setConfirmOpen] = useState(false);
-  const [saveDialogOpen, setSaveDialogOpen] = useState(false); // Uusi tila dialogille
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
 
   const [allCleaning, setAllCleaning] = useState([]);
-  const [rawCleaningData, setRawCleaningData] = useState(null); // State for raw JSON data
+  const [rawCleaningData, setRawCleaningData] = useState(null);
   const [newData, setNewData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -85,7 +85,7 @@ const CleaningSchedule = ({
 
     iterateThroughJSON(json);
 
-    function iterateThroughJSON(json) {
+    async function iterateThroughJSON(json) {
       for (let i = 0; i < json.length; i++) {
         const cleaningObject = {
           week: json[i].week,
@@ -93,6 +93,8 @@ const CleaningSchedule = ({
           small: getOrgId(json[i].small.name),
         };
         confirmCleaning(cleaningObject);
+        const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+        await delay(10);
       }
     }
 
@@ -105,18 +107,18 @@ const CleaningSchedule = ({
     };
 
     function confirmCleaning(cleaningObject) {
-    axiosClient
-      .post(`/cleaning/create_cleaning`, cleaningObject)
-      .then((response) => {
-        setSuccess("Siivouksen kirjaus onnistui");
-        setTimeout(() => setSuccess(""), 5000);
-        fetchCleaning();
-      })
-      .catch((error) => {
-        setError("Siivouksen kirjaus epäonnistui");
-        setTimeout(() => setError(""), 5000);
-        console.error("Pyyntö ei menny läpi", error);
-      });
+      axiosClient
+        .post(`/cleaning/create_cleaning`, cleaningObject)
+        .then((response) => {
+          setSuccess("Siivouksen kirjaus onnistui");
+          setTimeout(() => setSuccess(""), 5000);
+          fetchCleaning();
+        })
+        .catch((error) => {
+          setError("Siivouksen kirjaus epäonnistui");
+          setTimeout(() => setError(""), 5000);
+          console.error("Pyyntö ei menny läpi", error);
+        });
     }
   };
 
@@ -139,10 +141,10 @@ const CleaningSchedule = ({
     axiosClient
       .get("/listobjects/cleaning/")
       .then((res) => {
-        setRawCleaningData(res.data); // Store the raw JSON data
+        setRawCleaningData(res.data);
 
         const cleaningData = res.data.map((u, index) => ({
-          id: u.week, // DataGrid requires a unique 'id' for each row
+          id: u.week,
           week: u.week,
           date: moment().day("Monday").week(u.week),
           big: u.big.name,
@@ -162,40 +164,38 @@ const CleaningSchedule = ({
           {error && <p style={{ color: "red" }}>{error}</p>}
           {success && <p style={{ color: "green" }}>{success}</p>}
           <h2>Siivousvuorot</h2>
-            <Stack direction="row" spacing={2}>
-              <CleanersListJSONButton cleaners={rawCleaningData} />
-          {loggedUser && loggedUser.role === 1 && (
-            <React.Fragment>
-            <CleanersListUploadButton setNewData={setNewData} onClick={() => handleFormSubmit(newData)}/>
-            <CleanersListAutomateButton threshold={2} updateNewData={setNewData} />
-            <Button
-              startIcon={<SaveOutlinedIcon />}
-              variant="contained"
-              color="primary"
-              onClick={handleSaveClick}
-            >
-              Tallenna
-            </Button>
-            <Button
-              startIcon={<DeleteOutlineIcon />}
-              variant="contained"
-              color="primary"
-              onClick={handleClickRemove}
-            >
-                Tyhjennä
-            </Button>
-            </React.Fragment>
-          )}
+          <Stack direction="row" spacing={2}>
+            <CleanersListJSONButton cleaners={rawCleaningData} />
+            {loggedUser && loggedUser.role === 1 && (
+              <React.Fragment>
+                <CleanersListUploadButton setNewData={setNewData} onClick={() => handleFormSubmit(newData)} />
+                <CleanersListAutomateButton updateNewData={setNewData} />
+                <Button
+                  startIcon={<SaveOutlinedIcon />}
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSaveClick}
+                >
+                  Tallenna
+                </Button>
+                <Button
+                  startIcon={<DeleteOutlineIcon />}
+                  variant="contained"
+                  color="primary"
+                  onClick={handleClickRemove}
+                >
+                  Tyhjennä
+                </Button>
+              </React.Fragment>
+            )}
           </Stack>
           <React.Fragment>
             <EmptyCleanersDialog confirm={confirm} handleCloseConfirm={handleCloseConfirm} handleRemoveFormSubmit={handleRemoveFormSubmit} />
-            <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
-            <SaveDialog open={saveDialogOpen} handleClose={handleSaveClose} handleSave={handleFormSubmit} newData={newData}/>
+            <SaveDialog open={saveDialogOpen} handleClose={handleSaveClose} handleSave={handleFormSubmit} newData={newData} />
           </React.Fragment>
           <React.Fragment>
             <CleanersList allCleaners={allCleaning} />
           </React.Fragment>
-          
         </div>
       )}
     </div>
