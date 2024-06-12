@@ -82,6 +82,13 @@ const CleaningSchedule = ({
   const handleFormSubmit = async (json) => {
     const orgdata = await axiosClient.get("/listobjects/organizations/");
 
+    const cleaningData = allCleaning;
+    console.log(cleaningData);
+    if (cleaningData.length > 0) {
+       setError("Poista siivousvuorot ennen uusien lisäämistä");
+       return;
+    }
+
     iterateThroughJSON(json);
 
     async function iterateThroughJSON(json) {
@@ -189,8 +196,15 @@ const CleaningSchedule = ({
             )}
           </Stack>
           <React.Fragment>
-            <EmptyCleanersDialog confirm={confirm} handleCloseConfirm={handleCloseConfirm} handleRemoveFormSubmit={handleRemoveFormSubmit} />
-            <SaveDialog open={saveDialogOpen} handleClose={handleSaveClose} handleSave={handleFormSubmit} newData={newData} />
+            <EmptyCleanersDialog 
+              confirm={confirm} 
+              handleCloseConfirm={handleCloseConfirm} 
+              handleRemoveFormSubmit={handleRemoveFormSubmit} />
+            <SaveDialog 
+              open={saveDialogOpen} 
+              handleClose={handleSaveClose} 
+              handleSave={handleFormSubmit} 
+              newData={newData} />
           </React.Fragment>
           <React.Fragment>
             <CleanersList allCleaners={allCleaning} />

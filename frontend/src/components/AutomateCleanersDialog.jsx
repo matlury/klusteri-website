@@ -23,6 +23,7 @@ const AutomateCleanersDialog = ({ open, handleClose, handleAutomate }) => {
         <TextField
           autoFocus
           margin="dense"
+          id="threshold_value"
           label="Raja-arvo"
           type="number"
           fullWidth
@@ -33,7 +34,8 @@ const AutomateCleanersDialog = ({ open, handleClose, handleAutomate }) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Peruuta</Button>
-        <Button onClick={handleSubmit}>Luo lista</Button>
+        <Button className="create-cleaning-button"
+        onClick={handleSubmit}>Luo lista</Button>
       </DialogActions>
     </Dialog>
   );
