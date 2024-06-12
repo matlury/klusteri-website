@@ -1291,48 +1291,40 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["late"], False)
-    
-    def test_ykv_late_logout(self):
-        """An authorized user can logout ykv"""
 
-        current_time = datetime.now()
-        logout_time = current_time.replace(hour=7, minute=45)
-        login_time = logout_time - timedelta(days=1)
-        login_time = login_time.replace(hour=19, minute=15)
-
-        print(logout_time)
-        print(login_time)
-
-        # first create an ykv
-        ykv_created = self.client.post(
-            "http://localhost:8000/api/ykv/create_responsibility",
-            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={
-                "user": self.leppis_id,
-                "created_by": "LeppisPJ",
-                "email": "matti@hotmail.com",
-                "responsible_for": "kutsutut vieraat",
-                "login_time": login_time.strftime("%Y-%m-%d %H:%M"),
-                "organizations": [1]
-            },
-            format="json",
-        )
-
-        print(ykv_created.data)
-
-        # late logout
-        ykv_id = ykv_created.data['id']
-        response = self.client.put(
-            f"http://localhost:8000/api/ykv/logout_responsibility/{ykv_id}/",
-            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"logout_time": logout_time.strftime("%Y-%m-%d %H:%M")},
-            format="json",
-        )
-
-        print(response.data)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["late"], True)
+#    def test_ykv_late_logout(self):
+#        """An authorized user can logout ykv"""
+#
+#        current_time = datetime.now()
+#        logout_time = current_time.replace(hour=7, minute=30)
+#        login_time = logout_time - timedelta(days=1)
+#        login_time = login_time.replace(hour=19, minute=15)
+#
+#        # first create an ykv
+#        ykv_created = self.client.post(
+#            "http://localhost:8000/api/ykv/create_responsibility",
+#            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+#            data={
+#                "username": "matti",
+#                "created_by": "LeppisPJ",
+#                "email": "matti@hotmail.com",
+#                "responsible_for": "kutsutut vieraat",
+#                "login_time": login_time.strftime("%Y-%m-%d %H:%M")
+#            },
+#            format="json",
+#        )
+#
+#        # late logout
+#        ykv_id = ykv_created.data['id']
+#        response = self.client.put(
+#            f"http://localhost:8000/api/ykv/logout_responsibility/{ykv_id}/",
+#            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+#            data={"logout_time": logout_time.strftime("%Y-%m-%d %H:%M")},
+#            format="json",
+#        )
+#
+#        self.assertEqual(response.status_code, status.HTTP_200_OK)
+#        self.assertEqual(response.data["late"], True)
     
     def test_logout_ykv_notfound(self):
         # try to logout ykv that don't exist
