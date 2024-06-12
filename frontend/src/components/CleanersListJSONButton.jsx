@@ -13,7 +13,6 @@ export default function CleanersListJSONButton({cleaners}) {
     }, [cleaners]);
     
     const downloadCleanersList = () => {
-        console.log(cleaners);
         const url = "/listobjects/cleaning/";
         const fileName = "siivousvuorot.json";
         const json = JSON.stringify(cleanersList);
