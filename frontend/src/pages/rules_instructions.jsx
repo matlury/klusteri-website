@@ -402,7 +402,7 @@ const Rules_and_Instructions = () => {
       <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <h2 style={{ color: "#555", marginTop: "30px" }}>
-            Siivoussäännöt
+            Siivousohjeet
           </h2>
         </AccordionSummary>
         <AccordionDetails>
@@ -481,6 +481,15 @@ const Rules_and_Instructions = () => {
                 Ilmoita, jos klusteri saastainen (leppis-list@helsinki.fi)
               </li>
             </ul>
+            <h3>Siivouslistan tallentaminen</h3>
+            <ol>
+              <li>Tyhjennä vanha siivouslista 'Tyhjennä'-painikkeella</li>
+              <li>
+                Siirrä uusi siivouslista JSON-muodossa selaimelle 'Vie lista' -painikkeella
+                TAI luo uusi siivouslista automaattisesti 'Luo lista' -painikkeella
+              </li>
+              <li>Tallenna siivouslista tietokantaan 'Tallenna'-painikkeella</li>
+            </ol>
           </div>
         </AccordionDetails>
       </Accordion>
