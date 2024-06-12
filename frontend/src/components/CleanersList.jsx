@@ -4,6 +4,15 @@ import { styled } from "@mui/material/styles";
 import moment from "moment";
 
 const CleanersList = ({ allCleaners}) => {
+  const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
+    "& .past-week": {
+      backgroundColor: theme.palette.grey[300],
+      "&:hover": {
+        backgroundColor: theme.palette.grey[400],
+      },
+    },
+  }));
+
   const columns = [
     { field: "week", headerName: "Viikko", width: 120 },
     { field: "date", headerName: "Pvm", width: 200 },
