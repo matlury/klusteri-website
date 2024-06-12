@@ -17,38 +17,6 @@ const user = {
     id: 1,
 };
 
-const big_org1 = {
-    id: 1,
-    name: 'Matrix',
-    email: 'matrix@matrix.fi',
-    homepage: 'matrix.fi',
-    user_set: [1, 2],
-}
-
-const big_org2 = {
-    id: 2,
-    name: 'TKO-äly',
-    email: 'tko@aly.fi',
-    homepage: 'tekis.fi',
-    user_set: [3, 4],
-}
-
-const small_org1 = {
-    id: 3,
-    name: 'Vasara',
-    email: 'vasara@vasara.fi',
-    homepage: 'vasara.fi',
-    user_set: [5],
-}
-
-const small_org2 = {
-    id: 4,
-    name: 'Synop',
-    email: 'synop@synop.fi',
-    homepage: 'synop.fi',
-    user_set: [6],
-}
-
 const mockCleaningData = [
     {
       id: 1,
@@ -88,19 +56,36 @@ describe('CleaningSchedule Component', () => {
     });
   });
 
-//  test('shows success message after saving cleaning schedule', async () => {
-//    axiosClient.get.mockResolvedValueOnce({ data: mockCleaningData });
-//    axiosClient.post.mockResolvedValueOnce({ data: { success: true } });
-//
-//    render(<CleaningSchedule isLoggedIn={true} loggedUser={loggedUser} />);
-//
-//    fireEvent.click(screen.getByText('Tallenna'));
-//
-//    await waitFor(() => {
-//      expect(screen.getByText('Siivouksen kirjaus onnistui')).toBeInTheDocument();
-//    });
-//  });
-//
+  test('shows success message after saving cleaning schedule', async () => {
+    axiosClient.get.mockResolvedValueOnce({ data: mockCleaningData });
+    axiosClient.post.mockResolvedValueOnce({ data: { success: true } });
+
+    render(<CleaningSchedule isLoggedIn={true} loggedUser={loggedUser} />);
+
+    // Mock the FileReader
+    const fileReaderMock = {
+      onload: jest.fn(),
+      readAsText: jest.fn(),
+      result: JSON.stringify(mockCleaningData),
+    };
+    window.FileReader = jest.fn(() => fileReaderMock);
+
+    // Mock file
+    const mockFile = new Blob([JSON.stringify(mockCleaningData)], { type: 'application/json' });
+
+    // Trigger file input change event
+    const fileInput = screen.getByLabelText(/Vie lista/i);
+    fireEvent.change(fileInput, { target: { files: [mockFile] } });
+
+    // Trigger save button click
+    fireEvent.click(screen.getByText('Tallenna'));
+
+    // Wait for the success message to appear
+    await waitFor(() => {
+      expect(screen.getByText('Siivouksen kirjaus onnistui')).toBeInTheDocument();
+    });
+  });
+
 //  test('handles delete cleaners', async () => {
 //    axiosClient.get.mockResolvedValueOnce({ data: mockCleaningData });
 //    axiosClient.delete.mockResolvedValueOnce({ data: { success: true } });
