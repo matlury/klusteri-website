@@ -19,6 +19,8 @@ from .serializers import (
 from .models import User, Organization, Event, NightResponsibility, DefectFault
 from .config import Role
 from datetime import datetime, timezone
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import CustomTokenObtainPairSerializer
 
 LEPPISPJ = Role.LEPPISPJ.value
 LEPPISVARAPJ = Role.LEPPISVARAPJ.value
@@ -921,3 +923,6 @@ def force_logout_ykv_logins():
             responsibility.save()
 
     return "logged out users"
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer

@@ -25,6 +25,13 @@ const newaccountcheck = ({
   }
 
   /*
+    Check that the username does not contain a @ symbol
+    */
+  if (/@/.test(username)) {
+    return t("noatsymbol");
+  }
+
+  /*
     Check that the password and
     confirm password are the same
     */

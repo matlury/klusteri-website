@@ -17,7 +17,7 @@ const LoginForm = ({
       <FormGroup>
         <TextField
           id="email"
-          label={t("email")}
+          label={t("emailoruser")}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />

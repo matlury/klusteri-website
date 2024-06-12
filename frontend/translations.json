@@ -333,7 +333,11 @@
         "defectmailsuccess": "Merkitseminen lähetetyksi onnistui",
         "defectmailfail": "Merkitseminen lähetetyksi epäonnistui",
         "success": "Onnistui",
-        "fail": "Virhe"
+        "fail": "Virhe",
+        "noatsymbol": "Kielletty merkki @ käyttäjänimessä",
+        "emailoruser": "Sähköposti tai Käyttäjätunnus",
+        "defectcreatesuccess": "Vian kirjaus onnistui",
+        "defectcreatefail": "Vian kirjaus epäonnistui"
       }
     },
     "en": {
@@ -670,7 +674,11 @@
         "defectmailsuccess": "Email marked as sent",
         "defectmailfail": "Error marking email as sent",
         "success": "Success",
-        "fail": "Failed"
+        "fail": "Failed",
+        "noatsymbol": "Forbidden symbol @ in username",
+        "emailoruser": "Email or Username",
+        "defectcreatesuccess": "Defect created successfully",
+        "defectcreatefail": "Error creating defect"
       }
     }
 }

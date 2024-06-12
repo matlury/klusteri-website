@@ -73,12 +73,12 @@ const DefectFault = ({
         axiosClient
           .post(`/defects/create_defect`, defectFaultObject)
           .then((response) => {
-            setSuccess(t("defectfixsuccess"));
+            setSuccess(t("defectcreatesuccess"));
             setTimeout(() => setSuccess(""), 5000);
             fetchDefects();
           })
           .catch((error) => {
-            setError(t("defectfixfail"));
+            setError(t("defectcreatefail"));
             setTimeout(() => setError(""), 5000);
             console.error(t("defectfixfail"), error);
           });

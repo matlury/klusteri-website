@@ -2,6 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from rest_framework import serializers
 from .models import User, Organization, Event, NightResponsibility, DefectFault
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 """
@@ -49,6 +50,12 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
+
+    def validate_username(self, username):
+        """Validates that the username does not contain @ symbol so it doesn't mess with the email login"""
+        if "@" in username:
+            raise serializers.ValidationError("Username cannot contain @ symbol")
+        return username
 
     def validate_role(self, role):
         """Validates role when creating a new user. Limits: 1 <= role <= 7."""
@@ -174,3 +181,17 @@ class DefectFaultSerializer(serializers.ModelSerializer):
     class Meta:
         model = DefectFault
         fields = '__all__'
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        email = attrs.get("email", "")
+        password = attrs.get("password", "")
+
+        user = User.objects.filter(email=email).first() or User.objects.filter(username=email).first()
+
+        if user and user.check_password(password):
+            attrs["email"] = user.email
+        else:
+            raise serializers.ValidationError("Invalid login credentials")
+        
+        return super().validate(attrs)
