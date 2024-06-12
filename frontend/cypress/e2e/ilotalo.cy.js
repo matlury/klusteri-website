@@ -1050,7 +1050,7 @@ describe("Cleaningshifts", () => {
  
       cy.contains("Tyhjennä").click()
       cy.get(".delete-cleaninglist-button").click()
-      //cy.wait(2)
+      cy.wait(3)
       cy.contains("Siivousvuorot poistettu onnistuneesti.");
     })
 
