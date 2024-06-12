@@ -22,6 +22,7 @@ const SaveDialog = ({ open, handleClose, handleSave, newData }) => {
         </Button>
         <Button 
           className="save-cleaninglist-button"
+          data-testid="save-cleaninglist-button"
           onClick={handleSubmit} color="primary">
           Tallenna
         </Button>

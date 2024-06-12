@@ -3,16 +3,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { styled } from "@mui/material/styles";
 import moment from "moment";
 
-const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
-  "& .past-week": {
-    backgroundColor: theme.palette.grey[300],
-    "&:hover": {
-      backgroundColor: theme.palette.grey[400],
-    },
-  },
-}));
-
-const CleanersList = ({ allCleaners }) => {
+const CleanersList = ({ allCleaners}) => {
   const columns = [
     { field: "week", headerName: "Viikko", width: 120 },
     { field: "date", headerName: "Pvm", width: 200 },
