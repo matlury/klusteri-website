@@ -34,7 +34,6 @@ export default function CleanersListAutomateButton({ threshold, updateNewData })
         list.push({ week, big, small });
       }
 
-      console.log(list);
       updateNewData(list); // Update newData with the generated list
 
       return list;
