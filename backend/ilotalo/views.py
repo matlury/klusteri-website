@@ -915,11 +915,23 @@ class CreateCleaningView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
+        user = UserSerializer(request.user)
 
+        if user.data["role"] not in [
+            LEPPISPJ,
+        ]:
+          return Response(
+                "You can't edit cleaning schedule",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         serializer = CreateCleaningSerializer(data=request.data)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+        if Cleaning.objects.all().count() > 0:
+            return Response({"error": "Cleaning schedule already exist."}, status=status.HTTP_400_BAD_REQUEST)
+            
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -936,7 +948,7 @@ class RemoveCleaningView(APIView):
             LEPPISPJ,
         ]:
             return Response(
-                "You can't remove cleaners",
+                "You can't remove cleaning schedule",
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -947,7 +959,7 @@ class RemoveCleaningView(APIView):
                 "Cleaning data not found", status=status.HTTP_404_NOT_FOUND
             )
                 
-        return Response(f"Cleaners successfully removed", status=status.HTTP_200_OK)
+        return Response(f"Cleaning schedule successfully removed", status=status.HTTP_200_OK)
 
 
 def force_logout_ykv_logins():

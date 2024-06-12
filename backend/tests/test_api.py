@@ -2000,6 +2000,19 @@ class TestDjangoAPI(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+        # create cleaning data when there is already cleaning data 
+        response = self.client.post(
+            "http://localhost:8000/api/cleaning/create_cleaning",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "week":1,
+                "big": big_organization_id,
+                "small": small_organization_id,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
         # create cleaning data with incorrect information
         response = self.client.post(
             "http://localhost:8000/api/cleaning/create_cleaning",
@@ -2008,6 +2021,19 @@ class TestDjangoAPI(TestCase):
                 "week":1,
                 "big": big_organization_id,
                 "small": 100,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # create cleaning data with role other than 1
+        response = self.client.post(
+            "http://localhost:8000/api/cleaning/create_cleaning",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={
+                "week":1,
+                "big": big_organization_id,
+                "small": small_organization_id,
             },
             format="json",
         )
