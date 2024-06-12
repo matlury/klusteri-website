@@ -79,7 +79,7 @@ export default function CleanersListAutomateButton({ updateNewData }) {
         startIcon={<SmartToyOutlinedIcon />}
         disabled={loading}
       >
-        Tee lista
+        Luo lista
       </Button>
       <AutomateCleanersDialog 
         open={dialogOpen}

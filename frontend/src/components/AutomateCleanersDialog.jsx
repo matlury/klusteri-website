@@ -15,7 +15,7 @@ const AutomateCleanersDialog = ({ open, handleClose, handleAutomate }) => {
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Ilmoita ison järjestön koko</DialogTitle>
+      <DialogTitle>Luo siivouslista automaattisesti</DialogTitle>
       <DialogContent>
         <DialogContentText>
           Ilmoita kuinka monta avaimellista järjestöllä on oltava, jotta se on iso.
@@ -33,7 +33,7 @@ const AutomateCleanersDialog = ({ open, handleClose, handleAutomate }) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Peruuta</Button>
-        <Button onClick={handleSubmit}>Tee lista</Button>
+        <Button onClick={handleSubmit}>Luo lista</Button>
       </DialogActions>
     </Dialog>
   );
