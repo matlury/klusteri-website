@@ -3,7 +3,6 @@ import { useStateContext } from "../context/ContextProvider";
 import axios from "axios";
 import axiosClient from "../axios.js";
 import "../index.css";
-import { FaKey } from "react-icons/fa";
 import UserPage from "../components/UserPage.jsx";
 import OrganisationPage from "../components/OrganisationPage.jsx";
 import CreateOrganization from "../components/CreateOrganization.jsx";
@@ -226,9 +225,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   // Handles organization detail updates
   const handleOrganizationDetails = (organization_new_name, organization_new_email, organization_new_homepage, orgId) => {
-    const confirmUpdate = window.confirm(
-      "Oletko varma, että haluat päivittää organisaatiota?",
-    );
+
     
     const newOrganizationObject = {
       name: organization_new_name,
@@ -236,12 +233,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       homepage: organization_new_homepage,
       color: organization_new_color,
     };
-    if (true) {
-      const confirmUpdate = window.confirm(
-        "Oletko varma, että haluat päivittää organisaatiota?",
-      );
-
-      if (confirmUpdate) {
         axiosClient
           .put(
             `/organizations/update_organization/${orgId}/`,
@@ -256,11 +247,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           .catch((error) => {
             console.error("Error creating account:", error);
           });
-      }
-      else {
-        setTimeout(() => setError(""), 5000);
-      }
-    };
   };
 
   // Handles deletion of organization
