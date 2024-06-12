@@ -1,8 +1,18 @@
 import React from "react";
 import { DataGrid } from "@mui/x-data-grid";
+import { styled } from "@mui/material/styles";
 import moment from "moment";
 
-const CleanersList = ({ allCleaners}) => {
+const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
+  "& .past-week": {
+    backgroundColor: theme.palette.grey[300],
+    "&:hover": {
+      backgroundColor: theme.palette.grey[400],
+    },
+  },
+}));
+
+const CleanersList = ({ allCleaners }) => {
   const columns = [
     { field: "week", headerName: "Viikko", width: 120 },
     { field: "date", headerName: "Pvm", width: 200 },
@@ -10,16 +20,27 @@ const CleanersList = ({ allCleaners}) => {
     { field: "small", headerName: "Pieni järjestö", width: 120 },
   ];
 
-    return (
-        <DataGrid
-        initialState={{sorting:{sortModel:[{field:'week', sort:'asc'}],
-          },}}
-        rows={allCleaners}   /// tänne muokattu
-        columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5, 10, 20]}
-        />
-    );
+  const today = moment();
+
+  const getRowClassName = (params) => {
+    const rowDate = moment(params.row.date);
+    return rowDate.isBefore(today, "day") ? "past-week" : "";
+  };
+
+  return (
+    <StyledDataGrid
+      initialState={{
+        sorting: {
+          sortModel: [{ field: "week", sort: "asc" }],
+        },
+      }}
+      rows={allCleaners}
+      columns={columns}
+      pageSize={5}
+      rowsPerPageOptions={[5, 10, 20]}
+      getRowClassName={getRowClassName}
+    />
+  );
 };
 
 export default CleanersList;
