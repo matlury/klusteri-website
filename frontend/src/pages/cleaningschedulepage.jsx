@@ -83,7 +83,6 @@ const CleaningSchedule = ({
     const orgdata = await axiosClient.get("/listobjects/organizations/");
 
     const cleaningData = allCleaning;
-    console.log(cleaningData);
     if (cleaningData.length > 0) {
        setError("Poista siivousvuorot ennen uusien lisäämistä");
        return;
