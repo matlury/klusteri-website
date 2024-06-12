@@ -20,7 +20,9 @@ const SaveDialog = ({ open, handleClose, handleSave, newData }) => {
         <Button onClick={handleClose} color="primary">
           Peruuta
         </Button>
-        <Button onClick={handleSubmit} color="primary">
+        <Button 
+          className="save-cleaninglist-button"
+          onClick={handleSubmit} color="primary">
           Tallenna
         </Button>
       </DialogActions>
