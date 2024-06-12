@@ -929,7 +929,7 @@ class CreateCleaningView(APIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
-        if Cleaning.objects.all().count() > 0:
+        if Cleaning.objects.all().count() >= 53:
             return Response({"error": "Cleaning schedule already exist."}, status=status.HTTP_400_BAD_REQUEST)
             
         serializer.save()
