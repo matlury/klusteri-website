@@ -188,9 +188,15 @@ const CleaningSchedule = ({
           )}
           </Stack>
           <React.Fragment>
-            <EmptyCleanersDialog confirm={confirm} handleCloseConfirm={handleCloseConfirm} handleRemoveFormSubmit={handleRemoveFormSubmit} />
+            <EmptyCleanersDialog 
+              confirm={confirm} 
+              handleCloseConfirm={handleCloseConfirm} 
+              handleRemoveFormSubmit={handleRemoveFormSubmit} />
             <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
-            <SaveDialog open={saveDialogOpen} handleClose={handleSaveClose} handleSave={handleFormSubmit} newData={newData}/>
+            <SaveDialog open={saveDialogOpen} 
+              handleClose={handleSaveClose} 
+              handleSave={handleFormSubmit} 
+              newData={newData}/>
           </React.Fragment>
           <React.Fragment>
             <CleanersList allCleaners={allCleaning} />
