@@ -18,7 +18,7 @@ const AutomateCleanersDialog = ({ open, handleClose, handleAutomate }) => {
       <DialogTitle>Luo siivouslista automaattisesti</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Ilmoita kuinka monta avaimellista järjestöllä on oltava, jotta se on iso.
+          Luo siivouslista automaattisesti algoritmin avulla. Anna raja-arvo, jonka mukaan organisaatiot jaetaan suuriin ja pieniin.
         </DialogContentText>
         <TextField
           autoFocus
