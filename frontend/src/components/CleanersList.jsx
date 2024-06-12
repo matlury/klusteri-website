@@ -2,7 +2,7 @@ import React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import moment from "moment";
 
-const CleanersList = ({ allCleaners}) => {
+const CleanersList = ({ allCleaners }) => {
   const columns = [
     { field: "week", headerName: "Viikko", width: 120 },
     { field: "date", headerName: "Pvm", width: 200 },
@@ -14,7 +14,7 @@ const CleanersList = ({ allCleaners}) => {
         <DataGrid
         initialState={{sorting:{sortModel:[{field:'week', sort:'asc'}],
           },}}
-        rows={allCleaners}   /// tänne muokattu
+        rows={allCleaners}
         columns={columns}
         pageSize={5}
         rowsPerPageOptions={[5, 10, 20]}
