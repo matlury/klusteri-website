@@ -47,6 +47,7 @@ import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
 import Statistics from "./pages/statistics";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import BedtimeOutlinedIcon from '@mui/icons-material/BedtimeOutlined';
 
 const drawerWidth = 240;
 
@@ -75,7 +76,7 @@ const Sidebar = () => {
     <HomeOutlinedIcon />,
     <InfoOutlinedIcon />,
     <CalendarMonthOutlinedIcon />,
-    <KeyOutlinedIcon />,
+    <BedtimeOutlinedIcon />,
     <ManageAccountsOutlinedIcon />,
     <BarChartIcon />,
     <LocationOnOutlinedIcon />,
