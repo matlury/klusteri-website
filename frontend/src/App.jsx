@@ -159,7 +159,9 @@ const App = (props) => {
   const drawer = (
   <div>
     <Box sx={{ padding: "16px", width: "100%" }}>
-      <img src={matlu} alt="logo" style={{ height: "auto", width: "100%" }} />{" "}
+      <a href="/">
+        <img src={matlu} alt="logo" style={{ height: "auto", width: "100%" }} />
+      </a>
     </Box>
     <Divider />
     <List>
