@@ -67,23 +67,31 @@
     ]
   },
   "nyc": {
+    "report-dir": "./coverage",
     "extension": [
       ".js",
-      ".ts",
       ".jsx",
+      ".ts",
       ".tsx"
     ],
     "exclude": [
-      "cypress/**/*.js"
+      "cypress",
+      "node_modules"
     ],
+    "include": [
+      "src/**/*.js",
+      "src/**/*.jsx",
+      "src/**/*.ts",
+      "src/**/*.tsx"
+    ],
+    "all": true,
+    "check-coverage": true,
     "reporter": [
       "lcov",
-      "text",
-      "text-summary"
-    ],
-    "all": true
+      "text"
+    ]
   },
-  "scripts": {
+    "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
