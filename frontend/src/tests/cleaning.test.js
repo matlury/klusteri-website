@@ -65,22 +65,4 @@ describe('CleaningSchedule Component', () => {
         expect(screen.getByText('Vie lista')).toBeInTheDocument();
         expect(screen.getByText('Tallenna')).toBeInTheDocument();
     });
-
-//    test('shows success message after saving cleaning schedule', async () => {
-//        axiosClient.get.mockResolvedValueOnce({ data: mockCleaningData });
-//
-//        const { container } = render(<CleaningSchedule isLoggedIn={true} loggedUser={loggedUser} newData={mockCleaningData} />);
-//
-//        // Trigger save button click
-//        fireEvent.click(screen.getByText('Tallenna'));
-//
-//        // Wait for the save dialog button to appear and then click it
-//        const saveDialogButton = await waitFor(() => screen.getByTestId('save-cleaninglist-button'));
-//        fireEvent.click(saveDialogButton);
-//
-//        // Wait for the success message to appear
-//        await waitFor(() => {
-//            expect(screen.getByText('Siivouksen kirjaus onnistui')).toBeInTheDocument();
-//        });
-//    });
 });
