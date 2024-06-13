@@ -1,12 +1,12 @@
-const { defineConfig } = require('cypress');
-const codeCoverageTask = require('@cypress/code-coverage/task');
+import { defineConfig } from 'cypress';
+import codeCoverageTask from '@cypress/code-coverage/task';
 
-module.exports = defineConfig({
+export default defineConfig({
   e2e: {
     setupNodeEvents(on, config) {
       codeCoverageTask(on, config);
       return config;
     },
-    baseUrl: 'http://localhost:3000', // Adjust the base URL as needed
+    baseUrl: 'http://localhost:3000', // Muokkaa tarvittaessa perus-URL:ää
   },
 });

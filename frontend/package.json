@@ -2,7 +2,7 @@
   "name": "frontent",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "type": "commonjs",
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
@@ -91,7 +91,7 @@
       "text"
     ]
   },
-    "scripts": {
+  "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
@@ -101,6 +101,6 @@
     "cypress": "cypress open",
     "cy:run": "cypress run",
     "coverage": "nyc report --reporter=lcov",
-    "format": "prettier --write ."
+    "format": "prettier --write , ."
   }
 }
