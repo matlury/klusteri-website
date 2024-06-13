@@ -507,6 +507,7 @@ describe("Ownpage", () => {
     cy.wait(500);
     cy.contains("Hallinnointi").click();
 
+    cy.get(".open-dialog-button").click()
     cy.get("#name").type("Teekkarit");
     cy.get(".organization-email").type("teekkarit@mail.com");
     cy.get("#homepage").type("www.teekkarit.fi");
@@ -543,6 +544,8 @@ describe("Ownpage", () => {
       cy.contains("Talon latinankielinen nimi");
       cy.wait(500);
       cy.contains("Hallinnointi").click();
+      cy.get(".open-dialog-button").click()
+
       cy.get("#name").type("Teekkarit");
       cy.get(".organization-email").type("teekkarit@mail.com");
       cy.get("#homepage").type("www.teekkarit.fi");
@@ -585,6 +588,9 @@ describe("Ownpage", () => {
       cy.contains("Talon latinankielinen nimi");
       cy.wait(500);
       cy.contains("Hallinnointi").click();
+
+      cy.get(".open-dialog-button").click()
+
       cy.get("#name").type("Teekkarit");
       cy.get(".organization-email").type("teekkarit@mail.com");
       cy.get("#homepage").type("www.teekkarit.fi");
@@ -1409,7 +1415,7 @@ describe("Cleaningshifts", () => {
           //checks that list is created and week no.53 can be found
           cy.contains('53').should('exist');
       
-        })
+ })
   
     })
 

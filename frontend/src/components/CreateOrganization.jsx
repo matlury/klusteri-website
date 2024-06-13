@@ -51,12 +51,11 @@ const CreateOrganization = ({
 
   return (
     <div>
-      {/* Open button for the dialog */}
+
       <Button onClick={handleClickOpen} variant="contained" className="open-dialog-button">
         + Luo järjestö
       </Button>
-
-      {/* Dialog for organization creation */}
+      
       <Dialog open={open} onClose={handleClose} maxWidth="md">
         <DialogTitle>Luo uusi järjestö</DialogTitle>
         <DialogContent sx={{ width: "400px" }}>
@@ -116,7 +115,6 @@ const CreateOrganization = ({
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar for displaying error message */}
       <Snackbar
         open={Object.keys(errorFields).length > 0}
         autoHideDuration={6000}
