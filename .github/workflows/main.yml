@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      #Start a postgres container for test runs
+      # Start a postgres container for test runs
       postgres:
         image: postgres:latest
         env:
@@ -24,6 +24,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
@@ -51,7 +57,7 @@ jobs:
       - name: Migrate
         working-directory: ./backend
         run: poetry run python manage.py migrate
-        
+
       - name: Run backend tests
         working-directory: ./backend
         run: poetry run coverage run --branch -m pytest
@@ -66,27 +72,22 @@ jobs:
 
       - name: Create frontend coverage report
         working-directory: ./frontend
-        run: npx jest --coverage
+        run: npm run coverage
 
-      #Cypress tests require backend to be running
+      # Cypress tests require backend to be running
       - name: Start backend
         run: |
           cd backend
           poetry run python manage.py runserver &
+          sleep 5
 
       - name: Run Cypress tests
-        uses: cypress-io/github-action@v3
-        with:
-          working-directory: ./frontend
-          project: ./
-          browser: chrome
-          build: npm run build
-          start: npm run dev
+        working-directory: ./frontend
+        run: npm run cy:run
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
-          files: ./backend/coverage.xml,./frontend/coverage/clover.xml
+          files: ./backend/coverage.xml,./frontend/coverage/lcov.info
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-

@@ -66,6 +66,23 @@
       "src/components/**/*.jsx"
     ]
   },
+  "nyc": {
+    "extension": [
+      ".js",
+      ".ts",
+      ".jsx",
+      ".tsx"
+    ],
+    "exclude": [
+      "cypress/**/*.js"
+    ],
+    "reporter": [
+      "lcov",
+      "text",
+      "text-summary"
+    ],
+    "all": true
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -74,6 +91,8 @@
     "start": "react-scripts start",
     "test": "jest --coverage",
     "cypress": "cypress open",
+    "cy:run": "cypress run",
+    "coverage": "nyc report --reporter=lcov",
     "format": "prettier --write ."
   }
 }
