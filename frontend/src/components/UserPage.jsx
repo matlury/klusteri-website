@@ -13,7 +13,7 @@ const UserPage = ({
 }) => {
   return (
     <form>
-      <h2>Omat tiedot</h2>
+      <h2>Hallinnointi</h2>
       <div>
         <TextField
           id="username"

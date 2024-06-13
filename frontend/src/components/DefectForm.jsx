@@ -49,6 +49,7 @@ const DefectForm = ({ open, handleClose, handleFormSubmit }) => {
       <DialogActions>
         <Button onClick={handleClose}>Peruuta</Button>
         <Button 
+          variant="contained"
           type="submit" 
           data-testid="createdefect"
           id="addfault"

@@ -124,9 +124,7 @@ const ReservationsView = ({
           )}
         </div>
       )}
-      <Typography variant="h1" component="h1">
-        Varauskalenteri
-      </Typography>
+      <h2>Varauskalenteri</h2>
       <div className="add-event-button">
         <Button
           id="createEvent"

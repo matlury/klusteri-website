@@ -268,6 +268,7 @@ const YkvLogoutFunction = ({
           <DialogActions>
             <Button onClick={handleClose}>Peruuta</Button>
             <Button
+              variant="contained"
               type="submit"
               className="create-user-button"
               data-testid="createresponsibility"
