@@ -9,14 +9,14 @@ import IconButton from "@mui/material/IconButton";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
-import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
 import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';  
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
+import BedtimeOutlinedIcon from '@mui/icons-material/BedtimeOutlined';
+import BuildOutlinedIcon from '@mui/icons-material/BuildOutlined';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import FormatColorResetOutlinedIcon from '@mui/icons-material/FormatColorResetOutlined';
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -47,7 +47,6 @@ import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
 import Statistics from "./pages/statistics";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import BedtimeOutlinedIcon from '@mui/icons-material/BedtimeOutlined';
 
 const drawerWidth = 240;
 
@@ -80,7 +79,7 @@ const Sidebar = () => {
     <ManageAccountsOutlinedIcon />,
     <BarChartIcon />,
     <LocationOnOutlinedIcon />,
-    <FormatColorResetOutlinedIcon/>,
+    <BuildOutlinedIcon />,
     <CleaningServicesIcon />,
 
     <FactCheckOutlinedIcon />,
