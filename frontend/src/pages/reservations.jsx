@@ -59,7 +59,13 @@ const MyCalendar = () => {
   }, [startRef.current.value]);
 
   useEffect(() => {
-    setEndTime(endRef.current.value);
+    if (typeof endRef.current.value !== 'undefined') {
+      const date = new Date(endRef.current.value);
+      date.setTime(date.getTime() - (date.getTimezoneOffset() * 60 * 1000) - (1000 * 60));
+      setEndTime(date.toISOString().slice(0, 16));
+    } else {
+      setEndTime(endRef.current.value);
+    }
   }, [endRef.current.value]);
 
   // Gets all created events from backend
