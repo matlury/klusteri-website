@@ -28,7 +28,8 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { FormControl, Select, MenuItem } from "@mui/material";
+import { MenuItem, Menu } from "@mui/material";
+import TranslateIcon from '@mui/icons-material/Translate';
 import matlu from "./matlu.png";
 
 import FrontPage from "./pages/frontpage";
@@ -66,6 +67,8 @@ const App = (props) => {
   const [language, setLanguage] = React.useState(
     localStorage.getItem("lang") || "fi"
   )
+
+  const [anchorEl, setAnchorEl] = React.useState(null)
 
   React.useEffect(() => {
     i18n.changeLanguage(localStorage.getItem("lang") || "fi")
@@ -120,18 +123,28 @@ const App = (props) => {
     setLoginDialogOpen(false);
   };
 
-  const handleLangChange = (event) => {
-    event.preventDefault();
-    setLanguage(event.target.value)
-    i18n.changeLanguage(event.target.value)
-    localStorage.setItem("lang", event.target.value)
-  }
+  const handleLangChange = (lang) => {
+    setLanguage(lang);
+    i18n.changeLanguage(lang);
+    localStorage.setItem('lang', lang);
+    setAnchorEl(null); // Close the menu after selecting an option
+  };
 
   const { t, i18n } = useTranslation();
 
   React.useEffect(() => {
     i18n.changeLanguage(language);
   }, [language]);
+
+  const handleIconClick = (event) => {
+    setAnchorEl(event.currentTarget); // Set anchorEl to the clicked element
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null); // Close the menu
+  };
+
+  const open = Boolean(anchorEl);
 
   const icons = [
     <HomeOutlinedIcon />,
@@ -178,17 +191,6 @@ const App = (props) => {
       ))}
     </List>
       <Divider />
-      <FormControl variant="standard"
-        style={{ padding: '10px' }} fullWidth>
-          <Select
-            value={language}
-            label="Kieli"
-            onChange={handleLangChange}
-          >
-          <MenuItem value={"fi"}>Suomi</MenuItem>
-          <MenuItem value={"en"}>English</MenuItem>
-          </Select>
-      </FormControl>
     </div>
   );
 
@@ -235,10 +237,29 @@ const App = (props) => {
               Ilotalo 3.0
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
+            <IconButton color="primary" onClick={handleIconClick}>
+              <TranslateIcon />
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+              }}
+            >
+              <MenuItem onClick={() => handleLangChange('fi')}>Suomi</MenuItem>
+              <MenuItem onClick={() => handleLangChange('en')}>English</MenuItem>
+            </Menu>
             {isLoggedIn ? (
               <Button
                 variant="outlined"
-                className="logout-button"
+                className="logout-button" 
                 onClick={handleLogout}
               >
                 {t("logout")}{" "}
