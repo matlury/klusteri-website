@@ -110,7 +110,7 @@ const CreateOrganization = ({
           <Button onClick={handleClose} color="primary">
             Peruuta
           </Button>
-          <Button onClick={handleCreateAndClose} variant="contained" className="create-organization-button">
+          <Button onClick={handleCreateAndClose} variant="contained" className="create-organization-button" data-testid="create-organization-button">
             Luo järjestö
           </Button>
         </DialogActions>

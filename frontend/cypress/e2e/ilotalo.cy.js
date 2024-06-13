@@ -223,7 +223,7 @@ describe("Ownkeys", () => {
     cy.contains("+ Ota vastuu").click();
     cy.get("#responsibility").type("fuksit");
     cy.get("#takeresp").click();
-    cy.contains("Peruuta").click();
+    cy.wait(500);
     cy.reload();
     cy.contains("fuksit");
     cy.contains("leppis");
@@ -369,8 +369,8 @@ describe("Reservations", () => {
             org_id = response.body.id;
           });
         });
-
       cy.contains("Varaukset").click();
+      cy.reload();
     });
     it("Creating event works", function () {
       cy.get("#createEvent").click();
@@ -506,11 +506,11 @@ describe("Ownpage", () => {
 
     cy.wait(500);
     cy.contains("Omat tiedot").click();
-
+    cy.contains("+ Luo järjestö").click();
     cy.get("#name").type("Teekkarit");
     cy.get(".organization-email").type("teekkarit@mail.com");
     cy.get("#homepage").type("www.teekkarit.fi");
-    cy.contains("Luo järjestö").click();
+    cy.get("[data-testid=create-organization-button]").click();
     cy.contains("Onnistui: Järjestö luotu onnistuneesti!");
     cy.reload()
     cy.contains("Teekkarit");
@@ -543,17 +543,18 @@ describe("Ownpage", () => {
       cy.contains("Talon latinankielinen nimi");
       cy.wait(500);
       cy.contains("Omat tiedot").click();
+      cy.contains("+ Luo järjestö").click();
       cy.get("#name").type("Teekkarit");
       cy.get(".organization-email").type("teekkarit@mail.com");
       cy.get("#homepage").type("www.teekkarit.fi");
-      cy.contains("Luo järjestö").click();
+      cy.get("[data-testid=create-organization-button]").click();
       cy.contains("Onnistui: Järjestö luotu onnistuneesti!");
       cy.reload();
       cy.contains("Teekkarit");
       cy.contains("teekkarit@mail.com");
       cy.get(".modify_org").click()
       cy.get("#organization_name").type("123");
-      cy.contains("Vahvista muutokset"). click()
+      cy.get('.confirm_org_change').click();
       cy.reload();
       cy.contains("Teekkarit123");
       });  
@@ -585,14 +586,15 @@ describe("Ownpage", () => {
       cy.contains("Talon latinankielinen nimi");
       cy.wait(500);
       cy.contains("Omat tiedot").click();
+      cy.contains("+ Luo järjestö").click();
       cy.get("#name").type("Teekkarit");
       cy.get(".organization-email").type("teekkarit@mail.com");
       cy.get("#homepage").type("www.teekkarit.fi");
-      cy.contains("Luo järjestö").click();
+      cy.get("[data-testid=create-organization-button]").click();
       cy.contains("Onnistui: Järjestö luotu onnistuneesti!");
       cy.reload();
       cy.get(".modify_org").click()
-      cy.contains("Poista järjestö"). click()
+      cy.contains("Poista"). click()
       cy.reload();
       cy.contains("Teekkarit").should("not.exist");
    });
@@ -631,7 +633,6 @@ describe("Ownpage", () => {
         cy.contains("+ Lisää vika").click();
         cy.get("#description").type("Vessan ovenkahva irronnut");
         cy.get("#addfault").click();
-        cy.contains("Peruuta").click();
         cy.reload();
         cy.contains("Vessan ovenkahva irronnut");
 
