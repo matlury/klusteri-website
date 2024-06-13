@@ -8,6 +8,7 @@ import {
   FormGroup,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const CreateForm = ({
   error,
@@ -25,8 +26,15 @@ const CreateForm = ({
   setTelegram,
   handleBackToLogin,
   handleCreateAccount,
+  setRecaptchaResponse
 }) => {
   const { t } = useTranslation();
+  const SITE_KEY = process.env.SITE_KEY;
+
+  const handleCaptcha = (value) => {
+    setRecaptchaResponse(value);
+  }
+
   return (
   <FormGroup>
     <h3>{t("createacc")}</h3>
@@ -82,6 +90,10 @@ const CreateForm = ({
           onChange={(e) => setTelegram(e.target.value)}
         />
       </div>
+      <ReCAPTCHA
+      sitekey={SITE_KEY}
+      onChange={handleCaptcha}
+      />
     </div>
     <div className="button-container">
       <div>

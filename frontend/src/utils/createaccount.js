@@ -9,6 +9,7 @@ const createaccount = ({
   setUserCreated,
   setShowLoginPage,
   onAccountCreated,
+  recaptchaResponse,
   t
 }) => {
   /*
@@ -36,6 +37,7 @@ const createaccount = ({
             role: 5,
             organization: null,
             keys: null,
+            recaptcha_response: recaptchaResponse
           };
           axios
             .post(`${API_URL}/api/users/register`, userObject)

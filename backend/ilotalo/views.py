@@ -1,4 +1,5 @@
 import os
+import requests
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -29,6 +30,9 @@ AVAIMELLINEN = Role.AVAIMELLINEN.value
 TAVALLINEN = Role.TAVALLINEN.value
 JARJESTOPJ = Role.JARJESTOPJ.value
 JARJESTOVARAPJ = Role.JARJESTOVARAPJ.value
+
+# Get reCAPTCHA secret key from environment variables, use the testing key if not found
+recaptcha_secret_key = os.getenv("RECAPTCHA_SECRET_KEY", "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe")
 
 """
 Views receive web requests and return web responses.
@@ -61,11 +65,22 @@ class RegisterView(APIView):
 
     def post(self, request):
         data = request.data
+        recaptcha_response = data.pop('recaptcha_response', None)
         serializer = UserSerializer(data=data)
 
         # Check if the request contains valid data
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        google_response = requests.post('https://www.google.com/recaptcha/api/siteverify', data={
+            'secret': recaptcha_secret_key,
+            'response': recaptcha_response,
+        })
+
+        # Check if the request to Google's API was successful
+        if not google_response.json().get('success'):
+            return Response({'recaptcha': 'Invalid or expired reCAPTCHA.'}, status=status.HTTP_400_BAD_REQUEST)
+
         user = serializer.create(serializer.validated_data)
         user = UserNoPasswordSerializer(user)
 
