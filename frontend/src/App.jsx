@@ -95,8 +95,6 @@ const Sidebar = () => {
           { text: "Etusivu", path: "/etusivu" },
           { text: "Christina Regina", path: "/christina_regina" },
           { text: "Varaukset", path: "/varaukset" },
-          { text: "YKV", path: "/ykv" },
-          { text: "Hallinnointi", path: "/hallinnointi" },
           { text: "Omat avaimet", path: "/omat_avaimet" },
           { text: "Omat tiedot", path: "/omat_tiedot" },
           { text: "Tilastot", path: "/tilastot" },
@@ -192,43 +190,9 @@ const App = (props) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const drawer = (
-    <div>
-      <img src={matlu} alt="logo" style={{ height: "auto" }} />{" "}
-      {/* ADD PADDING TO LOGO */}
-      <Divider />
-      <List>
-        {[
-          "Etusivu",
-          "Christina Regina",
-          "Varaukset",
-          "Omat avaimet",
-          "Omat tiedot",
-          "Tilastot",
-          "Yhteystiedot",
-          "Viat",
-          "Säännöt ja ohjeet",
-          "Tietosuojaseloste",
-        ].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton
-              key={text}
-              component={Link}
-              to={`/${text
-                .toLowerCase()
-                .replace(/\s+/g, "_")
-                .replace(/ä/g, "a")
-                .replace(/ö/g, "o")}`}
-            >
-              <ListItemIcon>{icons[index]}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-    </div>
-  );
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   const container = window !== undefined ? () => window().document.body : undefined;
 
@@ -341,13 +305,13 @@ const App = (props) => {
             <Route path="/christina_regina" element={<ChristinaRegina />} />
             <Route path="/varaukset" element={<Reservations />} />
             <Route
-              path="/ykv"
+              path="/omat_avaimet"
               element={
                 <OwnKeys isLoggedIn={isLoggedIn} loggedUser={loggedUser} />
               }
             />
             <Route
-              path="/hallinnointi"
+              path="/omat_tiedot"
               element={<OwnPage isLoggedIn={isLoggedIn} />}
             />
             <Route path="/tilastot" element={<Statistics />}/>
