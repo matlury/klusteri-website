@@ -13,6 +13,7 @@ import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
 import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
+import CleaningServicesIcon from '@mui/icons-material/CleaningServices';  
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import BarChartIcon from '@mui/icons-material/BarChart';
 import FormatColorResetOutlinedIcon from '@mui/icons-material/FormatColorResetOutlined';
@@ -41,6 +42,7 @@ import PrivacyPolicy from "./pages/privacypolicy";
 import Contacts from "./pages/contacts";
 import DefectFault from "./pages/defectfaultpage";
 import Rules_and_Instructions from "./pages/rules_instructions";
+import CleaningSchedule from "./pages/cleaningschedulepage";
 import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
 import Statistics from "./pages/statistics";
@@ -319,6 +321,8 @@ const App = (props) => {
             <Route
               path="/viat"
               element={<DefectFault isLoggedIn={isLoggedIn} loggedUser={loggedUser} />}
+            />
+            <Route path="/siivousvuorot" element={<CleaningSchedule isLoggedIn={isLoggedIn} loggedUser={loggedUser} />}
             />
             <Route
               path="/saannot_ja_ohjeet"
