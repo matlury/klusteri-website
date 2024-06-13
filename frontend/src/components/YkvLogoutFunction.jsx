@@ -57,6 +57,16 @@ const YkvLogoutFunction = ({
     setConfirmOpen(true);
   };
 
+  const getLateIcon = (params) => { 
+    if (params.row.late) {
+      return <AccessTimeIcon />;
+    } else if (params.row.present) {
+      return <CheckIcon />;
+    } else {
+      return null;
+    }
+  }
+
   const getBackgroundColor = (color) =>
     lighten(color, 0.7);
   
@@ -126,9 +136,7 @@ const YkvLogoutFunction = ({
     { field: "YKV_sisäänkirjaus", headerName: "Sisäänkirjaus", width: 200 },
     { field: "logout_time", headerName: "Uloskirjaus", width: 200 },
     { field: "Organisaatiot", headerName: "Järjestöt", width: 200 },
-    { field: "late", headerName: "Aktiivinen / Myöhässä", width: 200, renderCell: (params) => (
-      params.row.late ? <AccessTimeIcon /> : <CheckIcon />
-    ) },
+    { field: "late", headerName: "Aktiivinen / Myöhässä", width: 200, renderCell: getLateIcon },
   ];
 
   useEffect(() => {
@@ -190,9 +198,15 @@ const YkvLogoutFunction = ({
         user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase()),
     );
 
-  const getRowClassName = (params) => {
-    return params.row.late ? 'late' : 'on-time';
-  };
+    const getRowClassName = (params) => {
+      if (params.row.late) {
+        return 'late';
+      }
+      if (params.row.present) {
+        return 'on-time';
+      }
+      return '';
+    };
 
   return loading ? (
     <div>Lataa...</div>

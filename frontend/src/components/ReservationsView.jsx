@@ -173,9 +173,11 @@ const ReservationsView = ({
             </Typography>
             <TextField
               id="startTime"
+              data-testid="startTime"
               label="Alkaa"
               type="datetime-local"
               name="start"
+              value={startRef}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
@@ -185,9 +187,11 @@ const ReservationsView = ({
             />
             <TextField
               id="endTime"
+              data-testid="endTime"
               label="Päättyy"
               type="datetime-local"
               name="end"
+              value={endRef}
               onChange={handleInputChange}
               fullWidth
               margin="normal"

@@ -219,7 +219,7 @@ describe("Ownkeys", () => {
         });
       });
 
-    cy.contains("Omat avaimet").click();
+    cy.contains("YKV").click();
     cy.contains("+ Ota vastuu").click();
     cy.get("#responsibility").type("fuksit");
     cy.get("#takeresp").click();
@@ -298,7 +298,7 @@ describe("Ownkeys", () => {
         });
       });
 
-    cy.contains("Omat avaimet").click();
+    cy.contains("YKV").click();
     cy.reload();
     cy.contains("+ Ota vastuu").click();
     cy.get("#responsibility").type("fuksit");
@@ -472,7 +472,7 @@ describe("Ownpage", () => {
     cy.contains("Talon latinankielinen nimi");
 
     cy.wait(500);
-    cy.contains("Omat tiedot").click();
+    cy.contains("Hallinnointi").click();
 
     cy.get("#telegram").type("ProffaTG");
     cy.contains("Tallenna").click();
@@ -505,8 +505,8 @@ describe("Ownpage", () => {
     cy.contains("Talon latinankielinen nimi");
 
     cy.wait(500);
-    cy.contains("Omat tiedot").click();
-    cy.contains("+ Luo järjestö").click();
+    cy.contains("Hallinnointi").click();
+
     cy.get("#name").type("Teekkarit");
     cy.get(".organization-email").type("teekkarit@mail.com");
     cy.get("#homepage").type("www.teekkarit.fi");
@@ -543,7 +543,6 @@ describe("Ownpage", () => {
       cy.contains("Talon latinankielinen nimi");
       cy.wait(500);
       cy.contains("Omat tiedot").click();
-      cy.contains("+ Luo järjestö").click();
       cy.get("#name").type("Teekkarit");
       cy.get(".organization-email").type("teekkarit@mail.com");
       cy.get("#homepage").type("www.teekkarit.fi");
@@ -586,7 +585,6 @@ describe("Ownpage", () => {
       cy.contains("Talon latinankielinen nimi");
       cy.wait(500);
       cy.contains("Omat tiedot").click();
-      cy.contains("+ Luo järjestö").click();
       cy.get("#name").type("Teekkarit");
       cy.get(".organization-email").type("teekkarit@mail.com");
       cy.get("#homepage").type("www.teekkarit.fi");
