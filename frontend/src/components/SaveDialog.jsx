@@ -1,3 +1,6 @@
+/* istanbul ignore file */
+// this file is ignored in the tests because jest doesn't work with uploading data
+
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from "@mui/material";
 

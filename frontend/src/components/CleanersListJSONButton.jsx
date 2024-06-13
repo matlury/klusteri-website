@@ -1,3 +1,6 @@
+/* istanbul ignore file */
+// this file is ignored in the tests because jest doesn't work with uploading data
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";

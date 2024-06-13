@@ -53,10 +53,20 @@ describe('CleaningSchedule Component', () => {
         });
     });
 
+//    test('shows success message after deleting', () => {
+//        render (<CleaningSchedule isLoggedIn={true} loggedUser={loggedUser} />);
+//
+//        fireEvent.click(screen.getByText('Tyhjennä'));
+//        
+//        await waitFor(() => {
+//            expect(screen.getByText('Siivousvuorot poistettu onnistuneesti.')).toBeInTheDocument();
+//        });
+//    }
+
 //    test('shows success message after saving cleaning schedule', async () => {
 //        axiosClient.get.mockResolvedValueOnce({ data: mockCleaningData });
 //
-//        const { container } = render(<CleaningSchedule isLoggedIn={true} loggedUser={loggedUser} />);
+//        const { container } = render(<CleaningSchedule isLoggedIn={true} loggedUser={loggedUser} newData={mockCleaningData} />);
 //
 //        // Trigger save button click
 //        fireEvent.click(screen.getByText('Tallenna'));
