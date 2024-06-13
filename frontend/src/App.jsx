@@ -80,6 +80,8 @@ const Sidebar = () => {
     <BarChartIcon />,
     <LocationOnOutlinedIcon />,
     <FormatColorResetOutlinedIcon/>,
+    <CleaningServicesIcon />,
+
     <FactCheckOutlinedIcon />,
     <AdminPanelSettingsOutlinedIcon />,
   ];
@@ -102,6 +104,7 @@ const Sidebar = () => {
           { text: "Tilastot", path: "/tilastot" },
           { text: "Yhteystiedot", path: "/yhteystiedot" },
           { text: "Viat", path: "/viat" },
+          { text: "Siivousvuorot", path: "/siivousvuorot" },
           { text: "Säännöt ja ohjeet", path: "/saannot_ja_ohjeet" },
           { text: "Tietosuojaseloste", path: "/tietosuojaseloste" },
         ].map(({ text, path }, index) => (
