@@ -1,5 +1,6 @@
 
 require('cypress-downloadfile/lib/downloadFileCommand')
+import 'cypress-file-upload';
 
 // ***********************************************
 // This example commands.js shows you how to
