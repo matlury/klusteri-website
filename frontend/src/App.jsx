@@ -1,4 +1,5 @@
 import * as React from "react";
+import { BrowserRouter as Router, Route, Routes, Link, useLocation } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -44,10 +45,6 @@ import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
 import Statistics from "./pages/statistics";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { useLocation } from 'react-router-dom';
-
-
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -69,6 +66,60 @@ const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
   );
 };
 
+const Sidebar = () => {
+  const location = useLocation();
+
+  const icons = [
+    <HomeOutlinedIcon />,
+    <InfoOutlinedIcon />,
+    <CalendarMonthOutlinedIcon />,
+    <KeyOutlinedIcon />,
+    <ManageAccountsOutlinedIcon />,
+    <BarChartIcon />,
+    <LocationOnOutlinedIcon />,
+    <FormatColorResetOutlinedIcon/>,
+    <FactCheckOutlinedIcon />,
+    <AdminPanelSettingsOutlinedIcon />,
+  ];
+
+  return (
+    <div>
+      <Box sx={{ padding: "16px", width: "100%" }}>
+        <a href="/">
+          <img src={matlu} alt="logo" style={{ height: "auto", width: "100%" }} />
+        </a>
+      </Box>
+      <Divider />
+      <List>
+        {[
+          { text: "Etusivu", path: "/etusivu" },
+          { text: "Christina Regina", path: "/christina_regina" },
+          { text: "Varaukset", path: "/varaukset" },
+          { text: "Omat avaimet", path: "/omat_avaimet" },
+          { text: "Omat tiedot", path: "/omat_tiedot" },
+          { text: "Tilastot", path: "/tilastot" },
+          { text: "Yhteystiedot", path: "/yhteystiedot" },
+          { text: "Viat", path: "/viat" },
+          { text: "Säännöt ja ohjeet", path: "/saannot_ja_ohjeet" },
+          { text: "Tietosuojaseloste", path: "/tietosuojaseloste" },
+        ].map(({ text, path }, index) => (
+          <ListItem key={text} disablePadding>
+            <ListItemButton
+              key={text}
+              component={Link}
+              to={path}
+              sx={{ backgroundColor: location.pathname === path ? '#bdbdbd' : 'transparent' }}
+            >
+              <ListItemIcon>{icons[index]}</ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+    </div>
+  );
+};
 
 const App = (props) => {
   const { window } = props;
@@ -143,111 +194,61 @@ const App = (props) => {
     setAnchorEl(null);
   };
 
-  const icons = [
-    <HomeOutlinedIcon />,
-    <InfoOutlinedIcon />,
-    <CalendarMonthOutlinedIcon />,
-    <KeyOutlinedIcon />,
-    <ManageAccountsOutlinedIcon />,
-    <BarChartIcon />,
-    <LocationOnOutlinedIcon />,
-    <FormatColorResetOutlinedIcon/>,
-    <FactCheckOutlinedIcon />,
-    <AdminPanelSettingsOutlinedIcon />,
-  ];
-
-  const drawer = (
-  <div>
-    <Box sx={{ padding: "16px", width: "100%" }}>
-      <a href="/">
-        <img src={matlu} alt="logo" style={{ height: "auto", width: "100%" }} />
-      </a>
-    </Box>
-    <Divider />
-    <List>
-      {[
-        { text: "Etusivu", path: "/etusivu" },
-        { text: "Christina Regina", path: "/christina_regina" },
-        { text: "Varaukset", path: "/varaukset" },
-        { text: "Omat avaimet", path: "/omat_avaimet" },
-        { text: "Omat tiedot", path: "/omat_tiedot" },
-        { text: "Tilastot", path: "/tilastot" },
-        { text: "Yhteystiedot", path: "/yhteystiedot" },
-        { text: "Viat", path: "/viat" },
-        { text: "Säännöt ja ohjeet", path: "/saannot_ja_ohjeet" },
-        { text: "Tietosuojaseloste", path: "/tietosuojaseloste" },
-      ].map(({ text, path }, index) => (
-        <ListItem key={text} disablePadding>
-          <ListItemButton
-            key={text}
-            component={Link}
-            to={path}
-            sx={{ backgroundColor: location.pathname === path ? '#bdbdbd' : 'transparent' }}
-          >
-            <ListItemIcon>{icons[index]}</ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItemButton>
-        </ListItem>
-      ))}
-    </List>
-    <Divider />
-  </div>
-);
-  const container =
-    window !== undefined ? () => window().document.body : undefined;
+  const container = window !== undefined ? () => window().document.body : undefined;
 
   return (
     <Router>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar
-      position="fixed"
-      sx={{
-        bgcolor: "#484644",
-        width: { sm: `calc(100% - ${drawerWidth}px)` },
-        ml: { sm: `${drawerWidth}px` },
-      }}
-    >
-      <Toolbar>
-        <IconButton
-          aria-label="open drawer"
-          edge="start"
-          onClick={handleDrawerToggle}
-          sx={{ mr: 2, display: { sm: "none" }, color: "white" }}  // Change color to white
+          position="fixed"
+          sx={{
+            bgcolor: "#484644",
+            width: { sm: `calc(100% - ${drawerWidth}px)` },
+            ml: { sm: `${drawerWidth}px` },
+          }}
         >
-          <MenuIcon />
-        </IconButton>
-        <Typography variant="h6" noWrap component="div" color={"white"}>
+          <Toolbar>
+            <IconButton
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2, display: { sm: "none" }, color: "white" }}  // Change color to white
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap component="div" color={"white"}>
           Ilotalo 3.0
-        </Typography>
+            </Typography>
         <Box sx={{ flexGrow: 1 }} />
-        {isLoggedIn ? (
-          <>
-            <Button
+            {isLoggedIn ? (
+              <>
+                <Button
               aria-controls="simple-menu"
               aria-haspopup="true"
-              onClick={handleMenuClick}
-              endIcon={<ArrowDropDownIcon />}
+                  onClick={handleMenuClick}
+                  sx={{ marginLeft: 'auto' }}
+                  endIcon={<ArrowDropDownIcon />}
               style={{ color: "white" }}
-            >
+                >
               {loggedUser ? loggedUser.username : "User"}
-            </Button>
-            <Menu
-              id="simple-menu"
-              anchorEl={anchorEl}
-              keepMounted
-              open={Boolean(anchorEl)}
-              onClose={handleMenuClose}
-            >
-              <MenuItem onClick={handleLogout}>Kirjaudu ulos</MenuItem>
-            </Menu>
-          </>
-        ) : (
-          <Button variant="contained" onClick={openLoginDialog}>
-            Kirjaudu
-          </Button>
-        )}
-      </Toolbar>
+                </Button>
+                <Menu
+                  id="simple-menu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={handleMenuClose}
+                >
+                  <MenuItem onClick={handleLogout}>Kirjaudu ulos</MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <Button variant="contained" onClick={openLoginDialog}>
+                Kirjaudu
+              </Button>
+            )}
+          </Toolbar>
         </AppBar>
         <Box
           component="nav"
@@ -272,7 +273,7 @@ const App = (props) => {
               },
             }}
           >
-            {drawer}
+            <Sidebar />
           </Drawer>
           <Drawer
             variant="permanent"
@@ -286,7 +287,7 @@ const App = (props) => {
             }}
             open
           >
-            {drawer}
+            <Sidebar />
           </Drawer>
         </Box>
         <Box
