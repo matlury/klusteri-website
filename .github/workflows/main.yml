@@ -82,8 +82,13 @@ jobs:
           sleep 5
 
       - name: Run Cypress tests
-        working-directory: ./frontend
-        run: npm run cy:run
+        uses: cypress-io/github-action@v3
+        with:
+          working-directory: ./frontend
+          project: ./
+          browser: chrome
+          build: npm run build
+          start: npm run dev
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
