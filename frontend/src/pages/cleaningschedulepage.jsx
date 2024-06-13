@@ -178,6 +178,7 @@ const CleaningSchedule = ({
                   startIcon={<SaveOutlinedIcon />}
                   variant="contained"
                   color="primary"
+                  data-testid="save-cleaning-button"
                   onClick={handleSaveClick}
                 >
                   Tallenna

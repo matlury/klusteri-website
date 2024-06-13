@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {act} from 'react';
 import CleaningSchedule from '../pages/cleaningschedulepage.jsx';
 import CleanersList from '../components/CleanersList.jsx';
 import axiosClient from '../axios.js';
@@ -51,5 +52,17 @@ describe('CleaningSchedule Component', () => {
         await waitFor(() => {
             expect(screen.findByText('Matrix')).resolves.toBeInTheDocument();
         });
+    });
+
+    test('renders all content when logged as leppispj', () => {
+        window.confirm = jest.fn(() => true);
+        localStorage.setItem("ACCESS_TOKEN", "example_token");
+        localStorage.setItem("loggeduser", JSON.stringify(user));
+
+        render(<CleaningSchedule isLoggedIn={true} loggedUser={user} />);
+        expect(screen.getByText('Siivousvuorot')).toBeInTheDocument();
+        expect(screen.getByText('Tuo lista')).toBeInTheDocument();
+        expect(screen.getByText('Vie lista')).toBeInTheDocument();
+        expect(screen.getByText('Tallenna')).toBeInTheDocument();
     });
 });
