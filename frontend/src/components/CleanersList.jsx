@@ -40,10 +40,11 @@ const CleanersList = ({ allCleaners }) => {
     { field: "small", headerName: "Pieni järjestö", width: 120 },
   ];
 
+  const today = moment();
+
   const getRowClassName = (params) => {
-    const rowWeek = moment(params.row.date).week();
-    const currentWeek = moment().week();
-    return rowWeek < currentWeek ? "past-week" : "";
+    const rowDate = moment(params.row.date);
+    return rowDate.isBefore(today, "day") ? "past-week" : "";
   };
 
     return (
