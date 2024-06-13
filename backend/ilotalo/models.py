@@ -140,3 +140,11 @@ class DefectFault(models.Model):
         blank = True,
         null = True
     )
+
+class Cleaning(models.Model):
+    """Model for cleaningn responsibilities"""
+
+    id = models.AutoField(primary_key=True)
+    week = models.IntegerField(default=0)
+    big = models.ForeignKey(Organization, on_delete=models.CASCADE, default=0, related_name="big_orgs")
+    small = models.ForeignKey(Organization, on_delete=models.CASCADE, default=0, related_name="small_orgs")

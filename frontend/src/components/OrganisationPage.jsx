@@ -46,7 +46,6 @@ const OrganisationPage = ({
 
   const toggleOrgDetails = (orgId) => {
     const showThisOrg = allOrganisations.find((org) => org.id === orgId);
-    console.log(showThisOrg);
 
     setOrganisationNewName(showThisOrg.Organisaatio)
     setOrganisationNewHomePage(showThisOrg.kotisivu)
