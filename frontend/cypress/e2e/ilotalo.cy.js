@@ -542,7 +542,7 @@ describe("Ownpage", () => {
       cy.get(".login-button").click();
       cy.contains("Talon latinankielinen nimi");
       cy.wait(500);
-      cy.contains("Omat tiedot").click();
+      cy.contains("Hallinnointi").click();
       cy.get("#name").type("Teekkarit");
       cy.get(".organization-email").type("teekkarit@mail.com");
       cy.get("#homepage").type("www.teekkarit.fi");
@@ -584,7 +584,7 @@ describe("Ownpage", () => {
       cy.get(".login-button").click();
       cy.contains("Talon latinankielinen nimi");
       cy.wait(500);
-      cy.contains("Omat tiedot").click();
+      cy.contains("Hallinnointi").click();
       cy.get("#name").type("Teekkarit");
       cy.get(".organization-email").type("teekkarit@mail.com");
       cy.get("#homepage").type("www.teekkarit.fi");
