@@ -41,12 +41,12 @@ const CleanersList = ({ allCleaners }) => {
   ];
 
   const today = moment();
+  const startOfThisWeek = moment().startOf('isoWeek');
 
   const getRowClassName = (params) => {
     const rowDate = moment(params.row.date);
-    return rowDate.isBefore(today, "day") ? "past-week" : "";
+    return rowDate.isBefore(startOfThisWeek, "day") ? "past-week" : "";
   };
-
     return (
         <StyledDataGrid
         initialState={{sorting:{sortModel:[{field:'week', sort:'asc'}],
