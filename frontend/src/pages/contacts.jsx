@@ -14,9 +14,9 @@ const Contacts = () => {
       <p>
         {t("contacts_1")}
       </p>
-      <Link to="/christina_regina">
-        <h1>Christina Regina</h1>
-       </Link>
+      <a href="/christina_regina">
+        <h1 onClick={OpenChristinaRegina}>Christina Regina</h1>
+      </a>
       <p>
         {t("contacts_2")}
       </p>
