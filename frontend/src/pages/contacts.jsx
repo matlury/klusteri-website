@@ -12,9 +12,9 @@ const Contacts = () => {
       <p>
         Domus Gaudium sijaitsee osoitteessa Leppäsuonkatu 11A, 00100 Helsinki.
       </p>
-      <Link to="/christina_regina">
-        <h1>Christina Regina</h1>
-       </Link>
+      <a href="/christina_regina">
+        <h1 onClick={OpenChristinaRegina}>Christina Regina</h1>
+      </a>
       <p>
         Christina Regina sijaitsee Domus Gaudiumin ensimmäisessä kerroksessa.
       </p>
