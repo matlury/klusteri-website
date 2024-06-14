@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 const Contacts = () => {
   const OpenChristinaRegina = () => {
@@ -13,9 +14,9 @@ const Contacts = () => {
       <p>
         {t("contacts_1")}
       </p>
-      <a href="/christina_regina">
-        <h1 onClick={OpenChristinaRegina}>Christina Regina</h1>
-      </a>
+      <Link to="/christina_regina">
+        <h1>Christina Regina</h1>
+       </Link>
       <p>
         {t("contacts_2")}
       </p>
