@@ -165,7 +165,7 @@ const ReservationsView = ({
       />
 
       <Dialog open={showCreateModal} onClose={handleCloseModal}>
-        <DialogTitle>{t("reservations_add")}</DialogTitle>
+        <DialogTitle>{t("reservations_addform")}</DialogTitle>
         <DialogContent>
           <div>
             <Typography variant="body1">{t("reservations_det")}</Typography>

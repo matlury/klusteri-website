@@ -6,6 +6,9 @@ import CleanersList from '../components/CleanersList.jsx';
 import axiosClient from '../axios.js';
 import mockAxios from "../../__mocks__/axios";
 import "@testing-library/jest-dom";
+import i18n from "../i18n";
+
+localStorage.setItem("lang", "fi")
 
 const user = {
     username: "example_username",
