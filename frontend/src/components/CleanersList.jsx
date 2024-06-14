@@ -2,9 +2,12 @@ import React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { lighten, styled } from '@mui/material/styles';
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 
 
 const CleanersList = ({ allCleaners }) => {
+  const { t } = useTranslation();
+
   const getBackgroundColor = (color) =>
     lighten(color, 0.4);
   
@@ -34,10 +37,10 @@ const CleanersList = ({ allCleaners }) => {
   }));
 
   const columns = [
-    { field: "week", headerName: "Viikko", width: 120 },
-    { field: "date", headerName: "Pvm", width: 200 },
-    { field: "big", headerName: "Iso järjestö", width: 120 },
-    { field: "small", headerName: "Pieni järjestö", width: 120 },
+    { field: "week", headerName: t("week"), width: 120 },
+    { field: "date", headerName: t("date"), width: 200 },
+    { field: "big", headerName: t("bigorg"), width: 120 },
+    { field: "small", headerName: t("smallorg"), width: 120 },
   ];
 
   const today = moment();

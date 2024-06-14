@@ -3,9 +3,12 @@
 
 import React, { useState } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Button } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 const AutomateCleanersDialog = ({ open, handleClose, handleAutomate }) => {
   const [threshold, setThreshold] = useState('');
+
+  const { t } = useTranslation();
 
   const handleThresholdChange = (event) => {
     setThreshold(event.target.value);
@@ -18,16 +21,16 @@ const AutomateCleanersDialog = ({ open, handleClose, handleAutomate }) => {
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Luo siivouslista automaattisesti</DialogTitle>
+      <DialogTitle>{t("cleanigcreatelistauto")}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Luo siivouslista automaattisesti algoritmin avulla. Anna raja-arvo, jonka mukaan järjestöt jaetaan suuriin ja pieniin järjestöihin.
+          {t("cleaningcreatedesc")}
         </DialogContentText>
         <TextField
           autoFocus
           margin="dense"
           id="threshold_value"
-          label="Raja-arvo"
+          label={t("threshold")}
           type="number"
           fullWidth
           variant="standard"
@@ -36,9 +39,9 @@ const AutomateCleanersDialog = ({ open, handleClose, handleAutomate }) => {
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Peruuta</Button>
+        <Button onClick={handleClose}>{t("cancel")}</Button>
         <Button className="create-cleaning-button"
-        onClick={handleSubmit}>Luo lista</Button>
+        onClick={handleSubmit}>{t("cleaningcreatelist")}</Button>
       </DialogActions>
     </Dialog>
   );

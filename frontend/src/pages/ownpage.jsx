@@ -229,32 +229,25 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // Handles organization detail updates
   const handleOrganizationDetails = (organization_new_name, organization_new_email, organization_new_homepage, orgId) => {
 
-    
     const newOrganizationObject = {
       name: organization_new_name,
       email: organization_new_email,
       homepage: organization_new_homepage,
       color: organization_new_color,
     };
-    if (true) {
-      const confirmUpdate = window.confirm(
-        t("orgeditconfirm"),
-      );
-
-      if (confirmUpdate) {
         axiosClient
           .put(
             `/organizations/update_organization/${orgId}/`,
             newOrganizationObject,
           )
           .then((response) => {
-            console.log(t("orgeditsuccess"), response.data);
-            setSuccess(t("orgeditsuccess"));
+            console.log("Organization created successfully!", response.data);
+            setSuccess("Järjestö muokattu onnistuneesti!");
             setTimeout(() => setSuccess(""), 5000);
             getOrganisations();
           })
           .catch((error) => {
-            console.error(t("orgeditfail"), error);
+            console.error("Error creating account:", error);
           });
   };
 

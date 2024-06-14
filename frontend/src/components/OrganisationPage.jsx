@@ -166,7 +166,7 @@ const OrganisationPage = ({
             className="delete-org-button"
             onClick={() => handleDelete(organisation_id)}
           >
-            <DeleteIcon /> Poista
+            <DeleteIcon /> {t("delete")}
           </Button>
           <div style={{ flexGrow: 1 }} /> {/* Add space to push buttons to opposite ends */}
           <Button onClick={handleClose}>{t("cancel")}</Button>

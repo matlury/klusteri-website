@@ -292,14 +292,13 @@ const Rules_and_Instructions = () => {
               {t("rules_97")}
               </li>
             </ul>
-            <h3>Siivouslistan tallentaminen</h3>
+            <h3>{t("rules_115")}</h3>
             <ol>
-              <li>Tyhjennä vanha siivouslista 'Tyhjennä'-painikkeella</li>
+              <li>{t("rules_116")}</li>
               <li>
-                Siirrä uusi siivouslista JSON-muodossa selaimelle 'Vie lista' -painikkeella
-                TAI luo uusi siivouslista automaattisesti 'Luo lista' -painikkeella
+              {t("rules_117")}
               </li>
-              <li>Tallenna siivouslista tietokantaan 'Tallenna'-painikkeella</li>
+              <li>{t("rules_118")}</li>
             </ol>
           </div>
         </AccordionDetails>

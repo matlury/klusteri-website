@@ -165,7 +165,7 @@ const ReservationsView = ({
       />
 
       <Dialog open={showCreateModal} onClose={handleCloseModal}>
-        <DialogTitle>{"Lisää tapahtuma"}</DialogTitle>
+        <DialogTitle>{t("reservations_add")}</DialogTitle>
         <DialogContent>
           <div>
             <Typography variant="body1">{t("reservations_det")}</Typography>

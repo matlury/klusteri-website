@@ -54,24 +54,26 @@ import i18n from "./i18n";
 const drawerWidth = 240;
 
 const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
+  const { t } = useTranslation();
   return (
     <Dialog 
       open={open} 
       onClose={onClose} 
       PaperProps={{ style: { minWidth: '400px' } }} // Set minimum width
     >
-      <DialogTitle>Kirjaudu sisään</DialogTitle>
+      <DialogTitle>{t("loginsuggest")}</DialogTitle>
       <DialogContent>
         <LoginPage onLogin={onLogin} onCreateNewUser={onCreateNewUser} />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Peruuta</Button>
+        <Button onClick={onClose}>{t("cancel")}</Button>
       </DialogActions>
     </Dialog>
   );
 };
 
 const Sidebar = () => {
+  const { t } = useTranslation();
   const location = useLocation();
 
   const icons = [
@@ -106,18 +108,19 @@ const Sidebar = () => {
         { key: "front_sidebar_6", path: "tilastot", icon: icons[5]},
         { key: "front_sidebar_7", path: "yhteystiedot", icon: icons[6]},
         { key: "front_sidebar_8", path: "viat", icon: icons[7]},
-        { key: "front_sidebar_9", path: "saannot_ja_ohjeet", icon: icons[8]},
-        { key: "front_sidebar_10", path: "tietosuojaseloste", icon: icons[9]}
-        ].map(({ text, path }, index) => (
-          <ListItem key={text} disablePadding>
+        { key: "front_sidebar_9", path: "siivousvuorot", icon: icons[8]},
+        { key: "front_sidebar_10", path: "saannot_ja_ohjeet", icon: icons[9]},
+        { key: "front_sidebar_11", path: "tietosuojaseloste", icon: icons[10]}
+        ].map(({ key, path }, index) => (
+          <ListItem key={key} disablePadding>
             <ListItemButton
-              key={text}
+              key={key}
               component={Link}
               to={path}
               sx={{ backgroundColor: location.pathname === path ? '#bdbdbd' : 'transparent' }}
             >
               <ListItemIcon>{icons[index]}</ListItemIcon>
-              <ListItemText primary={text} />
+              <ListItemText primary={t(key)} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -145,6 +148,7 @@ const App = (props) => {
   )
 
   const [anchorEl, setAnchorEl] = React.useState(null)
+  const [anchorElLang, setAnchorElLang] = React.useState(null)
 
   React.useEffect(() => {
     i18n.changeLanguage(localStorage.getItem("lang") || "fi")
@@ -202,24 +206,24 @@ const App = (props) => {
     setLanguage(lang);
     i18n.changeLanguage(lang);
     localStorage.setItem('lang', lang);
-    setAnchorEl(null); // Close the menu after selecting an option
+    setAnchorElLang(null); // Close the menu after selecting an option
   };
 
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     i18n.changeLanguage(language);
   }, [language]);
 
   const handleIconClick = (event) => {
-    setAnchorEl(event.currentTarget); // Set anchorEl to the clicked element
+    setAnchorElLang(event.currentTarget); // Set anchorEl to the clicked element
   };
 
   const handleClose = () => {
-    setAnchorEl(null); // Close the menu
+    setAnchorElLang(null); // Close the menu
   };
 
-  const open = Boolean(anchorEl);
+  const open = Boolean(anchorElLang);
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -255,12 +259,13 @@ const App = (props) => {
             <Typography variant="h6" noWrap component="div" color={"white"}>
           Ilotalo 3.0
             </Typography>
-            <Box sx={{ flexGrow: 1 }} />
-            <IconButton color="primary" onClick={handleIconClick}>
-              <TranslateIcon />
+          <Box sx={{ flexGrow: 1 }} />
+          <IconButton color="primary" onClick={handleIconClick}>
+              <TranslateIcon
+              color="primary" sx={{ color: 'white' }} />
             </IconButton>
             <Menu
-              anchorEl={anchorEl}
+              anchorEl={anchorElLang}
               open={open}
               onClose={handleClose}
               anchorOrigin={{
@@ -275,7 +280,6 @@ const App = (props) => {
               <MenuItem onClick={() => handleLangChange('fi')}>Suomi</MenuItem>
               <MenuItem onClick={() => handleLangChange('en')}>English</MenuItem>
             </Menu>
-        <Box sx={{ flexGrow: 1 }} />
             {isLoggedIn ? (
               <>
                 <Button
@@ -295,7 +299,7 @@ const App = (props) => {
                   open={Boolean(anchorEl)}
                   onClose={handleMenuClose}
                 >
-                  <MenuItem onClick={handleLogout}>Kirjaudu ulos</MenuItem>
+                  <MenuItem onClick={handleLogout}>{t("logout")}</MenuItem>
                 </Menu>
               </>
             ) : (

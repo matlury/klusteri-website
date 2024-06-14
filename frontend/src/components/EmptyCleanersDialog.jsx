@@ -8,6 +8,7 @@ import {
   DialogActions,
   DialogTitle,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const EmptyCleaners = ({ confirm, handleCloseConfirm, handleRemoveFormSubmit }) => {
 
@@ -16,6 +17,8 @@ const EmptyCleaners = ({ confirm, handleCloseConfirm, handleRemoveFormSubmit }) 
     handleRemoveFormSubmit();
     handleCloseConfirm();
   };
+
+  const { t } = useTranslation();
 
   return (
   <Dialog
@@ -26,16 +29,16 @@ const EmptyCleaners = ({ confirm, handleCloseConfirm, handleRemoveFormSubmit }) 
       onSubmit: onSubmit,
     }}
 >
-      <DialogTitle>Haluatko varmasti tyhjentää siivousvuorot? </DialogTitle>
+      <DialogTitle>{t("cleaningclearconfirm")} </DialogTitle>
       <DialogActions>
-        <Button onClick={handleCloseConfirm}>Peruuta</Button>
+        <Button onClick={handleCloseConfirm}>{t("cancel")}</Button>
         <Button 
           type="submit" 
           data-testid="delete-cleaninglist"
           id="delete-cleaninglist"
           className="delete-cleaninglist-button"
           >
-          Tyhjennä
+          {t("clear")}
         </Button>
       </DialogActions>
     </Dialog>

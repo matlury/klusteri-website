@@ -4,11 +4,14 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
+import { useTranslation } from "react-i18next";
 
 
 export default function CleanersListJSONButton({cleaners}) {
     const [cleanersList, setCleanersList] = useState(cleaners);
     const [loading, setLoading] = useState(true);
+
+    const { t } = useTranslation();
     
     useEffect(() => {
         setCleanersList(cleaners);
@@ -37,7 +40,7 @@ export default function CleanersListJSONButton({cleaners}) {
         onClick={downloadCleanersList}
         disabled={loading}
         >
-        Tuo lista
+        {t("cleaningexportlist")}
         </Button>
     );
 }
