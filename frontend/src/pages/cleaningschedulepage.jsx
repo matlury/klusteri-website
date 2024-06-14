@@ -176,7 +176,9 @@ const CleaningSchedule = ({
             {loggedUser && loggedUser.role === 1 && (
               <React.Fragment>
                 <CleanersListUploadButton setNewData={setNewData} onClick={() => handleFormSubmit(newData)} />
-                <CleanersListAutomateButton updateNewData={setNewData} />
+                <CleanersListAutomateButton 
+                  updateNewData={setNewData} 
+                  setError={setError}/>
                 <Button
                   startIcon={<SaveOutlinedIcon />}
                   variant="contained"

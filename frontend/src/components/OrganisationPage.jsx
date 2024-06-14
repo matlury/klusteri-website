@@ -73,7 +73,7 @@ const OrganisationPage = ({
 
   const handleFormSubmit = (event) => {
      event.preventDefault();
-     handleOrganizationDetails(organisation_new_name, organisation_new_email, organisation_new_homepage, organisation_id);
+     handleOrganizationDetails(organisation_new_name, organisation_new_email, organisation_new_homepage, organisation_new_color, organisation_id);
      handleClose();
    };
 

@@ -218,6 +218,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     setOrganizationNewName(organization.name);
     setOrganizationNewEmail(organization.email);
     setOrganizationNewHomePage(organization.homepage);
+    setOrganizationNewColor(organization.color);
     setSelectedOrg((prevSelectedOrg) => {
       if (prevSelectedOrg === orgId) {
         return null;
@@ -227,8 +228,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   };
 
   // Handles organization detail updates
-  const handleOrganizationDetails = (organization_new_name, organization_new_email, organization_new_homepage, orgId) => {
-
+  const handleOrganizationDetails = (organization_new_name, organization_new_email, organization_new_homepage,  organization_new_color, orgId) => {
     const newOrganizationObject = {
       name: organization_new_name,
       email: organization_new_email,

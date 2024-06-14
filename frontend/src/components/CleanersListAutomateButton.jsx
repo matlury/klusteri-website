@@ -8,7 +8,7 @@ import axiosClient from "../axios.js";
 import AutomateCleanersDialog from "./AutomateCleanersDialog.jsx";
 import { useTranslation } from "react-i18next";
 
-export default function CleanersListAutomateButton({ updateNewData }) {
+export default function CleanersListAutomateButton({ updateNewData, setError}) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -30,6 +30,7 @@ export default function CleanersListAutomateButton({ updateNewData }) {
 
       // Check if orgdata is an array
       if (!Array.isArray(orgdata)) {
+        setError(t("cleaningautomatefail"));
         throw new Error("Unexpected API response format");
       }
 
@@ -52,6 +53,10 @@ export default function CleanersListAutomateButton({ updateNewData }) {
       return list;
     } catch (error) {
       console.error("Error fetching organization data:", error);
+      setError(t("cleaningautomatefail"));
+      setTimeout(() => {
+        setError(null);
+      }, 5000);
     } finally {
       setLoading(false);
     }
