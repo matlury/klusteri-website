@@ -714,7 +714,7 @@
         "YKVsearch": "Search YKVs",
         "delete": "Delete",
         "cleaningerrorold": "Remove cleaning schedule before adding new",
-        "cleningsubmitsuccess": "Cleaning schedule added successfully",
+        "cleaningsubmitsuccess": "Cleaning schedule added successfully",
         "cleaningsubmitfail": "Error adding cleaning schedule",
         "cleaningclearedsuccess": "Cleaning schedule cleared successfully",
         "cleaningschedule": "Cleaning schedule",
