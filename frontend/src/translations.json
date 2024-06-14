@@ -347,7 +347,7 @@
         "YKVsearch": "Hae yökäyttövastuista",
         "delete": "Poista",
         "cleaningerrorold": "Poista siivousvuorot ennen uusien lisäämistä",
-        "cleningsubmitsuccess": "Siivouksen kirjaus onnistui",
+        "cleaningsubmitsuccess": "Siivouksen kirjaus onnistui",
         "cleaningsubmitfail": "Siivouksen kirjaus epäonnistui",
         "cleaningclearedsuccess": "Siivousvuorot poistettu onnistuneesti",
         "cleaningschedule": "Siivousvuorot",
