@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Contacts = () => {
   const OpenChristinaRegina = () => {
@@ -11,9 +12,9 @@ const Contacts = () => {
       <p>
         Domus Gaudium sijaitsee osoitteessa Leppäsuonkatu 11A, 00100 Helsinki.
       </p>
-      <a href="/christina_regina">
-        <h1 onClick={OpenChristinaRegina}>Christina Regina</h1>
-      </a>
+      <Link to="/christina_regina">
+        <h1>Christina Regina</h1>
+       </Link>
       <p>
         Christina Regina sijaitsee Domus Gaudiumin ensimmäisessä kerroksessa.
       </p>
