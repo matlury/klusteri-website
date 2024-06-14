@@ -1,7 +1,7 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from rest_framework import serializers
-from .models import User, Organization, Event, NightResponsibility, DefectFault
+from .models import User, Organization, Event, NightResponsibility, DefectFault, Cleaning
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
@@ -167,7 +167,7 @@ class NightResponsibilitySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CreateNightResponsibilitySerializer(serializers.ModelSerializer):
-    """Used for saving NightResponsibility object to the database"""
+    """Used for saving a NightResponsibility object to the database"""
 
     class Meta:
         model = NightResponsibility
@@ -195,3 +195,27 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             raise serializers.ValidationError("Invalid login credentials")
         
         return super().validate(attrs)
+
+class OrganizationOnlyNameSerializer(serializers.ModelSerializer):
+    """Serializes an Organization object as JSON"""
+
+    class Meta:
+        model = Organization
+        fields = ('name',)
+
+class CreateCleaningSerializer(serializers.ModelSerializer):
+    """Used for saving a Cleaning object to the database"""
+
+    class Meta:
+        model = Cleaning
+        fields = '__all__'
+
+class CleaningSerializer(serializers.ModelSerializer):
+    """Used for saving a Cleaning object to the database"""
+
+    big = OrganizationOnlyNameSerializer(read_only=True)
+    small = OrganizationOnlyNameSerializer(read_only=True)
+
+    class Meta:
+        model = Cleaning
+        exclude = ('id',)

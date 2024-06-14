@@ -26,30 +26,31 @@ const AllUsers = ({
   handleKeySubmit,
 }) => {
 
+  // State variables to manage user data and dialog visibility
   const [allUsers, setAllUsers] = useState([]);
   const [allOrganisations, setAllOrganisations] = useState([]);
-
   const [open, setOpen] = useState(false);
-  
   const [userDetailsUsername, setUserDetailsUsername] = useState("");
   const [userDetailsEmail, setuserDetailsEmail] = useState("");
   const [userDetailsTelegram, setuserDetailsTelegram] = useState("");
   const [userDetailsRole, setuserDetailsRole] = useState("");  
   const [userDetailsOrganizations, setuserDetailsOrganizations] = useState("");
   const [userDetailsId, setuserDetailsId] = useState("");
-
   const [selectedOrganization, setSelectedOrganization] = useState(null);
 
   const { t } = useTranslation();
 
+  // Function to open the dialog
   const handleClickOpen = () => {
     setOpen(true);
   };
 
+  // Function to close the dialog
   const handleClose = () => {
     setOpen(false);
   };
 
+  // Function to toggle user details in the dialog
   const toggleUserDetails = (userId) => {
     const showThisUser = allUsers.find((user) => user.id === userId);
     setUserDetailsUsername(showThisUser.Käyttäjänimi);
@@ -61,6 +62,7 @@ const AllUsers = ({
     handleClickOpen();
   };
 
+  // Fetching user data from the server on component mount
   useEffect(() => {
     axiosClient
       .get("listobjects/users/")
@@ -78,6 +80,7 @@ const AllUsers = ({
       .catch((error) => console.error(error));
   }, []);
 
+  // Fetching organization data from the server on component mount
   useEffect(() => {
     axiosClient
       .get("listobjects/organizations/")
@@ -94,7 +97,7 @@ const AllUsers = ({
       .catch((error) => console.error(error));
   }, []);
 
-
+  // Function to handle form submission (updating user details)
   const handleFormSubmit = (event) => {
     event.preventDefault();
     handleUpdateAnotherUser(userDetailsId, userDetailsUsername, userDetailsEmail, userDetailsTelegram, userDetailsRole,
@@ -102,6 +105,7 @@ const AllUsers = ({
     handleClose();
   };
 
+  // Columns configuration for the DataGrid component
   const columns = [
     {
       field: "actions",
@@ -109,7 +113,7 @@ const AllUsers = ({
       width: 130,
       renderCell: (params) => (
         <Button
-          variant="contained"
+          variant="outlined"
           color="primary"
           className="modify_user"
           data-testid={`edit-button-${params.id}`}
@@ -129,15 +133,17 @@ const AllUsers = ({
 
   return (
     <div>
+      {/* Display DataGrid for users */}
       <h2>{t("users")}</h2>
       <div>
-        <DataGrid
+      <DataGrid
           rows={allUsers}
           columns={columns}
           pageSize={5}
           rowsPerPageOptions={[5, 10, 20]}
         />
       </div>
+      {/* Dialog for editing user details */}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>{t("edituser")}</DialogTitle>
         <DialogContent>
@@ -148,6 +154,7 @@ const AllUsers = ({
               value={userDetailsUsername}
               onChange={(e) => setUserDetailsUsername(e.target.value)}
               fullWidth
+              sx={{ marginBottom: '1rem' }} // Add spacing below the field
               data-testid="username-input"
             />
             <TextField
@@ -156,6 +163,7 @@ const AllUsers = ({
               value={userDetailsEmail}
               onChange={(e) => setuserDetailsEmail(e.target.value)}
               fullWidth
+              sx={{ marginBottom: '1rem' }} // Add spacing below the field
               data-testid="email-input"
             />
             <TextField
@@ -164,6 +172,7 @@ const AllUsers = ({
               value={userDetailsTelegram}
               onChange={(e) => setuserDetailsTelegram(e.target.value)}
               fullWidth
+              sx={{ marginBottom: '1rem' }} // Add spacing below the field
               data-testid="telegram-input"
             />
             <TextField
@@ -172,9 +181,11 @@ const AllUsers = ({
               value={userDetailsRole}
               onChange={(e) => setuserDetailsRole(e.target.value)}
               fullWidth
+              sx={{ marginBottom: '1rem' }} // Add spacing below the field
               data-testid="role-input"
             />
 
+            {/* Accordion for organization key */}
             <Accordion>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
@@ -207,30 +218,33 @@ const AllUsers = ({
               </AccordionDetails>
             </Accordion>
 
+            {/* Button to change user's role */}
             <Button 
               onClick={() => handlePJChange(userDetailsId)}
               data-testid="change-pj-button"
+              sx={{ marginBottom: '1rem' }} // Add spacing below the button
             >
               {t("changepj")}
             </Button>
 
-        <DialogActions>
-          <Button 
-            onClick={handleClose}
-            data-testid="cancel-button"
-          >
-            {t("cancel")}
-          </Button>
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            data-testid="save-button"
-          >
-            {t("save")}
-          </Button>
-        </DialogActions>
-        </form>
+            {/* Dialog actions */}
+            <DialogActions>
+              <Button 
+                onClick={handleClose}
+                data-testid="cancel-button"
+              >
+                {t("cancel")}
+              </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                data-testid="save-button"
+              >
+                {t("save")}
+              </Button>
+            </DialogActions>
+          </form>
         </DialogContent>
       </Dialog>
     </div>

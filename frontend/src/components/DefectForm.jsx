@@ -52,6 +52,7 @@ const DefectForm = ({ open, handleClose, handleFormSubmit }) => {
       <DialogActions>
         <Button onClick={handleClose}>{t("cancel")}</Button>
         <Button 
+          variant="contained"
           type="submit" 
           data-testid="createdefect"
           id="addfault"

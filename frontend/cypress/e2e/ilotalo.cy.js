@@ -230,6 +230,7 @@ describe("Ownkeys", () => {
     cy.contains("+ Ota vastuu").click();
     cy.get("#responsibility").type("fuksit");
     cy.get("#takeresp").click();
+    cy.wait(500);
     cy.reload();
     cy.contains("fuksit");
     cy.contains("leppis");
@@ -375,8 +376,8 @@ describe("Reservations", () => {
             org_id = response.body.id;
           });
         });
-
       cy.contains("Varaukset").click();
+      cy.reload();
     });
     it("Creating event works", function () {
       cy.get("#createEvent").click();
@@ -478,7 +479,7 @@ describe("Ownpage", () => {
     cy.contains("Talon latinankielinen nimi");
 
     cy.wait(500);
-    cy.contains("Omat Tiedot").click();
+    cy.contains("Hallinnointi").click();
 
     cy.get("#telegram").type("ProffaTG");
     cy.contains("Tallenna").click();
@@ -511,12 +512,13 @@ describe("Ownpage", () => {
     cy.contains("Talon latinankielinen nimi");
 
     cy.wait(500);
-    cy.contains("Omat Tiedot").click();
+    cy.contains("Hallinnointi").click();
 
+    cy.get(".open-dialog-button").click()
     cy.get("#name").type("Teekkarit");
     cy.get(".organization-email").type("teekkarit@mail.com");
     cy.get("#homepage").type("www.teekkarit.fi");
-    cy.contains("Luo järjestö").click();
+    cy.get("[data-testid=create-organization-button]").click();
     cy.contains("Onnistui: Järjestö luotu onnistuneesti!");
     cy.reload()
     cy.contains("Teekkarit");
@@ -548,18 +550,20 @@ describe("Ownpage", () => {
       cy.get(".login-button").click();
       cy.contains("Talon latinankielinen nimi");
       cy.wait(500);
-      cy.contains("Omat Tiedot").click();
+      cy.contains("Hallinnointi").click();
+      cy.get(".open-dialog-button").click()
+
       cy.get("#name").type("Teekkarit");
       cy.get(".organization-email").type("teekkarit@mail.com");
       cy.get("#homepage").type("www.teekkarit.fi");
-      cy.contains("Luo järjestö").click();
+      cy.get("[data-testid=create-organization-button]").click();
       cy.contains("Onnistui: Järjestö luotu onnistuneesti!");
       cy.reload();
       cy.contains("Teekkarit");
       cy.contains("teekkarit@mail.com");
       cy.get(".modify_org").click()
       cy.get("#organization_name").type("123");
-      cy.contains("Vahvista muutokset"). click()
+      cy.get('.confirm_org_change').click();
       cy.reload();
       cy.contains("Teekkarit123");
       });  
@@ -590,15 +594,18 @@ describe("Ownpage", () => {
       cy.get(".login-button").click();
       cy.contains("Talon latinankielinen nimi");
       cy.wait(500);
-      cy.contains("Omat Tiedot").click();
+      cy.contains("Hallinnointi").click();
+
+      cy.get(".open-dialog-button").click()
+
       cy.get("#name").type("Teekkarit");
       cy.get(".organization-email").type("teekkarit@mail.com");
       cy.get("#homepage").type("www.teekkarit.fi");
-      cy.contains("Luo järjestö").click();
+      cy.get("[data-testid=create-organization-button]").click();
       cy.contains("Onnistui: Järjestö luotu onnistuneesti!");
       cy.reload();
       cy.get(".modify_org").click()
-      cy.contains("Poista järjestö"). click()
+      cy.contains("Poista"). click()
       cy.reload();
       cy.contains("Teekkarit").should("not.exist");
    });
@@ -637,7 +644,6 @@ describe("Ownpage", () => {
         cy.contains("+ Lisää vika").click();
         cy.get("#description").type("Vessan ovenkahva irronnut");
         cy.get("#addfault").click();
-        cy.contains("Peruuta").click();
         cy.reload();
         cy.contains("Vessan ovenkahva irronnut");
 
@@ -713,10 +719,712 @@ describe("Statistics page", () => {
     cy.contains("Tilastot").click();
     cy.contains("YKV-kirjausten määrä järjestöittäin")
   })
+})
+
+
+describe("Cleaningshifts", () => {
+    beforeEach(function () {
+       cy.request("POST", "http://localhost:8000/api/testing/reset");
+       cy.visit("http://localhost:5173/");
+       cy.viewport(2560, 1440);
+     });
+
+
+    it("Cleaninglist can be created", function () {
+      cy.on("uncaught:exception", () => {
+          return false;
+        });
+        const body1 = {
+          username: "super_prof",
+          password: "salasana123",
+          email: "super@gmail.com",
+          telegram: "",
+          role: 1,
+        };
+        let user_id1;
+        cy.request("POST", "http://localhost:8000/api/users/register", body1).then(
+          (response) => {
+            user_id1 = response.body.id;
+            expect(response.body).to.have.property("username", "super_prof");
+          },
+        );
+
+        const body2 = {
+          username: "varapj",
+          password: "salasana123",
+          email: "varapj@gmail.com",
+          telegram: "",
+          role: 1,
+        };
+        let user_id2;
+        cy.request("POST", "http://localhost:8000/api/users/register", body2).then(
+          (response) => {
+            user_id2 = response.body.id;
+            expect(response.body).to.have.property("username", "varapj");
+          },
+        );
+
+        cy.wait(1000);
+        cy.contains("Kirjaudu").click();
+        cy.get("#email").type("super@gmail.com");
+        cy.get("#password").type("salasana123");
+        cy.get(".login-button").click();
+    
+        cy.wait(500);
+        cy.contains("Hallinnointi").click();
+    
+
+        cy.window()
+            .its("localStorage")
+            .invoke("getItem", "ACCESS_TOKEN")
+            .should("not.be.null")
+            .then((token) => {
+              const req = {
+                email: "sahkoposti@tko-aly.fi",
+                homepage: "tko-aly.fi",
+                name: "tko-äly",
+                size: "1",
+              };
+
+          cy.request({
+            method: "POST",
+            url: "http://localhost:8000/api/organizations/create",
+            body: req,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }).then((response) => {
+            expect(response.body).to.have.property("name", "tko-äly");
+          });
+        });
+
+        cy.window()
+        .its("localStorage")
+        .invoke("getItem", "ACCESS_TOKEN")
+        .should("not.be.null")
+        .then((token) => {
+          const req2 = {
+            email: "sahkoposti@matrix.fi",
+            homepage: "matrix.fi",
+            name: "matrix",
+            size: "1",
+          };
+
+        cy.request({
+          method: "POST",
+          url: "http://localhost:8000/api/organizations/create",
+          body: req2,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }).then((response) => {
+          expect(response.body).to.have.property("name", "matrix");
+        });
+       });
+
+        cy.window()
+          .its("localStorage")
+          .invoke("getItem", "ACCESS_TOKEN")
+          .should("not.be.null")
+          .then((token) => {
+            const request = {
+              organization_name: "tko-äly",
+            };
+
+            cy.request({
+              method: "PUT",
+              url: `http://localhost:8000/api/keys/hand_over_key/${user_id1}/`,
+              body: request,
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }).then((response) => {
+              expect(response.body).to.have.property("id", user_id1);
+            });
+            });
+
+          cy.window()
+          .its("localStorage")
+          .invoke("getItem", "ACCESS_TOKEN")
+          .should("not.be.null")
+          .then((token) => {
+            const request = {
+              organization_name: "tko-äly",
+            };
+
+            cy.request({
+              method: "PUT",
+              url: `http://localhost:8000/api/keys/hand_over_key/${user_id2}/`,
+              body: request,
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }).then((response) => {
+              expect(response.body).to.have.property("id", user_id2);
+            });
+            });
+
+            cy.window()
+          .its("localStorage")
+          .invoke("getItem", "ACCESS_TOKEN")
+          .should("not.be.null")
+          .then((token) => {
+            const request2 = {
+              organization_name: "matrix",
+            };
+
+            cy.request({
+              method: "PUT",
+              url: `http://localhost:8000/api/keys/hand_over_key/${user_id1}/`,
+              body: request2,
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }).then((response) => {
+              expect(response.body).to.have.property("id", user_id1);
+            });
+            });
+
+        cy.contains("Siivousvuorot").click();
+        cy.contains("Luo lista").click()
+        cy.get("#threshold_value").type("2");
+        cy.get(".create-cleaning-button").click()
+        
+        cy.contains("Tallenna").click()
+        cy.get(".save-cleaninglist-button").click()
+        cy.wait(1000);
+        //checks that list is created and week no.6 can be found
+        cy.contains('6').should('exist');
+
+    })
+
+    // it("Deleting cleaning list succeeds", function () {
+    //   cy.on("uncaught:exception", () => {
+    //       return false;
+    //     });
+    //     const body1 = {
+    //       username: "super_prof",
+    //       password: "salasana123",
+    //       email: "super@gmail.com",
+    //       telegram: "",
+    //       role: 1,
+    //     };
+    //     let user_id1;
+    //     cy.request("POST", "http://localhost:8000/api/users/register", body1).then(
+    //       (response) => {
+    //         user_id1 = response.body.id;
+    //         expect(response.body).to.have.property("username", "super_prof");
+    //       },
+    //     );
+
+    //     const body2 = {
+    //       username: "varapj",
+    //       password: "salasana123",
+    //       email: "varapj@gmail.com",
+    //       telegram: "",
+    //       role: 1,
+    //     };
+    //     let user_id2;
+    //     cy.request("POST", "http://localhost:8000/api/users/register", body2).then(
+    //       (response) => {
+    //         user_id2 = response.body.id;
+    //         expect(response.body).to.have.property("username", "varapj");
+    //       },
+    //     );
+
+    //     cy.wait(1000);
+    //     cy.contains("Kirjaudu").click();
+    //     cy.get("#email").type("super@gmail.com");
+    //     cy.get("#password").type("salasana123");
+    //     cy.get(".login-button").click();
+    
+    //     cy.wait(500);
+    //     cy.contains("Hallinnointi").click();
+    
+
+    //     cy.window()
+    //         .its("localStorage")
+    //         .invoke("getItem", "ACCESS_TOKEN")
+    //         .should("not.be.null")
+    //         .then((token) => {
+    //           const req = {
+    //             email: "sahkoposti@tko-aly.fi",
+    //             homepage: "tko-aly.fi",
+    //             name: "tko-äly",
+    //             size: "1",
+    //           };
+
+    //       cy.request({
+    //         method: "POST",
+    //         url: "http://localhost:8000/api/organizations/create",
+    //         body: req,
+    //         headers: {
+    //           Authorization: `Bearer ${token}`,
+    //         },
+    //       }).then((response) => {
+    //         expect(response.body).to.have.property("name", "tko-äly");
+    //       });
+    //     });
+
+    //     cy.window()
+    //     .its("localStorage")
+    //     .invoke("getItem", "ACCESS_TOKEN")
+    //     .should("not.be.null")
+    //     .then((token) => {
+    //       const req2 = {
+    //         email: "sahkoposti@matrix.fi",
+    //         homepage: "matrix.fi",
+    //         name: "matrix",
+    //         size: "1",
+    //       };
+
+    //     cy.request({
+    //       method: "POST",
+    //       url: "http://localhost:8000/api/organizations/create",
+    //       body: req2,
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //     }).then((response) => {
+    //       expect(response.body).to.have.property("name", "matrix");
+    //     });
+    //   });
+
+    //     cy.window()
+    //       .its("localStorage")
+    //       .invoke("getItem", "ACCESS_TOKEN")
+    //       .should("not.be.null")
+    //       .then((token) => {
+    //         const request = {
+    //           organization_name: "tko-äly",
+    //         };
+
+    //         cy.request({
+    //           method: "PUT",
+    //           url: `http://localhost:8000/api/keys/hand_over_key/${user_id1}/`,
+    //           body: request,
+    //           headers: {
+    //             Authorization: `Bearer ${token}`,
+    //           },
+    //         }).then((response) => {
+    //           expect(response.body).to.have.property("id", user_id1);
+    //         });
+    //         });
+
+    //       cy.window()
+    //       .its("localStorage")
+    //       .invoke("getItem", "ACCESS_TOKEN")
+    //       .should("not.be.null")
+    //       .then((token) => {
+    //         const request = {
+    //           organization_name: "tko-äly",
+    //         };
+
+    //         cy.request({
+    //           method: "PUT",
+    //           url: `http://localhost:8000/api/keys/hand_over_key/${user_id2}/`,
+    //           body: request,
+    //           headers: {
+    //             Authorization: `Bearer ${token}`,
+    //           },
+    //         }).then((response) => {
+    //           expect(response.body).to.have.property("id", user_id2);
+    //         });
+    //         });
+
+    //         cy.window()
+    //       .its("localStorage")
+    //       .invoke("getItem", "ACCESS_TOKEN")
+    //       .should("not.be.null")
+    //       .then((token) => {
+    //         const request2 = {
+    //           organization_name: "matrix",
+    //         };
+
+    //         cy.request({
+    //           method: "PUT",
+    //           url: `http://localhost:8000/api/keys/hand_over_key/${user_id1}/`,
+    //           body: request2,
+    //           headers: {
+    //             Authorization: `Bearer ${token}`,
+    //           },
+    //         }).then((response) => {
+    //           expect(response.body).to.have.property("id", user_id1);
+    //         });
+    //         });
+
+    //     cy.contains("Siivousvuorot").click();
+    //     cy.contains("Luo lista").click()
+    //     cy.get("#threshold_value").type("2");
+    //     cy.get(".create-cleaning-button").click()
+        
+    //     cy.contains("Tallenna").click()
+    //     cy.get(".save-cleaninglist-button").click()
+    //     cy.wait(5500);
+  
+    //     cy.contains("Tyhjennä").click()
+    //     cy.get(".delete-cleaninglist-button").click()
+    //     cy.wait(2)    // might need wait or not
+    //     cy.contains("Siivousvuorot poistettu onnistuneesti.");
+    //   })
+
+
+    it("Cleaninglist export to a json file succeeds", function () {
+          cy.on("uncaught:exception", () => {
+        return false;
+      });
+      const body1 = {
+        username: "super_prof",
+        password: "salasana123",
+        email: "super@gmail.com",
+        telegram: "",
+        role: 1,
+      };
+      let user_id1;
+      cy.request("POST", "http://localhost:8000/api/users/register", body1).then(
+        (response) => {
+          user_id1 = response.body.id;
+          expect(response.body).to.have.property("username", "super_prof");
+        },
+      );
+
+      const body2 = {
+        username: "varapj",
+        password: "salasana123",
+        email: "varapj@gmail.com",
+        telegram: "",
+        role: 1,
+      };
+      let user_id2;
+      cy.request("POST", "http://localhost:8000/api/users/register", body2).then(
+        (response) => {
+          user_id2 = response.body.id;
+          expect(response.body).to.have.property("username", "varapj");
+        },
+      );
+
+      cy.wait(1000);
+      cy.contains("Kirjaudu").click();
+      cy.get("#email").type("super@gmail.com");
+      cy.get("#password").type("salasana123");
+      cy.get(".login-button").click();
+  
+      cy.wait(500);
+      cy.contains("Hallinnointi").click();
   
 
+      cy.window()
+          .its("localStorage")
+          .invoke("getItem", "ACCESS_TOKEN")
+          .should("not.be.null")
+          .then((token) => {
+            const req = {
+              email: "sahkoposti@tko-aly.fi",
+              homepage: "tko-aly.fi",
+              name: "tko-äly",
+              size: "1",
+            };
 
+        cy.request({
+          method: "POST",
+          url: "http://localhost:8000/api/organizations/create",
+          body: req,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }).then((response) => {
+          expect(response.body).to.have.property("name", "tko-äly");
+        });
+      });
 
-})
+      cy.window()
+      .its("localStorage")
+      .invoke("getItem", "ACCESS_TOKEN")
+      .should("not.be.null")
+      .then((token) => {
+        const req2 = {
+          email: "sahkoposti@matrix.fi",
+          homepage: "matrix.fi",
+          name: "matrix",
+          size: "1",
+        };
+
+      cy.request({
+        method: "POST",
+        url: "http://localhost:8000/api/organizations/create",
+        body: req2,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }).then((response) => {
+        expect(response.body).to.have.property("name", "matrix");
+      });
+    });
+
+      cy.window()
+        .its("localStorage")
+        .invoke("getItem", "ACCESS_TOKEN")
+        .should("not.be.null")
+        .then((token) => {
+          const request = {
+            organization_name: "tko-äly",
+          };
+
+          cy.request({
+            method: "PUT",
+            url: `http://localhost:8000/api/keys/hand_over_key/${user_id1}/`,
+            body: request,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }).then((response) => {
+            expect(response.body).to.have.property("id", user_id1);
+          });
+          });
+
+        cy.window()
+        .its("localStorage")
+        .invoke("getItem", "ACCESS_TOKEN")
+        .should("not.be.null")
+        .then((token) => {
+          const request = {
+            organization_name: "tko-äly",
+          };
+
+          cy.request({
+            method: "PUT",
+            url: `http://localhost:8000/api/keys/hand_over_key/${user_id2}/`,
+            body: request,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }).then((response) => {
+            expect(response.body).to.have.property("id", user_id2);
+          });
+          });
+
+          cy.window()
+        .its("localStorage")
+        .invoke("getItem", "ACCESS_TOKEN")
+        .should("not.be.null")
+        .then((token) => {
+          const request2 = {
+            organization_name: "matrix",
+          };
+
+          cy.request({
+            method: "PUT",
+            url: `http://localhost:8000/api/keys/hand_over_key/${user_id1}/`,
+            body: request2,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }).then((response) => {
+            expect(response.body).to.have.property("id", user_id1);
+          });
+          });
+      
+          cy.contains("Siivousvuorot").click();
+          cy.contains("Luo lista").click()
+          cy.get("#threshold_value").type("2");
+          cy.get(".create-cleaning-button").click()
+          
+          cy.contains("Tallenna").click()
+          cy.get(".save-cleaninglist-button").click()
+          cy.wait(9000);
+      
+          cy.contains("Tuo lista").click()
+          cy.wait(1000);
+
+          const filePath = `cypress/downloads/siivousvuorot.json`;
+
+          cy.readFile(filePath).should((json) => {
+            // Check that the JSON array length is 53, i.e. shifts for every week of the year
+            expect(json).to.have.length(53); 
+          });
+      
+        })
+    
+        
+    it("Creating cleaninglist by uploading a json file succeeds", function () {
+          cy.on("uncaught:exception", () => {
+        return false;
+      });
+      const body1 = {
+        username: "super_prof",
+        password: "salasana123",
+        email: "super@gmail.com",
+        telegram: "",
+        role: 1,
+      };
+      let user_id1;
+      cy.request("POST", "http://localhost:8000/api/users/register", body1).then(
+        (response) => {
+          user_id1 = response.body.id;
+          expect(response.body).to.have.property("username", "super_prof");
+        },
+      );
+
+      const body2 = {
+        username: "varapj",
+        password: "salasana123",
+        email: "varapj@gmail.com",
+        telegram: "",
+        role: 1,
+      };
+      let user_id2;
+      cy.request("POST", "http://localhost:8000/api/users/register", body2).then(
+        (response) => {
+          user_id2 = response.body.id;
+          expect(response.body).to.have.property("username", "varapj");
+        },
+      );
+
+      cy.wait(1000);
+      cy.contains("Kirjaudu").click();
+      cy.get("#email").type("super@gmail.com");
+      cy.get("#password").type("salasana123");
+      cy.get(".login-button").click();
+  
+      cy.wait(500);
+      cy.contains("Hallinnointi").click();
+  
+
+      cy.window()
+          .its("localStorage")
+          .invoke("getItem", "ACCESS_TOKEN")
+          .should("not.be.null")
+          .then((token) => {
+            const req = {
+              email: "sahkoposti@tko-aly.fi",
+              homepage: "tko-aly.fi",
+              name: "tko-äly",
+              size: "1",
+            };
+
+        cy.request({
+          method: "POST",
+          url: "http://localhost:8000/api/organizations/create",
+          body: req,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }).then((response) => {
+          expect(response.body).to.have.property("name", "tko-äly");
+        });
+      });
+
+      cy.window()
+      .its("localStorage")
+      .invoke("getItem", "ACCESS_TOKEN")
+      .should("not.be.null")
+      .then((token) => {
+        const req2 = {
+          email: "sahkoposti@matrix.fi",
+          homepage: "matrix.fi",
+          name: "matrix",
+          size: "1",
+        };
+
+      cy.request({
+        method: "POST",
+        url: "http://localhost:8000/api/organizations/create",
+        body: req2,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }).then((response) => {
+        expect(response.body).to.have.property("name", "matrix");
+      });
+    });
+
+      cy.window()
+        .its("localStorage")
+        .invoke("getItem", "ACCESS_TOKEN")
+        .should("not.be.null")
+        .then((token) => {
+          const request = {
+            organization_name: "tko-äly",
+          };
+
+          cy.request({
+            method: "PUT",
+            url: `http://localhost:8000/api/keys/hand_over_key/${user_id1}/`,
+            body: request,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }).then((response) => {
+            expect(response.body).to.have.property("id", user_id1);
+          });
+          });
+
+        cy.window()
+        .its("localStorage")
+        .invoke("getItem", "ACCESS_TOKEN")
+        .should("not.be.null")
+        .then((token) => {
+          const request = {
+            organization_name: "tko-äly",
+          };
+
+          cy.request({
+            method: "PUT",
+            url: `http://localhost:8000/api/keys/hand_over_key/${user_id2}/`,
+            body: request,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }).then((response) => {
+            expect(response.body).to.have.property("id", user_id2);
+          });
+          });
+
+          cy.window()
+        .its("localStorage")
+        .invoke("getItem", "ACCESS_TOKEN")
+        .should("not.be.null")
+        .then((token) => {
+          const request2 = {
+            organization_name: "matrix",
+          };
+
+          cy.request({
+            method: "PUT",
+            url: `http://localhost:8000/api/keys/hand_over_key/${user_id1}/`,
+            body: request2,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }).then((response) => {
+            expect(response.body).to.have.property("id", user_id1);
+          });
+          });
+      
+          cy.contains("Siivousvuorot").click();
+          cy.contains("Vie lista").click()
+
+          const fileName = 'uploadtest_cleaninglist.json';
+
+          cy.fixture(fileName).then((fileContent) => {
+          cy.get('input[type="file"]').attachFile({
+            fileContent,
+            fileName,
+            mimeType: 'application/json',
+              });
+            });;
+          
+          cy.wait(500);  
+          cy.contains("Tallenna").click()
+          cy.get(".save-cleaninglist-button").click()
+          cy.wait(5000);
+          cy.scrollTo('bottom');
+          //checks that list is created and week no.53 can be found
+          cy.contains('53').should('exist');
+      
+ })
+  
+    })
+
 
 Cypress.on;

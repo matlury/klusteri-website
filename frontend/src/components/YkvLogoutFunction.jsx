@@ -60,6 +60,16 @@ const YkvLogoutFunction = ({
     setConfirmOpen(true);
   };
 
+  const getLateIcon = (params) => { 
+    if (params.row.late) {
+      return <AccessTimeIcon />;
+    } else if (params.row.present) {
+      return <CheckIcon />;
+    } else {
+      return null;
+    }
+  }
+
   const getBackgroundColor = (color) =>
     lighten(color, 0.7);
   
@@ -129,9 +139,7 @@ const YkvLogoutFunction = ({
     { field: "YKV_sisäänkirjaus", headerName: t("resp_login"), width: 200 },
     { field: "logout_time", headerName: t("resp_logout"), width: 200 },
     { field: "Organisaatiot", headerName: t("resp_orgs"), width: 200 },
-    { field: "late", headerName: t("resp_act"), width: 200, renderCell: (params) => (
-      params.row.late ? <AccessTimeIcon /> : <CheckIcon />
-    ) },
+    { field: "late", headerName: t("resp_act"), width: 200, renderCell: getLateIcon },
   ];
 
   useEffect(() => {
@@ -193,9 +201,15 @@ const YkvLogoutFunction = ({
         user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase()),
     );
 
-  const getRowClassName = (params) => {
-    return params.row.late ? 'late' : 'on-time';
-  };
+    const getRowClassName = (params) => {
+      if (params.row.late) {
+        return 'late';
+      }
+      if (params.row.present) {
+        return 'on-time';
+      }
+      return '';
+    };
 
   return loading ? (
     <div>{t("loading")}...</div>
@@ -257,6 +271,7 @@ const YkvLogoutFunction = ({
           <DialogActions>
             <Button onClick={handleClose}>{t("cancel")}</Button>
             <Button
+              variant="contained"
               type="submit"
               className="create-user-button"
               data-testid="createresponsibility"

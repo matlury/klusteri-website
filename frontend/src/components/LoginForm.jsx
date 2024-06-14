@@ -14,7 +14,7 @@ const LoginForm = ({
   const { t } = useTranslation();
   return (
     <form>
-      <FormGroup>
+      <FormGroup sx={{ marginBottom: 2 }}>
         <TextField
           id="email"
           label={t("emailoruser")}
@@ -22,7 +22,7 @@ const LoginForm = ({
           onChange={(e) => setEmail(e.target.value)}
         />
       </FormGroup>
-      <FormGroup>
+      <FormGroup sx={{ marginBottom: 2 }}>
         <TextField
           id="password"
           label={t("password")}

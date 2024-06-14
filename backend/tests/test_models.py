@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from django.test import TestCase
-from ilotalo.models import NightResponsibility, User, Organization
+from ilotalo.models import NightResponsibility, User, Organization, Cleaning
 
 class UserTestCase(TestCase):
     # Creating a new User object via test data
@@ -78,3 +78,34 @@ class NightResponsibilityTestCase(TestCase):
         self.assertEqual(str(self.night_responsibility.logout_time)[:-13], current_time)
         self.assertTrue(self.night_responsibility.present)
         self.assertFalse(self.night_responsibility.late)
+
+class CleaningTestCase(TestCase):
+    def setUp(self):
+        # Create two organizations for the tests
+        self.big_org = Organization.objects.create(
+            name="Big Organization",
+            email="bigorg@example.com",
+            homepage="https://bigorg.com"
+        )
+        self.small_org = Organization.objects.create(
+            name="Small Organization",
+            email="smallorg@example.com",
+            homepage="https://smallorg.com"
+        )
+
+        # Create a cleaning responsibility
+        self.cleaning = Cleaning.objects.create(
+            week=12,
+            big=self.big_org,
+            small=self.small_org
+        )
+
+    def test_cleaning_creation(self):
+        cleaning = Cleaning.objects.get(id=self.cleaning.id)
+        self.assertEqual(cleaning.week, 12)
+        self.assertEqual(cleaning.big.name, "Big Organization")
+        self.assertEqual(cleaning.small.name, "Small Organization")
+
+    def test_week_default(self):
+        cleaning_default_week = Cleaning.objects.create(big=self.big_org, small=self.small_org)
+        self.assertEqual(cleaning_default_week.week, 0)

@@ -27,7 +27,7 @@ describe("Instructions component opens", () => {
   it("Shows the cleaning rules", () => {
     const { getByText } = render(<Rules_and_Instructions />);
     const cleaningButton = getByText(
-      "Siivoussäännöt",
+      "Siivousohjeet",
     );
     fireEvent.click(cleaningButton);
 

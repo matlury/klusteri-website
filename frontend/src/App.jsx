@@ -1,4 +1,5 @@
 import * as React from "react";
+import { BrowserRouter as Router, Route, Routes, Link, useLocation } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -8,13 +9,14 @@ import IconButton from "@mui/material/IconButton";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
-import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
 import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
+import CleaningServicesIcon from '@mui/icons-material/CleaningServices';  
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
+import BedtimeOutlinedIcon from '@mui/icons-material/BedtimeOutlined';
+import BuildOutlinedIcon from '@mui/icons-material/BuildOutlined';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import FormatColorResetOutlinedIcon from '@mui/icons-material/FormatColorResetOutlined';
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -40,16 +42,90 @@ import PrivacyPolicy from "./pages/privacypolicy";
 import Contacts from "./pages/contacts";
 import DefectFault from "./pages/defectfaultpage";
 import Rules_and_Instructions from "./pages/rules_instructions";
+import CleaningSchedule from "./pages/cleaningschedulepage";
 import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
 import Statistics from "./pages/statistics";
-
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 import { useTranslation } from "react-i18next";
 import i18n from "./i18n";
 
 const drawerWidth = 240;
+
+const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
+  return (
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      PaperProps={{ style: { minWidth: '400px' } }} // Set minimum width
+    >
+      <DialogTitle>Kirjaudu sisään</DialogTitle>
+      <DialogContent>
+        <LoginPage onLogin={onLogin} onCreateNewUser={onCreateNewUser} />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Peruuta</Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+const Sidebar = () => {
+  const location = useLocation();
+
+  const icons = [
+    <HomeOutlinedIcon />,
+    <InfoOutlinedIcon />,
+    <CalendarMonthOutlinedIcon />,
+    <BedtimeOutlinedIcon />,
+    <ManageAccountsOutlinedIcon />,
+    <BarChartIcon />,
+    <LocationOnOutlinedIcon />,
+    <BuildOutlinedIcon />,
+    <CleaningServicesIcon />,
+    <FactCheckOutlinedIcon />,
+    <AdminPanelSettingsOutlinedIcon />,
+  ];
+
+  return (
+    <div>
+      <Box sx={{ padding: "16px", width: "100%" }}>
+        <a href="/">
+          <img src={matlu} alt="logo" style={{ height: "auto", width: "100%" }} />
+        </a>
+      </Box>
+      <Divider />
+      <List>
+        {[
+        { key: "front_sidebar_1", path: "etusivu", icon: icons[0] },
+        { key: "front_sidebar_2", path: "christina_regina", icon: icons[1] },
+        { key: "front_sidebar_3", path: "varaukset", icon: icons[2]},
+        { key: "front_sidebar_4", path: "ykv", icon: icons[3]},
+        { key: "front_sidebar_5", path: "omat_tiedot", icon: icons[4]},
+        { key: "front_sidebar_6", path: "tilastot", icon: icons[5]},
+        { key: "front_sidebar_7", path: "yhteystiedot", icon: icons[6]},
+        { key: "front_sidebar_8", path: "viat", icon: icons[7]},
+        { key: "front_sidebar_9", path: "saannot_ja_ohjeet", icon: icons[8]},
+        { key: "front_sidebar_10", path: "tietosuojaseloste", icon: icons[9]}
+        ].map(({ text, path }, index) => (
+          <ListItem key={text} disablePadding>
+            <ListItemButton
+              key={text}
+              component={Link}
+              to={path}
+              sx={{ backgroundColor: location.pathname === path ? '#bdbdbd' : 'transparent' }}
+            >
+              <ListItemIcon>{icons[index]}</ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+    </div>
+  );
+};
 
 const App = (props) => {
   const { window } = props;
@@ -112,7 +188,6 @@ const App = (props) => {
     localStorage.removeItem("isLoggedIn");
     setLoggedUser(null);
     setIsLoggedIn(false);
-    localStorage.removeItem("isLoggedIn");
   };
 
   const openLoginDialog = () => {
@@ -146,70 +221,15 @@ const App = (props) => {
 
   const open = Boolean(anchorEl);
 
-  const icons = [
-    <HomeOutlinedIcon />,
-    <InfoOutlinedIcon />,
-    <CalendarMonthOutlinedIcon />,
-    <KeyOutlinedIcon />,
-    <ManageAccountsOutlinedIcon />,
-    <BarChartIcon />,
-    <LocationOnOutlinedIcon />,
-    <FormatColorResetOutlinedIcon/>,
-    <FactCheckOutlinedIcon />,
-    <AdminPanelSettingsOutlinedIcon />,
-  ];
-
-  const listItems = [
-    { key: "front_sidebar_1", path: "etusivu", icon: icons[0] },
-    { key: "front_sidebar_2", path: "christina_regina", icon: icons[1] },
-    { key: "front_sidebar_3", path: "varaukset", icon: icons[2]},
-    { key: "front_sidebar_4", path: "ykv", icon: icons[3]},
-    { key: "front_sidebar_5", path: "omat_tiedot", icon: icons[4]},
-    { key: "front_sidebar_6", path: "tilastot", icon: icons[5]},
-    { key: "front_sidebar_7", path: "yhteystiedot", icon: icons[6]},
-    { key: "front_sidebar_8", path: "viat", icon: icons[7]},
-    { key: "front_sidebar_9", path: "saannot_ja_ohjeet", icon: icons[8]},
-    { key: "front_sidebar_10", path: "tietosuojaseloste", icon: icons[9]}
-  ];
-
-  const drawer = (
-    <div>
-      <img src={matlu} alt="logo" style={{ height: "auto" }} />{" "}
-      {/* ADD PADDING TO LOGO */}
-      <Divider />
-      <List>
-      {listItems.map(({ key, path, icon }) => (
-        <ListItem key={t(key)} disablePadding>
-          <ListItemButton
-            component={Link}
-            to={`/${`${path}`}`}
-          >
-            <ListItemIcon>{icon}</ListItemIcon>
-            <ListItemText primary={t(key)} />
-          </ListItemButton>
-        </ListItem>
-      ))}
-    </List>
-      <Divider />
-    </div>
-  );
-
-  const container =
-    window !== undefined ? () => window().document.body : undefined;
-
-  const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
-    return (
-      <Dialog open={open} onClose={onClose}>
-        <DialogTitle>{t("login")}</DialogTitle>
-        <DialogContent>
-          <LoginPage onLogin={onLogin} onCreateNewUser={onCreateNewUser} />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose}>{t("cancel")}</Button>
-        </DialogActions>
-      </Dialog>
-    );
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
   };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const container = window !== undefined ? () => window().document.body : undefined;
 
   return (
     <Router>
@@ -218,23 +238,22 @@ const App = (props) => {
         <AppBar
           position="fixed"
           sx={{
-            bgcolor: "#FFFFFF",
+            bgcolor: "#484644",
             width: { sm: `calc(100% - ${drawerWidth}px)` },
             ml: { sm: `${drawerWidth}px` },
           }}
         >
           <Toolbar>
             <IconButton
-              color="primary"
               aria-label="open drawer"
               edge="start"
               onClick={handleDrawerToggle}
-              sx={{ mr: 2, display: { sm: "none" } }}
+              sx={{ mr: 2, display: { sm: "none" }, color: "white" }}  // Change color to white
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" noWrap component="div" color={"primary"}>
-              Ilotalo 3.0
+            <Typography variant="h6" noWrap component="div" color={"white"}>
+          Ilotalo 3.0
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
             <IconButton color="primary" onClick={handleIconClick}>
@@ -256,14 +275,29 @@ const App = (props) => {
               <MenuItem onClick={() => handleLangChange('fi')}>Suomi</MenuItem>
               <MenuItem onClick={() => handleLangChange('en')}>English</MenuItem>
             </Menu>
+        <Box sx={{ flexGrow: 1 }} />
             {isLoggedIn ? (
-              <Button
-                variant="outlined"
-                className="logout-button" 
-                onClick={handleLogout}
-              >
-                {t("logout")}{" "}
-              </Button>
+              <>
+                <Button
+              aria-controls="simple-menu"
+              aria-haspopup="true"
+                  onClick={handleMenuClick}
+                  sx={{ marginLeft: 'auto' }}
+                  endIcon={<ArrowDropDownIcon />}
+              style={{ color: "white" }}
+                >
+              {loggedUser ? loggedUser.username : "User"}
+                </Button>
+                <Menu
+                  id="simple-menu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={handleMenuClose}
+                >
+                  <MenuItem onClick={handleLogout}>Kirjaudu ulos</MenuItem>
+                </Menu>
+              </>
             ) : (
               <Button variant="contained" onClick={openLoginDialog}>
                 {t("login")}
@@ -290,10 +324,11 @@ const App = (props) => {
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
                 width: drawerWidth,
+                bgcolor: "#E9E9E9",  // Set background color here for temporary drawer
               },
             }}
           >
-            {drawer}
+            <Sidebar />
           </Drawer>
           <Drawer
             variant="permanent"
@@ -302,11 +337,12 @@ const App = (props) => {
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
                 width: drawerWidth,
+                bgcolor: "#E9E9E9",  // Set background color here for permanent drawer
               },
             }}
             open
           >
-            {drawer}
+            <Sidebar />
           </Drawer>
         </Box>
         <Box
@@ -339,12 +375,13 @@ const App = (props) => {
               path="/viat"
               element={<DefectFault isLoggedIn={isLoggedIn} loggedUser={loggedUser} />}
             />
+            <Route path="/siivousvuorot" element={<CleaningSchedule isLoggedIn={isLoggedIn} loggedUser={loggedUser} />}
+            />
             <Route
               path="/saannot_ja_ohjeet"
               element={<Rules_and_Instructions />}
             />
             <Route path="/tietosuojaseloste" element={<PrivacyPolicy />} />
-            
           </Routes>
           <LoginDialog
             open={loginDialogOpen}

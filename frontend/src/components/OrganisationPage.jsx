@@ -11,20 +11,13 @@ import {
   DialogTitle,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import DeleteIcon from '@mui/icons-material/Delete';
+
 
 const OrganisationPage = ({
   hasPermissionOrg,
-  organization_new_name,
-  setOrganizationNewName,
-  organization_new_homepage,
-  setOrganizationNewHomePage,
-  organization_new_email,
-  setOrganizationNewEmail,
-  organization_new_color,
-  setOrganizationNewColor,
   handleOrganizationDetails,
   handleDeleteOrganization
-
 }) => {
 
   const [allOrganisations, setAllOrganisations] = useState([]);
@@ -33,6 +26,7 @@ const OrganisationPage = ({
   const [organisation_new_name, setOrganisationNewName] = useState("");
   const [organisation_new_homepage, setOrganisationNewHomePage] = useState("");
   const [organisation_new_email, setOrganisationNewEmail] = useState("");
+  const [organisation_new_color, setOrganizationNewColor] = useState("");
   const [organisation_id, setOrganisationId] = useState("");
   const [organisation_keys, setOrganisationKeys] = useState("");
 
@@ -48,7 +42,6 @@ const OrganisationPage = ({
 
   const toggleOrgDetails = (orgId) => {
     const showThisOrg = allOrganisations.find((org) => org.id === orgId);
-    console.log(showThisOrg);
 
     setOrganisationNewName(showThisOrg.Organisaatio)
     setOrganisationNewHomePage(showThisOrg.kotisivu)
@@ -96,7 +89,7 @@ const OrganisationPage = ({
       width: 200,
       renderCell: (params) => (
         <Button
-          variant="contained"
+          variant="outlined"
           color="primary"
           className="modify_org"
           id="modify_org"
@@ -135,6 +128,7 @@ const OrganisationPage = ({
               value={organisation_new_name}
               onChange={(e) => setOrganisationNewName(e.target.value)}
               fullWidth
+              sx={{ marginBottom: '1rem' }} // Add spacing below the field
             />
             <TextField
               label={t("email")}
@@ -143,7 +137,7 @@ const OrganisationPage = ({
               value={organisation_new_email}
               onChange={(e) => setOrganisationNewEmail(e.target.value)}
               fullWidth
-
+              sx={{ marginBottom: '1rem' }} // Add spacing below the field
             />
             <TextField
               label={t("homepage")}
@@ -152,18 +146,29 @@ const OrganisationPage = ({
               value={organisation_new_homepage}
               onChange={(e) => setOrganisationNewHomePage(e.target.value)}
               fullWidth
+              sx={{ marginBottom: '1rem' }} // Add spacing below the field
             />
             <TextField
               label={t("color")}
               id="organization_new_color"
               type="organ"
-              value={organization_new_color}
+              value={organisation_new_color}
               onChange={(e) => setOrganizationNewColor(e.target.value)}
               fullWidth
+              sx={{ marginBottom: '1rem' }} // Add spacing below the field
             />
-          {/* </form> */}
-        {/* </DialogContent> */}
+        </form> 
+        </DialogContent>
         <DialogActions>
+          <Button 
+            variant="contained"
+            style={{ backgroundColor: 'red', color: 'white' }}
+            className="delete-org-button"
+            onClick={() => handleDelete(organisation_id)}
+          >
+            <DeleteIcon /> Poista
+          </Button>
+          <div style={{ flexGrow: 1 }} /> {/* Add space to push buttons to opposite ends */}
           <Button onClick={handleClose}>{t("cancel")}</Button>
           <Button
             type="submit"
@@ -171,19 +176,11 @@ const OrganisationPage = ({
             color="primary"
             id="confirm_org_change"
             className="confirm_org_change"
+            onClick={handleFormSubmit}
           >
             {t("confirmchanges")}
           </Button>
-          <Button 
-            variant="contained"
-            color="secondary"
-            className="delete-org-button"
-            onClick={() => handleDelete(organisation_id)}
-            >{t("deleteorg")}
-            </Button>
         </DialogActions>
-        </form> 
-        </DialogContent>
       </Dialog>
        )}
       </div>

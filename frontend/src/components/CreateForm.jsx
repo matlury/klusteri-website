@@ -40,33 +40,36 @@ const CreateForm = ({
     <h3>{t("createacc")}</h3>
     {error && <p style={{ color: "red" }}>{error}</p>}
     <div className="input-fields">
-      <div>
+      <div style={{ marginBottom: 10 }}>
         <TextField
           id="usernameInput"
           label={t("username")}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          fullWidth // Make the field full width
         />
       </div>
-      <div>
+      <div style={{ marginBottom: 10 }}>
         <TextField
           id="passwordInput"
           label={t("password")}
           type={showPasswords ? "text" : "password"}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          fullWidth // Make the field full width
         />
       </div>
-      <div>
+      <div style={{ marginBottom: 10 }}>
         <TextField
           id="confirmPasswordInput"
           label={t("confirmpassword")}
           type={showPasswords ? "text" : "password"}
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
+          fullWidth // Make the field full width
         />
       </div>
-      <div>
+      <div style={{ marginBottom: 10 }}>
         <FormControlLabel
           control={
             <Checkbox checked={showPasswords} onChange={toggleShowPasswords} />
@@ -74,20 +77,22 @@ const CreateForm = ({
           label={t("showpassword")}
         />
       </div>
-      <div>
+      <div style={{ marginBottom: 10 }}>
         <TextField
           id="emailInput"
           label={t("email")}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          fullWidth // Make the field full width
         />
       </div>
-      <div>
+      <div style={{ marginBottom: 10 }}>
         <TextField
           id="telegramInput"
           label={t("telegram")}
           value={telegram}
           onChange={(e) => setTelegram(e.target.value)}
+          fullWidth // Make the field full width
         />
       </div>
       <ReCAPTCHA

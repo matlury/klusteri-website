@@ -127,9 +127,7 @@ const ReservationsView = ({
           )}
         </div>
       )}
-      <Typography variant="h1" component="h1">
-        {t("reservations_res")}
-      </Typography>
+      <h2>{t("reservations_res")}</h2>
       <div className="add-event-button">
         <Button
           id="createEvent"
@@ -176,9 +174,11 @@ const ReservationsView = ({
             </Typography>
             <TextField
               id="startTime"
+              data-testid="startTime"
               label={t("reservations_starts")}
               type="datetime-local"
               name="start"
+              value={startRef}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
@@ -188,9 +188,11 @@ const ReservationsView = ({
             />
             <TextField
               id="endTime"
+              data-testid="endTime"
               label={t("reservations_ends")}
               type="datetime-local"
               name="end"
+              value={endRef}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
