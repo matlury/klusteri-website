@@ -3,15 +3,18 @@ import React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
+import { useTranslation } from "react-i18next";
 
 const DefectList = ({ loggedUser, allDefects, activeDefects, handleRepairClick, handleEmailClick }) => {
+  const { t } = useTranslation();
+  
   const columns = [
-    { field: "description", headerName: "Kuvaus", width: 400 },
-    { field: "time", headerName: "Aika", width: 200 },
-    { field: "email", headerName: "Sähköposti lähetetty", width: 200 },
+    { field: "description", headerName: t("desc"), width: 400 },
+    { field: "time", headerName: t("time"), width: 200 },
+    { field: "email", headerName: t("emailsent"), width: 200 },
     {
       field: "email_button",
-      headerName: "Merkitse lähetetyksi",
+      headerName: t("marksent"),
       width: 150,
       renderCell: (params) => (
         <Button
@@ -24,10 +27,10 @@ const DefectList = ({ loggedUser, allDefects, activeDefects, handleRepairClick, 
         </Button>
       ),
     },
-    { field: "repaired", headerName: "Korjattu", width: 200 },
+    { field: "repaired", headerName: t("fixed"), width: 200 },
     {
       field: "actions",
-      headerName: "Korjaa",
+      headerName: t("fix"),
       width: 90,
       renderCell: (params) => (
         <Button

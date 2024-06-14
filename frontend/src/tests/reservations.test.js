@@ -6,6 +6,9 @@ import {
 } from "@testing-library/react";import "@testing-library/jest-dom";
 import Reservations from "../../src/pages/reservations";
 import mockAxios from "../../__mocks__/axios.js";
+import i18n from "../i18n.js";
+
+localStorage.setItem("lang", "fi")
 import { momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 

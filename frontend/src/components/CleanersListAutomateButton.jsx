@@ -6,10 +6,13 @@ import { Button } from "@mui/material";
 import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined';
 import axiosClient from "../axios.js";
 import AutomateCleanersDialog from "./AutomateCleanersDialog.jsx";
+import { useTranslation } from "react-i18next";
 
 export default function CleanersListAutomateButton({ updateNewData }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const { t } = useTranslation();
 
   const handleClickOpen = () => {
     setDialogOpen(true);
@@ -82,7 +85,7 @@ export default function CleanersListAutomateButton({ updateNewData }) {
         startIcon={<SmartToyOutlinedIcon />}
         disabled={loading}
       >
-        Luo lista
+        {t("cleaningcreatelist")}
       </Button>
       <AutomateCleanersDialog 
         open={dialogOpen}

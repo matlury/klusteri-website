@@ -4,6 +4,7 @@ from rest_framework.test import APIClient
 from rest_framework import status
 from ilotalo.models import User, Organization, Event
 from datetime import datetime, timezone, timedelta
+from ilotalo.views import force_logout_ykv_logins
 
 """
 Unit tests for back end features
@@ -1290,7 +1291,7 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["late"], False)
-    
+
 #    def test_ykv_late_logout(self):
 #        """An authorized user can logout ykv"""
 #
@@ -1968,6 +1969,35 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def force_logout_ykv_no_ykv(self):
+        """Tests force logout ykv when there are no YKVs"""
+
+        result = force_logout_ykv_logins()
+
+        self.assertEqual(result, "Nothing to log out")
+
+    def force_logout_ykv(self):
+        """Tests force logout ykv"""
+
+        ykv_created = self.client.post(
+            f"http://localhost:8000/api/ykv/create_responsibility",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "user": self.leppis_id,
+                "responsible_for": "kutsutut vieraat",
+                "login_time": "1970-01-01T12:00",
+                "logout_time": "1970-01-02T14:00",
+                "present": True,
+                "late": False,
+                "organizations": [self.tko_aly_id, ],
+            },
+            format="json",
+        )
+
+        result = force_logout_ykv_logins()
+
+        self.assertEqual(result, "logged out users")
 
     def test_creating_cleaning(self):
         """Role 1 can create cleanings"""

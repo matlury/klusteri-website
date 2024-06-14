@@ -2,6 +2,9 @@ import { render, fireEvent, waitFor, screen } from "@testing-library/react";
 import '@testing-library/jest-dom';
 import axiosClient from "../axios.js";
 import AllUsers from "../components/AllUsers";
+import i18n from "../i18n.js";
+
+localStorage.setItem("lang", "fi")
 
 jest.mock("../axios.js");
 

@@ -2,15 +2,18 @@ import "@testing-library/jest-dom";
 import { render, fireEvent, waitFor } from "@testing-library/react";
 import LoginPage from "../pages/loginpage";
 import axiosClient from "../axios.js";
+import i18n from "../i18n.js";
+
+localStorage.setItem("lang", "fi")
 
 jest.mock("../axios");
 
 test("renders login form", () => {
   const { getByLabelText, getByText } = render(<LoginPage />);
 
-  const emailInput = getByLabelText("Sähköposti");
+  const emailInput = getByLabelText("Sähköposti tai Käyttäjätunnus");
   const passwordInput = getByLabelText("Salasana");
-  const loginButton = getByText("Kirjaudu sisään");
+  const loginButton = getByText("Kirjaudu");
   const createUserButton = getByText("Luo tili");
 
   expect(emailInput).toBeInTheDocument();
@@ -32,12 +35,12 @@ test("error message when logging in with invalid credentials", async () => {
   );
 
   // Fill in email and password fields
-  const emailInput = getByLabelText("Sähköposti");
+  const emailInput = getByLabelText("Sähköposti tai Käyttäjätunnus");
   const passwordInput = getByLabelText("Salasana");
   fireEvent.change(emailInput, { target: { value: "test@example.com" } });
   fireEvent.change(passwordInput, { target: { value: "invalidpassword" } });
 
-  const loginButton = getByText("Kirjaudu sisään");
+  const loginButton = getByText("Kirjaudu");
   fireEvent.click(loginButton);
 
   await waitFor(() => {
@@ -47,7 +50,7 @@ test("error message when logging in with invalid credentials", async () => {
     });
 
     expect(
-      queryByText("Sähköposti tai salasana virheellinen!"),
+      queryByText("Sähköposti tai salasana virheellinen"),
     ).toBeInTheDocument();
     expect(localStorage.getItem("loggedUser")).toBeNull();
     expect(localStorage.getItem("isLoggedIn")).toBeNull();
@@ -72,12 +75,12 @@ test("logging in with valid credentials works", async () => {
   );
 
   // Fill in email and password fields
-  const emailInput = getByLabelText("Sähköposti");
+  const emailInput = getByLabelText("Sähköposti tai Käyttäjätunnus");
   const passwordInput = getByLabelText("Salasana");
   fireEvent.change(emailInput, { target: { value: "test@example.com" } });
   fireEvent.change(passwordInput, { target: { value: "password123" } });
 
-  const loginButton = getByText("Kirjaudu sisään");
+  const loginButton = getByText("Kirjaudu");
   fireEvent.click(loginButton);
 
   await waitFor(() => {
@@ -113,5 +116,5 @@ test("switching to create account works", async () => {
   const loginButton = getByText("Luo tili");
   fireEvent.click(loginButton);
 
-  expect(getByText("Näytä salasana")).toBeInTheDocument();
+  expect(getByText("Näytä Salasana")).toBeInTheDocument();
 })

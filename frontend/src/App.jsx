@@ -30,8 +30,8 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import { MenuItem, Menu } from "@mui/material";
+import TranslateIcon from '@mui/icons-material/Translate';
 import matlu from "./matlu.png";
 
 import FrontPage from "./pages/frontpage";
@@ -48,27 +48,32 @@ import OwnKeys from "./pages/ownkeys";
 import Statistics from "./pages/statistics";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
+import { useTranslation } from "react-i18next";
+import i18n from "./i18n";
+
 const drawerWidth = 240;
 
 const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
+  const { t } = useTranslation();
   return (
     <Dialog 
       open={open} 
       onClose={onClose} 
       PaperProps={{ style: { minWidth: '400px' } }} // Set minimum width
     >
-      <DialogTitle>Kirjaudu sisään</DialogTitle>
+      <DialogTitle>{t("loginsuggest")}</DialogTitle>
       <DialogContent>
         <LoginPage onLogin={onLogin} onCreateNewUser={onCreateNewUser} />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Peruuta</Button>
+        <Button onClick={onClose}>{t("cancel")}</Button>
       </DialogActions>
     </Dialog>
   );
 };
 
 const Sidebar = () => {
+  const { t } = useTranslation();
   const location = useLocation();
 
   const icons = [
@@ -81,7 +86,6 @@ const Sidebar = () => {
     <LocationOnOutlinedIcon />,
     <BuildOutlinedIcon />,
     <CleaningServicesIcon />,
-
     <FactCheckOutlinedIcon />,
     <AdminPanelSettingsOutlinedIcon />,
   ];
@@ -96,27 +100,27 @@ const Sidebar = () => {
       <Divider />
       <List>
         {[
-          { text: "Etusivu", path: "/etusivu" },
-          { text: "Christina Regina", path: "/christina_regina" },
-          { text: "Varaukset", path: "/varaukset" },
-          { text: "YKV", path: "/omat_avaimet" },
-          { text: "Hallinnointi", path: "/omat_tiedot" },
-          { text: "Tilastot", path: "/tilastot" },
-          { text: "Yhteystiedot", path: "/yhteystiedot" },
-          { text: "Viat", path: "/viat" },
-          { text: "Siivousvuorot", path: "/siivousvuorot" },
-          { text: "Säännöt ja ohjeet", path: "/saannot_ja_ohjeet" },
-          { text: "Tietosuojaseloste", path: "/tietosuojaseloste" },
-        ].map(({ text, path }, index) => (
-          <ListItem key={text} disablePadding>
+        { key: "front_sidebar_1", path: "etusivu", icon: icons[0] },
+        { key: "front_sidebar_2", path: "christina_regina", icon: icons[1] },
+        { key: "front_sidebar_3", path: "varaukset", icon: icons[2]},
+        { key: "front_sidebar_4", path: "ykv", icon: icons[3]},
+        { key: "front_sidebar_5", path: "omat_tiedot", icon: icons[4]},
+        { key: "front_sidebar_6", path: "tilastot", icon: icons[5]},
+        { key: "front_sidebar_7", path: "yhteystiedot", icon: icons[6]},
+        { key: "front_sidebar_8", path: "viat", icon: icons[7]},
+        { key: "front_sidebar_9", path: "siivousvuorot", icon: icons[8]},
+        { key: "front_sidebar_10", path: "saannot_ja_ohjeet", icon: icons[9]},
+        { key: "front_sidebar_11", path: "tietosuojaseloste", icon: icons[10]}
+        ].map(({ key, path }, index) => (
+          <ListItem key={key} disablePadding>
             <ListItemButton
-              key={text}
+              key={key}
               component={Link}
               to={path}
               sx={{ backgroundColor: location.pathname === path ? '#bdbdbd' : 'transparent' }}
             >
               <ListItemIcon>{icons[index]}</ListItemIcon>
-              <ListItemText primary={text} />
+              <ListItemText primary={t(key)} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -138,9 +142,16 @@ const App = (props) => {
   );
 
   const [loginDialogOpen, setLoginDialogOpen] = React.useState(false);
-  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const [language, setLanguage] = React.useState(
+    localStorage.getItem("lang") || "fi"
+  )
+
+  const [anchorEl, setAnchorEl] = React.useState(null)
+  const [anchorElLang, setAnchorElLang] = React.useState(null)
 
   React.useEffect(() => {
+    i18n.changeLanguage(localStorage.getItem("lang") || "fi")
     const loggedInStatus = localStorage.getItem("isLoggedIn");
     if (loggedInStatus === "true") {
       setIsLoggedIn(true);
@@ -191,6 +202,29 @@ const App = (props) => {
     setLoginDialogOpen(false);
   };
 
+  const handleLangChange = (lang) => {
+    setLanguage(lang);
+    i18n.changeLanguage(lang);
+    localStorage.setItem('lang', lang);
+    setAnchorElLang(null); // Close the menu after selecting an option
+  };
+
+  const { t } = useTranslation();
+
+  React.useEffect(() => {
+    i18n.changeLanguage(language);
+  }, [language]);
+
+  const handleIconClick = (event) => {
+    setAnchorElLang(event.currentTarget); // Set anchorEl to the clicked element
+  };
+
+  const handleClose = () => {
+    setAnchorElLang(null); // Close the menu
+  };
+
+  const open = Boolean(anchorElLang);
+
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -225,7 +259,27 @@ const App = (props) => {
             <Typography variant="h6" noWrap component="div" color={"white"}>
           Ilotalo 3.0
             </Typography>
-        <Box sx={{ flexGrow: 1 }} />
+          <Box sx={{ flexGrow: 1 }} />
+          <IconButton color="primary" onClick={handleIconClick}>
+              <TranslateIcon
+              color="primary" sx={{ color: 'white' }} />
+            </IconButton>
+            <Menu
+              anchorEl={anchorElLang}
+              open={open}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+              }}
+            >
+              <MenuItem onClick={() => handleLangChange('fi')}>Suomi</MenuItem>
+              <MenuItem onClick={() => handleLangChange('en')}>English</MenuItem>
+            </Menu>
             {isLoggedIn ? (
               <>
                 <Button
@@ -245,12 +299,12 @@ const App = (props) => {
                   open={Boolean(anchorEl)}
                   onClose={handleMenuClose}
                 >
-                  <MenuItem onClick={handleLogout}>Kirjaudu ulos</MenuItem>
+                  <MenuItem onClick={handleLogout}>{t("logout")}</MenuItem>
                 </Menu>
               </>
             ) : (
               <Button variant="contained" onClick={openLoginDialog}>
-                Kirjaudu
+                {t("login")}
               </Button>
             )}
           </Toolbar>
@@ -310,7 +364,7 @@ const App = (props) => {
             <Route path="/christina_regina" element={<ChristinaRegina />} />
             <Route path="/varaukset" element={<Reservations />} />
             <Route
-              path="/omat_avaimet"
+              path="/ykv"
               element={
                 <OwnKeys isLoggedIn={isLoggedIn} loggedUser={loggedUser} />
               }

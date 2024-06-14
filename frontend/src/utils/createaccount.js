@@ -9,6 +9,8 @@ const createaccount = ({
   setUserCreated,
   setShowLoginPage,
   onAccountCreated,
+  recaptchaResponse,
+  t
 }) => {
   /*
     Send request to server to check if email is already in use
@@ -20,11 +22,11 @@ const createaccount = ({
       .then((response) => {
         const existingUsers = response.data;
         if (existingUsers.some((user) => user.email === email)) {
-          resolve("Sähköposti on jo käytössä.");
+          resolve(t("emailinuse"));
           return
         }
         if (existingUsers.some((user) => user.username === username)) {
-          resolve("Käyttäjänimi on jo käytössä");
+          resolve(t("usernameinuse"));
           return
         } else {
           const userObject = {
@@ -35,6 +37,7 @@ const createaccount = ({
             role: 5,
             organization: null,
             keys: null,
+            recaptcha_response: recaptchaResponse
           };
           axios
             .post(`${API_URL}/api/users/register`, userObject)
@@ -49,7 +52,7 @@ const createaccount = ({
             })
             .catch((error) => {
               console.error("Error creating account:", error);
-              resolve("Virhe luotaessa käyttäjää.");
+              resolve(t("errorcreate"));
               return
             });
           setShowLoginPage(true);
@@ -57,7 +60,7 @@ const createaccount = ({
       })
       .catch((error) => {
         console.error("Error checking email:", error);
-        resolve("Virhe tarkistettaessa sähköpostia.");
+        resolve(t("erroremail"));
         return
       });
   });

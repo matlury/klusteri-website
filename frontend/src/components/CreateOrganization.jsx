@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const CreateOrganization = ({
   organization_name,
@@ -12,6 +13,7 @@ const CreateOrganization = ({
   setOrganizationColor,
   handleCreateOrganization,
 }) => {
+  const { t } = useTranslation();
   // State variables to manage dialog visibility and field validation
   const [open, setOpen] = useState(false);
   const [errorFields, setErrorFields] = useState({});
@@ -53,17 +55,17 @@ const CreateOrganization = ({
     <div>
 
       <Button onClick={handleClickOpen} variant="contained" className="open-dialog-button">
-        + Luo järjestö
+        {t("createneworg")}
       </Button>
       
       <Dialog open={open} onClose={handleClose} maxWidth="md">
-        <DialogTitle>Luo uusi järjestö</DialogTitle>
+        <DialogTitle>{t("createneworg")}</DialogTitle>
         <DialogContent sx={{ width: "400px" }}>
           <form>
             <div style={{ marginBottom: "1rem" }}>
               <TextField
                 id="name"
-                label="Järjestön nimi"
+                label={t("name")}
                 value={organization_name}
                 onChange={(e) => setOrganizationName(e.target.value)}
                 fullWidth
@@ -74,7 +76,7 @@ const CreateOrganization = ({
             <div style={{ marginBottom: "1rem" }}>
               <TextField
                 id="email"
-                label="Sähköposti"
+                label={t("email")}
                 className="organization-email"
                 value={organization_email}
                 onChange={(e) => setOrganizationEmail(e.target.value)}
@@ -86,7 +88,7 @@ const CreateOrganization = ({
             <div style={{ marginBottom: "1rem" }}>
               <TextField
                 id="homepage"
-                label="Kotisivu"
+                label={t("homepage")}
                 value={organization_homepage}
                 onChange={(e) => setOrganizationHomePage(e.target.value)}
                 fullWidth
@@ -97,7 +99,7 @@ const CreateOrganization = ({
             <div style={{ marginBottom: "1rem" }}>
               <TextField
                 id="color"
-                label="Järjestön väri"
+                label={t("color")}
                 value={organization_color}
                 onChange={(e) => setOrganizationColor(e.target.value)}
                 fullWidth
@@ -107,10 +109,10 @@ const CreateOrganization = ({
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Peruuta
+          {t("cancel")}
           </Button>
           <Button onClick={handleCreateAndClose} variant="contained" className="create-organization-button" data-testid="create-organization-button">
-            Luo järjestö
+          {t("createorg")}
           </Button>
         </DialogActions>
       </Dialog>

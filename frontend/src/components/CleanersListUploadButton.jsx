@@ -4,9 +4,12 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@mui/material";
 import UploadIcon from "@mui/icons-material/Upload";
+import { useTranslation } from "react-i18next";
 
 export default function CleanersListUploadButton({ setNewData }) {
   const [loading, setLoading] = useState(true);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     setLoading(false);
@@ -33,7 +36,7 @@ export default function CleanersListUploadButton({ setNewData }) {
       startIcon={<UploadIcon />}
       disabled={loading}
     >
-      Vie lista
+      {t("cleaningimportlist")}
       <input
         type="file"
         accept=".json"

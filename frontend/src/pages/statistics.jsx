@@ -17,6 +17,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import DownloadIcon from "@mui/icons-material/Download";
+import { useTranslation } from "react-i18next";
 
 const API_URL = process.env.API_URL;
 
@@ -96,6 +97,8 @@ const Statistics = () => {
     };
   }, []);
 
+  const { t } = useTranslation();
+
   const fetchData = async () => {
     try {
       const [orgResponse, userResponse, responsibilitiesResponse] =
@@ -146,8 +149,8 @@ const Statistics = () => {
     const orgmemdata = {};
 
     orgData.forEach((org) => {
-      orgdata[org.name] = { value: 0, label: org.name };
-      orgmemdata[org.name] = { value: org.user_set.length, label: org.name };
+      orgdata[org.name] = { value: 0, label: org.name, ...(org.color ? { color: org.color } : {}) };
+      orgmemdata[org.name] = { value: org.user_set.length, label: org.name, ...(org.color ? { color: org.color } : {}) };
     });
 
     setOrgMembersData(Object.values(orgmemdata));
@@ -185,7 +188,8 @@ const Statistics = () => {
     const numberdayweek = [6, 0, 1, 2, 3, 4, 5];
 
     orgdata.forEach((org) => {
-      latedata[org.name] = { value: 0, label: org.name };
+      latedata[org.name] = { value: 0, label: org.name, ...(org.color ? { color: org.color } : {})};
+      console.log(latedata)
     });
     users.forEach((usr) => {
       userdata[usr.username] = { data: [0], label: usr.username };
@@ -224,13 +228,13 @@ const Statistics = () => {
     const logs = [
       {
         data: logintimesdata,
-        label: "Sisäänkirjautuminen",
+        label: t("statslogin"),
         color: "lightGreen",
         showMark: ({ index }) => index === -1,
       },
       {
         data: logouttimesdata,
-        label: "Uloskirjautuminen",
+        label: t("statslogout"),
         color: "red",
         showMark: ({ index }) => index === -1,
       },
@@ -330,7 +334,7 @@ const Statistics = () => {
   };
 
   if (userRole === 5 || userRole == null) {
-    return <p>Kirjaudu sisään</p>;
+    return <p>{t("login")}</p>;
   }
 
   return (
@@ -338,7 +342,7 @@ const Statistics = () => {
       <Grid container spacing={2}>
         <Grid item xs={columnWidth}>
           <div>
-            <p>Hae aikavälillä</p>
+            <p>{t("timefilter")}</p>
             <input type="hidden" id="timezone" name="timezone" value="03:00" />
             <input
               value={minFilter}
@@ -360,7 +364,7 @@ const Statistics = () => {
               onClick={handleCSV}
               startIcon={<DownloadIcon />}
             >
-              Lataa CSV-tiedosto tapahtumista
+              {t("csvdownload")}
             </Button>
             {shouldDownload && CSVdata && (
               <CSVDownload
@@ -372,7 +376,7 @@ const Statistics = () => {
           </div>
         </Grid>
         <Grid item xs={columnWidth}>
-          <h2>Järjestötilastot</h2>
+          <h2>{t("orgstats")}</h2>
           <FormControl>
             <FormLabel id="radio-buttons-group" />
             <RadioGroup
@@ -385,17 +389,17 @@ const Statistics = () => {
               <FormControlLabel
                 value="1"
                 control={<Radio />}
-                label="Avainten määrä järjestöittäin"
+                label={t("orgstats_1")}
               />
               <FormControlLabel
                 value="2"
                 control={<Radio />}
-                label="YKV-kirjausten määrä järjestöittäin"
+                label={t("orgstats_2")}
               />
               <FormControlLabel
                 value="3"
                 control={<Radio />}
-                label="Myöhäisten YKV-kirjausten määrä järjestöittäin"
+                label={t("orgstats_3")}
               />
             </RadioGroup>
           </FormControl>
@@ -410,7 +414,7 @@ const Statistics = () => {
           />
         </Grid>
         <Grid item xs={columnWidth}>
-          <h2>YKV-kirjausten määrä käyttäjittäin</h2>
+          <h2>{t("userstats_1")}</h2>
           <BarChart
             width={winWidth / widthDivider}
             height={winHeight / 2.6}
@@ -421,13 +425,13 @@ const Statistics = () => {
           />
         </Grid>
         <Grid item xs={columnWidth}>
-          <h2>YKV-kirjausten määrä viikonpäivittäin</h2>
+          <h2>{t("userstats_2")}</h2>
           <BarChart
             series={logsPerWeekDayData || []}
             xAxis={[
               {
                 scaleType: "band",
-                data: ["ma", "ti", "ke", "to", "pe", "la", "su"],
+                data: [t("monday"), t("tuesday"), t("wednesday"), t("thursday"), t("friday"), t("saturday"), t("sunday")],
               },
             ]}
             width={winWidth / widthDivider}
@@ -436,7 +440,7 @@ const Statistics = () => {
           />
         </Grid>
         <Grid item xs={columnWidth}>
-          <h2>YKV-kirjausten määrä tunneittain</h2>
+          <h2>{t("userstats_3")}</h2>
           <LineChart
             series={logTimesData || []}
             width={winWidth / widthDivider}

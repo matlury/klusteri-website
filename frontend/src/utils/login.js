@@ -1,7 +1,7 @@
 import axiosClient from "../axios.js";
 
 // Handles the login function
-const login = ({ email, password, setError, setToken, onLogin, setUser }) => {
+const login = ({ email, password, setError, setToken, onLogin, setUser, t }) => {
   const credentials = {
     email: email,
     password: password,
@@ -30,7 +30,7 @@ const login = ({ email, password, setError, setToken, onLogin, setUser }) => {
       if (response && response.status === 422) {
         setError(response.data.message);
       } else {
-        setError("Sähköposti tai salasana virheellinen!");
+        setError(t("faillogin"));
       }
     });
 };

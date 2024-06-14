@@ -11,6 +11,7 @@ import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import CleanersListAutomateButton from "../components/CleanersListAutomateButton.jsx";
 import SaveDialog from "../components/SaveDialog";
 import Stack from '@mui/material/Stack';
+import { useTranslation } from "react-i18next";
 
 const CleaningSchedule = ({
   isLoggedIn: propIsLoggedIn,
@@ -28,6 +29,8 @@ const CleaningSchedule = ({
   const [rawCleaningData, setRawCleaningData] = useState(null);
   const [newData, setNewData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     setIsLoggedIn(propIsLoggedIn);
@@ -83,7 +86,7 @@ const CleaningSchedule = ({
     const orgdata = await axiosClient.get("/listobjects/organizations/");
 
     if (allCleaning.length > 0) {
-       setError("Poista siivousvuorot ennen uusien lisäämistä");
+       setError(t("cleaningerrorold"));
        return;
     }
 
@@ -114,14 +117,14 @@ const CleaningSchedule = ({
       axiosClient
         .post(`/cleaning/create_cleaning`, cleaningObject)
         .then((response) => {
-          setSuccess("Siivouksen kirjaus onnistui");
+          setSuccess(t("cleaningsubmitsuccess"));
           setTimeout(() => setSuccess(""), 5000);
           fetchCleaning();
         })
         .catch((error) => {
-          setError("Siivouksen kirjaus epäonnistui");
+          setError(t("cleaningsubmitfail"));
           setTimeout(() => setError(""), 5000);
-          console.error("Pyyntö ei menny läpi", error);
+          console.error("Error submitting cleaning", error);
         });
     }
   };
@@ -132,7 +135,7 @@ const CleaningSchedule = ({
       .then((response) => {
         console.log("Cleaners deleted successfully");
         fetchCleaning();
-        setSuccess("Siivousvuorot poistettu onnistuneesti.");
+        setSuccess(t("cleaningclearedsuccess"));
         setTimeout(() => setSuccess(""), 5000);
       })
       .catch((error) => {
@@ -162,12 +165,12 @@ const CleaningSchedule = ({
 
   return (
     <div className="textbox">
-      {!isLoggedIn && <h3>Kirjaudu sisään</h3>}
+      {!isLoggedIn && <h3>{t("loginsuggest")}</h3>}
       {isLoggedIn && (
         <div>
           {error && <p style={{ color: "red" }}>{error}</p>}
           {success && <p style={{ color: "green" }}>{success}</p>}
-          <h2>Siivousvuorot</h2>
+          <h2>{t("cleaningschedule")}</h2>
           <Stack direction="row" spacing={2}>
             <CleanersListJSONButton cleaners={rawCleaningData} />
             {loggedUser && loggedUser.role === 1 && (
@@ -181,7 +184,7 @@ const CleaningSchedule = ({
                   data-testid="save-cleaning-button"
                   onClick={handleSaveClick}
                 >
-                  Tallenna
+                  {t("save")}
                 </Button>
                 <Button
                   startIcon={<DeleteOutlineIcon />}
@@ -189,7 +192,7 @@ const CleaningSchedule = ({
                   color="primary"
                   onClick={handleClickRemove}
                 >
-                  Tyhjennä
+                  {t("clear")}
                 </Button>
               </React.Fragment>
             )}

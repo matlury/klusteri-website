@@ -1,36 +1,20 @@
 import React from "react";
 import christinaregina from "../ChristinaRegina.png";
+import { useTranslation } from "react-i18next";
 
 const ChristinaRegina = () => {
+  const { t } = useTranslation();
   return (
     <div className="textbox">
       <h1>Christina Regina</h1>
       <p>
-        Christina Regina eli Matlun klusteri sijaitsee Domus Gaudiumin
-        ensimmäisessä kerroksessa (tila 1.8). Siinä on kolme tilaa: kokoushuone,
-        kerhotila ja oleskelutila. Naapurissa on Conduksen klusteri eli Gustavus
-        Rex.
+        {t("christina_regina_1")}
       </p>
       <p>
-        "Talon latinankielinen nimi, Domus Gaudium, tarkoittaa Ilo- tai
-        Riemu-nimistä taloa. Se viittaa luontevasti opiskelun ja
-        opiskelijaelämän riemuihin – ja jatkaa akateemista traditiota ja sopii
-        paikan muuhun nimistöön, kuten Domus Academicaan. Talo sai myös oman
-        tunnuslauseen, ”sub hoc tecto cives academici excoluntur”, joka
-        suomennettuna tarkoittaa ”tämän rakennuksen suojissa tehdään akateemisia
-        kansalaisia”. Lauseeseen sisältyy vahvasti henkisten ominaisuuksien
-        kehittämisen merkitys."
+        {t("front_1")} {t("front_2")} {t("christina_regina_2")}
       </p>
       <p>
-        "HYYn puolella opiskelijoiden ja järjestöjen käyttöön tarkoitetut tilat
-        on nimetty peilaten ylioppilaskunnan historiaa tuoreesti, mutta
-        perinteitä kunnioittaen. Tärkeitä teemoja ovat olleet akateemisuus ja
-        akateemisuuden merkittävimmät symbolit ja rikkaana elävä kaksikielisyys,
-        sekä ylioppilaskunnan oman historian lisäksi myös Helsingin yliopiston
-        ja kaupungin historia. Vaikutteita on myös Ruotsin ja Venäjän
-        historiasta. Domus Academican puolella Domus Gaudiumiin liittyvässä
-        kehityshankkeessa tilojen nimiin on käytetty kalevalaisia aiheita, kuten
-        Aino ja Väinämöinen.
+        {t("christina_regina_3")}
       </p>
       <img src={christinaregina} id="map" width="400" height="300" alt="Logo" />
     </div>

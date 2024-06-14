@@ -6,6 +6,7 @@ import { useStateContext } from "../context/ContextProvider.jsx";
 import axiosClient from "../axios.js";
 import axios from "axios";
 import ReservationsView from "../components/ReservationsView.jsx";
+import { useTranslation } from "react-i18next";
 
 const API_URL = process.env.API_URL;
 
@@ -42,6 +43,8 @@ const MyCalendar = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const { user } = useStateContext();
+
+  const { t } = useTranslation();
 
   // Calls getEvents() to fetch events when starting the page
   useEffect(() => {
@@ -81,7 +84,7 @@ const MyCalendar = () => {
         setEvents(events);
       })
       .catch((error) => {
-        console.error("Virhe tapahtumien hakemisessa:", error);
+        console.error(t("errorfetchevents"), error);
       });
   };
 
@@ -97,7 +100,7 @@ const MyCalendar = () => {
         setOrganizations(organizations);
       })
       .catch((error) => {
-        console.error("Virhe järjestöjen hakemisessa:", error);
+        console.error(t("errorfetchorg"), error);
       });
   };
 
@@ -107,7 +110,7 @@ const MyCalendar = () => {
       setSelectedSlot({ start, end });
       setShowCreateModal(true);
     } else {
-      alert("Sinun täytyy kirjautua sisään lisätäksesi tapahtuman.");
+      alert(t("erroreventlogin"));
     }
   };
 
@@ -163,7 +166,7 @@ const MyCalendar = () => {
     const open = isOpen === "avoin" ? true : false;
 
     if (duration > 24) {
-      alert("Varauksen kesto ei voi olla yli 24 tuntia.");
+      alert(t("errorlongevent"));
       return;
     }
     if (
@@ -190,7 +193,7 @@ const MyCalendar = () => {
       });
 
       if (isRoomOccupied) {
-        alert("Huone on jo varattu valitulle ajankohdalle.");
+        alert(t("erroreventroom"));
         return;
       }
 
@@ -210,7 +213,7 @@ const MyCalendar = () => {
       axiosClient
         .post(`events/create_event`, newEvent)
         .then((response) => {
-          console.log("Tapahtuma tallennettu:", response.data);
+          console.log(t("eventsaved"), response.data);
           const updatedEvent = { ...newEvent, id: response.data.id };
           setEvents([...events, updatedEvent]);
           setShowCreateModal(false);
@@ -227,11 +230,11 @@ const MyCalendar = () => {
           });
         })
         .catch((error) => {
-          alert("Virhe tapahtuman tallentamisessa");
-          console.error("Virhe tapahtuman tallentamisessa", error);
+          alert(t("errorevent"));
+          console.error(t("errorevent"), error);
         });
     } else {
-      alert("Täytä kaikki tiedot ennen tapahtuman lisäämistä.");
+      alert(t("erroreventfields"));
     }
   };
 
@@ -241,11 +244,11 @@ const MyCalendar = () => {
       axiosClient
         .delete(`events/delete_event/${eventId}/`)
         .then((response) => {
-          console.log("Tapahtuma poistettu:", response.data);
+          console.log(t("eventdeleted"), response.data);
           setEvents(events.filter((event) => event.id !== eventId));
         })
         .catch((error) => {
-          console.error("Virhe tapahtuman poistamisessa:", error);
+          console.error(t("erroreventdelete"), error);
         });
     }
   };

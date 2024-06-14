@@ -18,6 +18,7 @@ python-dotenv = "^1.0.1"
 aenum = "^3.1.15"
 psycopg2 = "^2.9.9"
 django-apscheduler = "^0.6.2"
+requests = "^2.32.3"
 
 
 [tool.poetry.group.dev.dependencies]

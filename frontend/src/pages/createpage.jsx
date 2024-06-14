@@ -3,6 +3,7 @@ import LoginPage from "./loginpage";
 import newaccountcheck from "../utils/newaccountcheck";
 import CreateForm from "../components/CreateForm";
 import createaccount from "../utils/createaccount";
+import { useTranslation } from "react-i18next";
 
 const NewAccountPage = ({ onAccountCreated }) => {
   const [username, setUsername] = useState("");
@@ -14,8 +15,11 @@ const NewAccountPage = ({ onAccountCreated }) => {
   const [showLoginPage, setShowLoginPage] = useState(false);
   const [error, setError] = useState("");
   const [userCreated, setUserCreated] = useState(false);
+  const [recaptchaResponse, setRecaptchaResponse] = useState("");
 
   const API_URL = process.env.API_URL;
+
+  const { t } = useTranslation();
 
   const handleCreateAccount = async () => {
     const response = await newaccountcheck({
@@ -25,6 +29,7 @@ const NewAccountPage = ({ onAccountCreated }) => {
       telegram,
       confirmPassword,
       API_URL,
+      t
     });
     if (typeof response === "string") {
       setError(response);
@@ -38,12 +43,14 @@ const NewAccountPage = ({ onAccountCreated }) => {
         setUserCreated,
         setShowLoginPage,
         onAccountCreated,
+        recaptchaResponse,
+        t
       });
       if (typeof resp === "string") {
         setError(resp);
       }
     } else {
-      setError("Virhe käyttäjän luonnissa.");
+      setError(t("errorusercreate"));
     }
   };
 
@@ -76,10 +83,11 @@ const NewAccountPage = ({ onAccountCreated }) => {
           setTelegram={setTelegram}
           handleBackToLogin={handleBackToLogin}
           handleCreateAccount={handleCreateAccount}
+          setRecaptchaResponse={setRecaptchaResponse}
         />
       )}
       {userCreated && (
-        <p style={{ color: "green" }}>Käyttäjä luotu onnistuneesti!</p>
+        <p style={{ color: "green" }}>{t("usersuccess")}</p>
       )}
     </div>
   );

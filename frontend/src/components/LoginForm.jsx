@@ -1,5 +1,6 @@
 import React from "react";
 import { TextField, Button, FormGroup } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const LoginForm = ({
   email,
@@ -10,12 +11,13 @@ const LoginForm = ({
   handleCreateUser,
   error,
 }) => {
+  const { t } = useTranslation();
   return (
     <form>
       <FormGroup sx={{ marginBottom: 2 }}>
         <TextField
           id="email"
-          label="Sähköposti"
+          label={t("emailoruser")}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -23,7 +25,7 @@ const LoginForm = ({
       <FormGroup sx={{ marginBottom: 2 }}>
         <TextField
           id="password"
-          label="Salasana"
+          label={t("password")}
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -32,13 +34,14 @@ const LoginForm = ({
 
       <div style={{ marginTop: 10 }}>
         <Button
+          id="login-button"
           variant="contained"
           className="login-button"
           color="primary"
           type="button"
           onClick={handleLogin}
         >
-          Kirjaudu sisään
+          {t("login")}
         </Button>
       </div>
 
@@ -50,7 +53,7 @@ const LoginForm = ({
           type="button"
           onClick={handleCreateUser}
         >
-          Luo tili
+          {t("createacc")}
         </Button>
       </div>
 

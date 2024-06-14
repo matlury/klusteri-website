@@ -4,13 +4,14 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import { useTranslation } from 'react-i18next';
 
 export default function OrgSelect({data, value, handleChange}) {
-
+  const { t } = useTranslation();
   return (
     <Box sx={{ minWidth: 120 }}>
       <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">Järjestäjä</InputLabel>
+        <InputLabel id="demo-simple-select-label">{t("reservations_org")}</InputLabel>
         <Select
           id="organizerName"
           value={value}

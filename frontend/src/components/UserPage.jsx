@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, TextField } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const UserPage = ({
   username,
@@ -11,13 +12,14 @@ const UserPage = ({
   handleUserDetails,
   role,
 }) => {
+  const { t } = useTranslation();
   return (
     <form>
-      <h2>Hallinnointi</h2>
+      <h2>{t("owninfo")}</h2>
       <div>
         <TextField
           id="username"
-          label="Käyttäjänimi"
+          label={t("username")}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
@@ -25,7 +27,7 @@ const UserPage = ({
       <div>
         <TextField
           id="email"
-          label="Sähköposti"
+          label={t("email")}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -44,10 +46,10 @@ const UserPage = ({
         className="create-user-button"
         data-testid="saveuserdata"
       >
-        Tallenna{" "}
+        {t("save")}{" "}
       </Button>
 
-      <div>Käyttäjän rooli: {role}</div>
+      <div>{t("userrole")}: {role}</div>
 
 
     </form>
