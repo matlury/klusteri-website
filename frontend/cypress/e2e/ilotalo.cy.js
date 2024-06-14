@@ -1233,7 +1233,7 @@ describe("Cleaningshifts", () => {
           cy.get(".save-cleaninglist-button").click()
           cy.wait(9000);
       
-          cy.contains("Tuo lista").click()
+          cy.contains("Vie lista").click()
           cy.wait(1000);
 
           const filePath = `cypress/downloads/siivousvuorot.json`;
