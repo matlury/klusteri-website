@@ -3,10 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 const Contacts = () => {
-  const OpenChristinaRegina = () => {
-    const christinaregina_url = "/christina_regina";
-    window.open(christinaregina_url, "_self");
-  };
+ 
   const { t } = useTranslation();
   return (
     <div className="textbox">
@@ -14,7 +11,7 @@ const Contacts = () => {
       <p>
         {t("contacts_1")}
       </p>
-      <Link to="/christina_regina">
+      <Link to="/christina_regina" data-testid="christina-regina-link">
         <h1>Christina Regina</h1>
       </Link>
       <p>
