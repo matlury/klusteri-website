@@ -1970,14 +1970,14 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def force_logout_ykv_no_ykv(self):
+    def test_force_logout_ykv_no_ykv(self):
         """Tests force logout ykv when there are no YKVs"""
 
         result = force_logout_ykv_logins()
 
         self.assertEqual(result, "Nothing to log out")
 
-    def force_logout_ykv(self):
+    def test_force_logout_ykv(self):
         """Tests force logout ykv"""
 
         ykv_created = self.client.post(
