@@ -24,6 +24,8 @@ from .views import (
     EmailDefectFaultView,
     CreateCleaningView,
     RemoveCleaningView,
+    CleaningSuppliesView,
+    CreateCleaningSuppliesView,
 )
 
 """Define URL endpoints for the ilotalo app"""
@@ -54,5 +56,7 @@ urlpatterns = [
     path("delete_defect/<int:pk>/", RemoveDefectFaultView.as_view()),
     path("create_cleaning", CreateCleaningView.as_view()),
     path("remove/all", RemoveCleaningView.as_view()),
+    path("cleaningsupplies", CleaningSuppliesView.as_view()),
+    path("create_tool", CreateCleaningSuppliesView.as_view()),
 
 ]

@@ -18,8 +18,9 @@ from .serializers import (
     DefectFaultSerializer,
     CleaningSerializer,
     CreateCleaningSerializer,
+    CleaningSuppliesSerializer
 )
-from .models import User, Organization, Event, NightResponsibility, DefectFault, Cleaning
+from .models import User, Organization, Event, NightResponsibility, DefectFault, Cleaning, CleaningSupplies
 from .config import Role
 from datetime import datetime, timezone
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -1005,3 +1006,37 @@ def force_logout_ykv_logins():
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+
+class CleaningSuppliesView(viewsets.ReadOnlyModelViewSet):
+    """
+    Displays a list of all cleaning supplies at <baseurl>/cleaningsupplies
+    Only supports list and retrieve actions (read-only)
+    """
+
+    serializer_class = CleaningSuppliesSerializer
+    queryset = CleaningSupplies.objects.all()
+
+class CreateCleaningSuppliesView(APIView):
+    """View for creating cleaning supplies <baseurl>/api/cleaningsupplies/create_tool"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+        ]:
+          return Response(
+                "You can't edit cleaning tool",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        serializer =CleaningSuppliesSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+  
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
