@@ -72,7 +72,7 @@ const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
   );
 };
 
-const Sidebar = () => {
+const Sidebar = ({ isLoggedIn }) => {
   const { t } = useTranslation();
   const location = useLocation();
 
@@ -90,6 +90,20 @@ const Sidebar = () => {
     <AdminPanelSettingsOutlinedIcon />,
   ];
 
+  const routes = [
+    { key: "front_sidebar_1", path: "etusivu", icon: icons[0] },
+    { key: "front_sidebar_2", path: "christina_regina", icon: icons[1] },
+    { key: "front_sidebar_3", path: "varaukset", icon: icons[2] },
+    { key: "front_sidebar_4", path: "ykv", icon: icons[3], requiresLogin: true },
+    { key: "front_sidebar_5", path: "omat_tiedot", icon: icons[4], requiresLogin: true },
+    { key: "front_sidebar_6", path: "tilastot", icon: icons[5], requiresLogin: true },
+    { key: "front_sidebar_7", path: "yhteystiedot", icon: icons[6] },
+    { key: "front_sidebar_8", path: "viat", icon: icons[7], requiresLogin: true },
+    { key: "front_sidebar_9", path: "siivousvuorot", icon: icons[8], requiresLogin: true },
+    { key: "front_sidebar_10", path: "saannot_ja_ohjeet", icon: icons[9] },
+    { key: "front_sidebar_11", path: "tietosuojaseloste", icon: icons[10] },
+  ];
+
   return (
     <div>
       <Box sx={{ padding: "16px", width: "100%" }}>
@@ -99,31 +113,22 @@ const Sidebar = () => {
       </Box>
       <Divider />
       <List>
-        {[
-        { key: "front_sidebar_1", path: "etusivu", icon: icons[0] },
-        { key: "front_sidebar_2", path: "christina_regina", icon: icons[1] },
-        { key: "front_sidebar_3", path: "varaukset", icon: icons[2]},
-        { key: "front_sidebar_4", path: "ykv", icon: icons[3]},
-        { key: "front_sidebar_5", path: "omat_tiedot", icon: icons[4]},
-        { key: "front_sidebar_6", path: "tilastot", icon: icons[5]},
-        { key: "front_sidebar_7", path: "yhteystiedot", icon: icons[6]},
-        { key: "front_sidebar_8", path: "viat", icon: icons[7]},
-        { key: "front_sidebar_9", path: "siivousvuorot", icon: icons[8]},
-        { key: "front_sidebar_10", path: "saannot_ja_ohjeet", icon: icons[9]},
-        { key: "front_sidebar_11", path: "tietosuojaseloste", icon: icons[10]}
-        ].map(({ key, path }, index) => (
-          <ListItem key={key} disablePadding>
-            <ListItemButton
-              key={key}
-              component={Link}
-              to={path}
-              sx={{ backgroundColor: location.pathname === path ? '#bdbdbd' : 'transparent' }}
-            >
-              <ListItemIcon>{icons[index]}</ListItemIcon>
-              <ListItemText primary={t(key)} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        {routes.map(({ key, path, requiresLogin }, index) => {
+          if (requiresLogin && !isLoggedIn) return null;
+          return (
+            <ListItem key={key} disablePadding>
+              <ListItemButton
+                key={key}
+                component={Link}
+                to={path}
+                sx={{ backgroundColor: location.pathname === path ? '#bdbdbd' : 'transparent' }}
+              >
+                <ListItemIcon>{icons[index]}</ListItemIcon>
+                <ListItemText primary={t(key)} />
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
       </List>
       <Divider />
     </div>
@@ -332,7 +337,7 @@ const App = (props) => {
               },
             }}
           >
-            <Sidebar />
+            <Sidebar isLoggedIn={isLoggedIn} />
           </Drawer>
           <Drawer
             variant="permanent"
@@ -346,7 +351,7 @@ const App = (props) => {
             }}
             open
           >
-            <Sidebar />
+            <Sidebar isLoggedIn={isLoggedIn} />
           </Drawer>
         </Box>
         <Box
