@@ -1,31 +1,43 @@
 import { render, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import Contacts from "../../src/pages/contacts";
+import ChristinaRegina from "../../src/pages/christina_regina";
 import i18n from "../i18n.js";
 
-localStorage.setItem("lang", "fi")
 
-jest.mock("react", () => ({
-  ...jest.requireActual("react"),
-  createElement: jest.fn(),
-}));
+jest.mock("../../src/ChristinaRegina.png", () => "mock-christina-regina.png");
 
-test("redirects to Christinaregina page when the link button is clicked", () => {
-  const openSpy = jest.spyOn(window, "open").mockImplementation(() => {});
+localStorage.setItem("lang", "fi");
 
-  const { getByText } = render(<Contacts />);
-  const linkButton = getByText("Christina Regina");
+test("redirects to ChristinaRegina page when the link button is clicked", () => {
+  const { getByTestId, getByText } = render(
+    <MemoryRouter initialEntries={["/contacts"]}>
+      <Routes>
+        <Route path="/contacts" element={<Contacts />} />
+        <Route path="/christina_regina" element={<ChristinaRegina />} />
+      </Routes>
+    </MemoryRouter>
+  );
+
+ 
+  const linkButton = getByTestId("christina-regina-link");
+
+  expect(linkButton).toBeInTheDocument();
+
   fireEvent.click(linkButton);
 
-  expect(openSpy).toHaveBeenCalledWith("/christina_regina", "_self");
-
-  // Restore the original window.open after the test
-  openSpy.mockRestore();
+  expect(getByText("Christina Regina")).toBeInTheDocument();
 });
 
 test("renders Contacts Page component", () => {
-  const { getByText } = render(<Contacts />);
+  const { getByText } = render(
+    <MemoryRouter>
+      <Contacts />
+    </MemoryRouter>
+  );
 
   expect(getByText("Christina Regina")).toBeInTheDocument();
   expect(getByText("Domus Gaudium")).toBeInTheDocument();
 });
+
