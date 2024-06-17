@@ -43,6 +43,7 @@ import Contacts from "./pages/contacts";
 import DefectFault from "./pages/defectfaultpage";
 import Rules_and_Instructions from "./pages/rules_instructions";
 import CleaningSchedule from "./pages/cleaningschedulepage";
+import CleaningSupplies from "./pages/cleaningsuppliespage";
 import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
 import Statistics from "./pages/statistics";
@@ -88,6 +89,7 @@ const Sidebar = () => {
     <CleaningServicesIcon />,
     <FactCheckOutlinedIcon />,
     <AdminPanelSettingsOutlinedIcon />,
+    <CleaningServicesIcon />,
   ];
 
   return (
@@ -110,7 +112,8 @@ const Sidebar = () => {
         { key: "front_sidebar_8", path: "viat", icon: icons[7]},
         { key: "front_sidebar_9", path: "siivousvuorot", icon: icons[8]},
         { key: "front_sidebar_10", path: "saannot_ja_ohjeet", icon: icons[9]},
-        { key: "front_sidebar_11", path: "tietosuojaseloste", icon: icons[10]}
+        { key: "front_sidebar_11", path: "tietosuojaseloste", icon: icons[10]},
+        { key: "front_sidebar_12", path: "siivoustarvikkeet", icon: icons[8]}
         ].map(({ key, path }, index) => (
           <ListItem key={key} disablePadding>
             <ListItemButton
@@ -386,6 +389,7 @@ const App = (props) => {
               element={<Rules_and_Instructions />}
             />
             <Route path="/tietosuojaseloste" element={<PrivacyPolicy />} />
+            <Route path="/siivoustarvikkeet" element={<CleaningSupplies isLoggedIn={isLoggedIn} loggedUser={loggedUser} />} />
           </Routes>
           <LoginDialog
             open={loginDialogOpen}
