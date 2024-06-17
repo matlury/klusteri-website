@@ -1404,8 +1404,8 @@ describe("Cleaningshifts", () => {
           });
       
           cy.contains("Siivousvuorot").click();
-          cy.contains("Vie lista").click()
-
+          cy.contains("Tuo lista").click()
+          
           const fileName = 'uploadtest_cleaninglist.json';
 
           cy.fixture(fileName).then((fileContent) => {
