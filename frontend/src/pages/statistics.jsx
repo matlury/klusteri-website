@@ -1,6 +1,5 @@
 /* istanbul ignore file */
 // this file is ignored in the tests because jest doesn't work with the charts
-import "../index.css";
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import axiosClient from "../axios";
