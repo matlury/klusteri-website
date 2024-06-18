@@ -25,7 +25,7 @@ const CleaningSuppliesConfirmDialog = ({ open, handleConfirmClose, handleDelete,
           onClick={() => handleDelete(selectedToolId)}
           color="primary"
           variant="contained"
-          data-testid="confirmlogout"
+          data-testid="confirmdelete"
           id="confirmremove"
         >
           {t("confirm")}

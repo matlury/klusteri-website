@@ -29,7 +29,7 @@ const CleaningSuppliesList = ({ loggedUser, allCleaningSupplies, handleDeleteCli
           <Button
             variant="outlined"
             onClick={() => handleDeleteClick(params.id)}
-            data-testid={`delete-tool-button-${params.id}`}
+            data-testid={`delete-tool-button`}
             id="delete-tool"
           >
             <DeleteIcon />
