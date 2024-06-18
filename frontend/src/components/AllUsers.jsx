@@ -31,12 +31,18 @@ const AllUsers = ({
   const [allOrganisations, setAllOrganisations] = useState([]);
   const [open, setOpen] = useState(false);
   const [userDetailsUsername, setUserDetailsUsername] = useState("");
+  const [userDetailPassword, setUserDetailPassword] = useState("");
   const [userDetailsEmail, setuserDetailsEmail] = useState("");
   const [userDetailsTelegram, setuserDetailsTelegram] = useState("");
   const [userDetailsRole, setuserDetailsRole] = useState("");  
   const [userDetailsOrganizations, setuserDetailsOrganizations] = useState("");
   const [userDetailsId, setuserDetailsId] = useState("");
   const [selectedOrganization, setSelectedOrganization] = useState(null);
+
+    // State variables for password change
+    const [oldPassword, setOldPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
   const { t } = useTranslation();
 
@@ -54,6 +60,7 @@ const AllUsers = ({
   const toggleUserDetails = (userId) => {
     const showThisUser = allUsers.find((user) => user.id === userId);
     setUserDetailsUsername(showThisUser.Käyttäjänimi);
+    setUserDetailPassword(showThisUser.password);
     setuserDetailsEmail(showThisUser.email);
     setuserDetailsTelegram(showThisUser.Telegram);
     setuserDetailsRole(showThisUser.Rooli);
@@ -99,10 +106,15 @@ const AllUsers = ({
 
   // Function to handle form submission (updating user details)
   const handleFormSubmit = (event) => {
-    event.preventDefault();
-    handleUpdateAnotherUser(userDetailsId, userDetailsUsername, userDetailsEmail, userDetailsTelegram, userDetailsRole,
-      userDetailsOrganizations.split(", ").map(org => org.trim()));
-    handleClose();
+    if (newPassword !== confirmNewPassword) {
+      alert(t("passwordsDontMatch"));
+      return;
+    } else if (newPassword === confirmNewPassword && newPassword.length > 8) {
+      event.preventDefault();
+      handleUpdateAnotherUser(userDetailsId, userDetailsUsername, userDetailsEmail, userDetailsTelegram, userDetailsRole,
+        userDetailsOrganizations.split(", ").map(org => org.trim()));
+      handleClose();
+    }
   };
 
   // Columns configuration for the DataGrid component
@@ -156,6 +168,33 @@ const AllUsers = ({
               fullWidth
               sx={{ marginBottom: '1rem' }} // Add spacing below the field
               data-testid="username-input"
+            />
+            <TextField
+              label={t("oldpassword")}
+              type="password"
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+              fullWidth
+              sx={{ marginBottom: '1rem' }}
+              data-testid="old-password-input"
+            />
+            <TextField
+              label={t("newpassword")}
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              fullWidth
+              sx={{ marginBottom: '1rem' }}
+              data-testid="new-password-input"
+            />
+            <TextField
+              label={t("confirmnewpassword")}
+              type="password"
+              value={confirmNewPassword}
+              onChange={(e) => setConfirmNewPassword(e.target.value)}
+              fullWidth
+              sx={{ marginBottom: '1rem' }}
+              data-testid="confirm-new-password-input"
             />
             <TextField
               label={t("email")}

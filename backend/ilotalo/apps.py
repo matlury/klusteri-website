@@ -4,12 +4,14 @@ from django.db.backends.signals import connection_created
 from django.db.utils import OperationalError
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
+from random import random
+import string
 
 def create_default_user(sender, **kwargs):
     User = get_user_model()
     try:
-        if not User.objects.filter(username='admin').exists():
-            User.objects.create_user('leppispj', 'salasana123', 'pj@leppis.fi', "", 1)
+        if not User.objects.filter(username='leppispj').exists():
+            User.objects.create_user('leppispj', ''.join(random.choice(string.ascii_uppercase + string.digits)), 'pj@leppis.fi', "", 1)
             print("Default admin user created")
         else:
             print("Default admin user already exists")
