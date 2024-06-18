@@ -16,8 +16,7 @@ const CleaningSupplies = ({
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-  const [activeSupplies, setActiveSupplies] = useState([]);
-  const [allCleaningSupplies, setAllCleanignSupplies] = useState([]);
+  const [allCleaningSupplies, setAllCleaningSupplies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedToolId, setSelectedToolId] = useState(null);
   const [buttonPopup, setButtonPopup] = useState(false);
@@ -67,14 +66,12 @@ const CleaningSupplies = ({
     };
 
     confirmCleaningSupplies(cleaningSupplyObject);
-    //console.log("cleaningtoolobject", cleaningSupplyObject )
 
     function confirmCleaningSupplies(cleaningSupplyObject) {
       if (confirm) {
         axiosClient
           .post(`/cleaningsupplies/create_tool`, cleaningSupplyObject)
           .then((response) => {
-            //console.log("siivousväline on lisätty")
             setSuccess(t("createtool"));
             setTimeout(() => setSuccess(""), 5000);
             fetchSupplies();
@@ -96,7 +93,7 @@ const CleaningSupplies = ({
         .then((response) => {
         setSuccess(t("deletetoolsuccess"));
         setTimeout(() => setSuccess(""), 5000);
-        fetchDefects();
+        fetchSupplies();
       })
       .catch((error) => {
         setError(t("cleaningtoolfixfail"));
@@ -130,9 +127,7 @@ const CleaningSupplies = ({
           tool: u.tool,
         }));
         console.log("supplies data", suppliesData)
-        setAllCleanignSupplies(suppliesData);
-        setActiveSupplies(suppliesData);    // not necessary
-        
+        setAllCleaningSupplies(suppliesData);
         setLoading(false);
       })
       .catch((error) => console.error(error));
@@ -161,7 +156,6 @@ const CleaningSupplies = ({
           <CleaningSuppliesList 
             loggedUser={loggedUser} 
             allCleaningSupplies={allCleaningSupplies} 
-            activeSupplies={activeSupplies} 
             handleDeleteClick={handleDeleteClick}
             />
           <CleaningSuppliesConfirmDialog

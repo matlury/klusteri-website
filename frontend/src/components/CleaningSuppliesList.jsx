@@ -16,7 +16,7 @@ import {
 } from '@mui/x-data-grid';
 
 
-const CleaningSuppliesList = ({ loggedUser, allCleaningSupplies, activeSupplies, handleDeleteClick, handleEmailClick }) => {
+const CleaningSuppliesList = ({ loggedUser, allCleaningSupplies, handleDeleteClick}) => {
     const { t } = useTranslation();
     
     const columns = [
@@ -54,7 +54,7 @@ const CleaningSuppliesList = ({ loggedUser, allCleaningSupplies, activeSupplies,
     } else {
       return (
         <DataGrid
-          rows={allCleaningSupplies}    // or activeSupplies
+          rows={allCleaningSupplies}
           columns={columns_buttonless}
           pageSize={5}
           rowsPerPageOptions={[5, 10, 20]}
