@@ -54,7 +54,7 @@ const CreateOrganization = ({
   return (
     <div>
 
-      <Button onClick={handleClickOpen} variant="contained" className="open-dialog-button">
+      <Button onClick={handleClickOpen} variant="contained" className="open-dialog-button" data-testid="createneworgbutton">
         {t("createneworg")}
       </Button>
       
@@ -71,6 +71,7 @@ const CreateOrganization = ({
                 fullWidth
                 required // Make required
                 error={errorFields.name} // Show error if field is empty
+                data-testid="organization-name"
               />
             </div>
             <div style={{ marginBottom: "1rem" }}>
@@ -83,6 +84,7 @@ const CreateOrganization = ({
                 fullWidth
                 required // Make required
                 error={errorFields.email} // Show error if field is empty
+                data-testid="organization-email"
               />
             </div>
             <div style={{ marginBottom: "1rem" }}>
@@ -94,6 +96,7 @@ const CreateOrganization = ({
                 fullWidth
                 required // Make required
                 error={errorFields.homepage} // Show error if field is empty
+                data-testid="organization-homepage"
               />
             </div>
             <div style={{ marginBottom: "1rem" }}>

@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, waitFor, fireEvent } from "@testing-library/react";
+import { render, waitFor, fireEvent, within, screen } from "@testing-library/react";
 import OwnPage from "../pages/ownpage";
 import mockAxios from "../../__mocks__/axios";
 import i18n from "../i18n.js";
@@ -501,127 +501,98 @@ describe("User updating errors", () => {
   })
 });
 
-// describe("Organizations", () => {
-//   it("Organization view works", async () => {
-//     const user = {
-//       username: "example_username",
-//       email: "example_email@example.com",
-//       telegram: "example_telegram",
-//       role: 1,
-//       id: 1,
-//     };
-//     localStorage.setItem("ACCESS_TOKEN", "example_token");
-//     localStorage.setItem("loggedUser", JSON.stringify(user));
-//     const { getByText, getByLabelText, getByTestId } = render(
-//       <OwnPage isLoggedIn={true} />,
-//     );
+ describe("Organizations", () => {
+   it("Organization creating works", async () => {
+     const user = {
+       username: "leppis",
+       email: "leppis@testi.com",
+       telegram: "",
+       role: 1,
+       id: 1,
+     };
+     localStorage.setItem("ACCESS_TOKEN", "example_token");
+     localStorage.setItem("loggedUser", JSON.stringify(user));
+     const { getByText, getByLabelText, getByTestId } = render(
+       <OwnPage isLoggedIn={true} />,
+     );
 
-//     const responseObj = {data: [  
-//       {
-//             "id": 1,
-//             "user_set": [
-//                 {
-//                     "id": 1,
-//                     "last_login": null,
-//                     "username": "example_username",
-//                     "email": "example_email@example.com",
-//                     "telegram": "example_telegram",
-//                     "role": 1,
-//                     "keys": [
-//                         1,
-//                         2
-//                     ]
-//                 }
-//             ],
-//             "name": "tko-äly",
-//             "email": "tko@aly.org",
-//             "homepage": "tko-aly.com",
-//             "size": 1
-//         }
-//       ]}
+     const responseObj = { data: [
+      {
+        "id": 1,
+        "keys": [],
+        "last_login": null,
+        "username": "leppis",
+        "email": "leppis@testi.com",
+        "telegram": "",
+        "role": 1,
+        "rights_for_reservation": false,
+        "password": "pbkdf2_sha256$720000$59HfEsJBpE0mRjEioNCe4t$UPY39IbZDP4/QNry7oH4b87/JF4IfTQSrVia4zpV7jc="
+    }
+    ]}
 
-//     const resp = {data: {
-//       "id": 1,
-//       "keys": [
-//           {
-//               "id": 1,
-//               "user_set": [
-//                   {
-//                       "id": 1,
-//                       "last_login": null,
-//                       "username": "example_username",
-//                       "email": "example_email@example.com",
-//                       "telegram": "example_telegram",
-//                       "role": 1,
-//                       "keys": [
-//                           1,
-//                           2
-//                       ]
-//                   }
-//               ],
-//               "name": "tko-äly",
-//               "email": "tko@aly.org",
-//               "homepage": "tko-aly.com",
-//               "size": 1
-//           },
-//           {
-//               "id": 2,
-//               "user_set": [
-//                   {
-//                       "id": 2,
-//                       "last_login": null,
-//                       "username": "tavallinen",
-//                       "email": "tavallinen@testi.com",
-//                       "telegram": "tavallinen",
-//                       "role": 4,
-//                       "keys": [
-//                           2
-//                       ]
-//                   },
-//                   {
-//                       "id": 1,
-//                       "last_login": null,
-//                       "username": "example_username",
-//                       "email": "example_email@example.com",
-//                       "telegram": "example_telegram",
-//                       "role": 1,
-//                       "keys": [
-//                           1,
-//                           2
-//                       ]
-//                   }
-//               ],
-//               "name": "matrix",
-//               "email": "matrix@matrix-ry.fi",
-//               "homepage": "matrix-ry.fi",
-//               "size": 1
-//           }
-//       ],
-//       "last_login": null,
-//       "username": "example_username",
-//       "email": "example_email@example.com",
-//       "telegram": "example_telegram",
-//       "password": "pbkdf2_sha256$720000$DLGzd60Wxi86fl0ALgPYyI$uZAvY+sTmSRrz/UdX6m1IKv3j2wy4hHz86TijOw+tt8=",
-//       "role": 1
-//       }}
-      
-//       mockAxios.mockResponseFor(
-//         { url: "undefined/api/listobjects/organizations/" },
-//         responseObj,
-//       );
-    
-//       await waitFor(() => {
-//       mockAxios.mockResponseFor(
-//       { url: "undefined/api/users/userinfo" },
-//       resp,
-//       );
-//         expect(mockAxios.get).toHaveBeenCalledWith("undefined/api/users/userinfo", { headers: { Authorization: "Bearer example_token" } });
-//         expect(mockAxios.get).toHaveBeenCalledWith("undefined/api/listobjects/organizations/");
-//       });
+    const resp = { data: 
+      {
+        "id": 2,
+        "user_set": [],
+        "name": "tko-aly",
+        "email": "tko@aly.com",
+        "homepage": "tko-aly.org",
+        "color": ""
+    }
+    }
 
-//       await waitFor(() => {
-//         const viewButton = getByTestId("orgdetailsbutton");
-//         fireEvent.click(viewButton);
-//     })
-//   })
-// })
+    await waitFor(() => {
+      mockAxios.mockResponseFor(
+        { url: "undefined/api/users/userinfo" },
+        responseObj,
+      )
+    })
+
+    await waitFor( async () => {
+      expect(mockAxios.get).toHaveBeenCalledWith("undefined/api/users/userinfo", {"headers": {"Authorization": "Bearer example_token"}})
+
+     const createForm = getByTestId("createneworgbutton");
+     fireEvent.click(createForm);
+
+     const modal = within(await screen.findByRole("dialog"));
+
+     expect(modal.getByText("Peruuta")).toBeInTheDocument();
+
+     const name = modal.getByTestId("organization-name").querySelector('input')
+     await fireEvent.change(name, { target: { value: "tko-aly" } });
+
+     const email = modal.getByTestId("organization-email").querySelector('input')
+     await fireEvent.change(email, { target: { value: "tko@aly.com" } });
+
+     const homepage = modal.getByTestId("organization-homepage").querySelector('input')
+     await fireEvent.change(homepage, { target: { value: "tko-aly.org" } });
+
+     const submit = modal.getByText("Luo järjestö");
+     fireEvent.click(submit);
+
+     mockAxios.mockResponseFor(
+      { url: "undefined/api/listobjects/organizations/?email=tko@aly.com"},
+      { data: [{
+        "id": 1,
+        "user_set": [],
+        "name": "matrix",
+        "email": "mat@rix.com",
+        "homepage": "matrix.org",
+        "color": ""
+     }]})
+     
+     expect(mockAxios.get).toHaveBeenCalledWith("undefined/api/listobjects/organizations/?email=tko@aly.com")
+     mockAxios.mockResponseFor(
+      { url: "organizations/create" },
+      resp,
+     )  
+     
+    expect(mockAxios.post).toHaveBeenCalledWith("organizations/create", {"color": "", "email": "tko@aly.com", "homepage": "tko-aly.org", "name": "tko-aly"})
+
+    const successMessage = getByText((content, element) => {
+      return element.tagName.toLowerCase() === 'p' && content.includes("Järjestö luotu onnistuneesti!");
+    });
+    expect(successMessage).toBeInTheDocument();
+    })
+  })
+ })

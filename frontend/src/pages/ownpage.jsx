@@ -298,11 +298,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             homepage: organization_homepage,
             color: organization_color,
           };
-          console.log(organizationObject);
           axiosClient
             .post("organizations/create", organizationObject)
             .then((response) => {
-              console.log("Organization created successfully!");
               setSuccess(t("orgcreatesuccess"));
               setTimeout(() => setSuccess(""), 5000);
               getOrganisations();
