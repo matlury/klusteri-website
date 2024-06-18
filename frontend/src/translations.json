@@ -365,7 +365,10 @@
         "week": "Viikko",
         "date": "Pvm",
         "bigorg": "Iso järjestö",
-        "smallorg": "Pieni järjestö"
+        "smallorg": "Pieni järjestö",
+        "resrightsconfirm": "Haluatko varmasti muuttaa käyttäjän varausoikeuksia",
+        "removeresrights": "Poista varausoikeus",
+        "addresrights": "Lisää varausoikeus"
       }
     },
     "en": {
@@ -734,7 +737,10 @@
         "week": "Week",
         "date": "Date",
         "bigorg": "Big org",
-        "smallorg": "Small org"
+        "smallorg": "Small org",
+        "resrightsconfirm": "Are you sure you want to change reservation rights?",
+        "removeresrights": "Remove reservation rights",
+        "addresrights": "Add reservation rights"
       }
     }
 }

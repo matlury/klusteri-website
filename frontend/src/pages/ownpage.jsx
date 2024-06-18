@@ -396,7 +396,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
     function confirmupdate() {
       const confirmUpdate = window.confirm(
-        "Haluatko varmasti muuttaa käyttäjän varausoikeuksia"
+        t("resrightsconfirm")
       );
 
       if (confirmUpdate) {
@@ -404,6 +404,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           .put(`/users/change_rights_reservation/${selectedUserId}/`)
           .then((response) => {
             console.log("Reservation rights changed succesfully:", response.data);
+            setSuccess(t("usereditsuccess"));
           })
           .catch((error) => {
             console.error("Error changing reservation rights:", error);

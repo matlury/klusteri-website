@@ -236,14 +236,14 @@ const AllUsers = ({
               onClick={() => handleResRightChange(userDetailsId)}
               sx={{ marginBottom: '1rem' }} // Add spacing below the button
               >
-              Poista varausoikeus
+              {t("removeresrights")}
               </Button>
             ):
             <Button
               onClick={() => handleResRightChange(userDetailsId)}
               sx={{ marginBottom: '1rem' }} // Add spacing below the button
             >
-              Lisää varausoikeus
+              {t("addresrights")}
             </Button>}
 
             {/* Dialog actions */}
