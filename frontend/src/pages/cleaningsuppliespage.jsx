@@ -3,8 +3,7 @@ import axiosClient from "../axios.js";
 import { Button } from "@mui/material";
 import CleaningToolForm from "../components/CleaningToolForm.jsx";
 import CleaningSuppliesList from "../components/CleaningSuppliesList.jsx";
-import RepairConfirmDialog from "../components/RepairConfirmDialog.jsx";
-//import EmailConfirmDialog from "../components/EmailConfirmDialog.jsx";
+import CleaningSuppliesConfirmDialog from "../components/CleaningSuppliesConfirm.jsx";
 import { useTranslation } from "react-i18next";
 
 
@@ -22,8 +21,7 @@ const CleaningSupplies = ({
   const [loading, setLoading] = useState(true);
   const [selectedToolId, setSelectedToolId] = useState(null);
   const [buttonPopup, setButtonPopup] = useState(false);
-  const [confirmRepairOpen, setConfirmRepairOpen] = useState(false);
-  // const [confirmEmailOpen, setConfirmEmailOpen] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
   const { t } = useTranslation();
 
@@ -77,12 +75,12 @@ const CleaningSupplies = ({
           .post(`/cleaningsupplies/create_tool`, cleaningSupplyObject)
           .then((response) => {
             //console.log("siivousväline on lisätty")
-            setSuccess(t("defectcreatesuccess"));   // muuta
+            setSuccess(t("defectcreatesuccess"));   // luo oma tool success?
             setTimeout(() => setSuccess(""), 5000);
             fetchSupplies();
           })
           .catch((error) => {
-            setError(t("defectcreatefail"));    //muuta
+            setError(t("defectcreatefail"));    //luo oma tool success?
             setTimeout(() => setError(""), 5000);
             console.error(t("cleaningtoolfixfail"), error);
           });
@@ -90,36 +88,37 @@ const CleaningSupplies = ({
     }
   };
 
-  // const handleDefectFaultRepair = (id) => {
-  //   setButtonPopup(true);
-  //   axiosClient
-  //     .put(`defects/repair_defect/${id}/`, {})
-  //     .then((response) => {
-  //       setSuccess(t("defectfixsuccess"));
-  //       setTimeout(() => setSuccess(""), 5000);
-  //       fetchDefects();
-  //     })
-  //     .catch((error) => {
-  //       setError(t("defectfixfail"));
-  //       setTimeout(() => setError(""), 5000);
-  //     });
-  // };
 
-
-  const handleRepairClick = (id) => {
-    setSelectedDefectId(id);
-    setConfirmRepairOpen(true);
+  const handleDeleteCleaningTool = (id) => {
+    setButtonPopup(true);
+    axiosClient
+      .delete(`cleaningsupplies/delete_tool/${id}/`, {})
+        .then((response) => {
+        setSuccess(t("defectfixsuccess"));
+        setTimeout(() => setSuccess(""), 5000);
+        fetchDefects();
+      })
+      .catch((error) => {
+        setError(t("defectfixfail"));
+        setTimeout(() => setError(""), 5000);
+      });
   };
 
 
-  const handleConfirmRepairClose = () => {
-    setConfirmRepairOpen(false);
+  const handleDeleteClick = (id) => {
+    setSelectedToolId(id);
+    setConfirmDeleteOpen(true);
   };
 
 
-  const handleRepairFault = (id) => {
-    handleDefectFaultRepair(id);
-    setConfirmRepairOpen(false);
+  const handleConfirmDeleteClose = () => {    //to do: deletelle oma confirm ikkuna
+    setConfirmDeleteOpen(false);
+  };
+
+
+  const handleDelete = (id) => {
+    handleDeleteCleaningTool(id);
+    setConfirmDeleteOpen(false);
   };
 
   const fetchSupplies = () => {
@@ -146,7 +145,7 @@ const CleaningSupplies = ({
         <div>
           {error && <p style={{ color: "red" }}>{error}</p>}
           {success && <p style={{ color: "green" }}>{success}</p>}
-          <h2>{t("defectfaults")}</h2>
+          <h2>{t("defectfaults")}</h2>                  {/*Tänne siivousvälineet tms. otsikko/käännös */}
           <React.Fragment>
             <Button
               variant="contained"
@@ -163,12 +162,12 @@ const CleaningSupplies = ({
             loggedUser={loggedUser} 
             allCleaningSupplies={allCleaningSupplies} 
             activeSupplies={activeSupplies} 
-            handleRepairClick={handleRepairClick}
+            handleDeleteClick={handleDeleteClick}
             />
-          <RepairConfirmDialog
-            open={confirmRepairOpen}
-            handleConfirmClose={handleConfirmRepairClose}
-            handleRepairFault={handleRepairFault}
+          <CleaningSuppliesConfirmDialog
+            open={confirmDeleteOpen}
+            handleConfirmClose={handleConfirmDeleteClose}
+            handleDelete={handleDelete}
             selectedToolId={selectedToolId}
           />
         </React.Fragment>

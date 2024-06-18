@@ -26,6 +26,7 @@ from .views import (
     RemoveCleaningView,
     CleaningSuppliesView,
     CreateCleaningSuppliesView,
+    RemoveCleaningSuppliesView,
 )
 
 """Define URL endpoints for the ilotalo app"""
@@ -58,5 +59,6 @@ urlpatterns = [
     path("remove/all", RemoveCleaningView.as_view()),
     # path("cleaningsupplies", CleaningSuppliesView.as_view()),
     path("create_tool", CreateCleaningSuppliesView.as_view()),
+    path("delete_tool/<int:pk>/", RemoveCleaningSuppliesView.as_view()),
 
 ]

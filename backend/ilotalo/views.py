@@ -1040,3 +1040,34 @@ class CreateCleaningSuppliesView(APIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class RemoveCleaningSuppliesView(APIView):
+    """View for removing a defect <baseurl>/api/cleaningsupplies/delete_tool/<id>/"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, pk):
+        user = UserSerializer(request.user)
+
+        if user.data["role"] not in [
+            LEPPISPJ,
+            LEPPISVARAPJ,
+            MUOKKAUS,
+            AVAIMELLINEN,
+            JARJESTOPJ,
+            JARJESTOVARAPJ
+        ]:
+            return Response(
+                "You can't remove cleaning supplies or tools",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            tool_to_remove = CleaningSupplies.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            return Response(
+                "Cleaning tool not found", status=status.HTTP_404_NOT_FOUND
+            )
+        tool_to_remove.delete()
+
+        return Response(f"The {tool_to_remove.tool} successfully removed", status=status.HTTP_200_OK)
