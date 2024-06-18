@@ -31,7 +31,7 @@ const AllUsers = ({
   const [allOrganisations, setAllOrganisations] = useState([]);
   const [open, setOpen] = useState(false);
   const [userDetailsUsername, setUserDetailsUsername] = useState("");
-  const [userDetailPassword, setUserDetailPassword] = useState("");
+  const [userDetailsPassword, setUserDetailsPassword] = useState("");
   const [userDetailsEmail, setuserDetailsEmail] = useState("");
   const [userDetailsTelegram, setuserDetailsTelegram] = useState("");
   const [userDetailsRole, setuserDetailsRole] = useState("");  
@@ -60,7 +60,6 @@ const AllUsers = ({
   const toggleUserDetails = (userId) => {
     const showThisUser = allUsers.find((user) => user.id === userId);
     setUserDetailsUsername(showThisUser.Käyttäjänimi);
-    setUserDetailPassword(showThisUser.password);
     setuserDetailsEmail(showThisUser.email);
     setuserDetailsTelegram(showThisUser.Telegram);
     setuserDetailsRole(showThisUser.Rooli);
@@ -110,8 +109,9 @@ const AllUsers = ({
       alert(t("passwordsDontMatch"));
       return;
     } else if (newPassword === confirmNewPassword && newPassword.length > 8) {
+      setUserDetailsPassword(newPassword);
       event.preventDefault();
-      handleUpdateAnotherUser(userDetailsId, userDetailsUsername, userDetailsEmail, userDetailsTelegram, userDetailsRole,
+      handleUpdateAnotherUser(userDetailsId, userDetailsUsername, userDetailsPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole,
         userDetailsOrganizations.split(", ").map(org => org.trim()));
       handleClose();
     }

@@ -18,6 +18,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   // user_details* variables for viewing and updating someone else's information
   const [userDetailsUsername, setUserDetailsUsername] = useState("");
+  const [userDetailsPassword, setUserDetailsPassword] = useState("");
   const [userDetailsEmail, setuserDetailsEmail] = useState("");
   const [userDetailsTelegram, setuserDetailsTelegram] = useState("");
   const [userDetailsRole, setuserDetailsRole] = useState(null);
@@ -151,7 +152,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
   };
 
-  const handleUpdateAnotherUser = (userDetailsId, userDetailsUsername, userDetailsEmail, userDetailsTelegram, userDetailsRole,
+  const handleUpdateAnotherUser = (userDetailsId, userDetailsUsername, userDetailsPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole,
     userDetailsOrganizations) => {  
   
     /*
@@ -166,6 +167,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
     const updatedValues = {
       username: userDetailsUsername,
+      password: userDetailsPassword,
       email: userDetailsEmail,
       telegram: userDetailsTelegram,
       role: userDetailsRole,
@@ -335,6 +337,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const toggleUserDetails = (userId) => {
     const showThisUser = allUsers.find((user) => user.id === userId);
     setUserDetailsUsername(showThisUser.username);
+    setUserDetailsPassword(showThisUser.password);
     setuserDetailsEmail(showThisUser.email);
     setuserDetailsTelegram(showThisUser.telegram);
     setuserDetailsRole(showThisUser.role);
@@ -543,6 +546,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                     toggleUserDetails={toggleUserDetails}
                     userDetailsUsername={userDetailsUsername}
                     setUserDetailsUsername={setUserDetailsUsername}
+                    userDetailsPassword={userDetailsPassword}
+                    setUserDetailsPassword={setUserDetailsPassword}
                     userDetailsEmail={userDetailsEmail}
                     setuserDetailsEmail={setuserDetailsEmail}
                     userDetailsTelegram={userDetailsTelegram}
