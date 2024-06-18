@@ -126,7 +126,6 @@ const CleaningSupplies = ({
           id: u.id, // DataGrid requires a unique 'id' for each row
           tool: u.tool,
         }));
-        console.log("supplies data", suppliesData)
         setAllCleaningSupplies(suppliesData);
         setLoading(false);
       })
