@@ -69,6 +69,7 @@ class User(AbstractBaseUser):
     role = models.IntegerField(default=5)
     keys = models.ManyToManyField(Organization)
     rights_for_reservation = models.BooleanField(default=False)
+    first_login = models.BooleanField(default=False)
 
     objects = UserAccountManager()
 

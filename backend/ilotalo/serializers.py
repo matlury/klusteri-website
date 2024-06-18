@@ -204,12 +204,25 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         user = User.objects.filter(email=email).first() or User.objects.filter(username=email).first()
 
-        if user and user.check_password(password):
-            attrs["email"] = user.email
+        if user:
+            if user.role == 1 and user.first_login:
+                user.first_login = False
+                user.save()
+
+                refresh = self.get_token(user)
+                data = {}
+                data['refresh'] = str(refresh)
+                data['access'] = str(refresh.access_token)
+                return data
+            else:
+                if user.check_password(password):
+                    attrs["email"] = user.email
+                else:
+                    raise serializers.ValidationError("Invalid login credentials")
+
+                return super().validate(attrs)
         else:
-            raise serializers.ValidationError("Invalid login credentials")
-        
-        return super().validate(attrs)
+            raise serializers.ValidationError("User not found")
 
 class OrganizationOnlyNameSerializer(serializers.ModelSerializer):
     """Serializes an Organization object as JSON"""
