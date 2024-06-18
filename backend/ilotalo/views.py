@@ -1027,6 +1027,11 @@ class CreateCleaningSuppliesView(APIView):
 
         if user.data["role"] not in [
             LEPPISPJ,
+            LEPPISVARAPJ,
+            MUOKKAUS,
+            AVAIMELLINEN,
+            JARJESTOPJ,
+            JARJESTOVARAPJ
         ]:
           return Response(
                 "You can't edit cleaning tool",
