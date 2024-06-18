@@ -2114,4 +2114,19 @@ class TestDjangoAPI(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_change_rights_for_reservation(self):
+        """Role 6 can add and remove rights for reservation"""
 
+        response = self.client.put(
+            f'http://localhost:8000/api/users/change_rights_reservation/{self.tavallinen_id}/',
+            headers={"Authorization": f"Bearer {self.jarjestopj_access_token}"},
+        )
+
+        self.assertEqual(response.data["rights_for_reservation"], True)
+
+        response = self.client.put(
+            f'http://localhost:8000/api/users/change_rights_reservation/{self.tavallinen_id}/',
+            headers={"Authorization": f"Bearer {self.jarjestopj_access_token}"},
+        )
+
+        self.assertEqual(response.data["rights_for_reservation"], False)

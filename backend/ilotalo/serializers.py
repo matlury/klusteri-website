@@ -111,6 +111,12 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         model = User
         exclude = ('password',)
 
+    def validate_username(self, username):
+        """Validates that the username does not contain @ symbol so it doesn't mess with the email login"""
+        if "@" in username:
+            raise serializers.ValidationError("Username cannot contain @ symbol")
+        return username
+
     def validate_role(self, role):
         """Validates role when updating a user. Limits: 1 <= role <= 7."""
 
@@ -193,7 +199,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             attrs["email"] = user.email
         else:
             raise serializers.ValidationError("Invalid login credentials")
-        
+
         return super().validate(attrs)
 
 class OrganizationOnlyNameSerializer(serializers.ModelSerializer):
