@@ -110,11 +110,10 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        exclude = ('password',)
+        exclude = ('password',)  # Exclude password field from serialization
 
     def validate_role(self, role):
         """Validates role when updating a user. Limits: 1 <= role <= 7."""
-
         if int(role) < 1:
             raise serializers.ValidationError("Role can't be less than 1")
         if int(role) > 7:
@@ -129,6 +128,21 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             if duplicate.exists():
                 raise serializers.ValidationError("This telegram name is taken")
         return tgname
+
+    def update(self, instance, validated_data):
+        """Update the user instance with validated data."""
+        instance.email = validated_data.get('email', instance.email)
+        instance.telegram = validated_data.get('telegram', instance.telegram)
+        instance.role = validated_data.get('role', instance.role)
+
+        # Check if password is provided and update it if so
+        password = validated_data.get('password')
+        if password:
+            validate_password(password)  # Validate the password
+            instance.set_password(password)
+
+        instance.save()
+        return instance
 
 class UserNoPasswordSerializer(serializers.ModelSerializer):
     """

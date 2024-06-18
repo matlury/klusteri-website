@@ -178,7 +178,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       axiosClient
         .put(`/users/update/${userDetailsId}/`, updatedValues)
         .then((response) => {
-          console.log(t("usereditsuccess"), response.data);
+          console.log(t("usereditsuccess"));
 
           setSuccess(t("usereditsuccess"));
           setTimeout(() => setSuccess(""), 5000);
@@ -337,7 +337,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const toggleUserDetails = (userId) => {
     const showThisUser = allUsers.find((user) => user.id === userId);
     setUserDetailsUsername(showThisUser.username);
-    setUserDetailsPassword(showThisUser.password);
     setuserDetailsEmail(showThisUser.email);
     setuserDetailsTelegram(showThisUser.telegram);
     setuserDetailsRole(showThisUser.role);
