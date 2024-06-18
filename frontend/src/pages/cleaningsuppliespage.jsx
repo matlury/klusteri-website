@@ -75,12 +75,12 @@ const CleaningSupplies = ({
           .post(`/cleaningsupplies/create_tool`, cleaningSupplyObject)
           .then((response) => {
             //console.log("siivousväline on lisätty")
-            setSuccess(t("defectcreatesuccess"));   // luo oma tool success?
+            setSuccess(t("createtool"));
             setTimeout(() => setSuccess(""), 5000);
             fetchSupplies();
           })
           .catch((error) => {
-            setError(t("defectcreatefail"));    //luo oma tool success?
+            setError(t("createtoolfail"));
             setTimeout(() => setError(""), 5000);
             console.error(t("cleaningtoolfixfail"), error);
           });
@@ -94,12 +94,12 @@ const CleaningSupplies = ({
     axiosClient
       .delete(`cleaningsupplies/delete_tool/${id}/`, {})
         .then((response) => {
-        setSuccess(t("defectfixsuccess"));
+        setSuccess(t("deletetoolsuccess"));
         setTimeout(() => setSuccess(""), 5000);
         fetchDefects();
       })
       .catch((error) => {
-        setError(t("defectfixfail"));
+        setError(t("cleaningtoolfixfail"));
         setTimeout(() => setError(""), 5000);
       });
   };
@@ -111,7 +111,7 @@ const CleaningSupplies = ({
   };
 
 
-  const handleConfirmDeleteClose = () => {    //to do: deletelle oma confirm ikkuna
+  const handleConfirmDeleteClose = () => {
     setConfirmDeleteOpen(false);
   };
 
@@ -131,7 +131,7 @@ const CleaningSupplies = ({
         }));
         console.log("supplies data", suppliesData)
         setAllCleanignSupplies(suppliesData);
-        setActiveSupplies(suppliesData);    // tänne voi laitta deletointi filterin tms. (ks.muista)....
+        setActiveSupplies(suppliesData);    // not necessary
         
         setLoading(false);
       })
@@ -145,7 +145,7 @@ const CleaningSupplies = ({
         <div>
           {error && <p style={{ color: "red" }}>{error}</p>}
           {success && <p style={{ color: "green" }}>{success}</p>}
-          <h2>{t("defectfaults")}</h2>                  {/*Tänne siivousvälineet tms. otsikko/käännös */}
+          <h2>{t("cleaningsupplies")}</h2>
           <React.Fragment>
             <Button
               variant="contained"

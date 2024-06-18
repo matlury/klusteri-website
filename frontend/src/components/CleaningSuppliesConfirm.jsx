@@ -15,9 +15,9 @@ const CleaningSuppliesConfirmDialog = ({ open, handleConfirmClose, handleDelete,
 
   return (
     <Dialog open={open} onClose={handleConfirmClose}>
-      <DialogTitle>{t("confirm_defect_fixed")}</DialogTitle>
+      <DialogTitle>{t("confirm_tool_delete")}</DialogTitle>
       <DialogContent>
-        <DialogContentText>{t("confirm_defect_fixed_2")}</DialogContentText>
+        <DialogContentText>{t("confirm_tool_delete_2")}</DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleConfirmClose}>{t("cancel")}</Button>

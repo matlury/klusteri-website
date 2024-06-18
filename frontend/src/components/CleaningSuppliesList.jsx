@@ -20,10 +20,10 @@ const CleaningSuppliesList = ({ loggedUser, allCleaningSupplies, activeSupplies,
     const { t } = useTranslation();
     
     const columns = [
-      { field: "tool", headerName: t("Tool, lisää käännös"), width: 150 },
+      { field: "tool", headerName: t("cleaningtool"), width: 150 },
       {
         field: "delete",
-        headerName: t("Delete"),
+        headerName: t("delete"),
         width: 90,
         renderCell: (params) => (
           <Button
@@ -39,7 +39,7 @@ const CleaningSuppliesList = ({ loggedUser, allCleaningSupplies, activeSupplies,
     ];
   
     const columns_buttonless = [
-      { field: "tool", headerName: "Siivousväline", width: 400 },
+      { field: "tool", headerName: t("cleaningtool"), width: 400 },
     ];
   
     if (loggedUser && loggedUser.role === 1) {
@@ -54,7 +54,7 @@ const CleaningSuppliesList = ({ loggedUser, allCleaningSupplies, activeSupplies,
     } else {
       return (
         <DataGrid
-          rows={allCleaningSupplies}    // oli activeSupplies (activeDefects)
+          rows={allCleaningSupplies}    // or activeSupplies
           columns={columns_buttonless}
           pageSize={5}
           rowsPerPageOptions={[5, 10, 20]}
