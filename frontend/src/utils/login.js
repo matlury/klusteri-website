@@ -1,18 +1,18 @@
 import axiosClient from "../axios.js";
 
 // Handles the login function
-const login = ({ email, password, setError, setToken, onLogin, setUser, t }) => {
+const login = async ({ email, password, setError, setToken, onLogin, setUser, t }) => {
   const credentials = {
     email: email,
     password: password,
   };
 
-  // Checks if the credentials match using tokens, and if the user is authenticated it saves the logged user to local storage
-  axiosClient
+  // Return a promise that resolves when login is complete
+  return axiosClient
     .post("/token/", credentials)
     .then(({ data }) => {
       setToken(data.access);
-      axiosClient
+      return axiosClient
         .get("/users/userinfo", {
           headers: {
             Authorization: `Bearer ${data.access}`,
@@ -32,6 +32,7 @@ const login = ({ email, password, setError, setToken, onLogin, setUser, t }) => 
       } else {
         setError(t("faillogin"));
       }
+      throw err;
     });
 };
 

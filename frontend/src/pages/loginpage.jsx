@@ -31,16 +31,19 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
   };
 
   // Handles the login function
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault();
-    login({ email, password, setError, setToken, onLogin, setUser, t });
+    try {
+      await login({ email, password, setError, setToken, onLogin, setUser, t });
+      window.location.reload(); // Reload the page after successful login
+    } catch (err) {
+      console.error("Login failed", err);
+    }
   };
 
   // renders the NewAccountPage if the showCreateUser function is true, if the user is logged in, it shows the username and logout-button
   // if the user is not logged nor in the create new user page, it shows the loginpage
   // starts the countdown timer for automatic logout
-
-  
 
   return (
     <div id="right_content">
