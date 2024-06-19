@@ -2115,3 +2115,81 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
+    def test_creating_cleaning_supplies(self):
+        """Roles other than role 5 can create cleaning tools"""
+
+        # create a tool with empty details
+        response = self.client.post(
+            "http://localhost:8000/api/cleaningsupplies/create_tool",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "tool": "",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # create a tool with correct tool description
+        response = self.client.post(
+            "http://localhost:8000/api/cleaningsupplies/create_tool",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={
+                "tool": "pesuaine",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # trying to create a cleaning tool as Tavallinen user fails
+        response = self.client.post(
+            f"http://localhost:8000/api/cleaningsupplies/create_tool",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={
+                "tool": "lattiaharja",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+    def test_deleting_cleaning_supplies(self):
+        """Cleaning tools can be deleted by roles higher than 5"""
+
+        # create a tool
+        created_tool = self.client.post(
+            "http://localhost:8000/api/cleaningsupplies/create_tool",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data={
+                "tool": "imuri",
+            },
+            format="json",
+        )
+        tool_id = created_tool.data["id"]
+
+        # delete the tools
+        response = self.client.delete(
+            f"http://localhost:8000/api/cleaningsupplies/delete_tool/{tool_id}/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # try delete a tool that doesn't exist
+        response = self.client.delete(
+            f"http://localhost:8000/api/cleaningsupplies/delete_tool/10000/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # try delete a tool as Tavallinen user fails (role has to be higher than 5)
+        response = self.client.delete(
+            f"http://localhost:8000/api/cleaningsupplies/delete_tool/{tool_id}/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+

@@ -1,7 +1,7 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from rest_framework import serializers
-from .models import User, Organization, Event, NightResponsibility, DefectFault, Cleaning
+from .models import User, Organization, Event, NightResponsibility, DefectFault, Cleaning, CleaningSupplies
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
@@ -247,3 +247,12 @@ class CleaningSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cleaning
         exclude = ('id',)
+
+class CleaningSuppliesSerializer(serializers.ModelSerializer):
+    """Serializes a Cleaningsupplies tool"""
+
+    user = UserNoPasswordSerializer(read_only=True)
+
+    class Meta:
+        model = CleaningSupplies
+        fields = '__all__'

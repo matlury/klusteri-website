@@ -1428,5 +1428,87 @@ describe("Cleaningshifts", () => {
   
     })
 
+describe("Cleaningsupplies", () => {
+    beforeEach(function () {
+        cy.request("POST", "http://localhost:8000/api/testing/reset");
+        cy.visit("http://localhost:5173");
+      });
+
+    it("Creating a new cleaning tool succeeds", function () {
+      cy.on("uncaught:exception", () => {
+        return false;
+      });
+      const body = {
+        username: "leppis",
+        password: "salasana123",
+        email: "pj@gmail.com",
+        telegram: "pjtg",
+        role: 1,
+      };
+      let user_id;
+      cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+        (response) => {
+          user_id = response.body.id;
+          expect(response.body).to.have.property("username", "leppis");
+        },
+      );
+      cy.wait(1000);
+      cy.contains("Kirjaudu").click();
+      cy.get("#email").type("pj@gmail.com");
+      cy.get("#password").type("salasana123");
+      cy.get(".login-button").click();
+      cy.wait(500);
+  
+      cy.contains("Siivoustarvikkeet").click();
+      cy.contains("+ Lisää siivoustarvike").click();
+      cy.get("#description").type("Moppi");
+      cy.get("#addtool").click();
+      cy.wait(500)
+      cy.contains("Moppi");
+      });
+
+
+
+    it("Deleting a cleaning tool succeeds", function () {
+      cy.on("uncaught:exception", () => {
+        return false;
+      });
+      const body = {
+        username: "leppis",
+        password: "salasana123",
+        email: "pj@gmail.com",
+        telegram: "pjtg",
+        role: 1,
+      };
+      let user_id;
+      cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+        (response) => {
+          user_id = response.body.id;
+          expect(response.body).to.have.property("username", "leppis");
+        },
+      );
+      cy.wait(1000);
+      cy.contains("Kirjaudu").click();
+      cy.get("#email").type("pj@gmail.com");
+      cy.get("#password").type("salasana123");
+      cy.get(".login-button").click();
+      cy.wait(500);
+  
+      cy.contains("Siivoustarvikkeet").click();
+      cy.wait(500);
+      cy.contains("Moppi");
+  
+      cy.wait(500);
+      cy.get("#delete-tool").click();
+      cy.get("#confirmremove").click();
+      cy.contains("Siivousvälineen poisto onnistui");
+
+      });  
+  
+    });
+
+
+
+
 
 Cypress.on;

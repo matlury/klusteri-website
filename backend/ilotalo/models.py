@@ -149,3 +149,10 @@ class Cleaning(models.Model):
     week = models.IntegerField(default=0)
     big = models.ForeignKey(Organization, on_delete=models.CASCADE, default=0, related_name="big_orgs")
     small = models.ForeignKey(Organization, on_delete=models.CASCADE, default=0, related_name="small_orgs")
+
+class CleaningSupplies(models.Model):
+    """Model for cleaning supplies"""
+
+    id = models.AutoField(primary_key=True)
+    tool = models.CharField(max_length=100, default="", unique=True)
+
