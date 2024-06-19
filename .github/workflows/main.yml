@@ -54,7 +54,7 @@ jobs:
         
       - name: Run backend tests
         working-directory: ./backend
-        run: poetry run coverage run --branch -m pytest
+        run: python manage.py test tests
 
       - name: Create backend coverage report
         working-directory: ./backend
