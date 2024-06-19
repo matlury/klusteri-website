@@ -15,5 +15,3 @@ RUN chgrp -R 0 /frontend && chmod -R g+rwX /frontend
 RUN npm run build
 
 EXPOSE 5173
-
-CMD ["npm", "run", "dev"]
