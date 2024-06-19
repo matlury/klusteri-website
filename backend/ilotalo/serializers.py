@@ -150,6 +150,8 @@ class EventSerializer(serializers.ModelSerializer):
     """Serializes an Event object as JSON"""
 
     organizer = OrganizationSerializer(read_only=True)
+    created_by = UserNoPasswordSerializer(read_only=True)
+
 
     class Meta:
         model = Event

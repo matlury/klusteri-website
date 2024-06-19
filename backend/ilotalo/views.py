@@ -428,25 +428,22 @@ class RemoveEventView(APIView):
         """ pk = primary key """
         user = UserSerializer(request.user)
 
-        if user.data["role"] not in [
-            LEPPISPJ,
-            LEPPISVARAPJ,
-            MUOKKAUS,
-            AVAIMELLINEN,
-            JARJESTOPJ,
-            JARJESTOVARAPJ
-        ] and user.data["rights_for_reservation"] is False:
-            return Response(
-                "You can't remove the event",
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
         try:
             event_to_remove = Event.objects.get(id=pk)
         except ObjectDoesNotExist:
             return Response(
                 "Event not found", status=status.HTTP_404_NOT_FOUND
             )
+
+        print(event_to_remove.created_by.id)
+        print(user.data["id"])
+        
+        if not (user.data["role"] in [LEPPISPJ, LEPPISVARAPJ] or user.data["id"] == event_to_remove.created_by.id):
+            return Response(
+                "You can't remove the event",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         event_to_remove.delete()
 
         return Response(
