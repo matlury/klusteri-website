@@ -16,7 +16,7 @@ test("unexpected error", async () => {
     const usernameInput = getByLabelText("Käyttäjänimi");
     const emailInput = getByLabelText("Sähköposti");
     const passwordInput = getByLabelText("Salasana");
-    const password2Input = getByLabelText("Vahvista Salasana");
+    const password2Input = getByLabelText("Vahvista salasana");
 
     fireEvent.change(emailInput, { target: { value: "example_email@example.com" } });
     fireEvent.change(passwordInput, { target: { value: "salasana1" } });

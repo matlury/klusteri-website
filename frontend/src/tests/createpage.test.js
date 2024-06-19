@@ -37,7 +37,7 @@ describe("NewAccountPage", () => {
     const usernameInput = getByLabelText("Käyttäjänimi");
     const emailInput = getByLabelText("Sähköposti");
     const passwordInput = getByLabelText("Salasana");
-    const password2Input = getByLabelText("Vahvista Salasana");
+    const password2Input = getByLabelText("Vahvista salasana");
 
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
     fireEvent.change(passwordInput, { target: { value: "password123" } });
@@ -57,7 +57,7 @@ describe("NewAccountPage", () => {
     const usernameInput = getByLabelText("Käyttäjänimi");
     const emailInput = getByLabelText("Sähköposti");
     const passwordInput = getByLabelText("Salasana");
-    const password2Input = getByLabelText("Vahvista Salasana");
+    const password2Input = getByLabelText("Vahvista salasana");
 
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
     fireEvent.change(passwordInput, { target: { value: "password123" } });
@@ -83,7 +83,7 @@ describe("NewAccountPage", () => {
     const usernameInput = getByLabelText("Käyttäjänimi");
     const emailInput = getByLabelText("Sähköposti");
     const passwordInput = getByLabelText("Salasana");
-    const password2Input = getByLabelText("Vahvista Salasana");
+    const password2Input = getByLabelText("Vahvista salasana");
 
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
     fireEvent.change(passwordInput, {
@@ -109,7 +109,7 @@ describe("NewAccountPage", () => {
     const usernameInput = getByLabelText("Käyttäjänimi");
     const emailInput = getByLabelText("Sähköposti");
     const passwordInput = getByLabelText("Salasana");
-    const password2Input = getByLabelText("Vahvista Salasana");
+    const password2Input = getByLabelText("Vahvista salasana");
 
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
     fireEvent.change(passwordInput, { target: { value: "pass12" } });
@@ -131,7 +131,7 @@ describe("NewAccountPage", () => {
     const usernameInput = getByLabelText("Käyttäjänimi");
     const emailInput = getByLabelText("Sähköposti");
     const passwordInput = getByLabelText("Salasana");
-    const password2Input = getByLabelText("Vahvista Salasana");
+    const password2Input = getByLabelText("Vahvista salasana");
 
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
     fireEvent.change(passwordInput, { target: { value: "12345678" } });
@@ -153,7 +153,7 @@ describe("NewAccountPage", () => {
     const usernameInput = getByLabelText("Käyttäjänimi");
     const emailInput = getByLabelText("Sähköposti");
     const passwordInput = getByLabelText("Salasana");
-    const password2Input = getByLabelText("Vahvista Salasana");
+    const password2Input = getByLabelText("Vahvista salasana");
 
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
     fireEvent.change(passwordInput, { target: { value: "salasanaaaaa" } });
@@ -185,7 +185,7 @@ describe("Createpage", () => {
     const usernameInput = getByLabelText("Käyttäjänimi");
     const emailInput = getByLabelText("Sähköposti");
     const passwordInput = getByLabelText("Salasana");
-    const password2Input = getByLabelText("Vahvista Salasana");
+    const password2Input = getByLabelText("Vahvista salasana");
 
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
     fireEvent.change(passwordInput, { target: { value: "salasana1" } });
@@ -229,7 +229,7 @@ describe("Createpage", () => {
     const usernameInput = getByLabelText("Käyttäjänimi");
     const emailInput = getByLabelText("Sähköposti");
     const passwordInput = getByLabelText("Salasana");
-    const password2Input = getByLabelText("Vahvista Salasana");
+    const password2Input = getByLabelText("Vahvista salasana");
 
     fireEvent.change(emailInput, { target: { value: "example_email@example.com" } });
     fireEvent.change(passwordInput, { target: { value: "salasana1" } });
