@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useStateContext } from "../context/ContextProvider";
 import axios from "axios";
 import axiosClient from "../axios.js";
-import "../index.css";
 import UserPage from "../components/UserPage.jsx";
 import OrganisationPage from "../components/OrganisationPage.jsx";
 import CreateOrganization from "../components/CreateOrganization.jsx";
