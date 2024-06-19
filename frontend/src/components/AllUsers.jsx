@@ -105,15 +105,10 @@ const AllUsers = ({
 
   // Function to handle form submission (updating user details)
   const handleFormSubmit = (event) => {
-    if (newPassword !== confirmNewPassword) {
-      alert(t("passwordsDontMatch"));
-      return;
-    } else {
-      event.preventDefault();
-      handleUpdateAnotherUser(userDetailsId, userDetailsUsername, newPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole,
-        userDetailsOrganizations.split(", ").map(org => org.trim()));
-      handleClose();
-    }
+    event.preventDefault();
+    handleUpdateAnotherUser(userDetailsId, userDetailsUsername, newPassword, confirmNewPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole,
+      userDetailsOrganizations.split(", ").map(org => org.trim()));
+    handleClose();
   };
 
   // Columns configuration for the DataGrid component

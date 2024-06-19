@@ -6,6 +6,7 @@ import UserPage from "../components/UserPage.jsx";
 import OrganisationPage from "../components/OrganisationPage.jsx";
 import CreateOrganization from "../components/CreateOrganization.jsx";
 import AllUsers from "../components/AllUsers.jsx";
+import updateaccountcheck from "../utils/updateaccountcheck.js";
 import { useTranslation } from "react-i18next";
 
 const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
@@ -18,6 +19,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // user_details* variables for viewing and updating someone else's information
   const [userDetailsUsername, setUserDetailsUsername] = useState("");
   const [userDetailsPassword, setUserDetailsPassword] = useState("");
+  const [userDetailsConfirmPassword, setUserDetailsConfirmPassword] = useState("")
   const [userDetailsEmail, setuserDetailsEmail] = useState("");
   const [userDetailsTelegram, setuserDetailsTelegram] = useState("");
   const [userDetailsRole, setuserDetailsRole] = useState(null);
@@ -151,9 +153,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
   };
 
-  const handleUpdateAnotherUser = (userDetailsId, userDetailsUsername, userDetailsPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole,
-    userDetailsOrganizations) => {  
-  
+  const handleUpdateAnotherUser = (userDetailsId, userDetailsUsername, userDetailsPassword, userDetailsConfirmPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole, 
+    userDetailsOrganizations) => {        
     /*
     Event handler for updating someone else's information.
     No validation here because backend takes care of it.
@@ -173,28 +174,46 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       id: userDetailsId, 
     };
 
-    if (confirmUpdate) {
-      axiosClient
-        .put(`/users/update/${userDetailsId}/`, updatedValues)
-        .then((response) => {
-          console.log(t("usereditsuccess"));
+    const validationError = updateaccountcheck({
+      username: userDetailsUsername,
+      password: userDetailsPassword,
+      email: userDetailsEmail,
+      telegram: userDetailsTelegram,
+      confirmPassword: userDetailsConfirmPassword,
+      API_URL,
+      t
+    });
 
-          setSuccess(t("usereditsuccess"));
-          setTimeout(() => setSuccess(""), 5000);
-          getAllUsers();
-
-          if (userDetailsEmail === email) {
-            localStorage.setItem("loggedUser", JSON.stringify(response.data));
-            setUser(response.data);
-          }
-        })
-        .catch((error) => {
-          console.error(t("usereditfail"), error);
-          setError(t("usereditfail"));
-          setTimeout(() => setError(""), 5000);
-        });
+    if (typeof validationError === "string") {
+      setError(validationError);
+      setTimeout(() => setError(""), 5000);
+    } else if (validationError === true) {
+      if (confirmUpdate) {
+        axiosClient
+          .put(`/users/update/${userDetailsId}/`, updatedValues)
+          .then((response) => {
+            console.log(t("usereditsuccess"));
+            setSuccess(t("usereditsuccess"));
+            setTimeout(() => setSuccess(""), 5000);
+            getAllUsers();
+    
+            if (userDetailsEmail === email) {
+              localStorage.setItem("loggedUser", JSON.stringify(response.data));
+              setUser(response.data);
+            }
+          })
+          .catch((error) => {
+            console.error(t("usereditfail"), error);
+            setError(t("usereditfail"));
+            setTimeout(() => setError(""), 5000);
+          });
+      } else {
+        console.log("User cancelled the update.");
+      }
     } else {
-      console.log("User cancelled the update.");
+      setError(t("usereditfail"));
+      setError(t("usereditfail"));
+      setTimeout(() => setError(""), 5000);
     }
   };
 
@@ -544,8 +563,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                     toggleUserDetails={toggleUserDetails}
                     userDetailsUsername={userDetailsUsername}
                     setUserDetailsUsername={setUserDetailsUsername}
-                    userDetailsPassword={userDetailsPassword}
-                    setUserDetailsPassword={setUserDetailsPassword}
                     userDetailsEmail={userDetailsEmail}
                     setuserDetailsEmail={setuserDetailsEmail}
                     userDetailsTelegram={userDetailsTelegram}
