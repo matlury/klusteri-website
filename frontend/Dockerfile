@@ -12,6 +12,8 @@ RUN npm install
 # Copy the rest of the application code from frontend
 COPY . .
 
+RUN chgrp -R 0 /frontend && chmod -R g+rwX /frontend
+
 # Build the app
 RUN npm run build
 
