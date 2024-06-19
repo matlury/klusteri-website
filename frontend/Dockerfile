@@ -1,7 +1,7 @@
 FROM node:current-alpine AS build
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /frontend
 
 # Copy package.json and package-lock.json from frontend
 COPY package*.json ./
@@ -12,7 +12,7 @@ RUN npm install
 # Copy the rest of the application code from frontend
 COPY . .
 
-RUN chgrp -R 0 /app && chmod -R g+rwX /app
+RUN chgrp -R 0 /frontend && chmod -R g+rwX /frontend
 
 # Build the app
 RUN npm run build
@@ -24,10 +24,10 @@ FROM nginx:alpine
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Copy the built files from the previous stage
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /frontend/dist /usr/share/nginx/html
 
 # Expose the port the app runs on
 EXPOSE 5173
 
 # Start Nginx server
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["nginx", "-g", "daemon off"]
