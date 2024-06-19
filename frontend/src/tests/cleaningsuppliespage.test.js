@@ -110,16 +110,21 @@ import {
     
         // Mock the axios post request
         mockAxios.mockResponseFor({ url: "/listobjects/cleaningsupplies/" }, responseObj);
-        // expect(screen.getByText("imuri")).toBeInTheDocument();   // draft, adjust (?) for MUI datagrid
+    
+
+        await waitFor(() => {
+          expect(screen.getByText("imuri")).toBeInTheDocument();
+        });
 
         // // Simulate clicking the trashcan for delete:
-        // fireEvent.click(screen.getByTestId("delete-tool-button"));
-        // //delete-tool-button-${params.id}
+        fireEvent.click(screen.getByTestId("delete-tool-button"));
+     
 
-        // fireEvent.click(screen.getByTestId("confirmdelete"));
+        fireEvent.click(screen.getByTestId("confirmdelete"));
 
-        // expect(screen.getByText("Siivousvälineen poisto onnistui")).toBeInTheDocument();
-
+      //   await waitFor(() => {
+      //   expect(screen.getByText("Siivousvälineen poisto onnistui")).toBeInTheDocument();
+      // });  
 
       });
   });
