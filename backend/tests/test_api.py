@@ -177,7 +177,8 @@ class TestDjangoAPI(TestCase):
         self.jarjestopj = response.data
         self.jarjestopj_user = self.jarjestopj
 
-        self.user_count = 5
+# leppispj created automatically when the database is created
+        self.user_count = 6
 
 
         tko_aly_data = self.data = {
@@ -395,7 +396,7 @@ class TestDjangoAPI(TestCase):
         """An authorized user can update their email address"""
 
         # update the email address
-        user_id = User.objects.all()[0].id
+        user_id = User.objects.all()[1].id
         response = self.client.put(
             f"http://localhost:8000/api/users/update/{user_id}/",
             headers={"Authorization": f"Bearer {self.access_token}"},
@@ -499,7 +500,7 @@ class TestDjangoAPI(TestCase):
         """An authorized user can update their telegram name"""
 
         # update the telegram name
-        user_id = User.objects.all()[0].id
+        user_id = User.objects.all()[1].id
         response = self.client.put(
             f"http://localhost:8000/api/users/update/{user_id}/",
             headers={"Authorization": f"Bearer {self.access_token}"},

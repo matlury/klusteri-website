@@ -2,18 +2,16 @@ from django.apps import AppConfig
 from django.db import connection
 from django.db.backends.signals import connection_created
 from django.db.utils import OperationalError
-from django.dispatch import receiver
+from django.db.models.signals import post_migrate
 from django.contrib.auth import get_user_model
-import string
 
 def create_default_user(sender, **kwargs):
     User = get_user_model()
     try:
         if not User.objects.filter(username='leppispj').exists():
-            user = User.objects.create_user('leppispj', '', 'pj@leppis.fi', "", 1,)
+            user = User.objects.create_user('leppispj', '', 'pj@leppis.fi', "", 1)
             user.first_login = True
             user.save()
-
             print("Default admin user created")
     except OperationalError:
         pass
@@ -24,14 +22,13 @@ class IlotaloConfig(AppConfig):
 
     def ready(self):
         self.start_scheduler()
-        connection_created.connect(create_default_user)
+        post_migrate.connect(create_default_user, sender=self)
 
     def start_scheduler(self):
         try:
             if self._check_scheduler_tables():
                 from scheduler import scheduler
                 scheduler.start()
-
         except OperationalError:
             pass
 

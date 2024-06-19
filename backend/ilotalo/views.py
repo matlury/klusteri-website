@@ -128,10 +128,12 @@ class UpdateUserView(APIView):
         pk (primary key): str
             Id of the User object to be updated
         """
-
+    
         try:
             user_to_update = User.objects.get(id=pk)
         except ObjectDoesNotExist:
+            if id(pk) != request.user.id and request.user.role not in [LEPPISPJ, LEPPISVARAPJ, MUOKKAUS]:
+                return Response("You are not allowed to edit users", status=status.HTTP_400_BAD_REQUEST)
             return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
         # Check if the user has permission to edit the user
