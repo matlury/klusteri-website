@@ -24,6 +24,7 @@ const AllUsers = ({
   hasPermission,
   handlePJChange,
   handleKeySubmit,
+  handleResRightChange
 }) => {
 
   // State variables to manage user data and dialog visibility
@@ -36,6 +37,7 @@ const AllUsers = ({
   const [userDetailsRole, setuserDetailsRole] = useState("");  
   const [userDetailsOrganizations, setuserDetailsOrganizations] = useState("");
   const [userDetailsId, setuserDetailsId] = useState("");
+  const [userDetailsResRights, setuserDetailsResRights] = useState(false);
   const [selectedOrganization, setSelectedOrganization] = useState(null);
 
   const { t } = useTranslation();
@@ -59,6 +61,7 @@ const AllUsers = ({
     setuserDetailsRole(showThisUser.Rooli);
     setuserDetailsId(showThisUser.id);
     setuserDetailsOrganizations(showThisUser.Jäsenyydet.join(", "));
+    setuserDetailsResRights(showThisUser.resrights);
     handleClickOpen();
   };
 
@@ -74,6 +77,7 @@ const AllUsers = ({
           Telegram: u.telegram,
           Rooli: u.role,
           Jäsenyydet: u.keys.map((organization) => organization.name),
+          resrights: u.rights_for_reservation
         }));
         setAllUsers(userData);
       })
@@ -226,6 +230,21 @@ const AllUsers = ({
             >
               {t("changepj")}
             </Button>
+
+            {userDetailsResRights ? (
+              <Button
+              onClick={() => handleResRightChange(userDetailsId)}
+              sx={{ marginBottom: '1rem' }} // Add spacing below the button
+              >
+              {t("removeresrights")}
+              </Button>
+            ):
+            <Button
+              onClick={() => handleResRightChange(userDetailsId)}
+              sx={{ marginBottom: '1rem' }} // Add spacing below the button
+            >
+              {t("addresrights")}
+            </Button>}
 
             {/* Dialog actions */}
             <DialogActions>

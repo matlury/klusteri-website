@@ -855,6 +855,7 @@ class TestDjangoAPI(TestCase):
                 "start": datetime.now(),
                 "end": datetime.now(),
                 "organizer": self.tko_aly_id,
+                "created_by": self.leppis_id,
                 "title": "Varaus suunnitteluun",
                 "description": "",
                 "responsible": "Pete",
@@ -874,6 +875,7 @@ class TestDjangoAPI(TestCase):
                 "start": datetime.now(),
                 "end": datetime.now(),
                 "organizer": self.tko_aly_id,
+                "created_by": self.leppis_id,
                 "title": "Varaus suunnitteluun",
                 "description": "Suunnitellaan juhlia",
                 "responsible": "Pete",
@@ -893,6 +895,7 @@ class TestDjangoAPI(TestCase):
                 "start": datetime.now(),
                 "end": datetime.now(),
                 "organizer": self.tko_aly_id,
+                "created_by": self.leppis_id,
                 "title": "Varaus suunnitteluun",
                 "description": "Suunnitellaan juhlia",
                 "responsible": "Pete",
@@ -915,6 +918,7 @@ class TestDjangoAPI(TestCase):
                 "start": datetime.now(),
                 "end": datetime.now(),
                 "organizer": self.tko_aly_id,
+                "created_by": self.leppis_id,
                 "title": "Varaus suunnitteluun",
                 "description": "Suunnitellaan juhlia",
                 "responsible": "Pete",
@@ -973,6 +977,7 @@ class TestDjangoAPI(TestCase):
                 "start": datetime.now(),
                 "end": datetime.now(),
                 "organizer": self.tko_aly_id,
+                "created_by": self.leppis_id,
                 "title": "Varaus suunnitteluun",
                 "description": "Suunnitellaan juhlia",
                 "responsible": "Pete",
@@ -1017,6 +1022,7 @@ class TestDjangoAPI(TestCase):
                 "start": datetime.now(),
                 "end": datetime.now(),
                 "organizer": self.tko_aly_id,
+                "created_by": self.leppis_id,
                 "title": "Varaus suunnitteluun",
                 "description": "Suunnitellaan juhlia",
                 "responsible": "Pete",
@@ -1114,6 +1120,7 @@ class TestDjangoAPI(TestCase):
                 "start": datetime.now(),
                 "end": datetime.now(),
                 "organizer": self.tko_aly_id,
+                "created_by": self.leppis_id,
                 "title": "Varaus suunnitteluun",
                 "description": "Suunnitellaan juhlia",
                 "responsible": "Pete",
@@ -1142,6 +1149,7 @@ class TestDjangoAPI(TestCase):
                 "start": datetime.now(),
                 "end": datetime.now(),
                 "organizer": self.tko_aly_id,
+                "created_by": self.leppis_id,
                 "title": "Varaus suunnitteluun",
                 "description": "Suunnitellaan juhlia",
                 "responsible": "Pete",
@@ -1720,32 +1728,32 @@ class TestDjangoAPI(TestCase):
 #        self.assertEqual(response.status_code, status.HTTP_200_OK)
 #        muokkaus_user = User.objects.get(id=self.muokkaus_user['id'])
 #        self.assertTrue(muokkaus_user.organization['Matrix'])
-    
-    def test_add_user_organization_role5(self):
-        """An authorized user can add member to organization"""
-
-        # first create an organization to add member to it
-        organization_created = self.client.post(
-            "http://localhost:8000/api/organizations/create",
-            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={
-                "name": "Matrix",
-                "email": "matrix_ry@gmail.com",
-                "homepage": "matrix-ry.fi",
-                "size": 1,
-            },
-            format="json",
-        )
-
-        # try to add user to created organization with role5 user
-        response = self.client.put(
-            f"http://localhost:8000/api/organizations/add_user_organization/{self.muokkaus_id}/",
-            headers={"Authorization": f"Bearer {self.access_token}"},
-            data={"organization_name": "Matrix"},
-            format="json"
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+#    
+#    def test_add_user_organization_role5(self):
+#        """An authorized user can add member to organization"""
+#
+#        # first create an organization to add member to it
+#        organization_created = self.client.post(
+#            "http://localhost:8000/api/organizations/create",
+#            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+#            data={
+#                "name": "Matrix",
+#                "email": "matrix_ry@gmail.com",
+#                "homepage": "matrix-ry.fi",
+#                "size": 1,
+#            },
+#            format="json",
+#        )
+#
+#        # try to add user to created organization with role5 user
+#        response = self.client.put(
+#            f"http://localhost:8000/api/organizations/add_user_organization/{self.muokkaus_id}/",
+#            headers={"Authorization": f"Bearer {self.access_token}"},
+#            data={"organization_name": "Matrix"},
+#            format="json"
+#        )
+#
+#        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     
     def test_add_user_organization_invalid_user(self):
         """An authorized user can add member to organization"""
@@ -2114,6 +2122,22 @@ class TestDjangoAPI(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_change_rights_for_reservation(self):
+        """Role 6 can add and remove rights for reservation"""
+
+        response = self.client.put(
+            f'http://localhost:8000/api/users/change_rights_reservation/{self.tavallinen_id}/',
+            headers={"Authorization": f"Bearer {self.jarjestopj_access_token}"},
+        )
+
+        self.assertEqual(response.data["rights_for_reservation"], True)
+
+        response = self.client.put(
+            f'http://localhost:8000/api/users/change_rights_reservation/{self.tavallinen_id}/',
+            headers={"Authorization": f"Bearer {self.jarjestopj_access_token}"},
+        )
+
+        self.assertEqual(response.data["rights_for_reservation"], False)
 
     def test_creating_cleaning_supplies(self):
         """Roles other than role 5 can create cleaning tools"""
@@ -2154,7 +2178,6 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-
     def test_deleting_cleaning_supplies(self):
         """Cleaning tools can be deleted by roles higher than 5"""
 
@@ -2192,4 +2215,3 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-

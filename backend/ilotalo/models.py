@@ -93,6 +93,7 @@ class Event(models.Model):
     organizer = models.ForeignKey(Organization, on_delete=models.CASCADE, default=0) # Organization responsible for the event
     description = models.CharField(max_length=500, default="")  # Description of the event
     responsible = models.CharField(max_length=100, default="")  # Person responsible for the event
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
     open = models.BooleanField(default=True)  # Indicates whether the event is open or not
     room = models.CharField(max_length=50, default="")  # Room where the event takes place
 
