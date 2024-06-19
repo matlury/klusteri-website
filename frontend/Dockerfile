@@ -26,6 +26,10 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Copy the built files from the previous stage
 COPY --from=build /frontend/dist /usr/share/nginx/html
 
+RUN mkdir -p /var/cache/nginx/client_temp && \
+    chmod 755 /var/cache/nginx/client_temp && \
+    chown nginx:nginx /var/cache/nginx/client_temp
+
 # Expose the port the app runs on
 EXPOSE 5173
 
