@@ -433,9 +433,6 @@ class RemoveEventView(APIView):
             return Response(
                 "Event not found", status=status.HTTP_404_NOT_FOUND
             )
-
-        print(event_to_remove.created_by.id)
-        print(user.data["id"])
         
         if not (user.data["role"] in [LEPPISPJ, LEPPISVARAPJ] or user.data["id"] == event_to_remove.created_by.id):
             return Response(
