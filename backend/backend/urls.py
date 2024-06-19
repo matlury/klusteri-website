@@ -33,6 +33,7 @@ router.register(r"events", views.EventView, "events")
 router.register(r"nightresponsibilities", views.NightResponsibilityView, "nightresponsibilities")
 router.register(r"defects", views.DefectFaultView, "defects")
 router.register(r"cleaning", views.CleaningView, "cleaning")
+router.register(r"cleaningsupplies", views.CleaningSuppliesView, "cleaning")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -48,4 +49,5 @@ urlpatterns = [
     path("api/testing/", include("ilotalo.urls")),
     path("api/defects/", include("ilotalo.urls")),
     path("api/cleaning/", include("ilotalo.urls")),
+    path("api/cleaningsupplies/", include("ilotalo.urls")),
 ]
