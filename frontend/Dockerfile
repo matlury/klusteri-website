@@ -28,10 +28,12 @@ COPY --from=build /frontend/dist /usr/share/nginx/html
 # Create directory for nginx client temp files and set permissions
 RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
 
-RUN sed -i.bak 's/listen\(.*\)80;/listen 8081;/' /etc/nginx/conf.d/default.conf
+RUN sed -i.bak 's/listen\(.*\)80;/listen 5173;/' /etc/nginx/conf.d/default.conf
 
 
 RUN sed -i.bak 's/^user/#user/' /etc/nginx/nginx.conf
+
+EXPOSE 5173
 
 # Start Nginx server (nginx image CMD already starts nginx, no need to override)
 # CMD ["nginx", "-g", "daemon off;"]
