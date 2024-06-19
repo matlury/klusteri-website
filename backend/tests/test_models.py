@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from django.test import TestCase
-from ilotalo.models import NightResponsibility, User, Organization, Cleaning
+from ilotalo.models import NightResponsibility, User, Organization, Cleaning, CleaningSupplies
 
 class UserTestCase(TestCase):
     # Creating a new User object via test data
@@ -109,3 +109,15 @@ class CleaningTestCase(TestCase):
     def test_week_default(self):
         cleaning_default_week = Cleaning.objects.create(big=self.big_org, small=self.small_org)
         self.assertEqual(cleaning_default_week.week, 0)
+
+
+class CleaningSuppliesTestCase(TestCase):
+    def setUp(self):
+        # Create a cleaning tool
+        self.cleaning_tool = CleaningSupplies.objects.create(
+            tool="vacuum cleaner"
+        )
+
+    def test_cleaningsupplies_creation(self):
+        cleaning = CleaningSupplies.objects.get(id=self.cleaning_tool.id)
+        self.assertEqual(cleaning.tool, "vacuum cleaner")

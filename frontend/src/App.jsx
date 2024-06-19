@@ -43,6 +43,7 @@ import Contacts from "./pages/contacts";
 import DefectFault from "./pages/defectfaultpage";
 import Rules_and_Instructions from "./pages/rules_instructions";
 import CleaningSchedule from "./pages/cleaningschedulepage";
+import CleaningSupplies from "./pages/cleaningsuppliespage";
 import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
 import Statistics from "./pages/statistics";
@@ -88,6 +89,7 @@ const Sidebar = ({ isLoggedIn }) => {
     <CleaningServicesIcon />,
     <FactCheckOutlinedIcon />,
     <AdminPanelSettingsOutlinedIcon />,
+    <CleaningServicesIcon />,
   ];
 
   const routes = [
@@ -102,6 +104,7 @@ const Sidebar = ({ isLoggedIn }) => {
     { key: "front_sidebar_9", path: "/siivousvuorot", icon: icons[8], requiresLogin: true },
     { key: "front_sidebar_10", path: "/saannot_ja_ohjeet", icon: icons[9] },
     { key: "front_sidebar_11", path: "/tietosuojaseloste", icon: icons[10] },
+    { key: "front_sidebar_12", path: "/siivoustarvikkeet", icon: icons[8]},
   ];
 
   return (
@@ -117,23 +120,23 @@ const Sidebar = ({ isLoggedIn }) => {
           if (requiresLogin && !isLoggedIn) return null;
           return (
             <ListItem key={key} disablePadding>
-              <ListItemButton
-                key={key}
-                component={Link}
-                to={path}
-                sx={{
-                  backgroundColor: location.pathname === path ? '#9e9e9e' : 'transparent',
-                  '&:hover': {
-                    backgroundColor: location.pathname === path ? '#9e9e9e' : '#e0e0e0',
-                  },
-                }}
-              >
-                <ListItemIcon>{icons[index]}</ListItemIcon>
-                <ListItemText primary={t(key)} />
-              </ListItemButton>
-            </ListItem>
-          );
-        })}
+            <ListItemButton
+              key={key}
+              component={Link}
+              to={path}
+              sx={{
+                backgroundColor: location.pathname === path ? '#9e9e9e' : 'transparent',
+                '&:hover': {
+                  backgroundColor: location.pathname === path ? '#9e9e9e' : '#e0e0e0',
+                },
+              }}
+            >
+              <ListItemIcon>{icons[index]}</ListItemIcon>
+              <ListItemText primary={t(key)} />
+            </ListItemButton>
+          </ListItem>
+        );
+      })}
       </List>
       <Divider />
     </div>
@@ -397,6 +400,7 @@ const App = (props) => {
               element={<Rules_and_Instructions />}
             />
             <Route path="/tietosuojaseloste" element={<PrivacyPolicy />} />
+            <Route path="/siivoustarvikkeet" element={<CleaningSupplies isLoggedIn={isLoggedIn} loggedUser={loggedUser} />} />
           </Routes>
           <LoginDialog
             open={loginDialogOpen}
