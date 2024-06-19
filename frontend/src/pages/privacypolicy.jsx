@@ -28,7 +28,8 @@ const PrivacyPolicy = () => {
       {t("privacy_12")}{" "}
       </p>
       <h2>{t("privacy_13")}</h2>
-      <p>{t("privacy_14")}</p>
+      {t("privacy_14")}
+      <br />
       <br />
       {t("privacy_15")}
       <br />
