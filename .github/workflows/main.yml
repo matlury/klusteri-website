@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      #Start a postgres container for test runs
+      # Start a postgres container for test runs
       postgres:
         image: postgres:latest
         env:
@@ -54,7 +54,7 @@ jobs:
         
       - name: Run backend tests
         working-directory: ./backend
-        run: python manage.py test tests
+        run: poetry run python manage.py test tests
 
       - name: Create backend coverage report
         working-directory: ./backend
@@ -68,7 +68,7 @@ jobs:
         working-directory: ./frontend
         run: npx jest --coverage
 
-      #Cypress tests require backend to be running
+      # Cypress tests require backend to be running
       - name: Start backend
         run: |
           cd backend
@@ -89,4 +89,3 @@ jobs:
           files: ./backend/coverage.xml,./frontend/coverage/clover.xml
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
