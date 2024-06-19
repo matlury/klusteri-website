@@ -318,11 +318,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             homepage: organization_homepage,
             color: organization_color,
           };
-          console.log(organizationObject);
           axiosClient
             .post("organizations/create", organizationObject)
             .then((response) => {
-              console.log("Organization created successfully!");
               setSuccess(t("orgcreatesuccess"));
               setTimeout(() => setSuccess(""), 5000);
               getOrganisations();
@@ -411,6 +409,32 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
   };
 
+  const handleResRightChange = (userId) => {
+    const selectedUserId = userId;
+
+    confirmupdate();
+
+    function confirmupdate() {
+      const confirmUpdate = window.confirm(
+        t("resrightsconfirm")
+      );
+
+      if (confirmUpdate) {
+        axiosClient
+          .put(`/users/change_rights_reservation/${selectedUserId}/`)
+          .then((response) => {
+            console.log("Reservation rights changed succesfully:", response.data);
+            setSuccess(t("usereditsuccess"));
+          })
+          .catch((error) => {
+            console.error("Error changing reservation rights:", error);
+          });
+      } else {
+        console.log("User cancelled the update.");
+      }
+    }
+  }
+
   // Handles key submit
   //const handleKeySubmit = async (event) => {
   const handleKeySubmit = async (UserId, Organization) => {
@@ -488,7 +512,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         if (currentUser.role === 1) {
           setHasPermission(true);
           setHasPermissionOrg(true);
-        } else if (currentUser.role == 2 || currentUser.role == 3) {
+        } else if (currentUser.role == 2 || currentUser.role == 3 || currentUser.role == 6) {
           setHasPermissionOrg(true);
           setHasPermission(false);
         } else if (currentUser[0]) {
@@ -575,6 +599,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                     handlePJChange={handlePJChange}
                     selectedUser={selectedUser}
                     handleKeySubmit={handleKeySubmit}
+                    handleResRightChange={handleResRightChange}
                   />
                 )}
               </div>

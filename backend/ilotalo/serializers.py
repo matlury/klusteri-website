@@ -112,6 +112,18 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         model = User
         exclude = ('password',)  # Exclude password field from serialization
 
+    def validate_username(self, username):
+        """Validates that the username does not contain @ symbol so it doesn't mess with the email login"""
+        if "@" in username:
+            raise serializers.ValidationError("Username cannot contain @ symbol")
+        return username
+
+    def validate_username(self, username):
+        """Validates that the username does not contain @ symbol so it doesn't mess with the email login"""
+        if "@" in username:
+            raise serializers.ValidationError("Username cannot contain @ symbol")
+        return username
+
     def validate_role(self, role):
         """Validates role when updating a user. Limits: 1 <= role <= 7."""
         if int(role) < 1:
@@ -159,6 +171,8 @@ class EventSerializer(serializers.ModelSerializer):
     """Serializes an Event object as JSON"""
 
     organizer = OrganizationSerializer(read_only=True)
+    created_by = UserNoPasswordSerializer(read_only=True)
+
 
     class Meta:
         model = Event

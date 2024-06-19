@@ -74,7 +74,7 @@ class RegisterView(APIView):
         # Check if the request contains valid data
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
         google_response = requests.post('https://www.google.com/recaptcha/api/siteverify', data={
             'secret': recaptcha_secret_key,
             'response': recaptcha_response,
@@ -164,13 +164,6 @@ class UpdateUserView(APIView):
         elif requesting_user.role == MUOKKAUS:
             return requesting_user.organization == user_to_update.organization and user_to_update.role in [AVAIMELLINEN, TAVALLINEN]
         return False
-
-def belongs_to_same_org(user, user_to_update):
-    """Check if two users are members of the same organization"""
-    for key, value in user.organization.items():
-        if value and user_to_update.organization[key]:
-            return True
-    return False
 
 class RemoveUserView(APIView):
     """View for removing an user <baseurl>/api/users/delete_user/<int:pk>/"""
@@ -309,67 +302,67 @@ class AddUserOrganizationView(APIView):
     Only Leppispj and Leppisvarapj can add users to organizations for now, data needed to add user
     to organization: user id and organization id
     """
-
-    permission_classes = [permissions.IsAuthenticated]
-
-    def put(self, request, pk=None):
-        """
-        Request for adding a user to an organization
-
-        Parameters
-        ----------
-        request: dict
-            Contains the name of the organization in which the user will be added
-            {
-                "organization_name": "Matrix"
-            }
-
-        pk (primary key): str
-            Id of the user about to be added to the organization
-        """
-
-        user = UserSerializer(request.user)
-
-        if user.data["role"] not in [
-            LEPPISPJ,
-            LEPPISVARAPJ
-        ]:
-            return Response(
-                "You can't add members to organizations",
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        try:
-            user_to_update = User.objects.get(id=pk)
-            organization_name = request.data["organization_name"]
-        except ObjectDoesNotExist:
-            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
-        except KeyError:
-            return Response(
-                "Provide the name of the organization",
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        # Check if the request contains unwanted data
-        if (len(request.data.keys())) > 1:
-            return Response(
-                "You can only add a user to an organization through this endpoint",
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-
-        # Update the user's key list
-        users_organizations = user_to_update.organization
-        users_organizations[organization_name] = True
-
-        serializer = UserUpdateSerializer(
-            instance=user_to_update, data=users_organizations, partial=True
-        )
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#    permission_classes = [permissions.IsAuthenticated]
+#
+#    def put(self, request, pk=None):
+#        """
+#        Request for adding a user to an organization
+#
+#        Parameters
+#        ----------
+#        request: dict
+#            Contains the name of the organization in which the user will be added
+#            {
+#                "organization_name": "Matrix"
+#            }
+#
+#        pk (primary key): str
+#            Id of the user about to be added to the organization
+#        """
+#
+#        user = UserSerializer(request.user)
+#
+#        if user.data["role"] not in [
+#            LEPPISPJ,
+#            LEPPISVARAPJ
+#        ]:
+#            return Response(
+#                "You can't add members to organizations",
+#                status=status.HTTP_400_BAD_REQUEST,
+#            )
+#
+#        try:
+#            user_to_update = User.objects.get(id=pk)
+#            organization_name = request.data["organization_name"]
+#        except ObjectDoesNotExist:
+#            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+#        except KeyError:
+#            return Response(
+#                "Provide the name of the organization",
+#                status=status.HTTP_400_BAD_REQUEST
+#            )
+#
+#        # Check if the request contains unwanted data
+#        if (len(request.data.keys())) > 1:
+#            return Response(
+#                "You can only add a user to an organization through this endpoint",
+#                status=status.HTTP_400_BAD_REQUEST
+#            )
+#
+#
+#        # Update the user's key list
+#        users_organizations = user_to_update.organization
+#        users_organizations[organization_name] = True
+#
+#        serializer = UserUpdateSerializer(
+#            instance=user_to_update, data=users_organizations, partial=True
+#        )
+#
+#        if serializer.is_valid():
+#            serializer.save()
+#            return Response(serializer.data, status=status.HTTP_200_OK)
+#        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    pass
 
 class EventView(viewsets.ReadOnlyModelViewSet):
     """
@@ -394,7 +387,7 @@ class CreateEventView(APIView):
             MUOKKAUS,
             JARJESTOPJ,
             JARJESTOVARAPJ
-        ]:
+        ] and user.data["rights_for_reservation"] is False:
             return Response(
                 "You can't add an event",
                 status=status.HTTP_400_BAD_REQUEST,
@@ -416,25 +409,19 @@ class RemoveEventView(APIView):
         """ pk = primary key """
         user = UserSerializer(request.user)
 
-        if user.data["role"] not in [
-            LEPPISPJ,
-            LEPPISVARAPJ,
-            MUOKKAUS,
-            AVAIMELLINEN,
-            JARJESTOPJ,
-            JARJESTOVARAPJ
-        ]:
-            return Response(
-                "You can't remove the event",
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
         try:
             event_to_remove = Event.objects.get(id=pk)
         except ObjectDoesNotExist:
             return Response(
                 "Event not found", status=status.HTTP_404_NOT_FOUND
             )
+        
+        if not (user.data["role"] in [LEPPISPJ, LEPPISVARAPJ] or user.data["id"] == event_to_remove.created_by.id):
+            return Response(
+                "You can't remove the event",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         event_to_remove.delete()
 
         return Response(
@@ -458,7 +445,7 @@ class UpdateEventView(APIView):
             AVAIMELLINEN,
             JARJESTOPJ,
             JARJESTOVARAPJ
-        ]:
+        ] and user.data["rights_for_reservation"] is False:
             return Response(
                 "Users with role 5 can't edit events",
                 status=status.HTTP_400_BAD_REQUEST,
@@ -499,7 +486,8 @@ class CreateNightResponsibilityView(APIView):
             LEPPISPJ,
             LEPPISVARAPJ,
             MUOKKAUS,
-            AVAIMELLINEN
+            AVAIMELLINEN,
+            JARJESTOPJ
         ]:
             return Response(
                 "You can't take responsibility",
@@ -527,7 +515,8 @@ class UpdateNightResponsibilityView(APIView):
             LEPPISPJ,
             LEPPISVARAPJ,
             MUOKKAUS,
-            AVAIMELLINEN
+            AVAIMELLINEN,
+            JARJESTOPJ
         ]:
             return Response(
                 "You can't edit this",
@@ -569,7 +558,8 @@ class LogoutNightResponsibilityView(APIView):
             LEPPISPJ,
             LEPPISVARAPJ,
             MUOKKAUS,
-            AVAIMELLINEN
+            AVAIMELLINEN,
+            JARJESTOPJ
         ]:
             return Response(
                 "You can't edit this",
@@ -623,7 +613,7 @@ class RightsForReservationView(APIView):
     def put(self, request, pk=None):
         user = UserSerializer(request.user)
 
-        if user.data["role"] not in [JARJESTOPJ, JARJESTOVARAPJ]:
+        if user.data["role"] not in [LEPPISPJ, LEPPISVARAPJ, JARJESTOPJ, JARJESTOVARAPJ]:
             return Response("You can't change the rights", status=status.HTTP_400_BAD_REQUEST)
         else:
             try:
@@ -631,8 +621,12 @@ class RightsForReservationView(APIView):
             except User.DoesNotExist:
                 return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
+            data = {
+                "rights_for_reservation": not user_to_update.rights_for_reservation
+            }
+
             user_serializer = UserUpdateSerializer(
-                instance=user_to_update, data=request.data, partial=True
+                instance=user_to_update, data=data, partial=True
             )
             if user_serializer.is_valid():
                 user_serializer.save()
@@ -924,14 +918,14 @@ class CreateCleaningView(APIView):
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            
+
         if Cleaning.objects.all().count() >= 53:
             return Response({"error": "Cleaning schedule already exist."}, status=status.HTTP_400_BAD_REQUEST)
-            
+
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
+
 class RemoveCleaningView(APIView):
     """View for removing the cleaning schedule <baseurl>/api/cleaning/remove/all/"""
 
@@ -954,7 +948,7 @@ class RemoveCleaningView(APIView):
             return Response(
                 "Cleaning data not found", status=status.HTTP_404_NOT_FOUND
             )
-                
+
         return Response(f"Cleaning schedule successfully removed", status=status.HTTP_200_OK)
 
 

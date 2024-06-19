@@ -38,7 +38,7 @@ const LoginForm = ({
           variant="contained"
           className="login-button"
           color="primary"
-          type="button"
+          type="submit"
           onClick={handleLogin}
         >
           {t("login")}
