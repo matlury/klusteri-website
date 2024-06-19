@@ -411,7 +411,7 @@
         "reservations_name": "Event name",
         "reservations_org": "Organizer",
         "reservations_resp": "Person in charge",
-        "reservations_desc": "Descritpion",
+        "reservations_desc": "Description",
         "reservations_openness": "Openness",
         "reservations_open": "Open event",
         "reservations_closed": "Members only",
