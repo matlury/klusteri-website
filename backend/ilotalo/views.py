@@ -129,41 +129,69 @@ class UpdateUserView(APIView):
         pk (primary key): str
             Id of the User object to be updated
         """
-    
-        try:
-            user_to_update = User.objects.get(id=pk)
-        except ObjectDoesNotExist:
-            if id(pk) != request.user.id and request.user.role not in [LEPPISPJ, LEPPISVARAPJ, MUOKKAUS]:
-                return Response("You are not allowed to edit users", status=status.HTTP_400_BAD_REQUEST)
-            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
-        # Check if the user has permission to edit the user
-        if not self.has_permission(request.user, user_to_update):
-            return Response("You are not allowed to edit this user", status=status.HTTP_400_BAD_REQUEST)
+        # All users can edit their own information
+        if int(pk) == request.user.id:
+            try:
+                user_to_update = User.objects.get(id=pk)
+            except ObjectDoesNotExist:
+                return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
-        user_serializer = UserUpdateSerializer(
-            instance=user_to_update, data=request.data, partial=True
-        )
+            user_serializer = UserUpdateSerializer(
+                instance=user_to_update, data=request.data, partial=True
+            )
 
-        if user_serializer.is_valid():
-            if 'password' in request.data and len(request.data['password']) > 0:
-                new_password = request.data['password']
-                user_to_update.set_password(new_password)
-                user_to_update.save()
+            if user_serializer.is_valid():
+                if 'password' in request.data and len(request.data['password']) > 0:
+                    new_password = request.data['password']
+                    user_serializer.set_password(new_password)
+                user_serializer.save()
+                return Response(user_serializer.data, status=status.HTTP_200_OK)
+            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            user_serializer.save()
-            return Response(user_serializer.data, status=status.HTTP_200_OK)
-        return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        user = UserSerializer(request.user)
 
-    def has_permission(self, requesting_user, user_to_update):
-        # Logic to determine if the requesting user has permission to update the target user
-        if requesting_user.id == user_to_update.id:
-            return True
-        elif requesting_user.role in [LEPPISPJ, LEPPISVARAPJ]:
-            return True
-        elif requesting_user.role == MUOKKAUS:
-            return requesting_user.organization == user_to_update.organization and user_to_update.role in [AVAIMELLINEN, TAVALLINEN]
-        return False
+        # Leppispj and Leppisvarapj can edit all users
+        if user.data["role"] in [LEPPISPJ, LEPPISVARAPJ]:
+            try:
+                user_to_update = User.objects.get(id=pk)
+            except ObjectDoesNotExist:
+                return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+
+            user = UserUpdateSerializer(
+                instance=user_to_update, data=request.data, partial=True
+            )
+            if user.is_valid():
+                if 'password' in request.data and len(request.data['password']) > 0:
+                    new_password = request.data['password']
+                    user_serializer.set_password(new_password)
+                user.save()
+                return Response(user.data, status=status.HTTP_200_OK)
+            return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # Muokkaus users can only edit users that have role 4 or 5 and belong to the same organization
+        elif user.data["role"] == MUOKKAUS:
+            try:
+                user_to_update = User.objects.get(id=pk)
+            except ObjectDoesNotExist:
+                return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+
+            if user_to_update.role in [AVAIMELLINEN, TAVALLINEN]:
+                user = UserUpdateSerializer(
+                    instance=user_to_update, data=request.data, partial=True
+                )
+                if user.is_valid():
+                    if 'password' in request.data and len(request.data['password']) > 0:
+                        new_password = request.data['password']
+                        user_serializer.set_password(new_password)
+                    user.save()
+                    return Response(user.data, status=status.HTTP_200_OK)
+                return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response("You are not allowed to edit this user", status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+            return Response("You are not allowed to edit users", status=status.HTTP_400_BAD_REQUEST)
 
 class RemoveUserView(APIView):
     """View for removing an user <baseurl>/api/users/delete_user/<int:pk>/"""
