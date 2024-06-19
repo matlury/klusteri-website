@@ -26,9 +26,8 @@ COPY --from=build /frontend/dist /usr/share/nginx/html
 # COPY frontend/nginx.conf /etc/nginx/nginx.conf
 
 # Create directory for nginx client temp files and set permissions
-RUN mkdir -p /var/cache/nginx/client_temp && \
-    chmod 755 /var/cache/nginx/client_temp && \
-    chown nginx:nginx /var/cache/nginx/client_temp
+RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
+RUN sed -i.bak 's/^user/#user/' /etc/nginx/nginx.conf
 
 # Start Nginx server (nginx image CMD already starts nginx, no need to override)
 # CMD ["nginx", "-g", "daemon off;"]
