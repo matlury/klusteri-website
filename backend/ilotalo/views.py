@@ -164,7 +164,7 @@ class UpdateUserView(APIView):
             if user.is_valid():
                 if 'password' in request.data and len(request.data['password']) > 0:
                     new_password = request.data['password']
-                    user_serializer.set_password(new_password)
+                    user.set_password(new_password)
                 user.save()
                 return Response(user.data, status=status.HTTP_200_OK)
             return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -183,7 +183,7 @@ class UpdateUserView(APIView):
                 if user.is_valid():
                     if 'password' in request.data and len(request.data['password']) > 0:
                         new_password = request.data['password']
-                        user_serializer.set_password(new_password)
+                        user.set_password(new_password)
                     user.save()
                     return Response(user.data, status=status.HTTP_200_OK)
                 return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
