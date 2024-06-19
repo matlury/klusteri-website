@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 def create_default_user(sender, **kwargs):
     User = get_user_model()
     try:
-        if not User.objects.filter(username='leppispj').exists():
+        if not User.objects.exists():
             user = User.objects.create_user('leppispj', '', 'pj@leppis.fi', "", 1)
             user.first_login = True
             user.save()

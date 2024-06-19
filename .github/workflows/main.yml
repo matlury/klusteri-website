@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      # Start a postgres container for test runs
+      #Start a postgres container for test runs
       postgres:
         image: postgres:latest
         env:
@@ -54,11 +54,9 @@ jobs:
         
       - name: Run backend tests
         working-directory: ./backend
-        run: poetry run python manage.py test tests
-
-      - name: Create backend coverage report
-        working-directory: ./backend
-        run: poetry run coverage xml
+        run: |
+          poetry run coverage run --source='.' manage.py test tests
+          poetry run coverage xml -o coverage.xml
 
       - name: Run frontend tests
         working-directory: ./frontend
@@ -68,7 +66,7 @@ jobs:
         working-directory: ./frontend
         run: npx jest --coverage
 
-      # Cypress tests require backend to be running
+      #Cypress tests require backend to be running
       - name: Start backend
         run: |
           cd backend
