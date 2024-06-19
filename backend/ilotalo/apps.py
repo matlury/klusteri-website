@@ -1,8 +1,8 @@
+import sys
 from django.apps import AppConfig
 from django.db import connection
 from django.db.backends.signals import connection_created
 from django.db.utils import OperationalError
-from django.db.models.signals import post_migrate
 from django.contrib.auth import get_user_model
 
 def create_default_user(sender, **kwargs):
@@ -22,7 +22,8 @@ class IlotaloConfig(AppConfig):
 
     def ready(self):
         self.start_scheduler()
-        post_migrate.connect(create_default_user, sender=self)
+        if 'test' not in sys.argv:
+            connection_created.connect(create_default_user)
 
     def start_scheduler(self):
         try:
