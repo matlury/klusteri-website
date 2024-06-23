@@ -326,25 +326,25 @@ describe("Reservations", () => {
 
   describe("Creating and deleting", () => {
     let org_id;
-    let leppis_id
+    let varaleppis_id
     beforeEach(function () {
       cy.viewport(2560, 1440);
       cy.on("uncaught:exception", () => {
         return false;
       });
       const body = {
-        username: "leppis",
+        username: "varapj",
         password: "salasana123",
-        email: "pj@gmail.com",
+        email: "varapj@gmail.com",
         telegram: "pjtg",
-        role: 1,
+        role: 2,
         keys: null,
         organization: null,
       };
       cy.request("POST", "http://localhost:8000/api/users/register", body).then(
         (response) => {
-          expect(response.body).to.have.property("username", "leppis");
-          leppis_id = response.body.id;
+          expect(response.body).to.have.property("username", "varapj");
+          varaleppis_id = response.body.id;
         },
       );
       cy.wait(1000);
@@ -412,8 +412,8 @@ describe("Reservations", () => {
     it("Deleting event works", function () {;
       const dates = getTestTimes();
       cy.wrap(null).then(() => {
-        expect(leppis_id).to.exist;
-        cy.log("User id:", leppis_id);
+        expect(varaleppis_id).to.exist;
+        cy.log("User id:", varaleppis_id);
       });
       const body = {
         start: dates[0],
@@ -424,7 +424,7 @@ describe("Reservations", () => {
         responsible: "Mr Irresponsible",
         open: false,
         room: "Kerhotila",
-        created_by: leppis_id,
+        created_by: varaleppis_id,
       };
       const token = localStorage.getItem("ACCESS_TOKEN");
       cy.wrap(null).then(() => {
