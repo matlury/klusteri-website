@@ -5,3 +5,4 @@ htmlcov
 backend/ilotalo/migrations/*
 !backend/ilotalo/migrations/__init__
 siivousvuorot.json
+backend/debug.log
