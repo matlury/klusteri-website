@@ -323,134 +323,131 @@ describe("Reservations", () => {
     cy.request("POST", "http://localhost:8000/api/testing/reset");
     cy.visit("http://localhost:5173/varaukset");
   });
+  let org_id;
+  let leppis_id
+  beforeEach(function () {
+    cy.viewport(2560, 1440);
+    cy.on("uncaught:exception", () => {
+      return false;
+    });
+    const body = {
+      username: "leppis",
+      password: "salasana123",
+      email: "pj@gmail.com",
+      telegram: "pjtg",
+      role: 1,
+      keys: null,
+      organization: null,
+    };
+    cy.request("POST", "http://localhost:8000/api/users/register", body).then(
+      (response) => {
+        expect(response.body).to.have.property("username", "leppis");
+        leppis_id = response.body.id;
+      },
+    );
+    cy.wait(1000);
+    cy.contains("Kirjaudu").click();
+    cy.get("#email").type("pj@gmail.com");
+    cy.get("#password").type("salasana123");
+    cy.get(".login-button").click();
+    cy.wait(500);
+    cy.reload();
+    cy.window()
+      .its("localStorage")
+      .invoke("getItem", "ACCESS_TOKEN")
+      .should("not.be.null")
+      .then((token) => {
+        const req = {
+          email: "sahkoposti@tko-aly.fi",
+          homepage: "tko-aly.fi",
+          name: "tko-äly",
+          color: "",
+        };
 
-  describe("Creating and deleting", () => {
-    let org_id;
-    let varaleppis_id
-    beforeEach(function () {
-      cy.viewport(2560, 1440);
-      cy.on("uncaught:exception", () => {
-        return false;
-      });
-      const body = {
-        username: "varapj",
-        password: "salasana123",
-        email: "varapj@gmail.com",
-        telegram: "pjtg",
-        role: 2,
-        keys: null,
-        organization: null,
-      };
-      cy.request("POST", "http://localhost:8000/api/users/register", body).then(
-        (response) => {
-          expect(response.body).to.have.property("username", "varapj");
-          varaleppis_id = response.body.id;
-        },
-      );
-      cy.wait(1000);
-      cy.contains("Kirjaudu").click();
-      cy.get("#email").type("pj@gmail.com");
-      cy.get("#password").type("salasana123");
-      cy.get(".login-button").click();
-      cy.wait(500);
-      cy.reload();
-      cy.window()
-        .its("localStorage")
-        .invoke("getItem", "ACCESS_TOKEN")
-        .should("not.be.null")
-        .then((token) => {
-          const req = {
-            email: "sahkoposti@tko-aly.fi",
-            homepage: "tko-aly.fi",
-            name: "tko-äly",
-            color: "",
-          };
-
-          cy.request({
-            method: "POST",
-            url: "http://localhost:8000/api/organizations/create",
-            body: req,
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }).then((response) => {
-            expect(response.body).to.have.property("name", "tko-äly");
-            org_id = response.body.id;
-          });
+        cy.request({
+          method: "POST",
+          url: "http://localhost:8000/api/organizations/create",
+          body: req,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }).then((response) => {
+          expect(response.body).to.have.property("name", "tko-äly");
+          org_id = response.body.id;
         });
-      cy.contains("Varaukset").click();
-      cy.reload();
-    });
-    it("Creating event works", function () {
-      cy.get("#createEvent").click();
-      const dates = getTestTimes();
-      const checkdate = getCurrentDateTime();
-      cy.get("#startTime").type(dates[0]);
-      cy.get("#endTime").click().type(dates[1]);
-      cy.get("#eventName").type("Test Event");
-      cy.get("#organizerName").click();
-      cy.contains("tko-äly").click();
-      cy.get("#responsibleName").type("Mr Responsible");
-      cy.get("#eventDescription").type("This is a testing event");
-      cy.get("#eventOpen").click();
-      cy.contains("Avoin tapahtuma").click();
-      cy.get("#eventRoom").click();
-      cy.contains("Kokoushuone").click();
-      cy.get("#confirmCreate").click();
-      cy.wait(500);
-      cy.reload();
-      cy.contains("Test Event").click();
-      cy.contains(checkdate);
-      cy.contains("Test Event");
-      cy.contains("Järjestäjä: tko-äly");
-      cy.contains("Vastuuhenkilö: Mr Responsible");
-      cy.contains("Kuvaus: This is a testing event");
-      cy.contains("Avoimuus: Avoin tapahtuma");
-      cy.contains("Huone: Kokoushuone");
-    });
+      });
+    cy.contains("Varaukset").click();
+    cy.reload();
+  });
+  it("Creating event works", function () {
+    cy.get("#createEvent").click();
+    const dates = getTestTimes();
+    const checkdate = getCurrentDateTime();
+    cy.get("#startTime").type(dates[0]);
+    cy.get("#endTime").click().type(dates[1]);
+    cy.get("#eventName").type("Test Event");
+    cy.get("#organizerName").click();
+    cy.contains("tko-äly").click();
+    cy.get("#responsibleName").type("Mr Responsible");
+    cy.get("#eventDescription").type("This is a testing event");
+    cy.get("#eventOpen").click();
+    cy.contains("Avoin tapahtuma").click();
+    cy.get("#eventRoom").click();
+    cy.contains("Kokoushuone").click();
+    cy.get("#confirmCreate").click();
+    cy.wait(500);
+    cy.reload();
+    cy.contains("Test Event").click();
+    cy.contains(checkdate);
+    cy.contains("Test Event");
+    cy.contains("Järjestäjä: tko-äly");
+    cy.contains("Vastuuhenkilö: Mr Responsible");
+    cy.contains("Kuvaus: This is a testing event");
+    cy.contains("Avoimuus: Avoin tapahtuma");
+    cy.contains("Huone: Kokoushuone");
+  });
 
-    it("Deleting event works", function () {;
-      const dates = getTestTimes();
-      cy.wrap(null).then(() => {
-        expect(varaleppis_id).to.exist;
-        cy.log("User id:", varaleppis_id);
-      });
-      const body = {
-        start: dates[0],
-        end: dates[1],
-        title: "Test Event 2",
-        organizer: org_id,
-        description: "Testing event",
-        responsible: "Mr Irresponsible",
-        open: false,
-        room: "Kerhotila",
-        created_by: varaleppis_id,
-      };
-      const token = localStorage.getItem("ACCESS_TOKEN");
-      cy.wrap(null).then(() => {
-        expect(org_id).to.exist;
-        cy.log("Organization ID:", org_id);
-      });
-      cy.request({
-        method: "POST",
-        url: "http://localhost:8000/api/events/create_event",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: body,
-      }).then((response) => {
-        expect(response.body).to.have.property("title", "Test Event 2");
-      });
-      cy.reload();
-      cy.contains("Test Event 2").then(() => {
-        cy.contains("Test Event 2").click();
-      });
-      cy.wait(500);
-      cy.get("#deleteEvent").click();
-      cy.wait(500);
-      cy.get("#closeEvent").click();
-      cy.contains("Test Event 2").should("not.exist");
+  it("Deleting event works", function () {;
+    const dates = getTestTimes();
+    cy.wrap(null).then(() => {
+      expect(leppis_id).to.exist;
+      cy.log("User id:", leppis_id);
     });
+    const body = {
+      start: dates[0],
+      end: dates[1],
+      title: "Test Event 2",
+      organizer: org_id,
+      description: "Testing event",
+      responsible: "Mr Irresponsible",
+      open: false,
+      room: "Kerhotila",
+      created_by: leppis_id,
+    };
+    const token = localStorage.getItem("ACCESS_TOKEN");
+    cy.wrap(null).then(() => {
+      expect(org_id).to.exist;
+      cy.log("Organization ID:", org_id);
+    });
+    cy.request({
+      method: "POST",
+      url: "http://localhost:8000/api/events/create_event",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: body,
+    }).then((response) => {
+      expect(response.body).to.have.property("title", "Test Event 2");
+    });
+    cy.reload();
+    cy.contains("Test Event 2").then(() => {
+      cy.contains("Test Event 2").click();
+    });
+    cy.wait(500);
+    cy.get("#deleteEvent").click();
+    cy.wait(500);
+    cy.get("#closeEvent").click();
+    cy.contains("Test Event 2").should("not.exist");
   });
 });
 
