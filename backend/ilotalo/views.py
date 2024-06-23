@@ -25,6 +25,7 @@ from .config import Role
 from datetime import datetime, timezone
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer
+import logging
 
 LEPPISPJ = Role.LEPPISPJ.value
 LEPPISVARAPJ = Role.LEPPISVARAPJ.value
@@ -36,6 +37,9 @@ JARJESTOVARAPJ = Role.JARJESTOVARAPJ.value
 
 # Get reCAPTCHA secret key from environment variables, use the testing key if not found
 recaptcha_secret_key = os.getenv("RECAPTCHA_SECRET_KEY", "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe")
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 """
 Views receive web requests and return web responses.
@@ -73,22 +77,31 @@ class RegisterView(APIView):
 
         # Check if the request contains valid data
         if not serializer.is_valid():
+            logger.error("Serializer errors: %s", serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        google_response = requests.post('https://www.google.com/recaptcha/api/siteverify', data={
-            'secret': recaptcha_secret_key,
-            'response': recaptcha_response,
-        })
+        try:
+            google_response = requests.post('https://www.google.com/recaptcha/api/siteverify', data={
+                'secret': recaptcha_secret_key,
+                'response': recaptcha_response,
+            })
 
-        # Check if the request to Google's API was successful
-        if not google_response.json().get('success'):
-            return Response({'recaptcha': 'Invalid or expired reCAPTCHA.'}, status=status.HTTP_400_BAD_REQUEST)
+            # Check if the request to Google's API was successful
+            if not google_response.json().get('success'):
+                logger.error("Invalid or expired reCAPTCHA: %s", google_response.json())
+                return Response({'recaptcha': 'Invalid or expired reCAPTCHA.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        user = serializer.create(serializer.validated_data)
-        user = UserNoPasswordSerializer(user)
+            user = serializer.save()
+            user = UserNoPasswordSerializer(user)
 
-        return Response(user.data, status=status.HTTP_201_CREATED)
+            return Response(user.data, status=status.HTTP_201_CREATED)
 
+        except requests.RequestException as e:
+            logger.error("reCAPTCHA verification failed: %s", str(e))
+            return Response({'recaptcha': 'reCAPTCHA verification failed.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            logger.error("Error creating user: %s", str(e))
+            return Response({'error': 'Error creating user.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class RetrieveUserView(APIView):
     """View for fetching a User object with a JSON web token at <baseurl>/api/users/userlist/"""
