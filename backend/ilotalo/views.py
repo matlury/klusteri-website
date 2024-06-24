@@ -25,7 +25,6 @@ from .config import Role
 from datetime import datetime, timezone
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer
-import logging
 
 LEPPISPJ = Role.LEPPISPJ.value
 LEPPISVARAPJ = Role.LEPPISVARAPJ.value
@@ -77,8 +76,8 @@ class RegisterView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         google_response = requests.post('https://www.google.com/recaptcha/api/siteverify', data={
-        'secret': recaptcha_secret_key,
-        'response': recaptcha_response,
+            'secret': recaptcha_secret_key,
+            'response': recaptcha_response,
         })
 
         # Check if the request to Google's API was successful
