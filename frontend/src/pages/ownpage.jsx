@@ -594,6 +594,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             open={snackbarOpen}
             autoHideDuration={6000}
             onClose={() => setSnackbarOpen(false)}
+            data-testid="snackbar"
           >
             <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
               {snackbarMessage}

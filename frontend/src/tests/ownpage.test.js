@@ -260,9 +260,9 @@ it("User updating works", async () => {
   await waitFor(() => {
     expect(mockAxios.put).toHaveBeenCalledWith("/users/update/1/", {"email": "email_example@example.com", "telegram": "telegram_example", "username": "username_example"});
   })
-//  await waitFor(() => {
-//    expect(getByText("Tiedot päivitetty onnistuneesti!")).toBeInTheDocument();
-//  })
+  await waitFor(() => {
+    expect(getByText("Tiedot päivitetty onnistuneesti!")).toBeInTheDocument();
+  })
 });
 
 describe("User updating errors", () => {
@@ -290,11 +290,9 @@ describe("User updating errors", () => {
     const saveButton = getByTestId("saveuserdata");
     fireEvent.click(saveButton);
 
-//    await waitFor(() => {
-//      expect(
-//        getByText("Virhe: Käyttäjänimi ja sähköposti ovat pakollisia kenttiä."),
-//      ).toBeInTheDocument();
-//    });
+    await waitFor(() => {
+      expect(getByTestId("snackbar")).toBeInTheDocument();
+    });
   });
 
   it("Updating fails with used telegram", async () => {
@@ -483,9 +481,9 @@ describe("User updating errors", () => {
       { url: "undefined/api/listobjects/users/?email=example_email_two@example.com" },
       responseObj,
     );})
-//    await waitFor(() => {
-//      expect(getByText("Sähköposti on jo käytössä")).toBeInTheDocument();
-//    })
+    await waitFor(() => {
+      expect(getByTestId("snackbar")).toBeInTheDocument();
+    })
     await waitFor(() => {
       expect(mockAxios.get).toHaveBeenCalledWith("undefined/api/listobjects/users/?email=example_email_two@example.com");
     })
