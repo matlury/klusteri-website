@@ -14,6 +14,8 @@ import { Snackbar, Alert } from '@mui/material';
 const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const { user, setUser } = useStateContext();
   const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [email, setEmail] = useState("");
   const [telegram, setTelegram] = useState("");
   const [role, setRole] = useState("5");
@@ -91,6 +93,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
     const details = {
       username: username,
+      password: password,
+      confirmPassword: confirmPassword,
       email: email,
       telegram: telegram,
     };
@@ -125,6 +129,24 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             return;
           }
         });
+    }
+
+    if (password) {
+      if (password !== confirmPassword) {
+        setError(t("diffpass"));
+        setTimeout(() => setError(""), 5000);
+        return;
+      }
+      if (password.length < 8 || password.length > 20) {
+        setError(t("mincharspass"));
+        setTimeout(() => setError(""), 5000);
+        return;
+      }
+      if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
+        setError(t("invalidpass"));
+        setTimeout(() => setError(""), 5000);
+        return;
+      }
     }
 
     axios
@@ -214,7 +236,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         axiosClient
           .put(`/users/update/${userDetailsId}/`, updatedValues)
           .then((response) => {
-            console.log(t("usereditsuccess"));
             setSuccess(t("usereditsuccess"));
             setSnackbarMessage(t("usereditsuccess"));
             setSnackbarSeverity("success");
@@ -228,15 +249,12 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             }
           })
           .catch((error) => {
-            console.error(t("usereditfail"), error);
             setError(t("usereditfail"));
             setSnackbarMessage(t("usereditfail"));
             setSnackbarSeverity("error");
             setSnackbarOpen(true);
             setTimeout(() => setError(""), 5000);
           });
-      } else {
-        console.log("User cancelled the update.");
       }
     } else {
       setError(t("usereditfail"));
@@ -607,6 +625,10 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                   <UserPage
                     username={username}
                     setUsername={setUsername}
+                    password={password}
+                    setPassword={setPassword}
+                    confirmPassword={confirmPassword}
+                    setConfirmPassword={setConfirmPassword}
                     email={email}
                     setEmail={setEmail}
                     telegram={telegram}
