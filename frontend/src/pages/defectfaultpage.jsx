@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "../axios.js";
-import { Button } from "@mui/material";
+import { Button, Snackbar, Alert } from "@mui/material";
 import DefectForm from "../components/DefectForm";
 import DefectList from "../components/DefectList";
 import RepairConfirmDialog from "../components/RepairConfirmDialog.jsx";
 import EmailConfirmDialog from "../components/EmailConfirmDialog.jsx";
 import { useTranslation } from "react-i18next";
+
 const DefectFault = ({
   isLoggedIn: propIsLoggedIn,
   loggedUser: propLoggedUser,
@@ -13,8 +14,6 @@ const DefectFault = ({
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
   const [loggedUser, setLoggedUser] = useState(propLoggedUser);
   const [open, setOpen] = useState(false);
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
   const [activeDefects, setActiveDefects] = useState([]);
   const [allDefects, setAllDefects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,6 +21,9 @@ const DefectFault = ({
   const [buttonPopup, setButtonPopup] = useState(false);
   const [confirmRepairOpen, setConfirmRepairOpen] = useState(false);
   const [confirmEmailOpen, setConfirmEmailOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const { t } = useTranslation();
 
@@ -73,13 +75,15 @@ const DefectFault = ({
         axiosClient
           .post(`/defects/create_defect`, defectFaultObject)
           .then((response) => {
-            setSuccess(t("defectcreatesuccess"));
-            setTimeout(() => setSuccess(""), 5000);
+            setSnackbarMessage(t("defectcreatesuccess"));
+            setSnackbarSeverity("success");
+            setSnackbarOpen(true);
             fetchDefects();
           })
           .catch((error) => {
-            setError(t("defectcreatefail"));
-            setTimeout(() => setError(""), 5000);
+            setSnackbarMessage(t("defectcreatefail"));
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
             console.error(t("defectfixfail"), error);
           });
       }
@@ -91,13 +95,15 @@ const DefectFault = ({
     axiosClient
       .put(`defects/repair_defect/${id}/`, {})
       .then((response) => {
-        setSuccess(t("defectfixsuccess"));
-        setTimeout(() => setSuccess(""), 5000);
+        setSnackbarMessage(t("defectfixsuccess"));
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
         fetchDefects();
       })
       .catch((error) => {
-        setError(t("defectfixfail"));
-        setTimeout(() => setError(""), 5000);
+        setSnackbarMessage(t("defectfixfail"));
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
       });
   };
 
@@ -106,13 +112,15 @@ const DefectFault = ({
     axiosClient
       .put(`defects/email_defect/${id}/`, {})
       .then((response) => {
-        setSuccess(t("defectmailsuccess"));
-        setTimeout(() => setSuccess(""), 5000);
+        setSnackbarMessage(t("defectmailsuccess"));
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
         fetchDefects();
       })
       .catch((error) => {
-        setError(t("defectmailfail"));
-        setTimeout(() => setError(""), 5000);
+        setSnackbarMessage(t("defectmailfail"));
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
       });
   };
 
@@ -167,13 +175,18 @@ const DefectFault = ({
       .catch((error) => console.error(error));
   };
 
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
+
   return (
     <div className="textbox">
       {!isLoggedIn && <h3>{t("loginsuggest")}</h3>}
       {isLoggedIn && (
         <div>
-          {error && <p style={{ color: "red" }}>{error}</p>}
-          {success && <p style={{ color: "green" }}>{success}</p>}
           <h2>{t("defectfaults")}</h2>
           <React.Fragment>
             <Button
@@ -186,28 +199,41 @@ const DefectFault = ({
             </Button>
             <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
           </React.Fragment>
-        <React.Fragment>
-          <DefectList 
-            loggedUser={loggedUser} 
-            allDefects={allDefects} 
-            activeDefects={activeDefects} 
-            handleRepairClick={handleRepairClick} 
-            handleEmailClick={handleEmailClick}/>
-          <RepairConfirmDialog
-            open={confirmRepairOpen}
-            handleConfirmClose={handleConfirmRepairClose}
-            handleRepairFault={handleRepairFault}
-            selectedDefectId={selectedDefectId}
-          />
-          <EmailConfirmDialog
-            open={confirmEmailOpen}
-            handleConfirmClose={handleConfirmEmailClose}
-            handleMarkEmailSent={handleMarkEmailSent}
-            selectedDefectId={selectedDefectId}
-          />
-        </React.Fragment>
-      </div>
-       )}
+          <React.Fragment>
+            <DefectList 
+              loggedUser={loggedUser} 
+              allDefects={allDefects} 
+              activeDefects={activeDefects} 
+              handleRepairClick={handleRepairClick} 
+              handleEmailClick={handleEmailClick}/>
+            <RepairConfirmDialog
+              open={confirmRepairOpen}
+              handleConfirmClose={handleConfirmRepairClose}
+              handleRepairFault={handleRepairFault}
+              selectedDefectId={selectedDefectId}
+            />
+            <EmailConfirmDialog
+              open={confirmEmailOpen}
+              handleConfirmClose={handleConfirmEmailClose}
+              handleMarkEmailSent={handleMarkEmailSent}
+              selectedDefectId={selectedDefectId}
+            />
+          </React.Fragment>
+        </div>
+      )}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
