@@ -1,6 +1,4 @@
-FROM node:iron-slim
-
-RUN npm install -g npm@10.4.0
+FROM node:current-alpine AS build
 
 WORKDIR /frontend
 
@@ -10,10 +8,16 @@ RUN npm install
 
 COPY . .
 
-RUN chgrp -R 0 /frontend && chmod -R g+rwX /frontend
-
 RUN npm run build
 
-EXPOSE 5173
+FROM nginx:alpine
 
-CMD ["npm", "run", "dev"]
+COPY --from=build /frontend/dist /usr/share/nginx/html
+
+RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
+
+RUN sed -i.bak 's/listen\(.*\)80;/listen 5173;/' /etc/nginx/conf.d/default.conf
+
+RUN sed -i.bak 's/^user/#user/' /etc/nginx/nginx.conf
+
+EXPOSE 5173
