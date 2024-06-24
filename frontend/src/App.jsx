@@ -87,9 +87,9 @@ const Sidebar = ({ isLoggedIn }) => {
     <LocationOnOutlinedIcon />,
     <BuildOutlinedIcon />,
     <CleaningServicesIcon />,
+    <CleaningServicesIcon />,
     <FactCheckOutlinedIcon />,
     <AdminPanelSettingsOutlinedIcon />,
-    <CleaningServicesIcon />,
   ];
 
   const routes = [
@@ -102,9 +102,9 @@ const Sidebar = ({ isLoggedIn }) => {
     { key: "front_sidebar_7", path: "/yhteystiedot", icon: icons[6] },
     { key: "front_sidebar_8", path: "/viat", icon: icons[7], requiresLogin: true },
     { key: "front_sidebar_9", path: "/siivousvuorot", icon: icons[8], requiresLogin: true },
+    { key: "front_sidebar_12", path: "/siivoustarvikkeet", icon: icons[8], requiresLogin: true},
     { key: "front_sidebar_10", path: "/saannot_ja_ohjeet", icon: icons[9] },
     { key: "front_sidebar_11", path: "/tietosuojaseloste", icon: icons[10] },
-    { key: "front_sidebar_12", path: "/siivoustarvikkeet", icon: icons[8]},
   ];
 
   return (
