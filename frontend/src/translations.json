@@ -382,7 +382,10 @@
         "smallorg": "Pieni järjestö",
         "resrightsconfirm": "Haluatko varmasti muuttaa käyttäjän varausoikeuksia",
         "removeresrights": "Poista varausoikeus",
-        "addresrights": "Lisää varausoikeus"
+        "addresrights": "Lisää varausoikeus",
+        "openevents": "Avoimet tapahtumat",
+        "loadingevents": "Ladataan tapahtumia...",
+        "moredetails": "Lisätietoja"
       }
     },
     "en": {
@@ -768,7 +771,10 @@
         "smallorg": "Small org",
         "resrightsconfirm": "Are you sure you want to change reservation rights?",
         "removeresrights": "Remove reservation rights",
-        "addresrights": "Add reservation rights"
+        "addresrights": "Add reservation rights",
+        "openevents": "Open events",
+        "loadingevents": "Loading events...",
+        "moredetails": "More details"
       }
     }
 }
