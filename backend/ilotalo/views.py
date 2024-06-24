@@ -161,7 +161,8 @@ class UpdateUserView(APIView):
                 instance=user_to_update, data=request.data, partial=True
             )
             if user.is_valid():
-                if 'password' in request.data and len(request.data['password']) > 0:
+            # Only leppispj can change the password
+                if 'password' in request.data and len(request.data['password']) > 0 and user.data["role"] == LEPPISPJ:
                     new_password = request.data['password']
                     user_to_update.set_password(new_password)
                 user_to_update.save()
@@ -180,9 +181,6 @@ class UpdateUserView(APIView):
                     instance=user_to_update, data=request.data, partial=True
                 )
                 if user.is_valid():
-                    if 'password' in request.data and len(request.data['password']) > 0:
-                        new_password = request.data['password']
-                        user_to_update.set_password(new_password)
                     user_to_update.save()
                     return Response(user.data, status=status.HTTP_200_OK)
                 return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
