@@ -31,6 +31,7 @@ const UserPage = ({
       <div>
         <TextField
           id="password"
+          data-testid="password-field"
           label={t("password")}
           type="password"
           onChange={(e) => setPassword(e.target.value)}
@@ -39,6 +40,7 @@ const UserPage = ({
       <div>
         <TextField
           id="confirmPassword"
+          data-testid="confirm-password-field"
           label={t("confirmpassword")}
           type="password"
           onChange={(e) => setConfirmPassword(e.target.value)}
