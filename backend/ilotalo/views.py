@@ -113,8 +113,6 @@ class RetrieveUserView(APIView):
 
 class UpdateUserView(APIView):
     """View for updating a User object at <baseurl>/api/users/update/<user.id>/"""
-
-    # IsAuthenticated will deny access if request has no access token
     permission_classes = [permissions.IsAuthenticated]
 
     def put(self, request, pk=None):
@@ -128,67 +126,55 @@ class UpdateUserView(APIView):
         pk (primary key): str
             Id of the User object to be updated
         """
+        if not pk:
+            return Response("User ID not provided", status=status.HTTP_400_BAD_REQUEST)
+        
+        user_id = int(pk)
+        if user_id == request.user.id:
+            return self.update_user(request, user_id)
 
-        # All users can edit their own information
-        if int(pk) == request.user.id:
-            try:
-                user_to_update = User.objects.get(id=pk)
-            except ObjectDoesNotExist:
-                return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+        user = UserSerializer(request.user).data
 
-            user_serializer = UserUpdateSerializer(
-                instance=user_to_update, data=request.data, partial=True
-            )
+        if user["role"] in [LEPPISPJ, LEPPISVARAPJ]:
+            return self.update_user(request, user_id, allow_password_change=(user["role"] == LEPPISPJ))
+        
+        if user["role"] == MUOKKAUS:
+            return self.update_limited_user(request, user_id)
 
-            if user_serializer.is_valid():
-                if 'password' in request.data and len(request.data['password']) > 0:
-                    new_password = request.data['password']
-                    user_to_update.set_password(new_password)
-                user_serializer.save()
-                return Response(user.data, status=status.HTTP_200_OK)
-            return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response("You are not allowed to edit users", status=status.HTTP_400_BAD_REQUEST)
 
-        user = UserSerializer(request.user)
+    def update_user(self, request, user_id, allow_password_change=True):
+        try:
+            user_to_update = User.objects.get(id=user_id)
+        except ObjectDoesNotExist:
+            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
-        # Leppispj and Leppisvarapj can edit all users
-        if user.data["role"] in [LEPPISPJ, LEPPISVARAPJ]:
-            try:
-                user_to_update = User.objects.get(id=pk)
-            except ObjectDoesNotExist:
-                return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+        user_serializer = UserUpdateSerializer(instance=user_to_update, data=request.data, partial=True)
 
-            user_serializer = UserUpdateSerializer(
-                instance=user_to_update, data=request.data, partial=True
-            )
-            if user.is_valid():
-            # Only leppispj can change the password
-                if 'password' in request.data and len(request.data['password']) > 0 and user.data["role"] == LEPPISPJ:
-                    new_password = request.data['password']
-                    user_to_update.set_password(new_password)
-                user_serializer.save()
-                return Response(user.data, status=status.HTTP_200_OK)
-            return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+        if user_serializer.is_valid():
+            if allow_password_change and 'password' in request.data and request.data['password']:
+                user_to_update.set_password(request.data['password'])
+            user_serializer.save()
+            return Response(user_serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # Muokkaus users can only edit users that have role 4 or 5 and belong to the same organization
-        elif user.data["role"] == MUOKKAUS:
-            try:
-                user_to_update = User.objects.get(id=pk)
-            except ObjectDoesNotExist:
-                return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+    def update_limited_user(self, request, user_id):
+        try:
+            user_to_update = User.objects.get(id=user_id)
+        except ObjectDoesNotExist:
+            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
-            if user_to_update.role in [AVAIMELLINEN, TAVALLINEN]:
-                user_serializer = UserUpdateSerializer(
-                    instance=user_to_update, data=request.data, partial=True
-                )
-                if user_serializer.is_valid():
-                    user_serializer.save() 
-                    return Response(user.data, status=status.HTTP_200_OK)
-                return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response("You are not allowed to edit this user", status=status.HTTP_400_BAD_REQUEST)
+        if user_to_update.role not in [AVAIMELLINEN, TAVALLINEN]:
+            return Response("You are not allowed to edit this user", status=status.HTTP_400_BAD_REQUEST)
 
-        else:
-            return Response("You are not allowed to edit users", status=status.HTTP_400_BAD_REQUEST)
+        user_serializer = UserUpdateSerializer(instance=user_to_update, data=request.data, partial=True)
+        
+        if user_serializer.is_valid():
+            user_serializer.save()
+            return Response(user_serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RemoveUserView(APIView):
     """View for removing an user <baseurl>/api/users/delete_user/<int:pk>/"""
