@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "../axios.js";
-import { Button } from "@mui/material";
+import { Button, Snackbar, Alert } from "@mui/material";
 import CleanersList from "../components/CleanersList.jsx";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import moment from "moment";
@@ -29,6 +29,10 @@ const CleaningSchedule = ({
   const [rawCleaningData, setRawCleaningData] = useState(null);
   const [newData, setNewData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const { t } = useTranslation();
 
@@ -87,6 +91,9 @@ const CleaningSchedule = ({
 
     if (allCleaning.length > 0) {
        setError(t("cleaningerrorold"));
+       setSnackbarMessage(t("cleaningerrorold"));
+       setSnackbarSeverity("error");
+       setSnackbarOpen(true);
        return;
     }
 
@@ -118,11 +125,17 @@ const CleaningSchedule = ({
         .post(`/cleaning/create_cleaning`, cleaningObject)
         .then((response) => {
           setSuccess(t("cleaningsubmitsuccess"));
+          setSnackbarMessage(t("cleaningsubmitsuccess"));
+          setSnackbarSeverity("success");
+          setSnackbarOpen(true);
           setTimeout(() => setSuccess(""), 5000);
           fetchCleaning();
         })
         .catch((error) => {
           setError(t("cleaningsubmitfail"));
+          setSnackbarMessage(t("cleaningsubmitfail"));
+          setSnackbarSeverity("error");
+          setSnackbarOpen(true);
           setTimeout(() => setError(""), 5000);
           console.error("Error submitting cleaning", error);
         });
@@ -136,10 +149,18 @@ const CleaningSchedule = ({
         console.log("Cleaners deleted successfully");
         fetchCleaning();
         setSuccess(t("cleaningclearedsuccess"));
+        setSnackbarMessage(t("cleaningclearedsuccess"));
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
         setTimeout(() => setSuccess(""), 5000);
       })
       .catch((error) => {
         console.error("Error deleting cleaners:", error + " " + error.response.data);
+        setError(t("cleaningclearfail"));
+        setSnackbarMessage(t("cleaningclearfail"));
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+        setTimeout(() => setError(""), 5000);
       });
     setConfirmOpen(false);
   };
@@ -168,8 +189,15 @@ const CleaningSchedule = ({
       {!isLoggedIn && <h3>{t("loginsuggest")}</h3>}
       {isLoggedIn && (
         <div>
-          {error && <p style={{ color: "red" }}>{error}</p>}
-          {success && <p style={{ color: "green" }}>{success}</p>}
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={() => setSnackbarOpen(false)}
+          >
+            <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '300%' }}>
+              {snackbarMessage}
+            </Alert>
+          </Snackbar>
           <h2>{t("cleaningschedule")}</h2>
           <Stack direction="row" spacing={2}>
             <CleanersListJSONButton cleaners={rawCleaningData} />
