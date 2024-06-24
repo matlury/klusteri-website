@@ -178,7 +178,7 @@ test("renders upcoming events", async () => {
   });
 });
 
-test("event description dialog works", async () => {
+test("event description dialog works correctly", async () => {
   const { getByText, queryByText } = render(<FrontPage />);
 
   const currentDate = new Date();
