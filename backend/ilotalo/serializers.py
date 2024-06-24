@@ -99,6 +99,7 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
         return user
+    
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     """
@@ -109,7 +110,13 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        exclude = ('password',)
+        exclude = ('password',)  # Exclude password field from serialization
+
+    def validate_username(self, username):
+        """Validates that the username does not contain @ symbol so it doesn't mess with the email login"""
+        if "@" in username:
+            raise serializers.ValidationError("Username cannot contain @ symbol")
+        return username
 
     def validate_username(self, username):
         """Validates that the username does not contain @ symbol so it doesn't mess with the email login"""
@@ -119,7 +126,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     def validate_role(self, role):
         """Validates role when updating a user. Limits: 1 <= role <= 7."""
-
         if int(role) < 1:
             raise serializers.ValidationError("Role can't be less than 1")
         if int(role) > 7:
@@ -134,6 +140,21 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             if duplicate.exists():
                 raise serializers.ValidationError("This telegram name is taken")
         return tgname
+
+    def update(self, instance, validated_data):
+        """Update the user instance with validated data."""
+        instance.email = validated_data.get('email', instance.email)
+        instance.telegram = validated_data.get('telegram', instance.telegram)
+        instance.role = validated_data.get('role', instance.role)
+
+        # Check if password is provided and update it if so
+        password = validated_data.get('password')
+        if password:
+            validate_password(password)  # Validate the password
+            instance.set_password(password)
+
+        instance.save()
+        return instance
 
 class UserNoPasswordSerializer(serializers.ModelSerializer):
     """
@@ -197,12 +218,25 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         user = User.objects.filter(email=email).first() or User.objects.filter(username=email).first()
 
-        if user and user.check_password(password):
-            attrs["email"] = user.email
-        else:
-            raise serializers.ValidationError("Invalid login credentials")
+        if user:
+            if user.role == 1 and user.first_login:
+                user.first_login = False
+                user.save()
 
-        return super().validate(attrs)
+                refresh = self.get_token(user)
+                data = {}
+                data['refresh'] = str(refresh)
+                data['access'] = str(refresh.access_token)
+                return data
+            else:
+                if user.check_password(password):
+                    attrs["email"] = user.email
+                else:
+                    raise serializers.ValidationError("Invalid login credentials")
+
+                return super().validate(attrs)
+        else:
+            raise serializers.ValidationError("User not found")
 
 class OrganizationOnlyNameSerializer(serializers.ModelSerializer):
     """Serializes an Organization object as JSON"""

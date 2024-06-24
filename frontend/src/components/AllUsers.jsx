@@ -24,7 +24,9 @@ const AllUsers = ({
   hasPermission,
   handlePJChange,
   handleKeySubmit,
-  handleResRightChange
+  handleResRightChange,
+  setUserDetailsPassword,
+  userDetailsPassword,
 }) => {
 
   // State variables to manage user data and dialog visibility
@@ -39,6 +41,10 @@ const AllUsers = ({
   const [userDetailsId, setuserDetailsId] = useState("");
   const [userDetailsResRights, setuserDetailsResRights] = useState(false);
   const [selectedOrganization, setSelectedOrganization] = useState(null);
+
+    // State variables for password change
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
   const { t } = useTranslation();
 
@@ -104,7 +110,7 @@ const AllUsers = ({
   // Function to handle form submission (updating user details)
   const handleFormSubmit = (event) => {
     event.preventDefault();
-    handleUpdateAnotherUser(userDetailsId, userDetailsUsername, userDetailsEmail, userDetailsTelegram, userDetailsRole,
+    handleUpdateAnotherUser(userDetailsId, userDetailsUsername, newPassword, confirmNewPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole,
       userDetailsOrganizations.split(", ").map(org => org.trim()));
     handleClose();
   };
@@ -160,6 +166,24 @@ const AllUsers = ({
               fullWidth
               sx={{ marginBottom: '1rem' }} // Add spacing below the field
               data-testid="username-input"
+            />
+            <TextField
+              label={t("newpassword")}
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              fullWidth
+              sx={{ marginBottom: '1rem' }}
+              data-testid="new-password-input"
+            />
+            <TextField
+              label={t("confirmnewpassword")}
+              type="password"
+              value={confirmNewPassword}
+              onChange={(e) => setConfirmNewPassword(e.target.value)}
+              fullWidth
+              sx={{ marginBottom: '1rem' }}
+              data-testid="confirm-new-password-input"
             />
             <TextField
               label={t("email")}

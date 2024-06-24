@@ -188,7 +188,6 @@ const Statistics = () => {
 
     orgdata.forEach((org) => {
       latedata[org.name] = { value: 0, label: org.name, ...(org.color ? { color: org.color } : {})};
-      console.log(latedata)
     });
     users.forEach((usr) => {
       userdata[usr.username] = { data: [0], label: usr.username };

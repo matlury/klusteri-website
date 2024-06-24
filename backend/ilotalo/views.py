@@ -25,6 +25,7 @@ from .config import Role
 from datetime import datetime, timezone
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer
+import logging
 
 LEPPISPJ = Role.LEPPISPJ.value
 LEPPISVARAPJ = Role.LEPPISVARAPJ.value
@@ -74,10 +75,10 @@ class RegisterView(APIView):
         # Check if the request contains valid data
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        
         google_response = requests.post('https://www.google.com/recaptcha/api/siteverify', data={
-            'secret': recaptcha_secret_key,
-            'response': recaptcha_response,
+        'secret': recaptcha_secret_key,
+        'response': recaptcha_response,
         })
 
         # Check if the request to Google's API was successful
@@ -88,7 +89,6 @@ class RegisterView(APIView):
         user = UserNoPasswordSerializer(user)
 
         return Response(user.data, status=status.HTTP_201_CREATED)
-
 
 class RetrieveUserView(APIView):
     """View for fetching a User object with a JSON web token at <baseurl>/api/users/userlist/"""
@@ -142,6 +142,9 @@ class UpdateUserView(APIView):
             )
 
             if user_serializer.is_valid():
+                if 'password' in request.data and len(request.data['password']) > 0:
+                    new_password = request.data['password']
+                    user_serializer.set_password(new_password)
                 user_serializer.save()
                 return Response(user_serializer.data, status=status.HTTP_200_OK)
             return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -159,6 +162,9 @@ class UpdateUserView(APIView):
                 instance=user_to_update, data=request.data, partial=True
             )
             if user.is_valid():
+                if 'password' in request.data and len(request.data['password']) > 0:
+                    new_password = request.data['password']
+                    user.set_password(new_password)
                 user.save()
                 return Response(user.data, status=status.HTTP_200_OK)
             return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -175,6 +181,9 @@ class UpdateUserView(APIView):
                     instance=user_to_update, data=request.data, partial=True
                 )
                 if user.is_valid():
+                    if 'password' in request.data and len(request.data['password']) > 0:
+                        new_password = request.data['password']
+                        user.set_password(new_password)
                     user.save()
                     return Response(user.data, status=status.HTTP_200_OK)
                 return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)

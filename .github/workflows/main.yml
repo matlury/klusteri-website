@@ -54,11 +54,9 @@ jobs:
         
       - name: Run backend tests
         working-directory: ./backend
-        run: poetry run coverage run --branch -m pytest
-
-      - name: Create backend coverage report
-        working-directory: ./backend
-        run: poetry run coverage xml
+        run: |
+          poetry run coverage run --source='.' manage.py test tests
+          poetry run coverage xml -o coverage.xml
 
       - name: Run frontend tests
         working-directory: ./frontend
@@ -89,4 +87,3 @@ jobs:
           files: ./backend/coverage.xml,./frontend/coverage/clover.xml
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-

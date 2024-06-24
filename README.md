@@ -17,6 +17,7 @@
 - [Sprint 3 Task Board](https://github.com/orgs/matlury/projects/26)
 - [Sprint 4 Task Board](https://github.com/orgs/matlury/projects/29)
 - [Sprint 5 Task Board](https://github.com/orgs/matlury/projects/31)
+- [Sprint 6 Task Board](https://github.com/orgs/matlury/projects/32)
   
 
 ## Definition of Done
