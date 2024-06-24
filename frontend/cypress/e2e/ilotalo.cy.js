@@ -487,7 +487,7 @@ describe("Ownpage", () => {
 
     cy.get("#telegram").type("ProffaTG");
     cy.contains("Tallenna").click();
-    cy.contains("Onnistui: Tiedot päivitetty onnistuneesti!");
+    cy.contains("Tiedot päivitetty onnistuneesti!");
   });
 
   it("Create new organization works for permitted users", function () {
@@ -523,7 +523,7 @@ describe("Ownpage", () => {
     cy.get(".organization-email").type("teekkarit@mail.com");
     cy.get("#homepage").type("www.teekkarit.fi");
     cy.get("[data-testid=create-organization-button]").click();
-    cy.contains("Onnistui: Järjestö luotu onnistuneesti!");
+    cy.contains("Järjestö luotu onnistuneesti!");
     cy.reload()
     cy.contains("Teekkarit");
 
@@ -561,7 +561,7 @@ describe("Ownpage", () => {
       cy.get(".organization-email").type("teekkarit@mail.com");
       cy.get("#homepage").type("www.teekkarit.fi");
       cy.get("[data-testid=create-organization-button]").click();
-      cy.contains("Onnistui: Järjestö luotu onnistuneesti!");
+      cy.contains("Järjestö luotu onnistuneesti!");
       cy.reload();
       cy.contains("Teekkarit");
       cy.contains("teekkarit@mail.com");
@@ -606,7 +606,7 @@ describe("Ownpage", () => {
       cy.get(".organization-email").type("teekkarit@mail.com");
       cy.get("#homepage").type("www.teekkarit.fi");
       cy.get("[data-testid=create-organization-button]").click();
-      cy.contains("Onnistui: Järjestö luotu onnistuneesti!");
+      cy.contains("Järjestö luotu onnistuneesti!");
       cy.reload();
       cy.get(".modify_org").click()
       cy.contains("Poista"). click()
