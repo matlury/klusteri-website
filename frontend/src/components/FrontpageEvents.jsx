@@ -80,7 +80,8 @@ const FrontpageEvents = ({ events }) => {
                   hour: "2-digit",
                   minute: "2-digit",
                 })}{" "}
-                @ {event.room}
+                <br/>
+                {t("reservations_room")}: {event.room}
               </DialogContentText>
             </DialogContent>
             <DialogActions>
