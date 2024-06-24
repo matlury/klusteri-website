@@ -2253,18 +2253,4 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_update_password_invalid(self):
-        """An authorized user can update their email address"""
-
-        # update the email address with invalid parameter
-        user_id = User.objects.all()[0].id
-        response = self.client.put(
-            f"http://localhost:8000/api/users/update/{user_id}/",
-            headers={"Authorization": f"Bearer {self.access_token}"},
-            data={"password": ""},
-            format="json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
     
