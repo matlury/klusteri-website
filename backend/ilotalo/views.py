@@ -144,7 +144,7 @@ class UpdateUserView(APIView):
                 if 'password' in request.data and len(request.data['password']) > 0:
                     new_password = request.data['password']
                     user_to_update.set_password(new_password)
-                user_to_update.save()
+                user_serializer.save()  # Tallenna muutokset serialisoijan kautta
                 return Response(user_serializer.data, status=status.HTTP_200_OK)
             return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -157,7 +157,7 @@ class UpdateUserView(APIView):
             except ObjectDoesNotExist:
                 return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
-            user = UserUpdateSerializer(
+            user_serializer = UserUpdateSerializer(
                 instance=user_to_update, data=request.data, partial=True
             )
             if user.is_valid():
@@ -165,9 +165,9 @@ class UpdateUserView(APIView):
                 if 'password' in request.data and len(request.data['password']) > 0 and user.data["role"] == LEPPISPJ:
                     new_password = request.data['password']
                     user_to_update.set_password(new_password)
-                user_to_update.save()
-                return Response(user.data, status=status.HTTP_200_OK)
-            return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+                user_serializer.save()  # Tallenna muutokset serialisoijan kautta
+                return Response(user_serializer.data, status=status.HTTP_200_OK)
+            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         # Muokkaus users can only edit users that have role 4 or 5 and belong to the same organization
         elif user.data["role"] == MUOKKAUS:
@@ -177,13 +177,13 @@ class UpdateUserView(APIView):
                 return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
             if user_to_update.role in [AVAIMELLINEN, TAVALLINEN]:
-                user = UserUpdateSerializer(
+                user_serializer = UserUpdateSerializer(
                     instance=user_to_update, data=request.data, partial=True
                 )
-                if user.is_valid():
-                    user_to_update.save()
-                    return Response(user.data, status=status.HTTP_200_OK)
-                return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+                if user_serializer.is_valid():
+                    user_serializer.save()  # Tallenna muutokset serialisoijan kautta
+                    return Response(user_serializer.data, status=status.HTTP_200_OK)
+                return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response("You are not allowed to edit this user", status=status.HTTP_400_BAD_REQUEST)
 
