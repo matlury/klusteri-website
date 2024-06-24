@@ -345,7 +345,7 @@ describe("Reservations", () => {
         leppis_id = response.body.id;
       },
     );
-    cy.wait(6000);
+    cy.wait(5000);
     cy.contains("Kirjaudu").click();
     cy.get("#email").type("pj@gmail.com");
     cy.get("#password").type("salasana123");
