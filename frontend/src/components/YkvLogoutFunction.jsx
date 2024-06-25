@@ -69,7 +69,7 @@ const YkvLogoutFunction = ({
 
   const handleRemove = async (id) => {
     await handleYkvLogout(id);
-    setActiveUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+    await fetchResponsibilities();
     setConfirmOpen(false);
   };
 
