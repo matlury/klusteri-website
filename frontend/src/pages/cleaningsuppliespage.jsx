@@ -181,6 +181,7 @@ const CleaningSupplies = ({
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
+        data-testid="snackbar"
       >
         <Alert
           onClose={handleSnackbarClose}

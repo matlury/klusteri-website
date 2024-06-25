@@ -76,7 +76,11 @@ import {
       });
   
       // Check if the description appears in the document
-      expect(screen.getByText("Siivousvälineen luonti onnistui")).toBeInTheDocument();
+      await waitFor(() => {
+        const snackbar = getByTestId("snackbar");
+        expect(snackbar).toBeInTheDocument();
+        expect(within(snackbar).getByRole("alert")).toHaveClass("MuiAlert-standardSuccess");
+      })
     });
 
 
@@ -122,9 +126,11 @@ import {
 
         fireEvent.click(screen.getByTestId("confirmdelete"));
 
-      //   await waitFor(() => {
-      //   expect(screen.getByText("Siivousvälineen poisto onnistui")).toBeInTheDocument();
-      // });  
+        await waitFor(() => {
+          const snackbar = getByTestId("snackbar");
+          expect(snackbar).toBeInTheDocument();
+          expect(within(snackbar).getByRole("alert")).toHaveClass("MuiAlert-standardSuccess");
+        })
 
       });
   });
