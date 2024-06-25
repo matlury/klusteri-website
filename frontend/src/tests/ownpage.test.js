@@ -41,6 +41,8 @@ it("opens with role 5", () => {
   localStorage.setItem("loggedUser", JSON.stringify(user));
   const { getByText, getByLabelText } = render(<OwnPage isLoggedIn={true} />);
   expect(getByLabelText("Käyttäjänimi")).toBeInTheDocument();
+  expect(getByLabelText("Salasana")).toBeInTheDocument();
+  expect(getByLabelText("Vahvista salasana")).toBeInTheDocument();
   expect(getByLabelText("Sähköposti")).toBeInTheDocument();
   expect(getByLabelText("Telegram")).toBeInTheDocument();
   expect(getByText("Käyttäjän rooli: 5")).toBeInTheDocument();
@@ -115,6 +117,8 @@ it("opens with role 5", () => {
 it("User updating works", async () => {
   const user = {
     username: "example_username",
+    password: "example_password123",
+    confirmPassword: "example_password123",
     email: "example_email@example.com",
     telegram: "example_telegram",
     role: 5,
@@ -149,7 +153,9 @@ it("User updating works", async () => {
                         "id": 1,
                         "last_login": null,
                         "username": "example_username",
+                        "password": "",
                         "email": "example_email@example.com",
+                        "confirmPassword": "",
                         "telegram": "example_telegram",
                         "role": 1,
                         "keys": [
@@ -166,7 +172,9 @@ it("User updating works", async () => {
         ],
         "last_login": null,
         "username": "example_username",
+        "password": "",
         "email": "example_email@example.com",
+        "confirmPassword": "",
         "telegram": "example_telegram",
         "role": 1
     }, {
@@ -179,7 +187,9 @@ it("User updating works", async () => {
                       "id": 2,
                       "last_login": null,
                       "username": "example_username_two",
+                      "password": "",
                       "email": "example_email_two@example.com",
+                      "confirmPassword": "",
                       "telegram": "example_telegram_two",
                       "role": 1,
                       "keys": [
@@ -195,7 +205,9 @@ it("User updating works", async () => {
       ],
       "last_login": null,
       "username": "example_username_two",
+      "password": "",
       "email": "example_email_two@example.com",
+      "confirmPassword": "",
       "telegram": "example_telegram_two",
       "role": 1
   }
@@ -211,7 +223,9 @@ it("User updating works", async () => {
                     "id": 1,
                     "last_login": null,
                     "username": "username_example",
+                    "password": "",
                     "email": "email_example@example.com",
+                    "confirmPassword": "",
                     "telegram": "telegram_example",
                     "role": 1,
                     "keys": [
@@ -227,7 +241,9 @@ it("User updating works", async () => {
     ],
     "last_login": null,
     "username": "username_example",
+    "password": "",
     "email": "email_example@example.com",
+    "confirmPassword": "",
     "telegram": "telegram_example",
     "role": 1
   }}
@@ -258,8 +274,8 @@ it("User updating works", async () => {
       expect(mockAxios.get).toHaveBeenCalledWith("undefined/api/listobjects/users/?email=email_example@example.com");
   })
   await waitFor(() => {
-    expect(mockAxios.put).toHaveBeenCalledWith("/users/update/1/", {"email": "email_example@example.com", "telegram": "telegram_example", "username": "username_example"});
-  })
+    expect(mockAxios.put).toHaveBeenCalledWith("/users/update/1/", {"email": "email_example@example.com", "password": "", "telegram": "telegram_example", "confirmPassword": "", "username": "username_example"});
+  });
   await waitFor(() => {
     const snackbar = getByTestId("snackbar");
     expect(snackbar).toBeInTheDocument();

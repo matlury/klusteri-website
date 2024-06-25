@@ -323,8 +323,8 @@ describe("Reservations", () => {
     cy.request("POST", "http://localhost:8000/api/testing/reset");
     cy.visit("http://localhost:5173/varaukset");
   });
-  let org_id;
-  let leppis_id
+    let org_id;
+    let leppis_id
   beforeEach(function () {
     cy.viewport(2560, 1440);
     cy.on("uncaught:exception", () => {
@@ -345,7 +345,7 @@ describe("Reservations", () => {
         leppis_id = response.body.id;
       },
     );
-    cy.wait(1000);
+    cy.wait(5000);
     cy.contains("Kirjaudu").click();
     cy.get("#email").type("pj@gmail.com");
     cy.get("#password").type("salasana123");
