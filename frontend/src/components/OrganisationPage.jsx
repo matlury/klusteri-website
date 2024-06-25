@@ -107,7 +107,7 @@ const OrganisationPage = ({
 
   return (
     <div>
-      <h4>{t("resp_orgs")}</h4>
+      <h2>{t("resp_orgs")}</h2>
       <div>
         <DataGrid
           rows={allOrganisations}

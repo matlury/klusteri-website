@@ -7,6 +7,10 @@ const UserPage = ({
   setUsername,
   email,
   setEmail,
+  password,
+  setPassword,
+  confirmPassword,
+  setConfirmPassword,
   telegram,
   setTelegram,
   handleUserDetails,
@@ -22,6 +26,24 @@ const UserPage = ({
           label={t("username")}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+        />
+      </div>
+      <div>
+        <TextField
+          id="password"
+          data-testid="password-field"
+          label={t("password")}
+          type="password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </div>
+      <div>
+        <TextField
+          id="confirmPassword"
+          data-testid="confirm-password-field"
+          label={t("confirmpassword")}
+          type="password"
+          onChange={(e) => setConfirmPassword(e.target.value)}
         />
       </div>
       <div>

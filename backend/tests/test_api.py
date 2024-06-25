@@ -2215,3 +2215,42 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+    def test_update_password(self):
+        """An authorized user can update their email address"""
+
+        # update the email address
+        user_id = User.objects.all()[0].id
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{user_id}/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={"password": "newpassword123"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # leppispj user can update any password
+        user_id = User.objects.all()[1].id
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{user_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data={"password": "newpassword123"},
+            format="json",
+        )
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # other users can't update other users' passwords
+        user_id = User.objects.all()[0].id
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{user_id}/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={"password": "newpassword123"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    
