@@ -29,8 +29,17 @@ const YkvLogoutFunction = ({
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [selectedUserName, setSelectedUserName] = useState("");
   const [search, setSearch] = useState("");
+  const [minFilter, setMinFilter] = useState("");
+  const [maxFilter, setMaxFilter] = useState("");
 
   const { t } = useTranslation();
+
+  const handleMaxFilterChange = (event) => {
+    setMaxFilter(event.target.value);
+  };
+  const handleMinFilterChange = (event) => {
+    setMinFilter(event.target.value);
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -183,11 +192,25 @@ const YkvLogoutFunction = ({
     handleClose(); // Close the dialog
   };
 
+  function filtering(login_time, logout_time) {
+    return (
+      (Date.parse(login_time) >= Number(Date.parse(minFilter)) &&
+        Date.parse(login_time) <= Number(Date.parse(maxFilter))) ||
+      (Date.parse(logout_time) <= Number(Date.parse(maxFilter)) &&
+        Date.parse(logout_time) >= Number(Date.parse(minFilter))) ||
+      (Date.parse(login_time) >= Number(Date.parse(minFilter)) &&
+        maxFilter === "") ||
+      (Date.parse(logout_time) <= Number(Date.parse(maxFilter)) &&
+        minFilter === "") ||
+      (minFilter === "" && maxFilter === "")
+    );
+  }
+
   const filteredUsers = allUsers.filter(
     (user) =>
       user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
       user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase()),
-  );
+    ).filter((user) => filtering(user.YKV_sisäänkirjaus, user.logout_time));
 
   const ownUsers = allUsers
     .filter(
@@ -337,6 +360,22 @@ const YkvLogoutFunction = ({
       {loggedUser.role === 1 && (
         <div>
           <h2>{t("allresps")}</h2>
+          <div>
+            <p>{t("timefilter")}</p>
+            <input type="hidden" id="timezone" name="timezone" value="03:00" />
+            <input
+              value={minFilter}
+              onChange={handleMinFilterChange}
+              type="datetime-local"
+              data-testid="filtermin"
+            />
+            <input
+              value={maxFilter}
+              onChange={handleMaxFilterChange}
+              type="datetime-local"
+              data-testid="filtermax"
+            />
+          </div>
           <StyledDataGrid
             rows={filteredUsers}
             columns={columns_2}
