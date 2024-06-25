@@ -18,7 +18,8 @@ RUN npm run build
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
 
-COPY --from=build /frontend/build /usr/share/nginx/html
+# Copy the build output to the Nginx html directory
+COPY --from=build /frontend/dist /usr/share/nginx/html
 
 # Copy custom Nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
