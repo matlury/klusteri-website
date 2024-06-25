@@ -3,6 +3,21 @@ import { getCurrentDateTime, getTestTimes } from "../../src/utils/timehelpers";
 describe("Frontpage", () => {
   beforeEach(function () {
     //Reset the testing database
+    cy.intercept('GET', '**/api/listobjects/events/', {
+      statusCode: 200,
+      body: [
+        {
+          id: 1,
+          title: 'Sample Event',
+          organizer: { name: 'Organizer Name' },
+          start: new Date().toISOString(),
+          end: new Date(Date.now() + 3600 * 1000).toISOString(),
+          open: true,
+          room: 'Room A',
+          description: 'This is a sample event description.'
+        },
+      ],
+    }).as('getEvents');
     cy.request("POST", "http://localhost:8000/api/testing/reset");
     cy.visit("http://localhost:5173");
   });
