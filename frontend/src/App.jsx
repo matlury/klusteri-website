@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BrowserRouter as Router, Route, Routes, Link, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Link, useLocation, useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -143,9 +143,7 @@ const Sidebar = ({ isLoggedIn }) => {
   );
 };
 
-
-const App = (props) => {
-  const { window } = props;
+const AppContent = ({ window }) => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
 
@@ -163,6 +161,8 @@ const App = (props) => {
 
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [anchorElLang, setAnchorElLang] = React.useState(null)
+
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     i18n.changeLanguage(localStorage.getItem("lang") || "fi")
@@ -206,6 +206,7 @@ const App = (props) => {
     localStorage.removeItem("isLoggedIn");
     setLoggedUser(null);
     setIsLoggedIn(false);
+    navigate("/etusivu"); // Navigate to front page after logging out
   };
 
   const openLoginDialog = () => {
@@ -250,168 +251,173 @@ const App = (props) => {
   const container = window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Router>
-      <Box sx={{ display: "flex" }}>
-        <CssBaseline />
-        <AppBar
-          position="fixed"
-          sx={{
-            bgcolor: "#484644",
-            width: { sm: `calc(100% - ${drawerWidth}px)` },
-            ml: { sm: `${drawerWidth}px` },
-          }}
-        >
-          <Toolbar>
-            <IconButton
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2, display: { sm: "none" }, color: "white" }}  // Change color to white
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap component="div" color={"white"}>
-          Ilotalo 3.0
-            </Typography>
-          <Box sx={{ flexGrow: 1 }} />
-          <IconButton color="primary" onClick={handleIconClick}>
-              <TranslateIcon
-              color="primary" sx={{ color: 'white' }} />
-            </IconButton>
-            <Menu
-              anchorEl={anchorElLang}
-              open={open}
-              onClose={handleClose}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-              }}
-            >
-              <MenuItem onClick={() => handleLangChange('fi')}>Suomi</MenuItem>
-              <MenuItem onClick={() => handleLangChange('en')}>English</MenuItem>
-            </Menu>
-            {isLoggedIn ? (
-              <>
-                <Button
-              aria-controls="simple-menu"
-              aria-haspopup="true"
-                  onClick={handleMenuClick}
-                  sx={{ marginLeft: 'auto' }}
-                  endIcon={<ArrowDropDownIcon />}
-              style={{ color: "white" }}
-                >
-              {loggedUser ? loggedUser.username : "User"}
-                </Button>
-                <Menu
-                  id="simple-menu"
-                  anchorEl={anchorEl}
-                  keepMounted
-                  open={Boolean(anchorEl)}
-                  onClose={handleMenuClose}
-                >
-                  <MenuItem onClick={handleLogout}>{t("logout")}</MenuItem>
-                </Menu>
-              </>
-            ) : (
-              <Button variant="contained" onClick={openLoginDialog}>
-                {t("login")}
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <AppBar
+        position="fixed"
+        sx={{
+          bgcolor: "#484644",
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          ml: { sm: `${drawerWidth}px` },
+        }}
+      >
+        <Toolbar>
+          <IconButton
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { sm: "none" }, color: "white" }}  // Change color to white
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap component="div" color={"white"}>
+        Ilotalo 3.0
+          </Typography>
+        <Box sx={{ flexGrow: 1 }} />
+        <IconButton color="primary" onClick={handleIconClick}>
+            <TranslateIcon
+            color="primary" sx={{ color: 'white' }} />
+          </IconButton>
+          <Menu
+            anchorEl={anchorElLang}
+            open={open}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+          >
+            <MenuItem onClick={() => handleLangChange('fi')}>Suomi</MenuItem>
+            <MenuItem onClick={() => handleLangChange('en')}>English</MenuItem>
+          </Menu>
+          {isLoggedIn ? (
+            <>
+              <Button
+            aria-controls="simple-menu"
+            aria-haspopup="true"
+                onClick={handleMenuClick}
+                sx={{ marginLeft: 'auto' }}
+                endIcon={<ArrowDropDownIcon />}
+            style={{ color: "white" }}
+              >
+            {loggedUser ? loggedUser.username : "User"}
               </Button>
-            )}
-          </Toolbar>
-        </AppBar>
-        <Box
-          component="nav"
-          sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-          aria-label="mailbox folders"
-        >
-          <Drawer
-            container={container}
-            variant="temporary"
-            open={mobileOpen}
-            onTransitionEnd={handleDrawerTransitionEnd}
-            onClose={handleDrawerClose}
-            ModalProps={{
-              keepMounted: true,
-            }}
-            sx={{
-              display: { xs: "block", sm: "none" },
-              "& .MuiDrawer-paper": {
-                boxSizing: "border-box",
-                width: drawerWidth,
-                bgcolor: "#E9E9E9",  // Set background color here for temporary drawer
-              },
-            }}
-          >
-            <Sidebar isLoggedIn={isLoggedIn} />
-          </Drawer>
-          <Drawer
-            variant="permanent"
-            sx={{
-              display: { xs: "none", sm: "block" },
-              "& .MuiDrawer-paper": {
-                boxSizing: "border-box",
-                width: drawerWidth,
-                bgcolor: "#E9E9E9",  // Set background color here for permanent drawer
-              },
-            }}
-            open
-          >
-            <Sidebar isLoggedIn={isLoggedIn} />
-          </Drawer>
-        </Box>
-        <Box
-          component="main"
+              <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+              >
+                <MenuItem onClick={handleLogout}>{t("logout")}</MenuItem>
+              </Menu>
+            </>
+          ) : (
+            <Button variant="contained" onClick={openLoginDialog}>
+              {t("login")}
+            </Button>
+          )}
+        </Toolbar>
+      </AppBar>
+      <Box
+        component="nav"
+        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        aria-label="mailbox folders"
+      >
+        <Drawer
+          container={container}
+          variant="temporary"
+          open={mobileOpen}
+          onTransitionEnd={handleDrawerTransitionEnd}
+          onClose={handleDrawerClose}
+          ModalProps={{
+            keepMounted: true,
+          }}
           sx={{
-            flexGrow: 1,
-            p: 3,
-            width: { sm: `calc(100% - ${drawerWidth}px)` },
+            display: { xs: "block", sm: "none" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+              bgcolor: "#E9E9E9",  // Set background color here for temporary drawer
+            },
           }}
         >
-          <Toolbar />
-          <Routes>
-            <Route path="/" element={<FrontPage />} />
-            <Route path="/etusivu" element={<FrontPage />} />
-            <Route path="/christina_regina" element={<ChristinaRegina />} />
-            <Route path="/varaukset" element={<Reservations />} />
-            <Route
-              path="/ykv"
-              element={
-                <OwnKeys isLoggedIn={isLoggedIn} loggedUser={loggedUser} />
-              }
-            />
-            <Route
-              path="/omat_tiedot"
-              element={<OwnPage isLoggedIn={isLoggedIn} />}
-            />
-            <Route path="/tilastot" element={<Statistics />}/>
-            <Route path="/yhteystiedot" element={<Contacts />} />
-            <Route
-              path="/viat"
-              element={<DefectFault isLoggedIn={isLoggedIn} loggedUser={loggedUser} />}
-            />
-            <Route path="/siivousvuorot" element={<CleaningSchedule isLoggedIn={isLoggedIn} loggedUser={loggedUser} />}
-            />
-            <Route
-              path="/saannot_ja_ohjeet"
-              element={<Rules_and_Instructions />}
-            />
-            <Route path="/tietosuojaseloste" element={<PrivacyPolicy />} />
-            <Route path="/siivoustarvikkeet" element={<CleaningSupplies isLoggedIn={isLoggedIn} loggedUser={loggedUser} />} />
-          </Routes>
-          <LoginDialog
-            open={loginDialogOpen}
-            onClose={closeLoginDialog}
-            onLogin={handleLogin}
-            onCreateNewUser={handleCreateNewUser}
-          />
-        </Box>
+          <Sidebar isLoggedIn={isLoggedIn} />
+        </Drawer>
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: "none", sm: "block" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+              bgcolor: "#E9E9E9",  // Set background color here for permanent drawer
+            },
+          }}
+          open
+        >
+          <Sidebar isLoggedIn={isLoggedIn} />
+        </Drawer>
       </Box>
-    </Router>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+        }}
+      >
+        <Toolbar />
+        <Routes>
+          <Route path="/" element={<FrontPage />} />
+          <Route path="/etusivu" element={<FrontPage />} />
+          <Route path="/christina_regina" element={<ChristinaRegina />} />
+          <Route path="/varaukset" element={<Reservations />} />
+          <Route
+            path="/ykv"
+            element={
+              <OwnKeys isLoggedIn={isLoggedIn} loggedUser={loggedUser} />
+            }
+          />
+          <Route
+            path="/omat_tiedot"
+            element={<OwnPage isLoggedIn={isLoggedIn} />}
+          />
+          <Route path="/tilastot" element={<Statistics />}/>
+          <Route path="/yhteystiedot" element={<Contacts />} />
+          <Route
+            path="/viat"
+            element={<DefectFault isLoggedIn={isLoggedIn} loggedUser={loggedUser} />}
+          />
+          <Route path="/siivousvuorot" element={<CleaningSchedule isLoggedIn={isLoggedIn} loggedUser={loggedUser} />}
+          />
+          <Route
+            path="/saannot_ja_ohjeet"
+            element={<Rules_and_Instructions />}
+          />
+          <Route path="/tietosuojaseloste" element={<PrivacyPolicy />} />
+          <Route path="/siivoustarvikkeet" element={<CleaningSupplies isLoggedIn={isLoggedIn} loggedUser={loggedUser} />} />
+        </Routes>
+        <LoginDialog
+          open={loginDialogOpen}
+          onClose={closeLoginDialog}
+          onLogin={handleLogin}
+          onCreateNewUser={handleCreateNewUser}
+        />
+      </Box>
+    </Box>
   );
 };
 
+const App = () => (
+  <Router>
+    <AppContent />
+  </Router>
+);
+
 export default App;
+

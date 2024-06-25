@@ -146,7 +146,8 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         instance.email = validated_data.get('email', instance.email)
         instance.telegram = validated_data.get('telegram', instance.telegram)
         instance.role = validated_data.get('role', instance.role)
-
+        instance.rights_for_reservation = validated_data.get('rights_for_reservation', instance.rights_for_reservation)
+        
         # Check if password is provided and update it if so
         password = validated_data.get('password')
         if password:
