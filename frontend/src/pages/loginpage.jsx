@@ -4,7 +4,6 @@ import { useStateContext } from "../context/ContextProvider.jsx";
 import login from "../utils/login.js";
 import LoginForm from "../components/LoginForm.jsx";
 import { useTranslation } from "react-i18next";
-import { Snackbar, Alert } from '@mui/material';
 
 const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
   const [email, setEmail] = useState("");
