@@ -10,8 +10,8 @@ RUN npm install
 COPY . .
 
 # Define ARG and ENV for RECAPTCHA_SITE_KEY
-ARG klusteri-website-recaptcha-secret-key
-ENV klusteri-website-recaptcha-secret-key=${klusteri-website-recaptcha-secret-key}
+ARG RECAPTCHA_SECRET_KEY
+ENV RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
 
 
 RUN npm run build
