@@ -261,7 +261,9 @@ it("User updating works", async () => {
     expect(mockAxios.put).toHaveBeenCalledWith("/users/update/1/", {"email": "email_example@example.com", "telegram": "telegram_example", "username": "username_example"});
   })
   await waitFor(() => {
-    expect(getByText("Tiedot päivitetty onnistuneesti!")).toBeInTheDocument();
+    const snackbar = getByTestId("snackbar");
+    expect(snackbar).toBeInTheDocument();
+    expect(within(snackbar).getByRole("alert")).toHaveClass("MuiAlert-standardSuccess");
   })
 });
 
@@ -291,7 +293,9 @@ describe("User updating errors", () => {
     fireEvent.click(saveButton);
 
     await waitFor(() => {
-      expect(getByTestId("snackbar")).toBeInTheDocument();
+      const snackbar = getByTestId("snackbar");
+      expect(snackbar).toBeInTheDocument();
+      expect(within(snackbar).getByRole("alert")).toHaveClass("MuiAlert-standardError");
     });
   });
 
@@ -384,9 +388,11 @@ describe("User updating errors", () => {
       { url: "undefined/api/listobjects/users/?telegram=example_telegram_two" },
       responseObj,
     );})
-//    await waitFor(() => {
-//      expect(getByText("Telegram on jo käytössä")).toBeInTheDocument();
-//    })
+    await waitFor(() => {
+      const snackbar = getByTestId("snackbar");
+      expect(snackbar).toBeInTheDocument();
+      expect(within(snackbar).getByRole("alert")).toHaveClass("MuiAlert-standardError");
+    })
     await waitFor(() => {
       expect(mockAxios.get).toHaveBeenCalledWith("undefined/api/listobjects/users/?telegram=example_telegram_two");
     })
@@ -482,7 +488,9 @@ describe("User updating errors", () => {
       responseObj,
     );})
     await waitFor(() => {
-      expect(getByTestId("snackbar")).toBeInTheDocument();
+      const snackbar = getByTestId("snackbar");
+      expect(snackbar).toBeInTheDocument();
+      expect(within(snackbar).getByRole("alert")).toHaveClass("MuiAlert-standardError");
     })
     await waitFor(() => {
       expect(mockAxios.get).toHaveBeenCalledWith("undefined/api/listobjects/users/?email=example_email_two@example.com");
@@ -577,7 +585,11 @@ describe("User updating errors", () => {
      )  
      
     expect(mockAxios.post).toHaveBeenCalledWith("organizations/create", {"color": "", "email": "tko@aly.com", "homepage": "tko-aly.org", "name": "tko-aly"})
-    expect(getByText("Järjestö luotu onnistuneesti!")).toBeInTheDocument();
+    await waitFor(() => {
+      const snackbar = getByTestId("snackbar");
+      expect(snackbar).toBeInTheDocument();
+      expect(within(snackbar).getByRole("alert")).toHaveClass("MuiAlert-standardSuccess");
+    })
     })
   })
  })
