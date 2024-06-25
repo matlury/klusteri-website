@@ -239,7 +239,7 @@ const AllUsers = ({
                   variant="contained"
                   className="submit-key-button"
                   data-testid="submit-key-button"
-                  onClick={() => handleKeySubmit(userDetailsId, selectedOrganization.Organisaatio)}
+                  onClick={() => {handleKeySubmit(userDetailsId, selectedOrganization.Organisaatio); handleClose()}}
                 >
                   {t("givekey")}
                 </Button>
