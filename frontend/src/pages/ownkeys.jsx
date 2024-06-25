@@ -43,6 +43,8 @@ const OwnKeys = ({
 
   const API_URL = process.env.API_URL;
 
+  const { t } = useTranslation();
+
   useEffect(() => {
     setIsLoggedIn(propIsLoggedIn);
     if (propIsLoggedIn) {
@@ -80,14 +82,7 @@ const OwnKeys = ({
     fetchData();
   }, [loggedUser]);
 
-  const { t } = useTranslation();
-
-  // THE FOLLOWING FUNCTIONS HANDLES TAKING THE YKV-RESPONSIBILITIES
-
-  // this function handles the event of taking responsibility (check above)
   const handleYkvLogin = async (event) => {
-    // event.preventDefault();
-
     const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
     if (!loggedUser) return;
 
@@ -96,9 +91,7 @@ const OwnKeys = ({
     const loginTime = getCurrentDateTime();
 
     const userdata = await axiosClient.get("/listobjects/users/");
-
     const user = userdata.data.find((user) => user.id === user_id);
-
     const user_orgs = user.keys.map((key) => key.id);
 
     const responsibilityObject = {
@@ -110,9 +103,9 @@ const OwnKeys = ({
       organizations: user_orgs,
     };
 
-    confirmYKV(responsibilityObject);
+    await confirmYKV(responsibilityObject);
 
-    selectedForYKV.map((user) => {
+    for (const user of selectedForYKV) {
       const responsibilityObject = {
         user: user.id,
         email: user.email,
@@ -121,26 +114,20 @@ const OwnKeys = ({
         created_by: loggedUser.username,
         organizations: user_orgs,
       };
-      confirmYKV(responsibilityObject);
-    });
+      await confirmYKV(responsibilityObject);
+    }
 
-    function confirmYKV(responsibilityObject) {
-      if (confirm) {
-        axiosClient
-          .post(`/ykv/create_responsibility`, responsibilityObject)
-          .then((response) => {
-            setSuccess(t("ykvsuccess"));
-            setTimeout(() => setSuccess(""), 5000);
-            getResponsibility();
-            getActiveResponsibilities();
-          })
-          .catch((error) => {
-            setError(t("ykvfail"));
-            setTimeout(() => setError(""), 5000);
-            console.error(t("ykvfail"), error);
-          });
-      } else {
-        console.log(t("ykvcancel"));
+    async function confirmYKV(responsibilityObject) {
+      try {
+        await axiosClient.post(`/ykv/create_responsibility`, responsibilityObject);
+        setSuccess(t("ykvsuccess"));
+        setTimeout(() => setSuccess(""), 5000);
+        await getResponsibility();
+        await getActiveResponsibilities();
+      } catch (error) {
+        setError(t("ykvfail"));
+        setTimeout(() => setError(""), 5000);
+        console.error(t("ykvfail"), error);
       }
     }
     setSelectedForYKV([]);
@@ -160,80 +147,72 @@ const OwnKeys = ({
   // THE FOLLOWING FUNCTIONS RENDER SPECIFIC YKV-RESPONSIBILITIES
 
   // fetches all of the responsibilities and the ones that the logged user has done
-  const getResponsibility = () => {
-    axiosClient
-      .get(`listobjects/nightresponsibilities/`)
-      .then((response) => {
-        setAllResponsibilities(response.data);
-        const filteredResponsibilities = response.data.filter(
-          (item) =>
-            item.email === email ||
-            (loggedUser && item.created_by === loggedUser.username),
-        );
-        setOwnResponsibilities(filteredResponsibilities);
-      })
-      .catch((error) => {
-        console.error("Error fetching responsibilities", error);
-      });
+  const getResponsibility = async () => {
+    try {
+      const response = await axiosClient.get(`listobjects/nightresponsibilities/`);
+      setAllResponsibilities(response.data);
+      const filteredResponsibilities = response.data.filter(
+        (item) =>
+          item.email === email ||
+          (loggedUser && item.created_by === loggedUser.username),
+      );
+      setOwnResponsibilities(filteredResponsibilities);
+    } catch (error) {
+      console.error("Error fetching responsibilities", error);
+    }
   };
 
-  const getActiveResponsibilities = () =>
-    axiosClient
-      .get(`listobjects/nightresponsibilities/`)
-      .then((response) => {
-        setAllResponsibilities(response.data);
-        const active = response.data.filter((item) => item.present === true);
-        setActiveResponsibilities(active);
-      })
-      .catch((error) => {
-        console.error("Error fetching responsibilities", error);
-      });
+  const getActiveResponsibilities = async () => {
+    try {
+      const response = await axiosClient.get(`listobjects/nightresponsibilities/`);
+      setAllResponsibilities(response.data);
+      const active = response.data.filter((item) => item.present === true);
+      setActiveResponsibilities(active);
+    } catch (error) {
+      console.error("Error fetching responsibilities", error);
+    }
+  };
 
   // THE FOLLOWING FUNCTIONS HANDLE THE YKV-LOGOUT
 
   // handles the end of taking responsibility
-  const handleYkvLogout = (id) => {
+  const handleYkvLogout = async (id) => {
     setButtonPopup(true);
-    axiosClient
-      .put(`ykv/logout_responsibility/${id}/`, {
+    try {
+      await axiosClient.put(`ykv/logout_responsibility/${id}/`, {
         logout_time: getCurrentDateTime(),
-      })
-      .then((response) => {
-        setSuccess(t("ykvlogoutsuccess"));
-        setTimeout(() => setSuccess(""), 5000);
-        getResponsibility();
-        getActiveResponsibilities();
-        fetchAllUsersWithKeys({
-          API_URL,
-          allUsersWithKeys,
-          setAllUsersWithKeys,
-          loggedUser,
-          allResponsibilities,
-        });
-      })
-      .catch((error) => {
-        setError(t("ykvlogoutfail"));
-        setTimeout(() => setError(""), 5000);
-        console.error(t("ykvlogoutfail"), error);
       });
+      setSuccess(t("ykvlogoutsuccess"));
+      setTimeout(() => setSuccess(""), 5000);
+      await getResponsibility();
+      await getActiveResponsibilities();
+      await fetchAllUsersWithKeys({
+        API_URL,
+        allUsersWithKeys,
+        setAllUsersWithKeys,
+        loggedUser,
+        allResponsibilities,
+      });
+    } catch (error) {
+      setError(t("ykvlogoutfail"));
+      setTimeout(() => setError(""), 5000);
+      console.error(t("ykvlogoutfail"), error);
+    }
   };
 
   // THE FOLLOWING FUNCTIONS HANDLE THE YKV-LOGIN EDITS
-
-  const handleYkvEdit = (respId, respToEdit) => {
-    axiosClient
-      .put(`ykv/update_responsibility/${respId}/`, respToEdit)
-      .then((response) => {
-        setSuccess(t("ykveditsuccess"));
-        setTimeout(() => setSuccess(""), 5000);
-        getResponsibility();
-        getActiveResponsibilities();
-      })
-      .catch((error) => {
-        setError(t("ykveditfail"));
-        setTimeout(() => setError(""), 5000);
-        console.error("Ykv-muokkaus epäonnistui", error);
-      });
+  const handleYkvEdit = async (respId, respToEdit) => {
+    try {
+      await axiosClient.put(`ykv/update_responsibility/${respId}/`, respToEdit);
+      setSuccess(t("ykveditsuccess"));
+      setTimeout(() => setSuccess(""), 5000);
+      await getResponsibility();
+      await getActiveResponsibilities();
+    } catch (error) {
+      setError(t("ykveditfail"));
+      setTimeout(() => setError(""), 5000);
+      console.error("Ykv-muokkaus epäonnistui", error);
+    }
   };
 
   return (
