@@ -240,12 +240,21 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // Keeps the organization information up-to-date
   const getOrganisations = async () => {
     try {
-      const response = await 
-      axios.get(`${API_URL}/api/listobjects/organizations/`);
-      setOrganisations(response.data);
-    } catch(error) {
-        console.error("Error fetching organisations:", error);
-      }
+      const res = await 
+      axiosClient.get("listobjects/organizations/")
+      const orgData = res.data.map((u) => ({
+            id: u.id,
+            Organisaatio: u.name,
+            email: u.email,
+            kotisivu: u.homepage,
+            color: u.color,
+            Avaimia: u.user_set.length,
+
+      }));
+      setOrganisations(orgData);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
@@ -569,7 +578,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                 }
                 {
                   <OrganisationPage
-                    organisations={organisations}
+                    organizations={organisations}
                     selectedOrg={selectedOrg}
                     hasPermissionOrg={hasPermissionOrg}
                     organization_new_name={organization_new_name}
@@ -584,6 +593,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                     hasPermission={hasPermission}
                     handleDeleteOrganization={handleDeleteOrganization}
                     toggleOrgDetails={toggleOrgDetails}
+                    fetchOrganizations={getOrganisations}
                   />
                 }
                 {hasPermission === true && (
