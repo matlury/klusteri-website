@@ -104,9 +104,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
     if (!username || !email) {
       setError(t("usereditmandfields"));
-      setSnackbarMessage(t("usereditmandfields"));
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
+      handleSnackbar(t("usereditmandfields"), "error");
       setTimeout(() => setError(""), 5000);
       return;
     }
@@ -122,9 +120,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             )
           ) {
             setError(t("telegraminuse"));
-            setSnackbarMessage(t("telegraminuse"));
-            setSnackbarSeverity("error");
-            setSnackbarOpen(true);
+            handleSnackbar(t("telegraminuse"), "error");
             setTimeout(() => setError(""), 5000);
             return;
           }
@@ -159,9 +155,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           )
         ) {
           setError(t("emailinuse"));
-          setSnackbarMessage(t("emailinuse"));
-          setSnackbarSeverity("error");
-          setSnackbarOpen(true);
+          handleSnackbar(t("emailinuse"), "error");
           setTimeout(() => setError(""), 5000);
           return;
         }
@@ -180,9 +174,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             localStorage.setItem("loggedUser", JSON.stringify(response.data));
             setUser(response.data);
             setSuccess(t("usereditsuccess"));
-            setSnackbarMessage(t("usereditsuccess"));
-            setSnackbarSeverity("success");
-            setSnackbarOpen(true);
+            handleSnackbar(t("usereditsuccess"), "success");
             setTimeout(() => setSuccess(""), 5000);
           })
           .catch((error) => {
@@ -193,6 +185,12 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       }
     }
   };
+
+  const handleSnackbar = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  }
 
   const handleUpdateAnotherUser = (userDetailsId, userDetailsUsername, userDetailsPassword, userDetailsConfirmPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole, 
     userDetailsOrganizations) => {        
@@ -227,9 +225,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
     if (typeof validationError === "string") {
       setError(validationError);
-      setSnackbarMessage(validationError);
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
+      handleSnackbar(validationError, "error");
       setTimeout(() => setError(""), 5000);
     } else if (validationError === true) {
       if (confirmUpdate) {
@@ -237,9 +233,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           .put(`/users/update/${userDetailsId}/`, updatedValues)
           .then((response) => {
             setSuccess(t("usereditsuccess"));
-            setSnackbarMessage(t("usereditsuccess"));
-            setSnackbarSeverity("success");
-            setSnackbarOpen(true);
+            handleSnackbar(t("usereditsuccess"), "success");
             setTimeout(() => setSuccess(""), 5000);
             getAllUsers();
     
@@ -250,17 +244,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           })
           .catch((error) => {
             setError(t("usereditfail"));
-            setSnackbarMessage(t("usereditfail"));
-            setSnackbarSeverity("error");
-            setSnackbarOpen(true);
+            handleSnackbar(t("usereditfail"), "error");
             setTimeout(() => setError(""), 5000);
           });
       }
     } else {
       setError(t("usereditfail"));
-      setSnackbarMessage(t("usereditfail"));
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
+      handleSnackbar(t("usereditfail"), "error");
       setTimeout(() => setError(""), 5000);
     }
   };
@@ -311,9 +301,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           .then((response) => {
             console.log("Organization created successfully!", response.data);
             setSuccess("Järjestö muokattu onnistuneesti!");
-            setSnackbarMessage("Järjestö muokattu onnistuneesti!");
-            setSnackbarSeverity("success");
-            setSnackbarOpen(true);
+            handleSnackbar("Järjestö muokattu onnistuneesti!", "success");
             setTimeout(() => setSuccess(""), 5000);
             getOrganisations();
           })
@@ -335,9 +323,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           console.log(t("orgdeletesuccess"), response.data);
           getOrganisations();
           setSuccess(t("orgdeletesuccess"));
-          setSnackbarMessage(t("orgdeletesuccess"));
-          setSnackbarSeverity("success");
-          setSnackbarOpen(true);
+          handleSnackbar(t("orgdeletesuccess"), "success");
           setTimeout(() => setSuccess(""), 5000);
         })
         .catch((error) => {
@@ -358,18 +344,14 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           existingOrganizations.some((org) => org.name === organization_name)
         ) {
           setError(t("orgcreatenamefail"));
-          setSnackbarMessage(t("orgcreatenamefail"));
-          setSnackbarSeverity("error");
-          setSnackbarOpen(true);
+          handleSnackbar(t("orgcreatenamefail"), "error");
           setTimeout(() => setError(""), 5000);
         }
         if (
           existingOrganizations.some((org) => org.email === organization_email)
         ) {
           setError(t("emailinuse"));
-          setSnackbarMessage(t("emailinuse"));
-          setSnackbarSeverity("error");
-          setSnackbarOpen(true);
+          handleSnackbar(t("emailinuse"), "error");
           setTimeout(() => setError(""), 5000);
         } else {
           const organizationObject = {
@@ -382,9 +364,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             .post("organizations/create", organizationObject)
             .then((response) => {
               setSuccess(t("orgcreatesuccess"));
-              setSnackbarMessage(t("orgcreatesuccess"));
-              setSnackbarSeverity("success");
-              setSnackbarOpen(true);
+              handleSnackbar(t("orgcreatesuccess"), "success");
               setTimeout(() => setSuccess(""), 5000);
               getOrganisations();
             })
@@ -461,9 +441,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             localStorage.setItem("loggedUser", JSON.stringify(response.data));
             setUser(response.data);
             setSuccess(t("usereditsuccess"));
-            setSnackbarMessage(t("usereditsuccess"));
-            setSnackbarSeverity("success");
-            setSnackbarOpen(true);
+            handleSnackbar(t("usereditsuccess"), "success");
             setTimeout(() => setSuccess(""), 5000);
           })
           .catch((error) => {
@@ -491,9 +469,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           .then((response) => {
             console.log("Reservation rights changed succesfully:", response.data);
             setSuccess(t("usereditsuccess"));
-            setSnackbarMessage(t("usereditsuccess"));
-            setSnackbarSeverity("success");
-            setSnackbarOpen(true);
+            handleSnackbar(t("usereditsuccess"), "success");
             setTimeout(() => setSuccess(""), 5000);
           })
           .catch((error) => {
@@ -541,9 +517,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       if (response.status === 200) {
         // Successful key handover
         setSuccess(t("handoverkeysuccess"));
-        setSnackbarMessage(t("handoverkeysuccess"));
-        setSnackbarSeverity("success");
-        setSnackbarOpen(true);
+        handleSnackbar(t("handoverkeysuccess"), "success");
         setTimeout(() => {
           setSuccess("");
         }, 5000);
@@ -554,9 +528,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     } catch (error) {
       console.error("Error in key handover:", error);
       setError(t("handoverkeyfail"));
-      setSnackbarMessage(t("handoverkeyfail"));
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
+      handleSnackbar(t("handoverkeyfail"), "error");
     }
   };
 
