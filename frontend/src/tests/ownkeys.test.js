@@ -108,6 +108,11 @@ describe("OwnKeys Component", () => {
       mockAxios.mockResponseFor({ url: "/listobjects/users/" }, responseObj);
       // Wait for the mockAxios.post to be called
       waitFor(() => {
+        const snackbar = getByTestId("snackbar");
+        expect(snackbar).toBeInTheDocument();
+        expect(within(snackbar).getByRole("alert")).toHaveClass("MuiAlert-standardSuccess");
+      })
+      waitFor(() => {
         expect(mockAxios.get).toHaveBeenCalledWith("/listobjects/users/");
         expect(mockAxios.post).toHaveBeenCalledWith(
           `/ykv/create_responsibility`,

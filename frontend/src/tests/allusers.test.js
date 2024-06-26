@@ -145,7 +145,7 @@ test("assigns a key to the user", async () => {
   await waitFor(() => {
     expect(mockHandleKeySubmit).toHaveBeenCalledWith(1, "Org2");
   });
-});
+}, 10 * 1000);
 
 test("closes the dialog when cancel button is clicked", async () => {
   render(

@@ -8,6 +8,8 @@ import CreateOrganization from "../components/CreateOrganization.jsx";
 import AllUsers from "../components/AllUsers.jsx";
 import updateaccountcheck from "../utils/updateaccountcheck.js";
 import { useTranslation } from "react-i18next";
+import { Snackbar, Alert } from '@mui/material';
+
 
 const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const { user, setUser } = useStateContext();
@@ -50,6 +52,11 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // "success", "error", "info", "warning"
+
 
   const { t } = useTranslation();
 
@@ -97,6 +104,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
     if (!username || !email) {
       setError(t("usereditmandfields"));
+      handleSnackbar(t("usereditmandfields"), "error");
       setTimeout(() => setError(""), 5000);
       return;
     }
@@ -112,6 +120,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             )
           ) {
             setError(t("telegraminuse"));
+            handleSnackbar(t("telegraminuse"), "error");
             setTimeout(() => setError(""), 5000);
             return;
           }
@@ -146,6 +155,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           )
         ) {
           setError(t("emailinuse"));
+          handleSnackbar(t("emailinuse"), "error");
           setTimeout(() => setError(""), 5000);
           return;
         }
@@ -164,6 +174,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             localStorage.setItem("loggedUser", JSON.stringify(response.data));
             setUser(response.data);
             setSuccess(t("usereditsuccess"));
+            handleSnackbar(t("usereditsuccess"), "success");
             setTimeout(() => setSuccess(""), 5000);
           })
           .catch((error) => {
@@ -174,6 +185,12 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       }
     }
   };
+
+  const handleSnackbar = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  }
 
   const handleUpdateAnotherUser = (userDetailsId, userDetailsUsername, userDetailsPassword, userDetailsConfirmPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole, 
     userDetailsOrganizations) => {        
@@ -208,6 +225,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
     if (typeof validationError === "string") {
       setError(validationError);
+      handleSnackbar(validationError, "error");
       setTimeout(() => setError(""), 5000);
     } else if (validationError === true) {
       if (confirmUpdate) {
@@ -215,6 +233,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           .put(`/users/update/${userDetailsId}/`, updatedValues)
           .then((response) => {
             setSuccess(t("usereditsuccess"));
+            handleSnackbar(t("usereditsuccess"), "success");
             setTimeout(() => setSuccess(""), 5000);
             getAllUsers();
     
@@ -225,12 +244,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           })
           .catch((error) => {
             setError(t("usereditfail"));
+            handleSnackbar(t("usereditfail"), "error");
             setTimeout(() => setError(""), 5000);
           });
       }
     } else {
       setError(t("usereditfail"));
-      setError(t("usereditfail"));
+      handleSnackbar(t("usereditfail"), "error");
       setTimeout(() => setError(""), 5000);
     }
   };
@@ -281,6 +301,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           .then((response) => {
             console.log("Organization created successfully!", response.data);
             setSuccess("Järjestö muokattu onnistuneesti!");
+            handleSnackbar("Järjestö muokattu onnistuneesti!", "success");
             setTimeout(() => setSuccess(""), 5000);
             getOrganisations();
           })
@@ -302,6 +323,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           console.log(t("orgdeletesuccess"), response.data);
           getOrganisations();
           setSuccess(t("orgdeletesuccess"));
+          handleSnackbar(t("orgdeletesuccess"), "success");
           setTimeout(() => setSuccess(""), 5000);
         })
         .catch((error) => {
@@ -322,12 +344,14 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           existingOrganizations.some((org) => org.name === organization_name)
         ) {
           setError(t("orgcreatenamefail"));
+          handleSnackbar(t("orgcreatenamefail"), "error");
           setTimeout(() => setError(""), 5000);
         }
         if (
           existingOrganizations.some((org) => org.email === organization_email)
         ) {
           setError(t("emailinuse"));
+          handleSnackbar(t("emailinuse"), "error");
           setTimeout(() => setError(""), 5000);
         } else {
           const organizationObject = {
@@ -340,6 +364,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             .post("organizations/create", organizationObject)
             .then((response) => {
               setSuccess(t("orgcreatesuccess"));
+              handleSnackbar(t("orgcreatesuccess"), "success");
               setTimeout(() => setSuccess(""), 5000);
               getOrganisations();
             })
@@ -416,6 +441,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             localStorage.setItem("loggedUser", JSON.stringify(response.data));
             setUser(response.data);
             setSuccess(t("usereditsuccess"));
+            handleSnackbar(t("usereditsuccess"), "success");
             setTimeout(() => setSuccess(""), 5000);
           })
           .catch((error) => {
@@ -443,6 +469,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           .then((response) => {
             console.log("Reservation rights changed succesfully:", response.data);
             setSuccess(t("usereditsuccess"));
+            handleSnackbar(t("usereditsuccess"), "success");
+            setTimeout(() => setSuccess(""), 5000);
           })
           .catch((error) => {
             console.error("Error changing reservation rights:", error);
@@ -489,6 +517,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       if (response.status === 200) {
         // Successful key handover
         setSuccess(t("handoverkeysuccess"));
+        handleSnackbar(t("handoverkeysuccess"), "success");
         setTimeout(() => {
           setSuccess("");
         }, 5000);
@@ -499,6 +528,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     } catch (error) {
       console.error("Error in key handover:", error);
       setError(t("handoverkeyfail"));
+      handleSnackbar(t("handoverkeyfail"), "error");
     }
   };
 
@@ -550,8 +580,16 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       {!isLoggedIn && <h3>{t("loginsuggest")}</h3>}
       {isLoggedIn && (
         <div>
-          {error && <p style={{ color: "red" }}>{t("fail")}: {error}</p>}
-          {success && <p style={{ color: "green" }}>{t("success")}: {success}</p>}
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={() => setSnackbarOpen(false)}
+            data-testid="snackbar"
+          >
+            <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
+              {snackbarMessage}
+            </Alert>
+          </Snackbar>
           <div style={{ display: "flex" }}>
             <div id="left_content">
               <div id="leftleft_content">
