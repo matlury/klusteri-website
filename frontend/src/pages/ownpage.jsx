@@ -645,7 +645,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                     handleKeySubmit={handleKeySubmit}
                     handleResRightChange={handleResRightChange}
                     fetchOrganizations={getOrganisations}
-                    
+                    getAllUsers={getAllUsers}
                   />
                 )}
               </div>
