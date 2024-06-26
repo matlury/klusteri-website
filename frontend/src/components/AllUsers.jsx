@@ -257,14 +257,14 @@ const AllUsers = ({
 
             {userDetailsResRights ? (
               <Button
-              onClick={() => handleResRightChange(userDetailsId)}
+              onClick={() => {handleResRightChange(userDetailsId); handleClose()}}
               sx={{ marginBottom: '1rem' }} // Add spacing below the button
               >
               {t("removeresrights")}
               </Button>
             ):
             <Button
-              onClick={() => handleResRightChange(userDetailsId)}
+              onClick={() => {handleResRightChange(userDetailsId); handleClose()}}
               sx={{ marginBottom: '1rem' }} // Add spacing below the button
             >
               {t("addresrights")}
