@@ -238,17 +238,19 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION OF THE ORGANIZATIONS
 
   // Keeps the organization information up-to-date
-  const getOrganisations = () => {
-    axios
-      .get(`${API_URL}/api/listobjects/organizations/`)
-      .then((response) => {
-        const data = response.data;
-        setOrganisations(data);
-      })
-      .catch((error) => {
+  const getOrganisations = async () => {
+    try {
+      const response = await 
+      axios.get(`${API_URL}/api/listobjects/organizations/`);
+      setOrganisations(response.data);
+    } catch(error) {
         console.error("Error fetching organisations:", error);
-      });
+      }
   };
+
+  useEffect(() => {
+    getOrganisations();
+  }, []);
 
   // Shows the information of organizations after clicking the view-button
   const toggleOrgDetails = (orgId) => {
@@ -266,93 +268,87 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   };
 
   // Handles organization detail updates
-  const handleOrganizationDetails = (organization_new_name, organization_new_email, organization_new_homepage,  organization_new_color, orgId) => {
+  const handleOrganizationDetails = async (organization_new_name, organization_new_email, organization_new_homepage,  organization_new_color, orgId) => {
     const newOrganizationObject = {
       name: organization_new_name,
       email: organization_new_email,
       homepage: organization_new_homepage,
       color: organization_new_color,
     };
-        axiosClient
-          .put(
-            `/organizations/update_organization/${orgId}/`,
-            newOrganizationObject,
-          )
-          .then((response) => {
-            console.log("Organization created successfully!", response.data);
-            setSuccess("Järjestö muokattu onnistuneesti!");
-            setTimeout(() => setSuccess(""), 5000);
-            getOrganisations();
-          })
-          .catch((error) => {
-            console.error("Error creating account:", error);
-          });
-  };
+    try {
+      await axiosClient
+        .put(
+          `/organizations/update_organization/${orgId}/`,
+          newOrganizationObject);
+        setSuccess("Järjestö muokattu onnistuneesti!");
+        setTimeout(() => setSuccess(""), 5000);
+        await getOrganisations();
+        } catch(error) {
+          console.error("Error creating account:", error);
+        }
+    };
 
   // Handles deletion of organization
-  const handleDeleteOrganization = (orgId) => {
+  const handleDeleteOrganization = async (orgId) => {
     const confirmUpdate = window.confirm(
       t("orgdeleteconfirm"),
     );
-
     if (confirmUpdate) {
-      axiosClient
-        .delete(`/organizations/remove/${orgId}/`)
-        .then((response) => {
-          console.log(t("orgdeletesuccess"), response.data);
-          getOrganisations();
-          setSuccess(t("orgdeletesuccess"));
-          setTimeout(() => setSuccess(""), 5000);
-        })
-        .catch((error) => {
-          console.error(t("orgdelelefail"), error);
-        });
+      try {
+        const response = await axiosClient.delete(`/organizations/remove/${orgId}/`);
+        await getOrganisations();
+        setSuccess(t("orgdeletesuccess"));
+        setTimeout(() => setSuccess(""), 5000);
+      } catch(error) {
+        setError(t("orgdeletefail"));
+      }
     }
   };
 
   // Handles the creation of organizations
-  const handleCreateOrganization = () => {
-    axios
+  const handleCreateOrganization = async () => {
+    try {
+      const response = await axios
       .get(
         `${API_URL}/api/listobjects/organizations/?email=${organization_email}`,
-      )
-      .then((response) => {
-        const existingOrganizations = response.data;
-        if (
-          existingOrganizations.some((org) => org.name === organization_name)
-        ) {
-          setError(t("orgcreatenamefail"));
-          setTimeout(() => setError(""), 5000);
-        }
-        if (
-          existingOrganizations.some((org) => org.email === organization_email)
-        ) {
-          setError(t("emailinuse"));
-          setTimeout(() => setError(""), 5000);
-        } else {
-          const organizationObject = {
-            name: organization_name,
-            email: organization_email,
-            homepage: organization_homepage,
-            color: organization_color,
-          };
-          axiosClient
-            .post("organizations/create", organizationObject)
-            .then((response) => {
-              setSuccess(t("orgcreatesuccess"));
-              setTimeout(() => setSuccess(""), 5000);
-              getOrganisations();
-            })
-            .catch((error) => {
-              console.error("Error creating account:", error);
-            });
-        }
-      })
-      .catch((error) => {
-        console.error("Error checking email:", error);
-      });
+      );
+      const existingOrganizations = response.data;
+      if (
+        existingOrganizations.some((org) => org.name === organization_name)
+      ) {
+        setError(t("orgcreatenamefail"));
+        setTimeout(() => setError(""), 5000);
+      }
+      if (
+        existingOrganizations.some((org) => org.email === organization_email)
+      ) {
+        setError(t("emailinuse"));
+        setTimeout(() => setError(""), 5000);
+      } else {
+        const organizationObject = {
+          name: organization_name,
+          email: organization_email,
+          homepage: organization_homepage,
+          color: organization_color,
+        };
+        await createOrganization(organizationObject);
+      }
+    } catch (error) {
+      console.error("Error checking email:", error);
+    }
   };
-
+  const createOrganization = async (organizationObject) => {
+    try {
+      await axiosClient
+        .post("organizations/create", organizationObject);
+      setSuccess(t("orgcreatesuccess"));
+      setTimeout(() => setSuccess(""), 5000);
+      await getOrganisations();
+    } catch(error) {
+      console.error("Error creating organization:", error);
+    }
+  };
+    
   // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION FOR ALL USERS (ONLY VISIBLE FOR LEPPIS PJ)
 
   // Gets every users data from backend
@@ -601,6 +597,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                     organization_color={organization_color}
                     setOrganizationColor={setOrganizationColor}
                     handleCreateOrganization={handleCreateOrganization}
+                    setOrganisations={setOrganisations}
+                    organisations={organisations}
                   />
                 )}
                 {hasPermissionOrg === true && (

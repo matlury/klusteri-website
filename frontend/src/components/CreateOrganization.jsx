@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axiosClient from "../axios.js";
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
@@ -12,11 +13,14 @@ const CreateOrganization = ({
   organization_color,
   setOrganizationColor,
   handleCreateOrganization,
+  setOrganisations,
+  organizations,
 }) => {
   const { t } = useTranslation();
   // State variables to manage dialog visibility and field validation
   const [open, setOpen] = useState(false);
   const [errorFields, setErrorFields] = useState({});
+  const [organisations, setOrganisations] = useState([]);
 
   // Function to open the dialog
   const handleClickOpen = () => {
@@ -29,7 +33,7 @@ const CreateOrganization = ({
   };
 
   // Function to handle organization creation and close dialog
-  const handleCreateAndClose = () => {
+  const handleCreateAndClose = async () => {
     // Validate fields
     const errors = {};
     if (!organization_name) errors.name = true;
@@ -38,7 +42,8 @@ const CreateOrganization = ({
 
     if (Object.keys(errors).length === 0) {
       // All fields are filled, proceed with organization creation
-      handleCreateOrganization();
+      await handleCreateOrganization();
+      await fetchOrganizations();
       handleClose();
     } else {
       // Some required fields are empty, set error state to show notification
@@ -49,6 +54,29 @@ const CreateOrganization = ({
   // Function to handle Snackbar close event
   const handleSnackbarClose = () => {
     setErrorFields({});
+  };
+
+  useEffect(() => {
+    fetchOrganizations();
+  }, []);
+
+  const fetchOrganizations = async () => {
+    try {
+      const res = await 
+      axiosClient.get("listobjects/organizations/")
+      const orgData = res.data.map((u) => ({
+            id: u.id,
+            Organisaatio: u.name,
+            email: u.email,
+            kotisivu: u.homepage,
+            color: u.color,
+            Avaimia: u.user_set.length,
+
+      }));
+      setOrganisations(orgData);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
