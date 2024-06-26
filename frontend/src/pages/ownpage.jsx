@@ -8,6 +8,7 @@ import CreateOrganization from "../components/CreateOrganization.jsx";
 import AllUsers from "../components/AllUsers.jsx";
 import updateaccountcheck from "../utils/updateaccountcheck.js";
 import { useTranslation } from "react-i18next";
+import { Snackbar, Alert } from '@mui/material';
 
 const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const { user, setUser } = useStateContext();
@@ -50,6 +51,11 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // "success", "error", "info", "warning"
+
 
   const { t } = useTranslation();
 
@@ -145,12 +151,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         console.log("User cancelled the update.");
         return;
       }
-      
-      const handleSnackbar = (message, severity) => {
-        setSnackbarMessage(message);
-        setSnackbarSeverity(severity);
-        setSnackbarOpen(true);
-      };
 
       const updateResponse = await axiosClient.put(`/users/update/${user_id}/`, details);
       localStorage.setItem("loggedUser", JSON.stringify(updateResponse.data));
@@ -166,6 +166,12 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
     setPassword("");
     setConfirmPassword("");
+  };
+
+  const handleSnackbar = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
   };
 
   const handleUpdateAnotherUser = async (userDetailsId, userDetailsUsername, userDetailsPassword, userDetailsConfirmPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole) => {
@@ -555,8 +561,16 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       {!isLoggedIn && <h3>{t("loginsuggest")}</h3>}
       {isLoggedIn && (
         <div>
-          {error && <p style={{ color: "red" }}>{t("fail")}: {error}</p>}
-          {success && <p style={{ color: "green" }}>{t("success")}: {success}</p>}
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={() => setSnackbarOpen(false)}
+          data-testid="snackbar"
+        >
+          <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
           <div style={{ display: "flex" }}>
             <div id="left_content">
               <div id="leftleft_content">
