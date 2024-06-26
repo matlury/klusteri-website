@@ -12,11 +12,14 @@ import {
   Autocomplete,
 } from "@mui/material";
 import Accordion from '@mui/material/Accordion';
-import AccordionActions from '@mui/material/AccordionActions';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useTranslation } from "react-i18next";
+import { ROLE_DESCRIPTIONS, ROLE_OPTIONS } from "../roles.js";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 
 const AllUsers = ({
   handleUpdateAnotherUser,
@@ -81,7 +84,7 @@ const AllUsers = ({
           Käyttäjänimi: u.username,
           email: u.email,
           Telegram: u.telegram,
-          Rooli: u.role,
+          Rooli: ROLE_DESCRIPTIONS[u.role],
           Jäsenyydet: u.keys.map((organization) => organization.name),
           resrights: u.rights_for_reservation
         }));
@@ -110,7 +113,8 @@ const AllUsers = ({
   // Function to handle form submission (updating user details)
   const handleFormSubmit = (event) => {
     event.preventDefault();
-    handleUpdateAnotherUser(userDetailsId, userDetailsUsername, newPassword, confirmNewPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole,
+    const roleIntValue = ROLE_OPTIONS.find(option => option.label === userDetailsRole).value;
+    handleUpdateAnotherUser(userDetailsId, userDetailsUsername, newPassword, confirmNewPassword, userDetailsEmail, userDetailsTelegram, roleIntValue,
       userDetailsOrganizations.split(", ").map(org => org.trim()));
     handleClose();
   };
@@ -138,7 +142,6 @@ const AllUsers = ({
     { field: "Telegram", headerName: "Telegram", width: 200 },
     { field: "Rooli", headerName: t("role"), width: 80 },
     { field: "Jäsenyydet", headerName: t("resp_orgs"), width: 200 },
-    
   ];
 
   return (
@@ -146,7 +149,7 @@ const AllUsers = ({
       {/* Display DataGrid for users */}
       <h2>{t("users")}</h2>
       <div>
-      <DataGrid
+        <DataGrid
           rows={allUsers}
           columns={columns}
           pageSize={5}
@@ -203,15 +206,23 @@ const AllUsers = ({
               sx={{ marginBottom: '1rem' }} // Add spacing below the field
               data-testid="telegram-input"
             />
-            <TextField
-              label={t("role")}
+            <InputLabel id="user-role-label">{t("role")}</InputLabel>
+            <Select
+              labelId="user-role-label"
               id="user_new_role"
               value={userDetailsRole}
+              label={t("role")}
               onChange={(e) => setuserDetailsRole(e.target.value)}
               fullWidth
-              sx={{ marginBottom: '1rem' }} // Add spacing below the field
-              data-testid="role-input"
-            />
+              sx={{ marginBottom: '1rem' }}
+              data-testid="role-select"
+            >
+              {ROLE_OPTIONS.map((option) => (
+                <MenuItem key={option.value} value={option.label}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
 
             {/* Accordion for organization key */}
             <Accordion>
