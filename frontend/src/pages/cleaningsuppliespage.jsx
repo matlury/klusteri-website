@@ -96,11 +96,11 @@ const CleaningSupplies = ({
     axiosClient
       .delete(`cleaningsupplies/delete_tool/${id}/`, {})
       .then((response) => {
-        handleSnackbar(t("cleaningtoolsuccess"), "success");
+        handleSnackbar(t("deletetoolsuccess"), "success");
         fetchSupplies();
       })
       .catch((error) => {
-        handleSnackbar(t("cleaningtoolfail"), "error");
+        handleSnackbar(t("cleaningtoolfixfail"), "error");
       });
   };
 
