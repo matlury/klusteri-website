@@ -53,6 +53,11 @@ const CleaningSupplies = ({
     fetchData();
   }, [loggedUser]);
 
+  const handleSnackbar = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  }
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -74,15 +79,11 @@ const CleaningSupplies = ({
         axiosClient
           .post(`/cleaningsupplies/create_tool`, cleaningSupplyObject)
           .then((response) => {
-            setSnackbarMessage(t("createtool"));
-            setSnackbarSeverity("success");
-            setSnackbarOpen(true);
+            handleSnackbar(t("createtool"), "success");
             fetchSupplies();
           })
           .catch((error) => {
-            setSnackbarMessage(t("createtoolfail"));
-            setSnackbarSeverity("error");
-            setSnackbarOpen(true);
+            handleSnackbar(t("cleaningtoolfixfail"), "error");
             console.error(t("cleaningtoolfixfail"), error);
           });
       }
@@ -95,15 +96,11 @@ const CleaningSupplies = ({
     axiosClient
       .delete(`cleaningsupplies/delete_tool/${id}/`, {})
       .then((response) => {
-        setSnackbarMessage(t("deletetoolsuccess"));
-        setSnackbarSeverity("success");
-        setSnackbarOpen(true);
+        handleSnackbar(t("cleaningtoolsuccess"), "success");
         fetchSupplies();
       })
       .catch((error) => {
-        setSnackbarMessage(t("cleaningtoolfixfail"));
-        setSnackbarSeverity("error");
-        setSnackbarOpen(true);
+        handleSnackbar(t("cleaningtoolfail"), "error");
       });
   };
 
