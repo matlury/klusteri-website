@@ -160,65 +160,57 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     setConfirmPassword("");
   };
 
-  const handleUpdateAnotherUser = async (userDetailsId, userDetailsUsername, userDetailsPassword, userDetailsConfirmPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole, 
-    userDetailsOrganizations) => {        
-    /*
-    Event handler for updating someone else's information.
-    No validation here because backend takes care of it.
-    */
-    //event.preventDefault();
-
+  const handleUpdateAnotherUser = async (userDetailsId, userDetailsUsername, userDetailsPassword, userDetailsConfirmPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole) => {
     const confirmUpdate = window.confirm(
       t("usereditforother"),
     );
-
+  
+    if (!confirmUpdate) {
+      return;
+    }
+  
     const updatedValues = {
       username: userDetailsUsername,
       password: userDetailsPassword,
       email: userDetailsEmail,
       telegram: userDetailsTelegram,
       role: userDetailsRole,
-      id: userDetailsId, 
+      id: userDetailsId,
     };
-
-    // check if all updates values are the same as the current values
-
-
-    const validationError = await updateaccountcheck({
-      username: userDetailsUsername,
-      password: userDetailsPassword,
-      email: userDetailsEmail,
-      telegram: userDetailsTelegram,
-      confirmPassword: userDetailsConfirmPassword,
-      API_URL,
-      t
-    });
-    console.log(validationError)
-    if (typeof validationError === "string") {
-      setError(validationError);
-      setTimeout(() => setError(""), 5000);
-    } else if (validationError === true) {
-      if (confirmUpdate) {
-        try {
-          await axiosClient.put(`/users/update/${userDetailsId}/`, updatedValues);
-          setSuccess(t("usereditsuccess"));
-          setTimeout(() => setSuccess(""), 5000);
-          await getAllUsers();
-          if (userDetailsEmail === email) {
-            localStorage.setItem("loggedUser", JSON.stringify(response.data));
-            setUser(response.data);
-          }
-        } catch (error) {
-          setError(t("usereditfail"));
-          setTimeout(() => setError(""), 5000);
-        }
-      } else {
-        setError(t("usereditfail"));
+  
+    try {
+      // Validate before update
+      const validationError = await updateaccountcheck({
+        username: userDetailsUsername,
+        password: userDetailsPassword,
+        email: userDetailsEmail,
+        telegram: userDetailsTelegram,
+        confirmPassword: userDetailsConfirmPassword,
+        API_URL,
+        t
+      });
+  
+      if (typeof validationError === "string") {
+        setError(validationError);
         setTimeout(() => setError(""), 5000);
+        return;
       }
-    };
+  
+      const response = await axiosClient.put(`/users/update/${userDetailsId}/`, updatedValues);
+      setSuccess(t("usereditsuccess"));
+      setTimeout(() => setSuccess(""), 5000);
+  
+      if (userDetailsEmail === email) {
+        localStorage.setItem("loggedUser", JSON.stringify(response.data));
+        setUser(response.data);
+      }
+  
+      await getAllUsers();
+    } catch (error) {
+      setError(t("usereditfail"));
+      setTimeout(() => setError(""), 5000);
+    }
   };
-
   // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION OF THE ORGANIZATIONS
 
   // Keeps the organization information up-to-date
