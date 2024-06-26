@@ -138,13 +138,6 @@ const CleaningSupplies = ({
       .catch((error) => console.error(error));
   };
 
-  const handleSnackbarClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setSnackbarOpen(false);
-  };
-
   return (
     <div className="textbox">
       {!isLoggedIn && <h3>{t("loginsuggest")}</h3>}
@@ -180,11 +173,11 @@ const CleaningSupplies = ({
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
-        onClose={handleSnackbarClose}
+        onClose={() => setSnackbarOpen(false)}
         data-testid="snackbar"
       >
         <Alert
-          onClose={handleSnackbarClose}
+          onClose={() => setSnackbarOpen(false)}
           severity={snackbarSeverity}
           sx={{ width: "100%" }}
         >
