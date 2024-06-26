@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "../axios.js";
 import { DataGrid } from "@mui/x-data-grid";
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import {
   Button,
   TextField,
@@ -11,10 +11,10 @@ import {
   DialogTitle,
   Autocomplete,
 } from "@mui/material";
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useTranslation } from "react-i18next";
 import { ROLE_DESCRIPTIONS, ROLE_OPTIONS } from "../roles.js";
 import InputLabel from "@mui/material/InputLabel";
@@ -31,7 +31,6 @@ const AllUsers = ({
   setUserDetailsPassword,
   userDetailsPassword,
 }) => {
-
   // State variables to manage user data and dialog visibility
   const [allUsers, setAllUsers] = useState([]);
   const [allOrganisations, setAllOrganisations] = useState([]);
@@ -39,15 +38,15 @@ const AllUsers = ({
   const [userDetailsUsername, setUserDetailsUsername] = useState("");
   const [userDetailsEmail, setuserDetailsEmail] = useState("");
   const [userDetailsTelegram, setuserDetailsTelegram] = useState("");
-  const [userDetailsRole, setuserDetailsRole] = useState("");  
+  const [userDetailsRole, setuserDetailsRole] = useState("");
   const [userDetailsOrganizations, setuserDetailsOrganizations] = useState("");
   const [userDetailsId, setuserDetailsId] = useState("");
   const [userDetailsResRights, setuserDetailsResRights] = useState(false);
   const [selectedOrganization, setSelectedOrganization] = useState(null);
 
-    // State variables for password change
-    const [newPassword, setNewPassword] = useState("");
-    const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  // State variables for password change
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
   const { t } = useTranslation();
 
@@ -86,7 +85,7 @@ const AllUsers = ({
           Telegram: u.telegram,
           Rooli: ROLE_DESCRIPTIONS[u.role],
           Jäsenyydet: u.keys.map((organization) => organization.name),
-          resrights: u.rights_for_reservation
+          resrights: u.rights_for_reservation,
         }));
         setAllUsers(userData);
       })
@@ -113,9 +112,19 @@ const AllUsers = ({
   // Function to handle form submission (updating user details)
   const handleFormSubmit = (event) => {
     event.preventDefault();
-    const roleIntValue = ROLE_OPTIONS.find(option => option.label === userDetailsRole).value;
-    handleUpdateAnotherUser(userDetailsId, userDetailsUsername, newPassword, confirmNewPassword, userDetailsEmail, userDetailsTelegram, roleIntValue,
-      userDetailsOrganizations.split(", ").map(org => org.trim()));
+    const roleIntValue = ROLE_OPTIONS.find(
+      (option) => option.label === userDetailsRole,
+    ).value;
+    handleUpdateAnotherUser(
+      userDetailsId,
+      userDetailsUsername,
+      newPassword,
+      confirmNewPassword,
+      userDetailsEmail,
+      userDetailsTelegram,
+      roleIntValue,
+      userDetailsOrganizations.split(", ").map((org) => org.trim()),
+    );
     handleClose();
   };
 
@@ -167,7 +176,7 @@ const AllUsers = ({
               value={userDetailsUsername}
               onChange={(e) => setUserDetailsUsername(e.target.value)}
               fullWidth
-              sx={{ marginBottom: '1rem' }} // Add spacing below the field
+              sx={{ marginBottom: "1rem" }} // Add spacing below the field
               data-testid="username-input"
             />
             <TextField
@@ -176,7 +185,7 @@ const AllUsers = ({
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               fullWidth
-              sx={{ marginBottom: '1rem' }}
+              sx={{ marginBottom: "1rem" }}
               data-testid="new-password-input"
             />
             <TextField
@@ -185,7 +194,7 @@ const AllUsers = ({
               value={confirmNewPassword}
               onChange={(e) => setConfirmNewPassword(e.target.value)}
               fullWidth
-              sx={{ marginBottom: '1rem' }}
+              sx={{ marginBottom: "1rem" }}
               data-testid="confirm-new-password-input"
             />
             <TextField
@@ -194,7 +203,7 @@ const AllUsers = ({
               value={userDetailsEmail}
               onChange={(e) => setuserDetailsEmail(e.target.value)}
               fullWidth
-              sx={{ marginBottom: '1rem' }} // Add spacing below the field
+              sx={{ marginBottom: "1rem" }} // Add spacing below the field
               data-testid="email-input"
             />
             <TextField
@@ -203,7 +212,7 @@ const AllUsers = ({
               value={userDetailsTelegram}
               onChange={(e) => setuserDetailsTelegram(e.target.value)}
               fullWidth
-              sx={{ marginBottom: '1rem' }} // Add spacing below the field
+              sx={{ marginBottom: "1rem" }} // Add spacing below the field
               data-testid="telegram-input"
             />
             <InputLabel id="user-role-label">{t("role")}</InputLabel>
@@ -214,7 +223,7 @@ const AllUsers = ({
               label={t("role")}
               onChange={(e) => setuserDetailsRole(e.target.value)}
               fullWidth
-              sx={{ marginBottom: '1rem' }}
+              sx={{ marginBottom: "1rem" }}
               data-testid="role-select"
             >
               {ROLE_OPTIONS.map((option) => (
@@ -243,14 +252,22 @@ const AllUsers = ({
                   onChange={(event, newValue) => {
                     setSelectedOrganization(newValue);
                   }}
-                  renderInput={(params) => <TextField {...params} label={t("chooseorg")} />}
+                  renderInput={(params) => (
+                    <TextField {...params} label={t("chooseorg")} />
+                  )}
                   data-testid="organization-autocomplete"
                 />
-                <Button 
+                <Button
                   variant="contained"
                   className="submit-key-button"
                   data-testid="submit-key-button"
-                  onClick={() => {handleKeySubmit(userDetailsId, selectedOrganization.Organisaatio); handleClose()}}
+                  onClick={() => {
+                    handleKeySubmit(
+                      userDetailsId,
+                      selectedOrganization.Organisaatio,
+                    );
+                    handleClose();
+                  }}
                 >
                   {t("givekey")}
                 </Button>
@@ -258,35 +275,39 @@ const AllUsers = ({
             </Accordion>
 
             {/* Button to change user's role */}
-            <Button 
+            <Button
               onClick={() => handlePJChange(userDetailsId)}
               data-testid="change-pj-button"
-              sx={{ marginBottom: '1rem' }} // Add spacing below the button
+              sx={{ marginBottom: "1rem" }} // Add spacing below the button
             >
               {t("changepj")}
             </Button>
 
             {userDetailsResRights ? (
               <Button
-              onClick={() => {handleResRightChange(userDetailsId); handleClose()}}
-              sx={{ marginBottom: '1rem' }} // Add spacing below the button
+                onClick={() => {
+                  handleResRightChange(userDetailsId);
+                  handleClose();
+                }}
+                sx={{ marginBottom: "1rem" }} // Add spacing below the button
               >
-              {t("removeresrights")}
+                {t("removeresrights")}
               </Button>
-            ):
-            <Button
-              onClick={() => {handleResRightChange(userDetailsId); handleClose()}}
-              sx={{ marginBottom: '1rem' }} // Add spacing below the button
-            >
-              {t("addresrights")}
-            </Button>}
+            ) : (
+              <Button
+                onClick={() => {
+                  handleResRightChange(userDetailsId);
+                  handleClose();
+                }}
+                sx={{ marginBottom: "1rem" }} // Add spacing below the button
+              >
+                {t("addresrights")}
+              </Button>
+            )}
 
             {/* Dialog actions */}
             <DialogActions>
-              <Button 
-                onClick={handleClose}
-                data-testid="cancel-button"
-              >
+              <Button onClick={handleClose} data-testid="cancel-button">
                 {t("cancel")}
               </Button>
               <Button

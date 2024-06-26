@@ -1,10 +1,10 @@
 import { render, fireEvent, waitFor, screen } from "@testing-library/react";
-import '@testing-library/jest-dom';
+import "@testing-library/jest-dom";
 import axiosClient from "../axios.js";
 import AllUsers from "../components/AllUsers";
 import i18n from "../i18n.js";
 
-localStorage.setItem("lang", "fi")
+localStorage.setItem("lang", "fi");
 
 jest.mock("../axios.js");
 
@@ -73,7 +73,7 @@ test("renders AllUsers component", async () => {
       hasPermission={true}
       handlePJChange={mockHandlePJChange}
       handleKeySubmit={mockHandleKeySubmit}
-    />
+    />,
   );
 
   await waitFor(() => {
@@ -90,7 +90,7 @@ test("opens and populates the user details dialog", async () => {
       hasPermission={true}
       handlePJChange={mockHandlePJChange}
       handleKeySubmit={mockHandleKeySubmit}
-    />
+    />,
   );
 
   await waitFor(() => {
@@ -100,52 +100,66 @@ test("opens and populates the user details dialog", async () => {
   fireEvent.click(screen.getByTestId("edit-button-1"));
 
   await waitFor(() => {
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(screen.getByTestId("username-input").querySelector('input')).toHaveValue("user1");
-    expect(screen.getByTestId("email-input").querySelector('input')).toHaveValue("user1@example.com");
-    expect(screen.getByTestId("telegram-input").querySelector('input')).toHaveValue("user1_telegram");
-    expect(screen.getByTestId("role-select").querySelector('input')).toHaveValue("LeppisPJ");
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("username-input").querySelector("input"),
+    ).toHaveValue("user1");
+    expect(
+      screen.getByTestId("email-input").querySelector("input"),
+    ).toHaveValue("user1@example.com");
+    expect(
+      screen.getByTestId("telegram-input").querySelector("input"),
+    ).toHaveValue("user1_telegram");
+    expect(
+      screen.getByTestId("role-select").querySelector("input"),
+    ).toHaveValue("LeppisPJ");
   });
 });
 
-test("assigns a key to the user", async () => {
-  render(
-    <AllUsers
-      handleUpdateAnotherUser={mockHandleUpdateAnotherUser}
-      hasPermissionOrg={true}
-      hasPermission={true}
-      handlePJChange={mockHandlePJChange}
-      handleKeySubmit={mockHandleKeySubmit}
-    />
-  );
+test(
+  "assigns a key to the user",
+  async () => {
+    render(
+      <AllUsers
+        handleUpdateAnotherUser={mockHandleUpdateAnotherUser}
+        hasPermissionOrg={true}
+        hasPermission={true}
+        handlePJChange={mockHandlePJChange}
+        handleKeySubmit={mockHandleKeySubmit}
+      />,
+    );
 
-  await waitFor(() => {
-    expect(screen.getByText("user1@example.com")).toBeInTheDocument();
-  });
+    await waitFor(() => {
+      expect(screen.getByText("user1@example.com")).toBeInTheDocument();
+    });
 
-  fireEvent.click(screen.getByTestId("edit-button-1"));
+    fireEvent.click(screen.getByTestId("edit-button-1"));
 
-  await waitFor(() => {
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
-  });
+    await waitFor(() => {
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+    });
 
-  fireEvent.click(screen.getByTestId("expand-key-accordion"));
+    fireEvent.click(screen.getByTestId("expand-key-accordion"));
 
-  const orgDropdown = screen.getByTestId("organization-autocomplete").querySelector('input');
-  fireEvent.change(orgDropdown, { target: { value: "Org2" } });
+    const orgDropdown = screen
+      .getByTestId("organization-autocomplete")
+      .querySelector("input");
+    fireEvent.change(orgDropdown, { target: { value: "Org2" } });
 
-  await waitFor(() => {
-    expect(screen.getByText("Org2")).toBeInTheDocument();
-  });
+    await waitFor(() => {
+      expect(screen.getByText("Org2")).toBeInTheDocument();
+    });
 
-  fireEvent.click(screen.getByText("Org2"));
+    fireEvent.click(screen.getByText("Org2"));
 
-  fireEvent.click(screen.getByTestId("submit-key-button"));
+    fireEvent.click(screen.getByTestId("submit-key-button"));
 
-  await waitFor(() => {
-    expect(mockHandleKeySubmit).toHaveBeenCalledWith(1, "Org2");
-  });
-}, 10 * 1000);
+    await waitFor(() => {
+      expect(mockHandleKeySubmit).toHaveBeenCalledWith(1, "Org2");
+    });
+  },
+  10 * 1000,
+);
 
 test("closes the dialog when cancel button is clicked", async () => {
   render(
@@ -155,7 +169,7 @@ test("closes the dialog when cancel button is clicked", async () => {
       hasPermission={true}
       handlePJChange={mockHandlePJChange}
       handleKeySubmit={mockHandleKeySubmit}
-    />
+    />,
   );
 
   await waitFor(() => {
@@ -165,12 +179,12 @@ test("closes the dialog when cancel button is clicked", async () => {
   fireEvent.click(screen.getByTestId("edit-button-1"));
 
   await waitFor(() => {
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 
   fireEvent.click(screen.getByTestId("cancel-button"));
 
   await waitFor(() => {
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 });

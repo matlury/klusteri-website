@@ -72,9 +72,9 @@ const UserPage = ({
         {t("save")}{" "}
       </Button>
 
-      <div>{t("userrole")}: {ROLE_DESCRIPTIONS[role]}</div>
-
-
+      <div>
+        {t("userrole")}: {ROLE_DESCRIPTIONS[role]}
+      </div>
     </form>
   );
 };
