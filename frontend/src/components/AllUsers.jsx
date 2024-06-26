@@ -19,6 +19,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useTranslation } from "react-i18next";
 
 const AllUsers = ({
+  allUsers,
   handleUpdateAnotherUser,
   hasPermissionOrg,
   hasPermission,
@@ -30,7 +31,6 @@ const AllUsers = ({
 }) => {
 
   // State variables to manage user data and dialog visibility
-  const [allUsers, setAllUsers] = useState([]);
   const [allOrganisations, setAllOrganisations] = useState([]);
   const [open, setOpen] = useState(false);
   const [userDetailsUsername, setUserDetailsUsername] = useState("");
@@ -71,46 +71,10 @@ const AllUsers = ({
     handleClickOpen();
   };
 
-  // Fetching user data from the server on component mount
-  useEffect(() => {
-    axiosClient
-      .get("listobjects/users/")
-      .then((res) => {
-        const userData = res.data.map((u) => ({
-          id: u.id,
-          Käyttäjänimi: u.username,
-          email: u.email,
-          Telegram: u.telegram,
-          Rooli: u.role,
-          Jäsenyydet: u.keys.map((organization) => organization.name),
-          resrights: u.rights_for_reservation
-        }));
-        setAllUsers(userData);
-      })
-      .catch((error) => console.error(error));
-  }, []);
-
-  // Fetching organization data from the server on component mount
-  useEffect(() => {
-    axiosClient
-      .get("listobjects/organizations/")
-      .then((res) => {
-        const orgData = res.data.map((u) => ({
-          id: u.id,
-          Organisaatio: u.name,
-          email: u.email,
-          kotisivu: u.homepage,
-          Avaimia: u.user_set.length,
-        }));
-        setAllOrganisations(orgData);
-      })
-      .catch((error) => console.error(error));
-  }, []);
-
   // Function to handle form submission (updating user details)
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
-    handleUpdateAnotherUser(userDetailsId, userDetailsUsername, newPassword, confirmNewPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole,
+    await handleUpdateAnotherUser(userDetailsId, userDetailsUsername, newPassword, confirmNewPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole,
       userDetailsOrganizations.split(", ").map(org => org.trim()));
     handleClose();
   };

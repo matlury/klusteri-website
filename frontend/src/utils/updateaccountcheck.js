@@ -1,7 +1,6 @@
-import { gridPaginatedVisibleSortedGridRowEntriesSelector } from "@mui/x-data-grid";
 import axios from "axios";
 
-const newaccountcheck = ({
+const newaccountcheck = async ({
   username,
   password,
   email,
@@ -39,23 +38,18 @@ const newaccountcheck = ({
         }
     }
     if (telegram) {
-        return new Promise((resolve) => {
-        axios
-            .get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`)
-            .then((response) => {
+        try {
+            const response = await axios.get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`);
             const existingUsers = response.data;
             if (existingUsers.some((user) => user.telegram === telegram)) {
-                resolve(t("telegraminuse"));
+                return t("telegraminuse");
             } else {
-                // Proceed with account creation
-                resolve(true);
+                return true;
             }
-            })
-            .catch((error) => {
+        } catch (error) {
             console.error("Error checking telegram:", error);
-            resolve(t("errortelegram"));
-            });
-        });
+            return t("errortelegram");
+        }
     }
     // Proceed with account up
     return true;

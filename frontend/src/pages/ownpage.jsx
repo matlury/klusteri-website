@@ -81,7 +81,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION OF THE LOGGED IN USER
 
   // Handles the user info update when the 'Vahvista Muutokset' button is clicked and gives error messages if the new username, email or telegram are taken by some other user
-  const handleUserDetails = (event) => {
+  const handleUserDetails = async (event) => {
     event.preventDefault();
 
     const details = {
@@ -100,78 +100,60 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       setTimeout(() => setError(""), 5000);
       return;
     }
-
-    if (telegram) {
-      axios
-        .get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`)
-        .then((response) => {
-          const existingUsers = response.data;
-          if (
-            existingUsers.some(
-              (user) => user.telegram === telegram && user.id !== loggedUser.id,
-            )
-          ) {
-            setError(t("telegraminuse"));
-            setTimeout(() => setError(""), 5000);
-            return;
-          }
-        });
-    }
-
-    if (password) {
-      if (password !== confirmPassword) {
-        setError(t("diffpass"));
-        setTimeout(() => setError(""), 5000);
-        return;
-      }
-      if (password.length < 8 || password.length > 20) {
-        setError(t("mincharspass"));
-        setTimeout(() => setError(""), 5000);
-        return;
-      }
-      if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
-        setError(t("invalidpass"));
-        setTimeout(() => setError(""), 5000);
-        return;
-      }
-    }
-
-    axios
-      .get(`${API_URL}/api/listobjects/users/?email=${email}`)
-      .then((response) => {
+  
+    try {
+      if (telegram) {
+        const response = await axios.get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`);
         const existingUsers = response.data;
-        if (
-          existingUsers.some(
-            (user) => user.email === email && user.id !== loggedUser.id,
-          )
-        ) {
-          setError(t("emailinuse"));
+        if (existingUsers.some((user) => user.telegram === telegram && user.id !== loggedUser.id)) {
+          setError(t("telegraminuse"));
           setTimeout(() => setError(""), 5000);
           return;
         }
-        confirmupdate();
-      });
-
-    function confirmupdate() {
-      const confirmUpdate = window.confirm(
-        t("usereditconfirm"),
-      );
-
-      if (confirmUpdate) {
-        axiosClient
-          .put(`/users/update/${user_id}/`, details)
-          .then((response) => {
-            localStorage.setItem("loggedUser", JSON.stringify(response.data));
-            setUser(response.data);
-            setSuccess(t("usereditsuccess"));
-            setTimeout(() => setSuccess(""), 5000);
-          })
-          .catch((error) => {
-            console.error(t("usereditfail"), error);
-          });
-      } else {
-        console.log("User cancelled the update.");
       }
+  
+      if (password) {
+        if (password !== confirmPassword) {
+          setError(t("diffpass"));
+          setTimeout(() => setError(""), 5000);
+          return;
+        }
+        if (password.length < 8 || password.length > 20) {
+          setError(t("mincharspass"));
+          setTimeout(() => setError(""), 5000);
+          return;
+        }
+        if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
+          setError(t("invalidpass"));
+          setTimeout(() => setError(""), 5000);
+          return;
+        }
+      }
+  
+      const response = await axios.get(`${API_URL}/api/listobjects/users/?email=${email}`);
+      const existingUsers = response.data;
+      if (existingUsers.some((user) => user.email === email && user.id !== loggedUser.id)) {
+        setError(t("emailinuse"));
+        setTimeout(() => setError(""), 5000);
+        return;
+      }
+  
+      const confirmUpdate = window.confirm(t("usereditconfirm"));
+      if (!confirmUpdate) {
+        console.log("User cancelled the update.");
+        return;
+      }
+  
+      const updateResponse = await axiosClient.put(`/users/update/${user_id}/`, details);
+      localStorage.setItem("loggedUser", JSON.stringify(updateResponse.data));
+      setUser(updateResponse.data);
+      setSuccess(t("usereditsuccess"));
+      setTimeout(() => setSuccess(""), 5000);
+      await getAllUsers();
+    } catch (error) {
+      console.error(t("usereditfail"), error);
+      setError(t("usereditfail"));
+      setTimeout(() => setError(""), 5000);
     }
   };
 
@@ -205,11 +187,11 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       API_URL,
       t
     });
-
+    console.log(validationError)
     if (typeof validationError === "string") {
       setError(validationError);
       setTimeout(() => setError(""), 5000);
-    } else if (validationError === true) {
+    } else {
       if (confirmUpdate) {
         try {
           await axiosClient.put(`/users/update/${userDetailsId}/`, updatedValues);
@@ -361,7 +343,16 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const getAllUsers = async () => {
     try {
       const response = await axiosClient.get("listobjects/users/");
-      setAllUsers(response.data);
+      const userData = response.data.map((u) => ({
+        id: u.id,
+        Käyttäjänimi: u.username,
+        email: u.email,
+        Telegram: u.telegram,
+        Rooli: u.role,
+        Jäsenyydet: u.keys.map((organization) => organization.name),
+        resrights: u.rights_for_reservation
+      }));
+      setAllUsers(userData);
     } catch (error) {
       console.error("Error fetching all users:", error);
     }
