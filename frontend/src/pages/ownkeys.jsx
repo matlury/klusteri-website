@@ -7,6 +7,7 @@ import {
 } from "../utils/keyuserhelpers.js";
 import YkvLogoutFunction from "../components/YkvLogoutFunction.jsx";
 import { useTranslation } from "react-i18next";
+import { Snackbar, Alert } from '@mui/material';
 
 const OwnKeys = ({
   isLoggedIn: propIsLoggedIn,
@@ -40,6 +41,10 @@ const OwnKeys = ({
 
   const [selectedForYKV, setSelectedForYKV] = useState([]);
   const [hasPermission, setHasPermission] = useState(false);
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const API_URL = process.env.API_URL;
 
@@ -121,11 +126,13 @@ const OwnKeys = ({
       try {
         await axiosClient.post(`/ykv/create_responsibility`, responsibilityObject);
         setSuccess(t("ykvsuccess"));
+        handleSnackbar(t("ykvsuccess"), "success");
         setTimeout(() => setSuccess(""), 5000);
         await getResponsibility();
         await getActiveResponsibilities();
       } catch (error) {
         setError(t("ykvfail"));
+        handleSnackbar(t("ykvfail"), "error");
         setTimeout(() => setError(""), 5000);
         console.error(t("ykvfail"), error);
       }
@@ -183,6 +190,7 @@ const OwnKeys = ({
         logout_time: getCurrentDateTime(),
       });
       setSuccess(t("ykvlogoutsuccess"));
+      handleSnackbar(t("ykvlogoutsuccess"), "success");
       setTimeout(() => setSuccess(""), 5000);
       await getResponsibility();
       await getActiveResponsibilities();
@@ -195,6 +203,7 @@ const OwnKeys = ({
       });
     } catch (error) {
       setError(t("ykvlogoutfail"));
+      handleSnackbar(t("ykvlogoutfail"), "error");
       setTimeout(() => setError(""), 5000);
       console.error(t("ykvlogoutfail"), error);
     }
@@ -205,23 +214,29 @@ const OwnKeys = ({
     try {
       await axiosClient.put(`ykv/update_responsibility/${respId}/`, respToEdit);
       setSuccess(t("ykveditsuccess"));
+      handleSnackbar(t("ykveditsuccess"), "success");
       setTimeout(() => setSuccess(""), 5000);
       await getResponsibility();
       await getActiveResponsibilities();
     } catch (error) {
       setError(t("ykveditfail"));
+        handleSnackbar(t("ykveditfail"), "error");
       setTimeout(() => setError(""), 5000);
       console.error("Ykv-muokkaus epäonnistui", error);
     }
   };
+
+  const handleSnackbar = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  }
 
   return (
     <div id="left_content">
       {!isLoggedIn && <h3>{t("login")}</h3>}
       {isLoggedIn && (
         <div id="leftleft_content">
-          {error && <p style={{ color: "red" }}>{error}</p>}
-          {success && <p style={{ color: "green" }}>{success}</p>}
           {checkIfLoggedIn() && (
             <YkvLogoutFunction
               handleYkvLogin={handleYkvLogin}
@@ -240,6 +255,16 @@ const OwnKeys = ({
               setResponsibility={setResponsibility}
             />
           )}
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={() => setSnackbarOpen(false)}
+            data-testid="snackbar"
+          >
+            <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
+              {snackbarMessage}
+            </Alert>
+          </Snackbar>
         </div>
       )}
     </div>

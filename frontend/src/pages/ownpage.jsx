@@ -107,6 +107,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         const existingUsers = response.data;
         if (existingUsers.some((user) => user.telegram === telegram && user.id !== loggedUser.id)) {
           setError(t("telegraminuse"));
+          handleSnackbar(t("telegraminuse"), "error");
           setTimeout(() => setError(""), 5000);
           return;
         }
@@ -134,6 +135,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       const existingUsers = response.data;
       if (existingUsers.some((user) => user.email === email && user.id !== loggedUser.id)) {
         setError(t("emailinuse"));
+        handleSnackbar(t("emailinuse"), "error");
         setTimeout(() => setError(""), 5000);
         return;
       }
@@ -143,7 +145,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         console.log("User cancelled the update.");
         return;
       }
-  
+      
+      const handleSnackbar = (message, severity) => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity(severity);
+        setSnackbarOpen(true);
+      };
+
       const updateResponse = await axiosClient.put(`/users/update/${user_id}/`, details);
       localStorage.setItem("loggedUser", JSON.stringify(updateResponse.data));
       setUser(updateResponse.data);
@@ -192,12 +200,14 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   
       if (typeof validationError === "string") {
         setError(validationError);
+        handleSnackbar(validationError, "error");
         setTimeout(() => setError(""), 5000);
         return;
       }
   
       const response = await axiosClient.put(`/users/update/${userDetailsId}/`, updatedValues);
       setSuccess(t("usereditsuccess"));
+      handleSnackbar(t("usereditsuccess"), "success");
       setTimeout(() => setSuccess(""), 5000);
   
       if (userDetailsEmail === email) {
@@ -208,6 +218,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       await getAllUsers();
     } catch (error) {
       setError(t("usereditfail"));
+      handleSnackbar(t("usereditfail"), "error");
       setTimeout(() => setError(""), 5000);
     }
   };
@@ -266,6 +277,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           `/organizations/update_organization/${orgId}/`,
           newOrganizationObject);
         setSuccess("Järjestö muokattu onnistuneesti!");
+        handleSnackbar("Järjestö muokattu onnistuneesti!", "success");
         setTimeout(() => setSuccess(""), 5000);
         await getOrganisations();
         } catch(error) {
@@ -284,6 +296,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         await getOrganisations();
         await getAllUsers();
         setSuccess(t("orgdeletesuccess"));
+        handleSnackbar(t("orgdeletesuccess"), "success");
         setTimeout(() => setSuccess(""), 5000);
       } catch(error) {
         setError(t("orgdeletefail"));
@@ -303,12 +316,14 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         existingOrganizations.some((org) => org.name === organization_name)
       ) {
         setError(t("orgcreatenamefail"));
+        handleSnackbar(t("orgcreatenamefail"), "error");
         setTimeout(() => setError(""), 5000);
       }
       if (
         existingOrganizations.some((org) => org.email === organization_email)
       ) {
         setError(t("emailinuse"));
+        handleSnackbar(t("emailinuse"), "error");
         setTimeout(() => setError(""), 5000);
       } else {
         const organizationObject = {
@@ -326,8 +341,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const createOrganization = async (organizationObject) => {
     try {
       await axiosClient
-        .post("organizations/create", organizationObject);
+      .post("organizations/create", organizationObject);
       setSuccess(t("orgcreatesuccess"));
+      handleSnackbar(t("orgcreatesuccess"), "success");
       setTimeout(() => setSuccess(""), 5000);
       await getOrganisations();
     } catch(error) {
@@ -614,8 +630,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                     selectedUser={selectedUser}
                     handleKeySubmit={handleKeySubmit}
                     handleResRightChange={handleResRightChange}
-                    fetchOrganizations={getOrganisations}
-                    getAllUsers={getAllUsers}
+                    fetchOrganizations={getOrganisations},
+                    
                   />
                 )}
               </div>

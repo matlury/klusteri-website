@@ -5,7 +5,8 @@ import CleaningToolForm from "../components/CleaningToolForm.jsx";
 import CleaningSuppliesList from "../components/CleaningSuppliesList.jsx";
 import CleaningSuppliesConfirmDialog from "../components/CleaningSuppliesConfirm.jsx";
 import { useTranslation } from "react-i18next";
-
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 const CleaningSupplies = ({
   isLoggedIn: propIsLoggedIn,
@@ -14,13 +15,14 @@ const CleaningSupplies = ({
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
   const [loggedUser, setLoggedUser] = useState(propLoggedUser);
   const [open, setOpen] = useState(false);
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
   const [allCleaningSupplies, setAllCleaningSupplies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedToolId, setSelectedToolId] = useState(null);
   const [buttonPopup, setButtonPopup] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const { t } = useTranslation();
 
@@ -51,6 +53,11 @@ const CleaningSupplies = ({
     fetchData();
   }, [loggedUser]);
 
+  const handleSnackbar = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  }
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -72,13 +79,11 @@ const CleaningSupplies = ({
         axiosClient
           .post(`/cleaningsupplies/create_tool`, cleaningSupplyObject)
           .then((response) => {
-            setSuccess(t("createtool"));
-            setTimeout(() => setSuccess(""), 5000);
+            handleSnackbar(t("createtool"), "success");
             fetchSupplies();
           })
           .catch((error) => {
-            setError(t("createtoolfail"));
-            setTimeout(() => setError(""), 5000);
+            handleSnackbar(t("cleaningtoolfixfail"), "error");
             console.error(t("cleaningtoolfixfail"), error);
           });
       }
@@ -90,14 +95,12 @@ const CleaningSupplies = ({
     setButtonPopup(true);
     axiosClient
       .delete(`cleaningsupplies/delete_tool/${id}/`, {})
-        .then((response) => {
-        setSuccess(t("deletetoolsuccess"));
-        setTimeout(() => setSuccess(""), 5000);
+      .then((response) => {
+        handleSnackbar(t("deletetoolsuccess"), "success");
         fetchSupplies();
       })
       .catch((error) => {
-        setError(t("cleaningtoolfixfail"));
-        setTimeout(() => setError(""), 5000);
+        handleSnackbar(t("cleaningtoolfixfail"), "error");
       });
   };
 
@@ -137,8 +140,6 @@ const CleaningSupplies = ({
       {!isLoggedIn && <h3>{t("loginsuggest")}</h3>}
       {isLoggedIn && (
         <div>
-          {error && <p style={{ color: "red" }}>{error}</p>}
-          {success && <p style={{ color: "green" }}>{success}</p>}
           <h2>{t("cleaningsupplies")}</h2>
           <React.Fragment>
             <Button
@@ -151,21 +152,35 @@ const CleaningSupplies = ({
             </Button>
             <CleaningToolForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
           </React.Fragment>
-        <React.Fragment>
-          <CleaningSuppliesList 
-            loggedUser={loggedUser} 
-            allCleaningSupplies={allCleaningSupplies} 
-            handleDeleteClick={handleDeleteClick}
+          <React.Fragment>
+            <CleaningSuppliesList 
+              loggedUser={loggedUser} 
+              allCleaningSupplies={allCleaningSupplies} 
+              handleDeleteClick={handleDeleteClick}
             />
-          <CleaningSuppliesConfirmDialog
-            open={confirmDeleteOpen}
-            handleConfirmClose={handleConfirmDeleteClose}
-            handleDelete={handleDelete}
-            selectedToolId={selectedToolId}
-          />
-        </React.Fragment>
-      </div>
-       )}
+            <CleaningSuppliesConfirmDialog
+              open={confirmDeleteOpen}
+              handleConfirmClose={handleConfirmDeleteClose}
+              handleDelete={handleDelete}
+              selectedToolId={selectedToolId}
+            />
+          </React.Fragment>
+        </div>
+      )}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+        data-testid="snackbar"
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

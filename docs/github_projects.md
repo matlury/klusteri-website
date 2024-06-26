@@ -9,7 +9,7 @@ Kaikki user storyt ja taskit ovat Github Issueita. Uuden user storyn tai taskin 
 
 ![Issues](img/issues.png)
 
-Vihree New issue -nappi vie valitsemaan joko Task tai User story templaten.
+Vihreä New issue -nappi vie valitsemaan joko Task tai User story templaten.
 
 ![New task](img/new_task.png)
 
