@@ -133,18 +133,14 @@ const OwnKeys = ({
           .post(`/ykv/create_responsibility`, responsibilityObject)
           .then((response) => {
             setSuccess(t("ykvsuccess"));
-            setSnackbarMessage(t("ykvsuccess"));
-            setSnackbarSeverity("success");
-            setSnackbarOpen(true);
+            handleSnackbar(t("ykvsuccess"), "success");
             setTimeout(() => setSuccess(""), 5000);
             getResponsibility();
             getActiveResponsibilities();
           })
           .catch((error) => {
             setError(t("ykvfail"));
-            setSnackbarMessage(t("ykvfail"));
-            setSnackbarSeverity("error");
-            setSnackbarOpen(true);
+            handleSnackbar(t("ykvfail"), "error");
             setTimeout(() => setError(""), 5000);
             console.error(t("ykvfail"), error);
           });
@@ -209,9 +205,7 @@ const OwnKeys = ({
       })
       .then((response) => {
         setSuccess(t("ykvlogoutsuccess"));
-        setSnackbarMessage(t("ykvlogoutsuccess"));
-        setSnackbarSeverity("success");
-        setSnackbarOpen(true);
+        handleSnackbar(t("ykvlogoutsuccess"), "success");
         setTimeout(() => setSuccess(""), 5000);
         getResponsibility();
         getActiveResponsibilities();
@@ -225,9 +219,7 @@ const OwnKeys = ({
       })
       .catch((error) => {
         setError(t("ykvlogoutfail"));
-        setSnackbarMessage(t("ykvlogoutfail"));
-        setSnackbarSeverity("error");
-        setSnackbarOpen(true);
+        handleSnackbar(t("ykvlogoutfail"), "error");
         setTimeout(() => setError(""), 5000);
         console.error(t("ykvlogoutfail"), error);
       });
@@ -240,22 +232,24 @@ const OwnKeys = ({
       .put(`ykv/update_responsibility/${respId}/`, respToEdit)
       .then((response) => {
         setSuccess(t("ykveditsuccess"));
-        setSnackbarMessage(t("ykveditsuccess"));
-        setSnackbarSeverity("success");
-        setSnackbarOpen(true);
+        handleSnackbar(t("ykveditsuccess"), "success");
         setTimeout(() => setSuccess(""), 5000);
         getResponsibility();
         getActiveResponsibilities();
       })
       .catch((error) => {
         setError(t("ykveditfail"));
-        setSnackbarMessage(t("ykveditfail"));
-        setSnackbarSeverity("error");
-        setSnackbarOpen(true);
+        handleSnackbar(t("ykveditfail"), "error");
         setTimeout(() => setError(""), 5000);
         console.error("Ykv-muokkaus epäonnistui", error);
       });
   };
+
+  const handleSnackbar = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  }
 
   return (
     <div id="left_content">
