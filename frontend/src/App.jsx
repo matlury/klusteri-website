@@ -73,7 +73,7 @@ const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
   );
 };
 
-const Sidebar = ({ isLoggedIn }) => {
+const Sidebar = ({ isLoggedIn, handleDrawerClose }) => {
   const { t } = useTranslation();
   const location = useLocation();
 
@@ -130,6 +130,7 @@ const Sidebar = ({ isLoggedIn }) => {
                   backgroundColor: location.pathname === path ? '#9e9e9e' : '#e0e0e0',
                 },
               }}
+              onClick={handleDrawerClose}
             >
               <ListItemIcon>{icons[index]}</ListItemIcon>
               <ListItemText primary={t(key)} />
@@ -346,7 +347,7 @@ const AppContent = ({ window }) => {
             },
           }}
         >
-          <Sidebar isLoggedIn={isLoggedIn} />
+          <Sidebar isLoggedIn={isLoggedIn} handleDrawerClose={handleDrawerClose} />
         </Drawer>
         <Drawer
           variant="permanent"
@@ -360,7 +361,7 @@ const AppContent = ({ window }) => {
           }}
           open
         >
-          <Sidebar isLoggedIn={isLoggedIn} />
+          <Sidebar isLoggedIn={isLoggedIn} handleDrawerClose={handleDrawerClose} />
         </Drawer>
       </Box>
       <Box
