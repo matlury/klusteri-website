@@ -7,6 +7,12 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+    secrets:
+      - django_secret_key
+      - database_url
 
   frontend:
     build:
@@ -16,3 +22,15 @@ services:
       - "5173:5173"
     depends_on:
       - api
+    environment:
+      - REACT_APP_RECAPTCHA_SITE_KEY=${REACT_APP_RECAPTCHA_SITE_KEY}
+    secrets:
+      - recaptcha_site_key
+
+secrets:
+  django_secret_key:
+    external: true
+  database_url:
+    external: true
+  recaptcha_site_key:
+    external: true
