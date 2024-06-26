@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next";
 
 const AllUsers = ({
   allUsers,
+  organizations,
   handleUpdateAnotherUser,
   hasPermissionOrg,
   hasPermission,
@@ -28,6 +29,7 @@ const AllUsers = ({
   handleResRightChange,
   setUserDetailsPassword,
   userDetailsPassword,
+  fetchOrganizations,
 }) => {
 
   // State variables to manage user data and dialog visibility
@@ -76,6 +78,13 @@ const AllUsers = ({
     event.preventDefault();
     await handleUpdateAnotherUser(userDetailsId, userDetailsUsername, newPassword, confirmNewPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole,
       userDetailsOrganizations.split(", ").map(org => org.trim()));
+    await fetchOrganizations();
+    handleClose();
+  };
+
+  const handleKeyForm = async (userId, orgName) => {
+    await handleKeySubmit(userId, orgName);
+    await fetchOrganizations();
     handleClose();
   };
 
@@ -190,7 +199,7 @@ const AllUsers = ({
               <AccordionDetails>
                 <Autocomplete
                   id="combo-box-org"
-                  options={allOrganisations}
+                  options={organizations}
                   getOptionLabel={(option) => option.Organisaatio}
                   style={{ width: 300 }}
                   onChange={(event, newValue) => {
@@ -203,7 +212,7 @@ const AllUsers = ({
                   variant="contained"
                   className="submit-key-button"
                   data-testid="submit-key-button"
-                  onClick={() => {handleKeySubmit(userDetailsId, selectedOrganization.Organisaatio); handleClose()}}
+                  onClick={() => {handleKeyForm(userDetailsId, selectedOrganization.Organisaatio)}}
                 >
                   {t("givekey")}
                 </Button>

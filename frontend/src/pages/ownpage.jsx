@@ -285,6 +285,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       try {
         const response = await axiosClient.delete(`/organizations/remove/${orgId}/`);
         await getOrganisations();
+        await getAllUsers();
         setSuccess(t("orgdeletesuccess"));
         setTimeout(() => setSuccess(""), 5000);
       } catch(error) {
@@ -482,6 +483,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         setTimeout(() => {
           setSuccess("");
         }, 5000);
+        await getAllUsers();
       } else {
         // Error in key handover
         setError("ERROR");
@@ -598,6 +600,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                 {hasPermissionOrg === true && (
                   <AllUsers
                     allUsers={allUsers}
+                    organizations={organisations}
                     toggleUserDetails={toggleUserDetails}
                     userDetailsUsername={userDetailsUsername}
                     setUserDetailsUsername={setUserDetailsUsername}
@@ -614,6 +617,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                     selectedUser={selectedUser}
                     handleKeySubmit={handleKeySubmit}
                     handleResRightChange={handleResRightChange}
+                    fetchOrganizations={getOrganisations}
                   />
                 )}
               </div>
