@@ -178,7 +178,10 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       id: userDetailsId, 
     };
 
-    const validationError = updateaccountcheck({
+    // check if all updates values are the same as the current values
+
+
+    const validationError = await updateaccountcheck({
       username: userDetailsUsername,
       password: userDetailsPassword,
       email: userDetailsEmail,
@@ -191,7 +194,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     if (typeof validationError === "string") {
       setError(validationError);
       setTimeout(() => setError(""), 5000);
-    } else {
+    } else if (validationError === true) {
       if (confirmUpdate) {
         try {
           await axiosClient.put(`/users/update/${userDetailsId}/`, updatedValues);
@@ -207,7 +210,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           setTimeout(() => setError(""), 5000);
         }
       } else {
-        setError(t("usereditfail"));
         setError(t("usereditfail"));
         setTimeout(() => setError(""), 5000);
       }

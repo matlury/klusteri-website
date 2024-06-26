@@ -38,21 +38,27 @@ const newaccountcheck = async ({
         }
     }
     if (telegram) {
-        try {
-            const response = await axios.get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`);
-            const existingUsers = response.data;
-            if (existingUsers.some((user) => user.telegram === telegram)) {
-                return t("telegraminuse");
-            } else {
-                return true;
-            }
-        } catch (error) {
-            console.error("Error checking telegram:", error);
-            return t("errortelegram");
-        }
-    }
-    // Proceed with account up
-    return true;
+        return new Promise((resolve) => {
+          axios
+            .get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`)
+            .then((response) => {
+              const existingUsers = response.data;
+              if (existingUsers.some((user) => user.telegram === telegram && user.username !== username)) {
+                resolve(t("telegraminuse"));
+              } else {
+                // Proceed with account creation
+                resolve(true);
+              }
+            })
+            .catch((error) => {
+              console.error("Error checking telegram:", error);
+              resolve(t("errortelegram"));
+            });
+        });
+      } else {
+        // Proceed with account editing
+        return true;
+      }
 };
 
 export default newaccountcheck;
