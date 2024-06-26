@@ -30,6 +30,7 @@ const AllUsers = ({
   setUserDetailsPassword,
   userDetailsPassword,
   fetchOrganizations,
+  getAllUsers,
 }) => {
 
   // State variables to manage user data and dialog visibility
@@ -87,6 +88,15 @@ const AllUsers = ({
   const handleKeyForm = async (userId, orgName) => {
     await handleKeySubmit(userId, orgName);
     await fetchOrganizations();
+    await getAllUsers();
+    handleClose();
+  };
+
+  const handleRightsFormChange = async (userId) => {
+    await handleResRightChange(userId);
+    await fetchOrganizations();
+    await getAllUsers();
+    toggleUserDetails(userId);
     handleClose();
   };
 
@@ -227,17 +237,16 @@ const AllUsers = ({
             >
               {t("changepj")}
             </Button>
-
             {userDetailsResRights ? (
               <Button
-              onClick={() => {handleResRightChange(userDetailsId); handleClose()}}
+              onClick={() => {handleRightsFormChange(userDetailsId)}}
               sx={{ marginBottom: '1rem' }} // Add spacing below the button
               >
               {t("removeresrights")}
               </Button>
             ):
             <Button
-              onClick={() => {handleResRightChange(userDetailsId); handleClose()}}
+              onClick={() => {handleRightsFormChange(userDetailsId)}}
               sx={{ marginBottom: '1rem' }} // Add spacing below the button
             >
               {t("addresrights")}

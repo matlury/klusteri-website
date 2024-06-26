@@ -379,7 +379,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   };
 
   // Handles PJ change
-  const handlePJChange = (userId) => {
+  const handlePJChange = async (userId) => {
     const selectedUserId = userId;
     const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
     const loggedUserId = loggedUser.id;
@@ -415,7 +415,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
   };
 
-  const handleResRightChange = (userId) => {
+  const handleResRightChange = async (userId) => {
     const selectedUserId = userId;
 
     confirmupdate();
@@ -615,6 +615,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                     handleKeySubmit={handleKeySubmit}
                     handleResRightChange={handleResRightChange}
                     fetchOrganizations={getOrganisations}
+                    getAllUsers={getAllUsers}
                   />
                 )}
               </div>
