@@ -29,6 +29,7 @@ const OrganisationPage = ({
   const [organisation_new_email, setOrganisationNewEmail] = useState("");
   const [organisation_new_color, setOrganizationNewColor] = useState("");
   const [organisation_id, setOrganisationId] = useState("");
+  const [organisation_keys, setOrganisationKeys] = useState("");
 
   const { t } = useTranslation();
 
