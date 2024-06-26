@@ -64,15 +64,21 @@ beforeEach(() => {
 const mockHandleUpdateAnotherUser = jest.fn();
 const mockHandlePJChange = jest.fn();
 const mockHandleKeySubmit = jest.fn();
+const mockFetchOrganizations = jest.fn();
+const mockGetAllUsers = jest.fn();
 
 test("renders AllUsers component", async () => {
   render(
     <AllUsers
+      allUsers={mockUsers}
+      organizations={mockOrganizations}
       handleUpdateAnotherUser={mockHandleUpdateAnotherUser}
       hasPermissionOrg={true}
       hasPermission={true}
       handlePJChange={mockHandlePJChange}
       handleKeySubmit={mockHandleKeySubmit}
+      fetchOrganizations={mockFetchOrganizations}
+      getAllUsers={mockGetAllUsers}
     />
   );
 
@@ -85,11 +91,15 @@ test("renders AllUsers component", async () => {
 test("opens and populates the user details dialog", async () => {
   render(
     <AllUsers
+      allUsers={mockUsers}
+      organizations={mockOrganizations}
       handleUpdateAnotherUser={mockHandleUpdateAnotherUser}
       hasPermissionOrg={true}
       hasPermission={true}
       handlePJChange={mockHandlePJChange}
       handleKeySubmit={mockHandleKeySubmit}
+      fetchOrganizations={mockFetchOrganizations}
+      getAllUsers={mockGetAllUsers}
     />
   );
 
