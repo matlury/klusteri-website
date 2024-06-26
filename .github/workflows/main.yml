@@ -33,15 +33,18 @@ jobs:
         working-directory: ./backend
         run: pip install poetry
       
-       - name: Set Django Secret Key
-        run: echo "export DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> $GITHUB_ENV
-
       - name: Install dependencies
         run: |
           cd backend
           poetry install
           cd ../frontend
           npm install
+
+      - name: Set Django Secret Key
+        id: set-secret-key
+        run: |
+          echo "DJANGO_SECRET_KEY=$(openssl rand -base64 32)" >> $GITHUB_ENV
+          echo "::set-output name=secret_key::$(openssl rand -base64 32)"
 
       - name: Pylint
         working-directory: ./backend
