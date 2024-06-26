@@ -175,7 +175,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
   };
 
-  const handleUpdateAnotherUser = (userDetailsId, userDetailsUsername, userDetailsPassword, userDetailsConfirmPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole, 
+  const handleUpdateAnotherUser = async (userDetailsId, userDetailsUsername, userDetailsPassword, userDetailsConfirmPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole, 
     userDetailsOrganizations) => {        
     /*
     Event handler for updating someone else's information.
@@ -211,28 +211,25 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       setTimeout(() => setError(""), 5000);
     } else if (validationError === true) {
       if (confirmUpdate) {
-        axiosClient
-          .put(`/users/update/${userDetailsId}/`, updatedValues)
-          .then((response) => {
-            setSuccess(t("usereditsuccess"));
-            setTimeout(() => setSuccess(""), 5000);
-            getAllUsers();
-    
-            if (userDetailsEmail === email) {
-              localStorage.setItem("loggedUser", JSON.stringify(response.data));
-              setUser(response.data);
-            }
-          })
-          .catch((error) => {
-            setError(t("usereditfail"));
-            setTimeout(() => setError(""), 5000);
-          });
+        try {
+          await axiosClient.put(`/users/update/${userDetailsId}/`, updatedValues);
+          setSuccess(t("usereditsuccess"));
+          setTimeout(() => setSuccess(""), 5000);
+          await getAllUsers();
+          if (userDetailsEmail === email) {
+            localStorage.setItem("loggedUser", JSON.stringify(response.data));
+            setUser(response.data);
+          }
+        } catch (error) {
+          setError(t("usereditfail"));
+          setTimeout(() => setError(""), 5000);
+        }
+      } else {
+        setError(t("usereditfail"));
+        setError(t("usereditfail"));
+        setTimeout(() => setError(""), 5000);
       }
-    } else {
-      setError(t("usereditfail"));
-      setError(t("usereditfail"));
-      setTimeout(() => setError(""), 5000);
-    }
+    };
   };
 
   // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION OF THE ORGANIZATIONS
@@ -361,16 +358,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION FOR ALL USERS (ONLY VISIBLE FOR LEPPIS PJ)
 
   // Gets every users data from backend
-  const getAllUsers = () => {
-    axios
-      .get(`${API_URL}/api/listobjects/users/`)
-      .then((response) => {
-        const data = response.data;
-        setAllUsers(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching all users:", error);
-      });
+  const getAllUsers = async () => {
+    try {
+      const response = await axiosClient.get("listobjects/users/");
+      setAllUsers(response.data);
+    } catch (error) {
+      console.error("Error fetching all users:", error);
+    }
   };
 
   const toggleUserDetails = (userId) => {
@@ -456,7 +450,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         console.log("User cancelled the update.");
       }
     }
-  }
+  };
 
   // Handles key submit
   //const handleKeySubmit = async (event) => {
