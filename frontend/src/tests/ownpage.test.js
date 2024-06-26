@@ -45,7 +45,7 @@ it("opens with role 5", () => {
   expect(getByLabelText("Vahvista salasana")).toBeInTheDocument();
   expect(getByLabelText("Sähköposti")).toBeInTheDocument();
   expect(getByLabelText("Telegram")).toBeInTheDocument();
-  expect(getByText("Käyttäjän rooli: 5")).toBeInTheDocument();
+  expect(getByText("Käyttäjän rooli: Tavallinen")).toBeInTheDocument();
   expect(getByText("Tallenna")).toBeInTheDocument();
   expect(getByText("Järjestöt")).toBeInTheDocument();
 });

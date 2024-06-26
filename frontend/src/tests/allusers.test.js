@@ -14,7 +14,7 @@ const mockUsers = [
     username: "user1",
     email: "user1@example.com",
     telegram: "user1_telegram",
-    role: "admin",
+    role: "1",
     keys: [{ name: "Org1" }, { name: "Org2" }],
   },
   {
@@ -22,7 +22,7 @@ const mockUsers = [
     username: "user2",
     email: "user2@example.com",
     telegram: "user2_telegram",
-    role: "user",
+    role: "2",
     keys: [{ name: "Org3" }],
   },
 ];
@@ -104,7 +104,7 @@ test("opens and populates the user details dialog", async () => {
     expect(screen.getByTestId("username-input").querySelector('input')).toHaveValue("user1");
     expect(screen.getByTestId("email-input").querySelector('input')).toHaveValue("user1@example.com");
     expect(screen.getByTestId("telegram-input").querySelector('input')).toHaveValue("user1_telegram");
-    expect(screen.getByTestId("role-input").querySelector('input')).toHaveValue("admin");
+    expect(screen.getByTestId("role-select").querySelector('input')).toHaveValue("LeppisPJ");
   });
 });
 
