@@ -28,6 +28,6 @@ COPY nginx.conf /etc/nginx/nginx.conf
 RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
 
 # Expose the necessary port
-EXPOSE 5173
+EXPOSE 5173 8000
 
 CMD ["nginx", "-g", "daemon off;"]
