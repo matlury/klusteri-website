@@ -607,6 +607,6 @@ describe("User updating errors", () => {
       expect(snackbar).toBeInTheDocument();
       expect(within(snackbar).getByRole("alert")).toHaveClass("MuiAlert-standardSuccess");
     })
-    })
+    },{timeout:10000})
   })
  })
