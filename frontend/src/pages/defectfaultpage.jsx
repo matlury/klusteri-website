@@ -54,6 +54,11 @@ const DefectFault = ({
     fetchData();
   }, [loggedUser]);
 
+  const handleSnackbar = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  }
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -75,15 +80,11 @@ const DefectFault = ({
         axiosClient
           .post(`/defects/create_defect`, defectFaultObject)
           .then((response) => {
-            setSnackbarMessage(t("defectcreatesuccess"));
-            setSnackbarSeverity("success");
-            setSnackbarOpen(true);
+            handleSnackbar(t("defectcreatesuccess"), "success");
             fetchDefects();
           })
           .catch((error) => {
-            setSnackbarMessage(t("defectcreatefail"));
-            setSnackbarSeverity("error");
-            setSnackbarOpen(true);
+            handleSnackbar(t("defectcreatefail"), "error");
             console.error(t("defectfixfail"), error);
           });
       }
@@ -95,15 +96,11 @@ const DefectFault = ({
     axiosClient
       .put(`defects/repair_defect/${id}/`, {})
       .then((response) => {
-        setSnackbarMessage(t("defectfixsuccess"));
-        setSnackbarSeverity("success");
-        setSnackbarOpen(true);
+        handleSnackbar(t("defectfixsuccess"), "success");
         fetchDefects();
       })
       .catch((error) => {
-        setSnackbarMessage(t("defectfixfail"));
-        setSnackbarSeverity("error");
-        setSnackbarOpen(true);
+        handleSnackbar(t("defectfixfail"), "error");
       });
   };
 
@@ -112,15 +109,11 @@ const DefectFault = ({
     axiosClient
       .put(`defects/email_defect/${id}/`, {})
       .then((response) => {
-        setSnackbarMessage(t("defectmailsuccess"));
-        setSnackbarSeverity("success");
-        setSnackbarOpen(true);
+        handleSnackbar(t("defectmailsuccess"), "success");
         fetchDefects();
       })
       .catch((error) => {
-        setSnackbarMessage(t("defectmailfail"));
-        setSnackbarSeverity("error");
-        setSnackbarOpen(true);
+        handleSnackbar(t("defectmailfail"), "error");
       });
   };
 
