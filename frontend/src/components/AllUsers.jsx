@@ -52,6 +52,8 @@ const AllUsers = ({
 
   // Function to open the dialog
   const handleClickOpen = () => {
+    setNewPassword("");
+    setConfirmNewPassword("");
     setOpen(true);
   };
 
@@ -143,7 +145,6 @@ const AllUsers = ({
             <TextField
               label={t("newpassword")}
               type="password"
-              value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               fullWidth
               sx={{ marginBottom: '1rem' }}
@@ -152,7 +153,6 @@ const AllUsers = ({
             <TextField
               label={t("confirmnewpassword")}
               type="password"
-              value={confirmNewPassword}
               onChange={(e) => setConfirmNewPassword(e.target.value)}
               fullWidth
               sx={{ marginBottom: '1rem' }}

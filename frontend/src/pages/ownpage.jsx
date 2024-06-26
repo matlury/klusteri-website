@@ -155,6 +155,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       setError(t("usereditfail"));
       setTimeout(() => setError(""), 5000);
     }
+
+    setPassword("");
+    setConfirmPassword("");
   };
 
   const handleUpdateAnotherUser = async (userDetailsId, userDetailsUsername, userDetailsPassword, userDetailsConfirmPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole, 
