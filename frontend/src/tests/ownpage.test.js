@@ -114,7 +114,6 @@ it("opens with role 5", () => {
 //   });
 // });
 
-
 it("User updating works", async () => {
   const user = {
     username: "example_username",
