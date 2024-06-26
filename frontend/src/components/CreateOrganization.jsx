@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axiosClient from "../axios.js";
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
@@ -13,14 +12,12 @@ const CreateOrganization = ({
   organization_color,
   setOrganizationColor,
   handleCreateOrganization,
-  setOrganisations,
-  organizations,
+  fetchOrganizations,
 }) => {
   const { t } = useTranslation();
   // State variables to manage dialog visibility and field validation
   const [open, setOpen] = useState(false);
   const [errorFields, setErrorFields] = useState({});
-  const [organisations, setOrganisations] = useState([]);
 
   // Function to open the dialog
   const handleClickOpen = () => {
@@ -60,28 +57,8 @@ const CreateOrganization = ({
     fetchOrganizations();
   }, []);
 
-  const fetchOrganizations = async () => {
-    try {
-      const res = await 
-      axiosClient.get("listobjects/organizations/")
-      const orgData = res.data.map((u) => ({
-            id: u.id,
-            Organisaatio: u.name,
-            email: u.email,
-            kotisivu: u.homepage,
-            color: u.color,
-            Avaimia: u.user_set.length,
-
-      }));
-      setOrganisations(orgData);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   return (
     <div>
-
       <Button onClick={handleClickOpen} variant="contained" className="open-dialog-button" data-testid="createneworgbutton">
         {t("createneworg")}
       </Button>

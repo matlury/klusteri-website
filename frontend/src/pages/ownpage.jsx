@@ -597,8 +597,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                     organization_color={organization_color}
                     setOrganizationColor={setOrganizationColor}
                     handleCreateOrganization={handleCreateOrganization}
-                    setOrganisations={setOrganisations}
-                    organisations={organisations}
+                    fetchOrganizations={getOrganisations}
                   />
                 )}
                 {hasPermissionOrg === true && (
