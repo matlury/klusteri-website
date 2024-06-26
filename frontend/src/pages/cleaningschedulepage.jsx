@@ -62,6 +62,12 @@ const CleaningSchedule = ({
     fetchData();
   }, [loggedUser]);
 
+  const handleSnackbar = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  }
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -91,9 +97,7 @@ const CleaningSchedule = ({
 
     if (allCleaning.length > 0) {
        setError(t("cleaningerrorold"));
-       setSnackbarMessage(t("cleaningerrorold"));
-       setSnackbarSeverity("error");
-       setSnackbarOpen(true);
+       handleSnackbar(t("cleaningerrorold"), "error");
        return;
     }
 
@@ -125,17 +129,13 @@ const CleaningSchedule = ({
         .post(`/cleaning/create_cleaning`, cleaningObject)
         .then((response) => {
           setSuccess(t("cleaningsubmitsuccess"));
-          setSnackbarMessage(t("cleaningsubmitsuccess"));
-          setSnackbarSeverity("success");
-          setSnackbarOpen(true);
+          handleSnackbar(t("cleaningsubmitsuccess"), "success");
           setTimeout(() => setSuccess(""), 5000);
           fetchCleaning();
         })
         .catch((error) => {
           setError(t("cleaningsubmitfail"));
-          setSnackbarMessage(t("cleaningsubmitfail"));
-          setSnackbarSeverity("error");
-          setSnackbarOpen(true);
+          handleSnackbar(t("cleaningsubmitfail"), "error");
           setTimeout(() => setError(""), 5000);
           console.error("Error submitting cleaning", error);
         });
@@ -149,17 +149,13 @@ const CleaningSchedule = ({
         console.log("Cleaners deleted successfully");
         fetchCleaning();
         setSuccess(t("cleaningclearedsuccess"));
-        setSnackbarMessage(t("cleaningclearedsuccess"));
-        setSnackbarSeverity("success");
-        setSnackbarOpen(true);
+        handleSnackbar(t("cleaningclearedsuccess"), "success");
         setTimeout(() => setSuccess(""), 5000);
       })
       .catch((error) => {
         console.error("Error deleting cleaners:", error + " " + error.response.data);
         setError(t("cleaningclearfail"));
-        setSnackbarMessage(t("cleaningclearfail"));
-        setSnackbarSeverity("error");
-        setSnackbarOpen(true);
+        handleSnackbar(t("cleaningclearfail"), "error");
         setTimeout(() => setError(""), 5000);
       });
     setConfirmOpen(false);
