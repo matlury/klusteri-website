@@ -29,6 +29,9 @@ const FrontPage = () => {
           .sort((a, b) => new Date(a.start) - new Date(b.start))
           .slice(0, 10);
         setEvents(events);
+        if (events.length === 0) {
+          setEvents(undefined)
+        }
       })
       .catch((error) => {
         console.error(t("errorfetchevents"), error);
@@ -79,6 +82,8 @@ const FrontPage = () => {
         </Typography>
         {events === null ? (
           <Typography>{t("loadingevents")}</Typography>
+        ) : events === undefined ? (
+          <Typography>{t("noevents")}</Typography>
         ) : (
           <FrontpageEvents events={events} />
         )}
