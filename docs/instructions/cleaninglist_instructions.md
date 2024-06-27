@@ -12,3 +12,16 @@
 6. Siivousvuorolistan voi myös luoda automaattisesti. Automaattinen luonti luo listan dynaamisesti järjestön avainten lukumäärän mukaan.
 7. Tuotu tai luotu lista on tallennettava erikseen tietokantaan painamalla 'Tallenna'.
 8. Olemassa olevan siivousvuorolistan voi tyhjentää painamalla 'Tyhjennä'.
+
+## Siivousvuorolistan luonti automaattisesti
+
+1. Varmista, että käyttäjä on kirjautuneena käyttäjällä jolla on tarvittavat oikeudet siivouslistan muokkaamiseen (LeppisPJ).
+2. Varmista, että taulukko on tyhjä painamalla 'Tyhjennä' (merkitty kuvaan numerolla 8).
+3. Varmista, että tietokantaan on luotu järjestöjä Hallinnointi-sivulla, ja että järjestöillä on avaimellisia.
+4. Paina 'Luo lista' (merkitty kuvaan numerolla 6).
+
+![Raja-arvon asettaminen](https://github.com/matlury/klusteri-website/blob/main/docs/img/instructions/cleaninglist_threshold.png)
+
+6. Painike avaa dialogin. Täytä kenttään raja-arvo, jonka kokoiset ja suuremmat järjestöt lasketaan suuriksi järjestöiksi (iso järjestö >= raja-arvo | raja-arvo > pieni järjestö > 0)
+7. Paina dialogiboksin 'Luo lista'-painiketta.
+8. Paina 'Tallenna' (merkitty kuvaan numerolla 7). Siivousvuorolistan pitäisi nyt ilmestyä taulukkoon.
