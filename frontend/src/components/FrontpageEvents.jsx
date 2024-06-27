@@ -44,7 +44,7 @@ const FrontpageEvents = ({ events }) => {
                   hour: "2-digit",
                   minute: "2-digit",
                 })}{" "}
-                @ {event.room}
+                @ {t(event.room)}
               </Typography>
             </CardContent>
             <CardActions sx={{ justifyContent: "center" }}>
@@ -82,7 +82,7 @@ const FrontpageEvents = ({ events }) => {
                   minute: "2-digit",
                 })}{" "}
                 <br />
-                {t("reservations_room")}: {event.room}
+                {t("reservations_room")}: {t(event.room)}
               </DialogContentText>
             </DialogContent>
             <DialogActions>
