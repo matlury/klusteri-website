@@ -36,7 +36,7 @@ const AllUsers = ({
   getAllUsers,
 }) => {
   // State variables to manage user data and dialog visibility
-  const [allOrganisations, setAllOrganisations] = useState([]);
+
   const [open, setOpen] = useState(false);
   const [userDetailsUsername, setUserDetailsUsername] = useState("");
   const [userDetailsEmail, setuserDetailsEmail] = useState("");
@@ -77,42 +77,6 @@ const AllUsers = ({
     setuserDetailsResRights(showThisUser.resrights);
     handleClickOpen();
   };
-
-  // Fetching user data from the server on component mount
-  useEffect(() => {
-    axiosClient
-      .get("listobjects/users/")
-      .then((res) => {
-        const userData = res.data.map((u) => ({
-          id: u.id,
-          Käyttäjänimi: u.username,
-          email: u.email,
-          Telegram: u.telegram,
-          Rooli: ROLE_DESCRIPTIONS[u.role],
-          Jäsenyydet: u.keys.map((organization) => organization.name),
-          resrights: u.rights_for_reservation,
-        }));
-        setAllUsers(userData);
-      })
-      .catch((error) => console.error(error));
-  }, []);
-
-  // Fetching organization data from the server on component mount
-  useEffect(() => {
-    axiosClient
-      .get("listobjects/organizations/")
-      .then((res) => {
-        const orgData = res.data.map((u) => ({
-          id: u.id,
-          Organisaatio: u.name,
-          email: u.email,
-          kotisivu: u.homepage,
-          Avaimia: u.user_set.length,
-        }));
-        setAllOrganisations(orgData);
-      })
-      .catch((error) => console.error(error));
-  }, []);
 
   // Function to handle form submission (updating user details)
   const handleFormSubmit = async (event) => {
