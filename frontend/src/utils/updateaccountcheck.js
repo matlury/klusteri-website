@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const newaccountcheck = async ({
+const updateAccountCheck = async ({
   username,
   password,
   email,
@@ -61,4 +61,4 @@ const newaccountcheck = async ({
       }
 };
 
-export default newaccountcheck;
+export default updateAccountCheck;

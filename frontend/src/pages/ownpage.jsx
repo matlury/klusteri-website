@@ -203,6 +203,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       return;
     }
 
+    if (!userDetailsUsername || !userDetailsEmail) {
+      setError(t("usereditmandfields"));
+      handleSnackbar(t("usereditmandfields"), "error");
+      setTimeout(() => setError(""), 5000);
+      return;
+    }
+
     const updatedValues = {
       username: userDetailsUsername,
       password: userDetailsPassword,
@@ -229,7 +236,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         setTimeout(() => setError(""), 5000);
         return;
       }
-  
+
       const response = await axiosClient.put(`/users/update/${userDetailsId}/`, updatedValues);
       setSuccess(t("usereditsuccess"));
       handleSnackbar(t("usereditsuccess"), "success");
