@@ -24,7 +24,6 @@ services:
       - api
     environment:
       - SITE_KEY=${SITE_KEY}
-      - API_URL=${API_URL}
     secrets:
       - site_key
 
@@ -34,6 +33,4 @@ secrets:
   database_url:
     external: true
   site_key:
-    external: true
-  api_url:
     external: true
