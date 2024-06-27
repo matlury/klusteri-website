@@ -13,6 +13,9 @@ COPY . .
 ARG SITE_KEY
 ENV SITE_KEY=${SITE_KEY}
 
+ARG API_URL
+ENV API_URL=${API_URL}
+
 RUN npm run build
 
 # Stage 2: Serve with Nginx
