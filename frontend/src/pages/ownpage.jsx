@@ -8,7 +8,7 @@ import CreateOrganization from "../components/CreateOrganization.jsx";
 import AllUsers from "../components/AllUsers.jsx";
 import updateaccountcheck from "../utils/updateaccountcheck.js";
 import { useTranslation } from "react-i18next";
-import { Snackbar, Alert } from '@mui/material';
+import { Snackbar, Alert } from "@mui/material";
 
 const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const { user, setUser } = useStateContext();
@@ -22,7 +22,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // user_details* variables for viewing and updating someone else's information
   const [userDetailsUsername, setUserDetailsUsername] = useState("");
   const [userDetailsPassword, setUserDetailsPassword] = useState("");
-  const [userDetailsConfirmPassword, setUserDetailsConfirmPassword] = useState("")
+  const [userDetailsConfirmPassword, setUserDetailsConfirmPassword] =
+    useState("");
   const [userDetailsEmail, setuserDetailsEmail] = useState("");
   const [userDetailsTelegram, setuserDetailsTelegram] = useState("");
   const [userDetailsRole, setuserDetailsRole] = useState(null);
@@ -55,7 +56,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // "success", "error", "info", "warning"
-
 
   const { t } = useTranslation();
 
@@ -174,15 +174,28 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     setSnackbarOpen(true);
   };
 
-  const handleUpdateAnotherUser = async (userDetailsId, userDetailsUsername, userDetailsPassword, userDetailsConfirmPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole) => {
-    const confirmUpdate = window.confirm(
-      t("usereditforother"),
-    );
-  
+  const handleUpdateAnotherUser = async (
+    userDetailsId,
+    userDetailsUsername,
+    userDetailsPassword,
+    userDetailsConfirmPassword,
+    userDetailsEmail,
+    userDetailsTelegram,
+    userDetailsRole,
+    userDetailsOrganizations,
+  ) => {
+    /*
+    Event handler for updating someone else's information.
+    No validation here because backend takes care of it.
+    */
+    //event.preventDefault();
+
+    const confirmUpdate = window.confirm(t("usereditforother"));
+
     if (!confirmUpdate) {
       return;
     }
-  
+
     const updatedValues = {
       username: userDetailsUsername,
       password: userDetailsPassword,
@@ -193,7 +206,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     };
   
     try {
-      // Validate before update
       const validationError = await updateaccountcheck({
         username: userDetailsUsername,
         password: userDetailsPassword,
@@ -270,7 +282,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   };
 
   // Handles organization detail updates
-  const handleOrganizationDetails = async (organization_new_name, organization_new_email, organization_new_homepage,  organization_new_color, orgId) => {
+  const handleOrganizationDetails = async (
+    organization_new_name,
+    organization_new_email,
+    organization_new_homepage,
+    organization_new_color,
+    orgId,
+  ) => {
     const newOrganizationObject = {
       name: organization_new_name,
       email: organization_new_email,
@@ -368,9 +386,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         Käyttäjänimi: u.username,
         email: u.email,
         Telegram: u.telegram,
-        Rooli: u.role,
+        Rooli: ROLE_DESCRIPTIONS[u.role],
         Jäsenyydet: u.keys.map((organization) => organization.name),
-        resrights: u.rights_for_reservation
+        resrights: u.rights_for_reservation,
       }));
       setAllUsers(userData);
     } catch (error) {
@@ -388,9 +406,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
     // get a list of each organization the user is a member of
     const orgDict = showThisUser.keys;
-    setuserDetailsOrganizations(
-      orgDict.map(org => org.name),
-    );
+    setuserDetailsOrganizations(orgDict.map((org) => org.name));
 
     setSelectedUser((prevSelectedUser) => {
       if (prevSelectedUser === userId) {
@@ -409,9 +425,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     confirmupdate();
 
     function confirmupdate() {
-      const confirmUpdate = window.confirm(
-        t("pjchange"),
-      );
+      const confirmUpdate = window.confirm(t("pjchange"));
 
       if (confirmUpdate) {
         axiosClient
@@ -443,15 +457,16 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     confirmupdate();
 
     function confirmupdate() {
-      const confirmUpdate = window.confirm(
-        t("resrightsconfirm")
-      );
+      const confirmUpdate = window.confirm(t("resrightsconfirm"));
 
       if (confirmUpdate) {
         axiosClient
           .put(`/users/change_rights_reservation/${selectedUserId}/`)
           .then((response) => {
-            console.log("Reservation rights changed succesfully:", response.data);
+            console.log(
+              "Reservation rights changed succesfully:",
+              response.data,
+            );
             setSuccess(t("usereditsuccess"));
           })
           .catch((error) => {
@@ -466,7 +481,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // Handles key submit
   //const handleKeySubmit = async (event) => {
   const handleKeySubmit = async (UserId, Organization) => {
-   // event.preventDefault();
+    // event.preventDefault();
 
     // if (!selectedUserId || !selectedOrganization) {
     //   console.error("Please select a user and an organization");
@@ -474,9 +489,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     // }
 
     // Display a confirmation dialog before handing over the key
-    const confirmKeyHandover = window.confirm(
-      t("handoverkeyconfirm")
-    );
+    const confirmKeyHandover = window.confirm(t("handoverkeyconfirm"));
 
     if (!confirmKeyHandover) {
       return;
@@ -541,7 +554,11 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         if (currentUser.role === 1) {
           setHasPermission(true);
           setHasPermissionOrg(true);
-        } else if (currentUser.role == 2 || currentUser.role == 3 || currentUser.role == 6) {
+        } else if (
+          currentUser.role == 2 ||
+          currentUser.role == 3 ||
+          currentUser.role == 6
+        ) {
           setHasPermissionOrg(true);
           setHasPermission(false);
         } else if (currentUser[0]) {
@@ -561,16 +578,20 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       {!isLoggedIn && <h3>{t("loginsuggest")}</h3>}
       {isLoggedIn && (
         <div>
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={6000}
-          onClose={() => setSnackbarOpen(false)}
-          data-testid="snackbar"
-        >
-          <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
-            {snackbarMessage}
-          </Alert>
-        </Snackbar>
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={() => setSnackbarOpen(false)}
+            data-testid="snackbar"
+          >
+            <Alert
+              onClose={() => setSnackbarOpen(false)}
+              severity={snackbarSeverity}
+              sx={{ width: "100%" }}
+            >
+              {snackbarMessage}
+            </Alert>
+          </Snackbar>
           <div style={{ display: "flex" }}>
             <div id="left_content">
               <div id="leftleft_content">
@@ -662,8 +683,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                   backgroundColor: "#fff",
                   padding: "20px",
                 }}
-              >
-              </div>
+              ></div>
             )}
           </div>
         </div>

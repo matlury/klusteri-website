@@ -1,6 +1,7 @@
 import React from "react";
 import { Button, TextField } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { ROLE_DESCRIPTIONS } from "../roles";
 
 const UserPage = ({
   username,
@@ -71,9 +72,9 @@ const UserPage = ({
         {t("save")}{" "}
       </Button>
 
-      <div>{t("userrole")}: {role}</div>
-
-
+      <div>
+        {t("userrole")}: {ROLE_DESCRIPTIONS[role]}
+      </div>
     </form>
   );
 };
