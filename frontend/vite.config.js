@@ -9,7 +9,7 @@ export default defineConfig({
   },
   define: {
     "process.env.API_URL": JSON.stringify(
-      process.env.API_URL || "http://localhost:8000",
+      process.env.API_URL || "https://klusteri-website-back-matlury-test.apps.ocp-prod-0.k8s.it.helsinki.fi",
     ),
     "process.env.SITE_KEY": JSON.stringify(
       process.env.SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI", // reCAPTCHA site key, uses the testing key from Google if not set
