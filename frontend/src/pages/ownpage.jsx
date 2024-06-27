@@ -308,7 +308,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         newOrganizationObject,
       )
       .then((response) => {
-        console.log("Organization created successfully!", response.data);
         setSuccess("Järjestö muokattu onnistuneesti!");
         handleSnackbar("Järjestö muokattu onnistuneesti!", "success");
         setTimeout(() => setSuccess(""), 5000);
@@ -327,7 +326,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       axiosClient
         .delete(`/organizations/remove/${orgId}/`)
         .then((response) => {
-          console.log(t("orgdeletesuccess"), response.data);
           getOrganisations();
           setSuccess(t("orgdeletesuccess"));
           handleSnackbar(t("orgdeletesuccess"), "success");
@@ -440,7 +438,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         axiosClient
           .put(`/users/update/${loggedUserId}/`, { role: 5 })
           .then((response) => {
-            console.log("Role updated successfully", response.data);
             localStorage.setItem("loggedUser", JSON.stringify(response.data));
             setUser(response.data);
             setSuccess(t("usereditsuccess"));
@@ -468,10 +465,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         axiosClient
           .put(`/users/change_rights_reservation/${selectedUserId}/`)
           .then((response) => {
-            console.log(
-              "Reservation rights changed succesfully:",
-              response.data,
-            );
             setSuccess(t("usereditsuccess"));
             handleSnackbar(t("usereditsuccess"), "success");
             setTimeout(() => setSuccess(""), 5000);

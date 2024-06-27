@@ -146,7 +146,6 @@ const CleaningSchedule = ({
     axiosClient
       .delete(`/cleaning/remove/all`)
       .then((response) => {
-        console.log("Cleaners deleted successfully");
         fetchCleaning();
         setSuccess(t("cleaningclearedsuccess"));
         handleSnackbar(t("cleaningclearedsuccess"), "success");
