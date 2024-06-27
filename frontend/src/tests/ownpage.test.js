@@ -543,7 +543,7 @@ describe("User updating errors", () => {
 //       );
 //     });
 //   });
-// });
+});
 
 describe("Organizations", () => {
   it("Organization creating works", async () => {
