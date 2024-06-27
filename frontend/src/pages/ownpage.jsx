@@ -105,6 +105,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     if (!username || !email) {
       setError(t("usereditmandfields"));
       setTimeout(() => setError(""), 5000);
+      handleSnackbar(t("usereditmandfields"), "error");
       return;
     }
   
@@ -124,16 +125,19 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         if (password !== confirmPassword) {
           setError(t("diffpass"));
           setTimeout(() => setError(""), 5000);
+          handleSnackbar(t("diffpass"), "error");
           return;
         }
         if (password.length < 8 || password.length > 20) {
           setError(t("mincharspass"));
           setTimeout(() => setError(""), 5000);
+          handleSnackbar(t("mincharspass"), "error");
           return;
         }
         if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
           setError(t("invalidpass"));
           setTimeout(() => setError(""), 5000);
+          handleSnackbar(t("invalidpass"), "error");
           return;
         }
       }
@@ -158,11 +162,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       setUser(updateResponse.data);
       setSuccess(t("usereditsuccess"));
       setTimeout(() => setSuccess(""), 5000);
+      handleSnackbar(t("usereditsuccess"), "success");
       await getAllUsers();
     } catch (error) {
       console.error(t("usereditfail"), error);
       setError(t("usereditfail"));
       setTimeout(() => setError(""), 5000);
+      handleSnackbar(t("usereditfail"), "error");
     }
 
     setPassword("");
