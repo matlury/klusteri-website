@@ -46,7 +46,7 @@ poetry install
 poetry shell
 ```
 ### Tietokannan rakentaminen
-Katso ohjeet tietokannan pystyttämiseksi [täältä](https://github.com/matlury/klusteri-website/blob/main/docs/database_instructions.md)
+Katso ohjeet tietokannan pystyttämiseksi [täältä](https://github.com/matlury/klusteri-website/blob/main/docs/instructions/database_instructions.md)
 
 Jos koodissa määriteltyjä tietokantatauluja on muokattu, on luotava uusi migraatio tietokantaa varten. Seuraava komento luo migraatiotiedoston
 ```bash
