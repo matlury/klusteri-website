@@ -43,10 +43,14 @@ const ReservationsView = ({
   const [shouldDownload, setShouldDownload] = useState(false);
 
   let admin = false;
+  let res_rights = false
   const user = JSON.parse(localStorage.getItem("loggedUser"));
   if (user) {
     if (user.role < 3) {
       admin = true;
+    }
+    if (user.role !== 5 && user.role !== 4 || user.rights_for_reservation === true) {
+      res_rights = true;
     }
   }
 
@@ -128,7 +132,8 @@ const ReservationsView = ({
         </div>
       )}
       <h2>{t("reservations_res")}</h2>
-      <div className="add-event-button">
+      {res_rights && 
+        <div className="add-event-button">
         <Button
           id="createEvent"
           variant="contained"
@@ -140,7 +145,8 @@ const ReservationsView = ({
         >
           {t("reservations_add")}
         </Button>
-      </div>
+      </div>  
+      }
       <Calendar
         localizer={localizer}
         events={events}
