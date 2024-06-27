@@ -44,8 +44,10 @@ const ReservationsView = ({
 
   let admin = false;
   let res_rights = false
+  let username = "";
   const user = JSON.parse(localStorage.getItem("loggedUser"));
   if (user) {
+    username = user.username
     if (user.role < 3) {
       admin = true;
     }
@@ -328,14 +330,16 @@ const ReservationsView = ({
           )}
         </DialogContent>
         <DialogActions>
+          {(selectedEvent && (selectedEvent.created_by.username === username || admin)) && 
           <Button
-            id="deleteEvent"
-            variant="contained"
-            color="error"
-            onClick={() => handleDeleteEvent(selectedEvent.id)}
+          id="deleteEvent"
+          variant="contained"
+          color="error"
+          onClick={() => handleDeleteEvent(selectedEvent.id)}
           >
-            {t("remove_event")}
+          {t("remove_event")}
           </Button>
+          }
           <Button id="closeEvent" variant="outlined" onClick={handleCloseModal}>
             {t("close")}
           </Button>
