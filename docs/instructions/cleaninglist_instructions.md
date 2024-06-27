@@ -31,5 +31,5 @@
 1. Varmista, että käyttäjä on kirjautuneena käyttäjällä jolla on tarvittavat oikeudet siivouslistan muokkaamiseen (LeppisPJ).
 2. Varmista, että taulukko on tyhjä painamalla 'Tyhjennä' (merkitty kuvaan numerolla 8).
 3. Varmista, että tietokantaan on luotu järjestöjä Hallinnointi-sivulla, ja että järjestöillä on avaimellisia.
-4. Paina 'Tuo lista' (merkitty kuvaan numerolla 5) ja valitse json-tiedosto, jonka perusteella lista luodaan. Tiedoston on oltava tietyssä muodossa, jotta sivusto osaa luoda sen perusteella listan. Muodon voi tarkistaa lataamalla sivustolta löytyvän listan. Huomioi, että json-tiedostoon merkittyjen järjestöjen on myös löydyttävä Hallinnointi-sivulta.
+4. Paina 'Tuo lista' (merkitty kuvaan numerolla 5) ja valitse json-tiedosto, jonka perusteella lista luodaan. Tiedoston on oltava tietyssä muodossa, jotta sivusto osaa luoda sen perusteella listan. Muodon voi tarkistaa [täältä](https://github.com/matlury/klusteri-website/blob/main/docs/examples/siivousvuorot_example.json) tai lataamalla sivustolla olemassa olevan listan. Huomioi, että json-tiedostoon merkittyjen järjestöjen on myös löydyttävä Hallinnointi-sivulta.
 5. Paina 'Tallenna' (merkitty kuvaan numerolla 7). Siivousvuorolistan pitäisi nyt ilmestyä taulukkoon.
