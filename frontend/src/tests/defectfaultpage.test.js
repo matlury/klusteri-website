@@ -63,11 +63,11 @@ describe("DefectFault Component", () => {
       ],
     };
 
-    // Mock the axios post request
-    mockAxios.mockResponseFor({ url: "/defects/create_defect" }, responseObj);
-
     // Wait for the axios requests to complete
     await waitFor(() => {
+      // Mock the axios post request
+      mockAxios.mockResponseFor({ url: "/defects/create_defect" }, responseObj);
+      
       expect(mockAxios.post).toHaveBeenCalledWith(
         "/defects/create_defect",
         {

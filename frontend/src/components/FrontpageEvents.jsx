@@ -11,6 +11,7 @@ import DialogActions from "@mui/material/DialogActions";
 import Typography from "@mui/material/Typography";
 import { useTranslation } from "react-i18next";
 
+// Event cards component for the front page
 const FrontpageEvents = ({ events }) => {
   const { t } = useTranslation();
   const [openDialogId, setOpenDialogId] = useState(null);
@@ -43,7 +44,7 @@ const FrontpageEvents = ({ events }) => {
                   hour: "2-digit",
                   minute: "2-digit",
                 })}{" "}
-                @ {event.room}
+                @ {t(event.room)}
               </Typography>
             </CardContent>
             <CardActions sx={{ justifyContent: "center" }}>
@@ -80,8 +81,8 @@ const FrontpageEvents = ({ events }) => {
                   hour: "2-digit",
                   minute: "2-digit",
                 })}{" "}
-                <br/>
-                {t("reservations_room")}: {event.room}
+                <br />
+                {t("reservations_room")}: {t(event.room)}
               </DialogContentText>
             </DialogContent>
             <DialogActions>

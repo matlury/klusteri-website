@@ -1,5 +1,12 @@
 import * as React from "react";
-import { BrowserRouter as Router, Route, Routes, Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -12,11 +19,11 @@ import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined
 import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
-import CleaningServicesIcon from '@mui/icons-material/CleaningServices';  
+import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
-import BedtimeOutlinedIcon from '@mui/icons-material/BedtimeOutlined';
-import BuildOutlinedIcon from '@mui/icons-material/BuildOutlined';
-import BarChartIcon from '@mui/icons-material/BarChart';
+import BedtimeOutlinedIcon from "@mui/icons-material/BedtimeOutlined";
+import BuildOutlinedIcon from "@mui/icons-material/BuildOutlined";
+import BarChartIcon from "@mui/icons-material/BarChart";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -31,7 +38,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { MenuItem, Menu } from "@mui/material";
-import TranslateIcon from '@mui/icons-material/Translate';
+import TranslateIcon from "@mui/icons-material/Translate";
 import matlu from "./matlu.png";
 
 import FrontPage from "./pages/frontpage";
@@ -47,20 +54,21 @@ import CleaningSupplies from "./pages/cleaningsuppliespage";
 import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
 import Statistics from "./pages/statistics";
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 import { useTranslation } from "react-i18next";
 import i18n from "./i18n";
 
 const drawerWidth = 240;
 
+// Login dialog component
 const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
   const { t } = useTranslation();
   return (
-    <Dialog 
-      open={open} 
-      onClose={onClose} 
-      PaperProps={{ style: { minWidth: '400px' } }} // Set minimum width
+    <Dialog
+      open={open}
+      onClose={onClose}
+      PaperProps={{ style: { minWidth: "400px" } }} // Set minimum width
     >
       <DialogTitle>{t("loginsuggest")}</DialogTitle>
       <DialogContent>
@@ -73,6 +81,7 @@ const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
   );
 };
 
+// Sidebar component
 const Sidebar = ({ isLoggedIn, handleDrawerClose }) => {
   const { t } = useTranslation();
   const location = useLocation();
@@ -96,13 +105,43 @@ const Sidebar = ({ isLoggedIn, handleDrawerClose }) => {
     { key: "front_sidebar_1", path: "/etusivu", icon: icons[0] },
     { key: "front_sidebar_2", path: "/christina_regina", icon: icons[1] },
     { key: "front_sidebar_3", path: "/varaukset", icon: icons[2] },
-    { key: "front_sidebar_4", path: "/ykv", icon: icons[3], requiresLogin: true },
-    { key: "front_sidebar_5", path: "/omat_tiedot", icon: icons[4], requiresLogin: true },
-    { key: "front_sidebar_6", path: "/tilastot", icon: icons[5], requiresLogin: true },
+    {
+      key: "front_sidebar_4",
+      path: "/ykv",
+      icon: icons[3],
+      requiresLogin: true,
+    },
+    {
+      key: "front_sidebar_5",
+      path: "/omat_tiedot",
+      icon: icons[4],
+      requiresLogin: true,
+    },
+    {
+      key: "front_sidebar_6",
+      path: "/tilastot",
+      icon: icons[5],
+      requiresLogin: true,
+    },
     { key: "front_sidebar_7", path: "/yhteystiedot", icon: icons[6] },
-    { key: "front_sidebar_8", path: "/viat", icon: icons[7], requiresLogin: true },
-    { key: "front_sidebar_9", path: "/siivousvuorot", icon: icons[8], requiresLogin: true },
-    { key: "front_sidebar_12", path: "/siivoustarvikkeet", icon: icons[8], requiresLogin: true},
+    {
+      key: "front_sidebar_8",
+      path: "/viat",
+      icon: icons[7],
+      requiresLogin: true,
+    },
+    {
+      key: "front_sidebar_9",
+      path: "/siivousvuorot",
+      icon: icons[8],
+      requiresLogin: true,
+    },
+    {
+      key: "front_sidebar_12",
+      path: "/siivoustarvikkeet",
+      icon: icons[8],
+      requiresLogin: true,
+    },
     { key: "front_sidebar_10", path: "/saannot_ja_ohjeet", icon: icons[9] },
     { key: "front_sidebar_11", path: "/tietosuojaseloste", icon: icons[10] },
   ];
@@ -111,7 +150,11 @@ const Sidebar = ({ isLoggedIn, handleDrawerClose }) => {
     <div>
       <Box sx={{ padding: "16px", width: "100%" }}>
         <a href="/">
-          <img src={matlu} alt="logo" style={{ height: "auto", width: "100%" }} />
+          <img
+            src={matlu}
+            alt="logo"
+            style={{ height: "auto", width: "100%" }}
+          />
         </a>
       </Box>
       <Divider />
@@ -120,24 +163,26 @@ const Sidebar = ({ isLoggedIn, handleDrawerClose }) => {
           if (requiresLogin && !isLoggedIn) return null;
           return (
             <ListItem key={key} disablePadding>
-            <ListItemButton
-              key={key}
-              component={Link}
-              to={path}
-              sx={{
-                backgroundColor: location.pathname === path ? '#9e9e9e' : 'transparent',
-                '&:hover': {
-                  backgroundColor: location.pathname === path ? '#9e9e9e' : '#e0e0e0',
-                },
-              }}
-              onClick={handleDrawerClose}
-            >
-              <ListItemIcon>{icons[index]}</ListItemIcon>
-              <ListItemText primary={t(key)} />
-            </ListItemButton>
-          </ListItem>
-        );
-      })}
+              <ListItemButton
+                key={key}
+                component={Link}
+                to={path}
+                sx={{
+                  backgroundColor:
+                    location.pathname === path ? "#9e9e9e" : "transparent",
+                  "&:hover": {
+                    backgroundColor:
+                      location.pathname === path ? "#9e9e9e" : "#e0e0e0",
+                  },
+                }}
+                onClick={handleDrawerClose}
+              >
+                <ListItemIcon>{icons[index]}</ListItemIcon>
+                <ListItemText primary={t(key)} />
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
       </List>
       <Divider />
     </div>
@@ -157,22 +202,23 @@ const AppContent = ({ window }) => {
   const [loginDialogOpen, setLoginDialogOpen] = React.useState(false);
 
   const [language, setLanguage] = React.useState(
-    localStorage.getItem("lang") || "fi"
-  )
+    localStorage.getItem("lang") || "fi",
+  );
 
-  const [anchorEl, setAnchorEl] = React.useState(null)
-  const [anchorElLang, setAnchorElLang] = React.useState(null)
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorElLang, setAnchorElLang] = React.useState(null);
 
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    i18n.changeLanguage(localStorage.getItem("lang") || "fi")
+    i18n.changeLanguage(localStorage.getItem("lang") || "fi");
     const loggedInStatus = localStorage.getItem("isLoggedIn");
     if (loggedInStatus === "true") {
       setIsLoggedIn(true);
     }
   }, []);
 
+  // Handles the sidebar closing on mobile
   const handleDrawerClose = () => {
     setIsClosing(true);
     setMobileOpen(false);
@@ -221,7 +267,7 @@ const AppContent = ({ window }) => {
   const handleLangChange = (lang) => {
     setLanguage(lang);
     i18n.changeLanguage(lang);
-    localStorage.setItem('lang', lang);
+    localStorage.setItem("lang", lang);
     setAnchorElLang(null); // Close the menu after selecting an option
   };
 
@@ -249,7 +295,8 @@ const AppContent = ({ window }) => {
     setAnchorEl(null);
   };
 
-  const container = window !== undefined ? () => window().document.body : undefined;
+  const container =
+    window !== undefined ? () => window().document.body : undefined;
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -267,45 +314,44 @@ const AppContent = ({ window }) => {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" }, color: "white" }}  // Change color to white
+            sx={{ mr: 2, display: { sm: "none" }, color: "white" }} // Change color to white
           >
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" color={"white"}>
-        Ilotalo 3.0
+            Ilotalo 3.0
           </Typography>
-        <Box sx={{ flexGrow: 1 }} />
-        <IconButton color="primary" onClick={handleIconClick}>
-            <TranslateIcon
-            color="primary" sx={{ color: 'white' }} />
+          <Box sx={{ flexGrow: 1 }} />
+          <IconButton color="primary" onClick={handleIconClick}>
+            <TranslateIcon color="primary" sx={{ color: "white" }} />
           </IconButton>
           <Menu
             anchorEl={anchorElLang}
             open={open}
             onClose={handleClose}
             anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'center',
+              vertical: "bottom",
+              horizontal: "center",
             }}
             transformOrigin={{
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             }}
           >
-            <MenuItem onClick={() => handleLangChange('fi')}>Suomi</MenuItem>
-            <MenuItem onClick={() => handleLangChange('en')}>English</MenuItem>
+            <MenuItem onClick={() => handleLangChange("fi")}>Suomi</MenuItem>
+            <MenuItem onClick={() => handleLangChange("en")}>English</MenuItem>
           </Menu>
           {isLoggedIn ? (
             <>
               <Button
-            aria-controls="simple-menu"
-            aria-haspopup="true"
+                aria-controls="simple-menu"
+                aria-haspopup="true"
                 onClick={handleMenuClick}
-                sx={{ marginLeft: 'auto' }}
+                sx={{ marginLeft: "auto" }}
                 endIcon={<ArrowDropDownIcon />}
-            style={{ color: "white" }}
+                style={{ color: "white" }}
               >
-            {loggedUser ? loggedUser.username : "User"}
+                {loggedUser ? loggedUser.username : "User"}
               </Button>
               <Menu
                 id="simple-menu"
@@ -343,11 +389,14 @@ const AppContent = ({ window }) => {
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: drawerWidth,
-              bgcolor: "#E9E9E9",  // Set background color here for temporary drawer
+              bgcolor: "#E9E9E9", // Set background color here for temporary drawer
             },
           }}
         >
-          <Sidebar isLoggedIn={isLoggedIn} handleDrawerClose={handleDrawerClose} />
+          <Sidebar
+            isLoggedIn={isLoggedIn}
+            handleDrawerClose={handleDrawerClose}
+          />
         </Drawer>
         <Drawer
           variant="permanent"
@@ -356,12 +405,15 @@ const AppContent = ({ window }) => {
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: drawerWidth,
-              bgcolor: "#E9E9E9",  // Set background color here for permanent drawer
+              bgcolor: "#E9E9E9", // Set background color here for permanent drawer
             },
           }}
           open
         >
-          <Sidebar isLoggedIn={isLoggedIn} handleDrawerClose={handleDrawerClose} />
+          <Sidebar
+            isLoggedIn={isLoggedIn}
+            handleDrawerClose={handleDrawerClose}
+          />
         </Drawer>
       </Box>
       <Box
@@ -388,20 +440,37 @@ const AppContent = ({ window }) => {
             path="/omat_tiedot"
             element={<OwnPage isLoggedIn={isLoggedIn} />}
           />
-          <Route path="/tilastot" element={<Statistics />}/>
+          <Route path="/tilastot" element={<Statistics />} />
           <Route path="/yhteystiedot" element={<Contacts />} />
           <Route
             path="/viat"
-            element={<DefectFault isLoggedIn={isLoggedIn} loggedUser={loggedUser} />}
+            element={
+              <DefectFault isLoggedIn={isLoggedIn} loggedUser={loggedUser} />
+            }
           />
-          <Route path="/siivousvuorot" element={<CleaningSchedule isLoggedIn={isLoggedIn} loggedUser={loggedUser} />}
+          <Route
+            path="/siivousvuorot"
+            element={
+              <CleaningSchedule
+                isLoggedIn={isLoggedIn}
+                loggedUser={loggedUser}
+              />
+            }
           />
           <Route
             path="/saannot_ja_ohjeet"
             element={<Rules_and_Instructions />}
           />
           <Route path="/tietosuojaseloste" element={<PrivacyPolicy />} />
-          <Route path="/siivoustarvikkeet" element={<CleaningSupplies isLoggedIn={isLoggedIn} loggedUser={loggedUser} />} />
+          <Route
+            path="/siivoustarvikkeet"
+            element={
+              <CleaningSupplies
+                isLoggedIn={isLoggedIn}
+                loggedUser={loggedUser}
+              />
+            }
+          />
         </Routes>
         <LoginDialog
           open={loginDialogOpen}
@@ -421,4 +490,3 @@ const App = () => (
 );
 
 export default App;
-

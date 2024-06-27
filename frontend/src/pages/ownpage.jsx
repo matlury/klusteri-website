@@ -450,7 +450,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         axiosClient
           .put(`/users/update/${loggedUserId}/`, { role: 5 })
           .then((response) => {
-            console.log("Role updated successfully", response.data);
             localStorage.setItem("loggedUser", JSON.stringify(response.data));
             setUser(response.data);
             setSuccess(t("usereditsuccess"));
@@ -477,10 +476,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         axiosClient
           .put(`/users/change_rights_reservation/${selectedUserId}/`)
           .then((response) => {
-            console.log(
-              "Reservation rights changed succesfully:",
-              response.data,
-            );
             setSuccess(t("usereditsuccess"));
           })
           .catch((error) => {

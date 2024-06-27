@@ -20,27 +20,51 @@ import { useTranslation } from "react-i18next";
 
 const API_URL = process.env.API_URL;
 
+// This page is used to display statistics about users and organizations
 const Statistics = () => {
   const [username, setUsername] = useState(null);
   const [userRole, setUserRole] = useState(null);
+
+  // YKV by organization
   const [orgStatsData, setOrgStatsData] = useState([]);
+
+  // YKV count by user
   const [allUserStatsData, setAllUserStatsData] = useState([]);
+
+  // CSV data and the flag to download the CSV
   const [CSVdata, setCSVdata] = useState(null);
   const [shouldDownload, setShouldDownload] = useState(false);
+
+  // Time filters
   const [minFilter, setMinFilter] = useState("");
   const [maxFilter, setMaxFilter] = useState("");
+
+  // Fetched data from the backend
   const [fetchedData, setFetchedData] = useState(null);
+
+  // YKV login and logout times per hour data
   const [logTimesData, setLogTimesData] = useState(null);
+
+  // Window height and width in px & grid column width
   const [winHeight, setWinHeight] = useState(window.innerHeight);
   const [winWidth, setWinWidth] = useState(window.innerWidth);
   const [columnWidth, setColumnWidth] = useState(6);
   const [widthDivider, setWidthDivider] = useState(2.5);
-  const [logsPerWeekDayData, setLogsPerWeekDayData] = useState([]);
-  const [orgMembersData, setOrgMembersData] = useState([]);
-  const [orgLateData, setOrgLateData] = useState([]);
-  const [pieChartData, setPieChartData] = useState([]);
-  const [selectedPie, setSelectedPie] = useState(1)
 
+  // YKV per weekday data
+  const [logsPerWeekDayData, setLogsPerWeekDayData] = useState([]);
+
+  // Keys by organization
+  const [orgMembersData, setOrgMembersData] = useState([]);
+
+  // Late YKV logouts by organization
+  const [orgLateData, setOrgLateData] = useState([]);
+
+  // Data to be displayed in the pie chart and the selected pie chart option
+  const [pieChartData, setPieChartData] = useState([]);
+  const [selectedPie, setSelectedPie] = useState(1);
+
+  // Gets the user's role from backend and fetches data. Also adjusts the grid column width if the user device is mobile
   useEffect(() => {
     getPermission();
     if (fetchedData) {
@@ -62,6 +86,7 @@ const Statistics = () => {
     }
   }, []);
 
+  // Updates the data when the filters change
   useEffect(() => {
     if (fetchedData) {
       processOrgStats(
@@ -76,6 +101,7 @@ const Statistics = () => {
     }
   }, [minFilter, maxFilter, fetchedData]);
 
+  // Changes the grid column widths when the window is resized
   useEffect(() => {
     const handleResize = () => {
       setWinWidth(window.innerWidth);
@@ -142,14 +168,23 @@ const Statistics = () => {
     );
   }
 
+  // Sets the organization data and the organization member data
   const processOrgStats = (orgData, responsibilities) => {
     const orgdata = {};
 
     const orgmemdata = {};
 
     orgData.forEach((org) => {
-      orgdata[org.name] = { value: 0, label: org.name, ...(org.color ? { color: org.color } : {}) };
-      orgmemdata[org.name] = { value: org.user_set.length, label: org.name, ...(org.color ? { color: org.color } : {}) };
+      orgdata[org.name] = {
+        value: 0,
+        label: org.name,
+        ...(org.color ? { color: org.color } : {}),
+      };
+      orgmemdata[org.name] = {
+        value: org.user_set.length,
+        label: org.name,
+        ...(org.color ? { color: org.color } : {}),
+      };
     });
 
     setOrgMembersData(Object.values(orgmemdata));
@@ -168,12 +203,13 @@ const Statistics = () => {
     setOrgStatsData(realdata);
 
     if (selectedPie == 1) {
-        setPieChartData(Object.values(orgmemdata));
+      setPieChartData(Object.values(orgmemdata));
     } else if (selectedPie == 2) {
       setPieChartData(Object.values(orgdata));
     }
   };
 
+  // Sets the user data and ykv data
   const processAllUserStats = (users, responsibilities, orgdata) => {
     const userdata = {};
 
@@ -187,7 +223,11 @@ const Statistics = () => {
     const numberdayweek = [6, 0, 1, 2, 3, 4, 5];
 
     orgdata.forEach((org) => {
-      latedata[org.name] = { value: 0, label: org.name, ...(org.color ? { color: org.color } : {})};
+      latedata[org.name] = {
+        value: 0,
+        label: org.name,
+        ...(org.color ? { color: org.color } : {}),
+      };
     });
     users.forEach((usr) => {
       userdata[usr.username] = { data: [0], label: usr.username };
@@ -252,9 +292,10 @@ const Statistics = () => {
 
     if (selectedPie == 3) {
       setPieChartData(Object.values(latedata));
-  }
+    }
   };
 
+  // Handles the creation of the event CSV file
   const handleCSV = async () => {
     try {
       const events = await axiosClient.get("listobjects/events/");
@@ -273,16 +314,16 @@ const Statistics = () => {
         ];
         events.data.forEach((e) => {
           if (filtering(e.start, e.end)) {
-          data.push([
-            e.start,
-            e.end,
-            e.organizer.name,
-            e.title,
-            e.description,
-            e.responsible,
-            e.room,
-            e.open,
-          ]);
+            data.push([
+              e.start,
+              e.end,
+              e.organizer.name,
+              e.title,
+              e.description,
+              e.responsible,
+              e.room,
+              e.open,
+            ]);
           }
         });
         setCSVdata(data);
@@ -318,16 +359,17 @@ const Statistics = () => {
 
   const date = getCurrentDateTime();
 
+  // Handles the change of the pie chart data
   const handleChange = (event) => {
     if (event.target.value == 1) {
       setPieChartData(orgMembersData);
-      setSelectedPie(1)
+      setSelectedPie(1);
     } else if (event.target.value == 2) {
       setPieChartData(orgStatsData);
-      setSelectedPie(2)
+      setSelectedPie(2);
     } else if (event.target.value == 3) {
       setPieChartData(orgLateData);
-      setSelectedPie(3)
+      setSelectedPie(3);
     }
   };
 
@@ -429,7 +471,15 @@ const Statistics = () => {
             xAxis={[
               {
                 scaleType: "band",
-                data: [t("monday"), t("tuesday"), t("wednesday"), t("thursday"), t("friday"), t("saturday"), t("sunday")],
+                data: [
+                  t("monday"),
+                  t("tuesday"),
+                  t("wednesday"),
+                  t("thursday"),
+                  t("friday"),
+                  t("saturday"),
+                  t("sunday"),
+                ],
               },
             ]}
             width={winWidth / widthDivider}
