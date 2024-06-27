@@ -61,11 +61,11 @@ describe("Cleaningsupplies Component", () => {
         ],
       };
   
-      // Mock the axios post request
-      mockAxios.mockResponseFor({ url: "/cleaningsupplies/create_tool" }, responseObj);
-  
       // Wait for the axios requests to complete
       await waitFor(() => {
+        // Mock the axios post request
+        mockAxios.mockResponseFor({ url: "/cleaningsupplies/create_tool" }, responseObj);
+
         expect(mockAxios.post).toHaveBeenCalledWith(
           "/cleaningsupplies/create_tool",
           {
@@ -107,10 +107,11 @@ describe("Cleaningsupplies Component", () => {
           },
         ],
       };
-  
-      // Mock the axios post request
-      mockAxios.mockResponseFor({ url: "/listobjects/cleaningsupplies/" }, responseObj);
-  
+
+      await waitFor(() => {
+        // Mock the axios get request
+        mockAxios.mockResponseFor({ url: "/listobjects/cleaningsupplies/" }, responseObj);
+      })
 
       await waitFor(() => {
         expect(screen.getByText("imuri")).toBeInTheDocument();

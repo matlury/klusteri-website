@@ -3,6 +3,9 @@ import NewAccountPage from "../../src/pages/createpage";
 import "@testing-library/jest-dom";
 import i18n from "../i18n.js";
 
+// Test value for the reCAPTCHA site key
+process.env.SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
+
 localStorage.setItem("lang", "fi")
 
 jest.mock('../utils/newaccountcheck.js', () => ({
