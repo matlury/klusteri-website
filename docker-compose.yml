@@ -23,14 +23,17 @@ services:
     depends_on:
       - api
     environment:
-      - REACT_APP_RECAPTCHA_SITE_KEY=${REACT_APP_RECAPTCHA_SITE_KEY}
+      - SITE_KEY=${SITE_KEY}
+      - API_URL=${API_URL}
     secrets:
-      - recaptcha_site_key
+      - site_key
 
 secrets:
   django_secret_key:
     external: true
   database_url:
     external: true
-  recaptcha_site_key:
+  site_key:
+    external: true
+  api_url:
     external: true
