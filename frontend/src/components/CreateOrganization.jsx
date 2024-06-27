@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
@@ -12,6 +12,7 @@ const CreateOrganization = ({
   organization_color,
   setOrganizationColor,
   handleCreateOrganization,
+  fetchOrganizations,
 }) => {
   const { t } = useTranslation();
   // State variables to manage dialog visibility and field validation
@@ -29,7 +30,7 @@ const CreateOrganization = ({
   };
 
   // Function to handle organization creation and close dialog
-  const handleCreateAndClose = () => {
+  const handleCreateAndClose = async () => {
     // Validate fields
     const errors = {};
     if (!organization_name) errors.name = true;
@@ -38,7 +39,8 @@ const CreateOrganization = ({
 
     if (Object.keys(errors).length === 0) {
       // All fields are filled, proceed with organization creation
-      handleCreateOrganization();
+      await handleCreateOrganization();
+      await fetchOrganizations();
       handleClose();
     } else {
       // Some required fields are empty, set error state to show notification
@@ -51,9 +53,12 @@ const CreateOrganization = ({
     setErrorFields({});
   };
 
+  useEffect(() => {
+    fetchOrganizations();
+  }, []);
+
   return (
     <div>
-
       <Button onClick={handleClickOpen} variant="contained" className="open-dialog-button" data-testid="createneworgbutton">
         {t("createneworg")}
       </Button>

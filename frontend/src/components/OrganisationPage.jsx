@@ -15,12 +15,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 
 const OrganisationPage = ({
+  organizations,
   hasPermissionOrg,
   handleOrganizationDetails,
-  handleDeleteOrganization
+  handleDeleteOrganization,
+  fetchOrganizations,
 }) => {
 
-  const [allOrganisations, setAllOrganisations] = useState([]);
   const [open, setOpen] = useState(false);
   
   const [organisation_new_name, setOrganisationNewName] = useState("");
@@ -41,7 +42,7 @@ const OrganisationPage = ({
   };
 
   const toggleOrgDetails = (orgId) => {
-    const showThisOrg = allOrganisations.find((org) => org.id === orgId);
+    const showThisOrg = organizations.find((org) => org.id === orgId);
 
     setOrganisationNewName(showThisOrg.Organisaatio)
     setOrganisationNewHomePage(showThisOrg.kotisivu)
@@ -52,33 +53,16 @@ const OrganisationPage = ({
     handleClickOpen();
   };
 
-  useEffect(() => {
-    axiosClient
-      .get("listobjects/organizations/")
-      .then((res) => {
-        const orgData = res.data.map((u) => ({
-          id: u.id,
-          Organisaatio: u.name,
-          email: u.email,
-          kotisivu: u.homepage,
-          color: u.color,
-          Avaimia: u.user_set.length,
-
-        }));
-        setAllOrganisations(orgData);
-        
-      })
-      .catch((error) => console.error(error));
-  }, []);
-
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
      event.preventDefault();
-     handleOrganizationDetails(organisation_new_name, organisation_new_email, organisation_new_homepage, organisation_new_color, organisation_id);
+     await handleOrganizationDetails(organisation_new_name, organisation_new_email, organisation_new_homepage, organisation_new_color, organisation_id);
+     await fetchOrganizations();
      handleClose();
    };
 
-  const handleDelete = (organisation_id) => {
-    handleDeleteOrganization(organisation_id);
+  const handleDelete = async (organisation_id) => {
+    await handleDeleteOrganization(organisation_id);
+    await fetchOrganizations();
     handleClose();
   }
 
@@ -110,7 +94,7 @@ const OrganisationPage = ({
       <h2>{t("resp_orgs")}</h2>
       <div>
         <DataGrid
-          rows={allOrganisations}
+          rows={organizations}
           columns={columns}
           pageSize={5}
           rowsPerPageOptions={[5, 10, 20]}

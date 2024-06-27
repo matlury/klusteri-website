@@ -9,6 +9,7 @@ import AllUsers from "../components/AllUsers.jsx";
 import updateaccountcheck from "../utils/updateaccountcheck.js";
 import { useTranslation } from "react-i18next";
 import { Snackbar, Alert } from "@mui/material";
+import { ROLE_DESCRIPTIONS, ROLE_OPTIONS } from "../roles.js";
 
 const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const { user, setUser } = useStateContext();
@@ -87,7 +88,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION OF THE LOGGED IN USER
 
   // Handles the user info update when the 'Vahvista Muutokset' button is clicked and gives error messages if the new username, email or telegram are taken by some other user
-  const handleUserDetails = (event) => {
+  const handleUserDetails = async (event) => {
     event.preventDefault();
 
     const details = {
@@ -103,84 +104,75 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
     if (!username || !email) {
       setError(t("usereditmandfields"));
-      handleSnackbar(t("usereditmandfields"), "error");
       setTimeout(() => setError(""), 5000);
+      handleSnackbar(t("usereditmandfields"), "error");
       return;
     }
-
-    if (telegram) {
-      axios
-        .get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`)
-        .then((response) => {
-          const existingUsers = response.data;
-          if (
-            existingUsers.some(
-              (user) => user.telegram === telegram && user.id !== loggedUser.id,
-            )
-          ) {
-            setError(t("telegraminuse"));
-            handleSnackbar(t("telegraminuse"), "error");
-            setTimeout(() => setError(""), 5000);
-            return;
-          }
-        });
-    }
-
-    if (password) {
-      if (password !== confirmPassword) {
-        setError(t("diffpass"));
-        setTimeout(() => setError(""), 5000);
-        return;
-      }
-      if (password.length < 8 || password.length > 20) {
-        setError(t("mincharspass"));
-        setTimeout(() => setError(""), 5000);
-        return;
-      }
-      if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
-        setError(t("invalidpass"));
-        setTimeout(() => setError(""), 5000);
-        return;
-      }
-    }
-
-    axios
-      .get(`${API_URL}/api/listobjects/users/?email=${email}`)
-      .then((response) => {
+  
+    try {
+      if (telegram) {
+        const response = await axios.get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`);
         const existingUsers = response.data;
-        if (
-          existingUsers.some(
-            (user) => user.email === email && user.id !== loggedUser.id,
-          )
-        ) {
-          setError(t("emailinuse"));
-          handleSnackbar(t("emailinuse"), "error");
+        if (existingUsers.some((user) => user.telegram === telegram && user.id !== loggedUser.id)) {
+          setError(t("telegraminuse"));
+          handleSnackbar(t("telegraminuse"), "error");
           setTimeout(() => setError(""), 5000);
           return;
         }
-        confirmupdate();
-      });
-
-    function confirmupdate() {
-      const confirmUpdate = window.confirm(t("usereditconfirm"));
-
-      if (confirmUpdate) {
-        axiosClient
-          .put(`/users/update/${user_id}/`, details)
-          .then((response) => {
-            localStorage.setItem("loggedUser", JSON.stringify(response.data));
-            setUser(response.data);
-            setSuccess(t("usereditsuccess"));
-            handleSnackbar(t("usereditsuccess"), "success");
-            setTimeout(() => setSuccess(""), 5000);
-          })
-          .catch((error) => {
-            console.error(t("usereditfail"), error);
-          });
-      } else {
-        console.log("User cancelled the update.");
       }
+  
+      if (password) {
+        if (password !== confirmPassword) {
+          setError(t("diffpass"));
+          setTimeout(() => setError(""), 5000);
+          handleSnackbar(t("diffpass"), "error");
+          return;
+        }
+        if (password.length < 8 || password.length > 20) {
+          setError(t("mincharspass"));
+          setTimeout(() => setError(""), 5000);
+          handleSnackbar(t("mincharspass"), "error");
+          return;
+        }
+        if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
+          setError(t("invalidpass"));
+          setTimeout(() => setError(""), 5000);
+          handleSnackbar(t("invalidpass"), "error");
+          return;
+        }
+      }
+  
+      const response = await axios.get(`${API_URL}/api/listobjects/users/?email=${email}`);
+      const existingUsers = response.data;
+      if (existingUsers.some((user) => user.email === email && user.id !== loggedUser.id)) {
+        setError(t("emailinuse"));
+        handleSnackbar(t("emailinuse"), "error");
+        setTimeout(() => setError(""), 5000);
+        return;
+      }
+  
+      const confirmUpdate = window.confirm(t("usereditconfirm"));
+      if (!confirmUpdate) {
+        console.log("User cancelled the update.");
+        return;
+      }
+
+      const updateResponse = await axiosClient.put(`/users/update/${user_id}/`, details);
+      localStorage.setItem("loggedUser", JSON.stringify(updateResponse.data));
+      setUser(updateResponse.data);
+      setSuccess(t("usereditsuccess"));
+      setTimeout(() => setSuccess(""), 5000);
+      handleSnackbar(t("usereditsuccess"), "success");
+      await getAllUsers();
+    } catch (error) {
+      console.error(t("usereditfail"), error);
+      setError(t("usereditfail"));
+      setTimeout(() => setError(""), 5000);
+      handleSnackbar(t("usereditfail"), "error");
     }
+
+    setPassword("");
+    setConfirmPassword("");
   };
 
   const handleSnackbar = (message, severity) => {
@@ -189,7 +181,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     setSnackbarOpen(true);
   };
 
-  const handleUpdateAnotherUser = (
+  const handleUpdateAnotherUser = async (
     userDetailsId,
     userDetailsUsername,
     userDetailsPassword,
@@ -207,6 +199,17 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
     const confirmUpdate = window.confirm(t("usereditforother"));
 
+    if (!confirmUpdate) {
+      return;
+    }
+
+    if (!userDetailsUsername || !userDetailsEmail) {
+      setError(t("usereditmandfields"));
+      handleSnackbar(t("usereditmandfields"), "error");
+      setTimeout(() => setError(""), 5000);
+      return;
+    }
+
     const updatedValues = {
       username: userDetailsUsername,
       password: userDetailsPassword,
@@ -215,63 +218,67 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       role: userDetailsRole,
       id: userDetailsId,
     };
-
-    const validationError = updateaccountcheck({
-      username: userDetailsUsername,
-      password: userDetailsPassword,
-      email: userDetailsEmail,
-      telegram: userDetailsTelegram,
-      confirmPassword: userDetailsConfirmPassword,
-      API_URL,
-      t,
-    });
-
-    if (typeof validationError === "string") {
-      setError(validationError);
-      handleSnackbar(validationError, "error");
-      setTimeout(() => setError(""), 5000);
-    } else if (validationError === true) {
-      if (confirmUpdate) {
-        axiosClient
-          .put(`/users/update/${userDetailsId}/`, updatedValues)
-          .then((response) => {
-            setSuccess(t("usereditsuccess"));
-            handleSnackbar(t("usereditsuccess"), "success");
-            setTimeout(() => setSuccess(""), 5000);
-            getAllUsers();
-
-            if (userDetailsEmail === email) {
-              localStorage.setItem("loggedUser", JSON.stringify(response.data));
-              setUser(response.data);
-            }
-          })
-          .catch((error) => {
-            setError(t("usereditfail"));
-            handleSnackbar(t("usereditfail"), "error");
-            setTimeout(() => setError(""), 5000);
-          });
+  
+    try {
+      const validationError = await updateaccountcheck({
+        username: userDetailsUsername,
+        password: userDetailsPassword,
+        email: userDetailsEmail,
+        telegram: userDetailsTelegram,
+        confirmPassword: userDetailsConfirmPassword,
+        API_URL,
+        t
+      });
+  
+      if (typeof validationError === "string") {
+        setError(validationError);
+        handleSnackbar(validationError, "error");
+        setTimeout(() => setError(""), 5000);
+        return;
       }
-    } else {
+
+      const response = await axiosClient.put(`/users/update/${userDetailsId}/`, updatedValues);
+      setSuccess(t("usereditsuccess"));
+      handleSnackbar(t("usereditsuccess"), "success");
+      setTimeout(() => setSuccess(""), 5000);
+  
+      if (userDetailsEmail === email) {
+        localStorage.setItem("loggedUser", JSON.stringify(response.data));
+        setUser(response.data);
+      }
+  
+      await getAllUsers();
+    } catch (error) {
       setError(t("usereditfail"));
       handleSnackbar(t("usereditfail"), "error");
       setTimeout(() => setError(""), 5000);
     }
   };
-
   // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION OF THE ORGANIZATIONS
 
   // Keeps the organization information up-to-date
-  const getOrganisations = () => {
-    axios
-      .get(`${API_URL}/api/listobjects/organizations/`)
-      .then((response) => {
-        const data = response.data;
-        setOrganisations(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching organisations:", error);
-      });
+  const getOrganisations = async () => {
+    try {
+      const res = await 
+      axiosClient.get("listobjects/organizations/")
+      const orgData = res.data.map((u) => ({
+            id: u.id,
+            Organisaatio: u.name,
+            email: u.email,
+            kotisivu: u.homepage,
+            color: u.color,
+            Avaimia: u.user_set.length,
+
+      }));
+      setOrganisations(orgData);
+    } catch (error) {
+      console.error(error);
+    }
   };
+
+  useEffect(() => {
+    getOrganisations();
+  }, []);
 
   // Shows the information of organizations after clicking the view-button
   const toggleOrgDetails = (orgId) => {
@@ -289,7 +296,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   };
 
   // Handles organization detail updates
-  const handleOrganizationDetails = (
+  const handleOrganizationDetails = async (
     organization_new_name,
     organization_new_email,
     organization_new_homepage,
@@ -302,100 +309,105 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       homepage: organization_new_homepage,
       color: organization_new_color,
     };
-    axiosClient
-      .put(
-        `/organizations/update_organization/${orgId}/`,
-        newOrganizationObject,
-      )
-      .then((response) => {
+    try {
+      await axiosClient
+        .put(
+          `/organizations/update_organization/${orgId}/`,
+          newOrganizationObject);
         setSuccess("Järjestö muokattu onnistuneesti!");
         handleSnackbar("Järjestö muokattu onnistuneesti!", "success");
         setTimeout(() => setSuccess(""), 5000);
-        getOrganisations();
-      })
-      .catch((error) => {
-        console.error("Error creating account:", error);
-      });
-  };
+        await getOrganisations();
+        } catch(error) {
+          console.error("Error creating account:", error);
+        }
+    };
 
   // Handles deletion of organization
-  const handleDeleteOrganization = (orgId) => {
-    const confirmUpdate = window.confirm(t("orgdeleteconfirm"));
-
+  const handleDeleteOrganization = async (orgId) => {
+    const confirmUpdate = window.confirm(
+      t("orgdeleteconfirm"),
+    );
     if (confirmUpdate) {
-      axiosClient
-        .delete(`/organizations/remove/${orgId}/`)
-        .then((response) => {
-          getOrganisations();
-          setSuccess(t("orgdeletesuccess"));
-          handleSnackbar(t("orgdeletesuccess"), "success");
-          setTimeout(() => setSuccess(""), 5000);
-        })
-        .catch((error) => {
-          console.error(t("orgdelelefail"), error);
-        });
+      try {
+        const response = await axiosClient.delete(`/organizations/remove/${orgId}/`);
+        await getOrganisations();
+        await getAllUsers();
+        setSuccess(t("orgdeletesuccess"));
+        handleSnackbar(t("orgdeletesuccess"), "success");
+        setTimeout(() => setSuccess(""), 5000);
+      } catch(error) {
+        setError(t("orgdeletefail"));
+      }
     }
   };
 
   // Handles the creation of organizations
-  const handleCreateOrganization = () => {
-    axios
+  const handleCreateOrganization = async () => {
+    try {
+      const response = await axios
       .get(
         `${API_URL}/api/listobjects/organizations/?email=${organization_email}`,
-      )
-      .then((response) => {
-        const existingOrganizations = response.data;
-        if (
-          existingOrganizations.some((org) => org.name === organization_name)
-        ) {
-          setError(t("orgcreatenamefail"));
-          handleSnackbar(t("orgcreatenamefail"), "error");
-          setTimeout(() => setError(""), 5000);
-        }
-        if (
-          existingOrganizations.some((org) => org.email === organization_email)
-        ) {
-          setError(t("emailinuse"));
-          handleSnackbar(t("emailinuse"), "error");
-          setTimeout(() => setError(""), 5000);
-        } else {
-          const organizationObject = {
-            name: organization_name,
-            email: organization_email,
-            homepage: organization_homepage,
-            color: organization_color,
-          };
-          axiosClient
-            .post("organizations/create", organizationObject)
-            .then((response) => {
-              setSuccess(t("orgcreatesuccess"));
-              handleSnackbar(t("orgcreatesuccess"), "success");
-              setTimeout(() => setSuccess(""), 5000);
-              getOrganisations();
-            })
-            .catch((error) => {
-              console.error("Error creating account:", error);
-            });
-        }
-      })
-      .catch((error) => {
-        console.error("Error checking email:", error);
-      });
+      );
+      const existingOrganizations = response.data;
+      if (
+        existingOrganizations.some((org) => org.name === organization_name)
+      ) {
+        setError(t("orgcreatenamefail"));
+        handleSnackbar(t("orgcreatenamefail"), "error");
+        setTimeout(() => setError(""), 5000);
+      }
+      if (
+        existingOrganizations.some((org) => org.email === organization_email)
+      ) {
+        setError(t("emailinuse"));
+        handleSnackbar(t("emailinuse"), "error");
+        setTimeout(() => setError(""), 5000);
+      } else {
+        const organizationObject = {
+          name: organization_name,
+          email: organization_email,
+          homepage: organization_homepage,
+          color: organization_color,
+        };
+        await createOrganization(organizationObject);
+      }
+    } catch (error) {
+      console.error("Error checking email:", error);
+    }
   };
-
+  const createOrganization = async (organizationObject) => {
+    try {
+      await axiosClient
+      .post("organizations/create", organizationObject);
+      setSuccess(t("orgcreatesuccess"));
+      handleSnackbar(t("orgcreatesuccess"), "success");
+      setTimeout(() => setSuccess(""), 5000);
+      await getOrganisations();
+    } catch(error) {
+      console.error("Error creating organization:", error);
+    }
+  };
+    
   // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION FOR ALL USERS (ONLY VISIBLE FOR LEPPIS PJ)
 
   // Gets every users data from backend
-  const getAllUsers = () => {
-    axios
-      .get(`${API_URL}/api/listobjects/users/`)
-      .then((response) => {
-        const data = response.data;
-        setAllUsers(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching all users:", error);
-      });
+  const getAllUsers = async () => {
+    try {
+      const response = await axiosClient.get("listobjects/users/");
+      const userData = response.data.map((u) => ({
+        id: u.id,
+        Käyttäjänimi: u.username,
+        email: u.email,
+        Telegram: u.telegram,
+        Rooli: ROLE_DESCRIPTIONS[u.role],
+        Jäsenyydet: u.keys.map((organization) => organization.name),
+        resrights: u.rights_for_reservation,
+      }));
+      setAllUsers(userData);
+    } catch (error) {
+      console.error("Error fetching all users:", error);
+    }
   };
 
   const toggleUserDetails = (userId) => {
@@ -419,7 +431,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   };
 
   // Handles PJ change
-  const handlePJChange = (userId) => {
+  const handlePJChange = async (userId) => {
     const selectedUserId = userId;
     const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
     const loggedUserId = loggedUser.id;
@@ -441,7 +453,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             localStorage.setItem("loggedUser", JSON.stringify(response.data));
             setUser(response.data);
             setSuccess(t("usereditsuccess"));
-            handleSnackbar(t("usereditsuccess"), "success");
             setTimeout(() => setSuccess(""), 5000);
           })
           .catch((error) => {
@@ -453,7 +464,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
   };
 
-  const handleResRightChange = (userId) => {
+  const handleResRightChange = async (userId) => {
     const selectedUserId = userId;
 
     confirmupdate();
@@ -466,8 +477,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           .put(`/users/change_rights_reservation/${selectedUserId}/`)
           .then((response) => {
             setSuccess(t("usereditsuccess"));
-            handleSnackbar(t("usereditsuccess"), "success");
-            setTimeout(() => setSuccess(""), 5000);
           })
           .catch((error) => {
             console.error("Error changing reservation rights:", error);
@@ -512,10 +521,10 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       if (response.status === 200) {
         // Successful key handover
         setSuccess(t("handoverkeysuccess"));
-        handleSnackbar(t("handoverkeysuccess"), "success");
         setTimeout(() => {
           setSuccess("");
         }, 5000);
+        await getAllUsers();
       } else {
         // Error in key handover
         setError("ERROR");
@@ -523,7 +532,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     } catch (error) {
       console.error("Error in key handover:", error);
       setError(t("handoverkeyfail"));
-      handleSnackbar(t("handoverkeyfail"), "error");
     }
   };
 
@@ -614,7 +622,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                 }
                 {
                   <OrganisationPage
-                    organisations={organisations}
+                    organizations={organisations}
                     selectedOrg={selectedOrg}
                     hasPermissionOrg={hasPermissionOrg}
                     organization_new_name={organization_new_name}
@@ -629,6 +637,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                     hasPermission={hasPermission}
                     handleDeleteOrganization={handleDeleteOrganization}
                     toggleOrgDetails={toggleOrgDetails}
+                    fetchOrganizations={getOrganisations}
                   />
                 }
                 {hasPermission === true && (
@@ -642,11 +651,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                     organization_color={organization_color}
                     setOrganizationColor={setOrganizationColor}
                     handleCreateOrganization={handleCreateOrganization}
+                    fetchOrganizations={getOrganisations}
                   />
                 )}
                 {hasPermissionOrg === true && (
                   <AllUsers
                     allUsers={allUsers}
+                    organizations={organisations}
                     toggleUserDetails={toggleUserDetails}
                     userDetailsUsername={userDetailsUsername}
                     setUserDetailsUsername={setUserDetailsUsername}
@@ -663,6 +674,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                     selectedUser={selectedUser}
                     handleKeySubmit={handleKeySubmit}
                     handleResRightChange={handleResRightChange}
+                    fetchOrganizations={getOrganisations}
+                    getAllUsers={getAllUsers}
                   />
                 )}
               </div>
