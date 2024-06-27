@@ -25,3 +25,11 @@
 6. Painike avaa dialogin. Täytä kenttään raja-arvo, jonka kokoiset ja suuremmat järjestöt lasketaan suuriksi järjestöiksi (iso järjestö >= raja-arvo | raja-arvo > pieni järjestö > 0)
 7. Paina dialogiboksin 'Luo lista'-painiketta.
 8. Paina 'Tallenna' (merkitty kuvaan numerolla 7). Siivousvuorolistan pitäisi nyt ilmestyä taulukkoon.
+
+## Siivousvuorolistan manuaalisesti
+
+1. Varmista, että käyttäjä on kirjautuneena käyttäjällä jolla on tarvittavat oikeudet siivouslistan muokkaamiseen (LeppisPJ).
+2. Varmista, että taulukko on tyhjä painamalla 'Tyhjennä' (merkitty kuvaan numerolla 8).
+3. Varmista, että tietokantaan on luotu järjestöjä Hallinnointi-sivulla, ja että järjestöillä on avaimellisia.
+4. Paina 'Tuo lista' (merkitty kuvaan numerolla 5) ja valitse json-tiedosto, jonka perusteella lista luodaan. Tiedoston on oltava tietyssä muodossa, jotta sivusto osaa luoda sen perusteella listan. Muodon voi tarkistaa lataamalla sivustolta löytyvän listan. Huomioi, että json-tiedostoon merkittyjen järjestöjen on myös löydyttävä Hallinnointi-sivulta.
+5. Paina 'Tallenna' (merkitty kuvaan numerolla 7). Siivousvuorolistan pitäisi nyt ilmestyä taulukkoon.
