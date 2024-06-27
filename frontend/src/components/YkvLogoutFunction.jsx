@@ -13,16 +13,26 @@ import {
 } from "@mui/material";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { lighten, styled } from '@mui/material/styles';
-import CheckIcon from '@mui/icons-material/Check';
+import { lighten, styled } from "@mui/material/styles";
+import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
 
 const YkvLogoutFunction = ({
   handleYkvLogin,
+  handleYkvLogout,
+  idToLogout,
+  buttonPopup,
+  setButtonPopup,
+  activeResponsibilities,
+  setIdToLogout,
+  loggedUser,
+  setEditButtonPopup,
+  editButtonPopup,
+  setRespToEdit,
+  handleYkvEdit,
   responsibility,
   setResponsibility,
-  handleYkvLogout,
-  loggedUser,
+  addedResponsibility,
 }) => {
   const [open, setOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -53,13 +63,13 @@ const YkvLogoutFunction = ({
     setConfirmOpen(false);
   };
 
-  const [activeUsers, setactiveUsers] = useState([]);
+  const [activeUsers, setActiveUsers] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const handleRemove = (id) => {
-    handleYkvLogout(id);
-    setactiveUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+  const handleRemove = async (id) => {
+    await handleYkvLogout(id);
+    await fetchResponsibilities();
     setConfirmOpen(false);
   };
 
@@ -69,7 +79,7 @@ const YkvLogoutFunction = ({
     setConfirmOpen(true);
   };
 
-  const getLateIcon = (params) => { 
+  const getLateIcon = (params) => {
     if (params.row.late) {
       return <AccessTimeIcon />;
     } else if (params.row.present) {
@@ -77,43 +87,36 @@ const YkvLogoutFunction = ({
     } else {
       return null;
     }
-  }
+  };
 
-  const getBackgroundColor = (color) =>
-    lighten(color, 0.7);
-  
-  const getHoverBackgroundColor = (color) =>
-    lighten(color, 0.6);
-
-  const getSelectedBackgroundColor = (color) =>
-    lighten(color, 0.5);
-  
-  const getSelectedHoverBackgroundColor = (color) =>
-    lighten(color, 0.4);
+  const getBackgroundColor = (color) => lighten(color, 0.7);
+  const getHoverBackgroundColor = (color) => lighten(color, 0.6);
+  const getSelectedBackgroundColor = (color) => lighten(color, 0.5);
+  const getSelectedHoverBackgroundColor = (color) => lighten(color, 0.4);
 
   const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
-    '& .late': {
+    "& .late": {
       backgroundColor: getBackgroundColor(theme.palette.error.main),
-      transition: 'background-color 0.1s ease',
-      '&:hover': {
+      transition: "background-color 0.1s ease",
+      "&:hover": {
         backgroundColor: getHoverBackgroundColor(theme.palette.error.main),
       },
-      '&.Mui-selected': {
+      "&.Mui-selected": {
         backgroundColor: getSelectedBackgroundColor(theme.palette.error.main),
-        '&:hover': {
+        "&:hover": {
           backgroundColor: getSelectedHoverBackgroundColor(theme.palette.error.main),
         },
       },
     },
-    '& .on-time': {
+    "& .on-time": {
       backgroundColor: getBackgroundColor(theme.palette.success.main),
-      transition: 'background-color 0.1s ease',
-      '&:hover': {
+      transition: "background-color 0.1s ease",
+      "&:hover": {
         backgroundColor: getHoverBackgroundColor(theme.palette.success.main),
       },
-      '&.Mui-selected': {
+      "&.Mui-selected": {
         backgroundColor: getSelectedBackgroundColor(theme.palette.success.main),
-        '&:hover': {
+        "&:hover": {
           backgroundColor: getSelectedHoverBackgroundColor(theme.palette.success.main),
         },
       },
@@ -151,44 +154,39 @@ const YkvLogoutFunction = ({
     { field: "late", headerName: t("resp_act"), width: 200, renderCell: getLateIcon },
   ];
 
+  const fetchResponsibilities = async () => {
+    try {
+      const res = await axiosClient.get("/listobjects/nightresponsibilities/");
+      const userData = res.data.map((u) => ({
+        id: u.id, // DataGrid requires a unique 'id' for each row
+        Vastuuhenkilö: u.user.username,
+        Vastuussa: u.responsible_for,
+        YKV_sisäänkirjaus: new Date(u.login_time), // Assuming login_time is available
+        Organisaatiot: u.organizations.map((organization) => organization.name), // Assuming login_time is available
+        present: u.present,
+        created_by: u.created_by,
+        logout_time: u.present ? null : new Date(u.logout_time),
+        late: u.late,
+      }));
+      setAllUsers(userData);
+      setActiveUsers(userData.filter((resp) => resp.present === true));
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    axiosClient
-      .get("/listobjects/nightresponsibilities/")
-      .then((res) => {
-        const userData = res.data.map((u, index) => ({
-          id: u.id, // DataGrid requires a unique 'id' for each row
-          Vastuuhenkilö: u.user.username,
-          Vastuussa: u.responsible_for,
-          YKV_sisäänkirjaus: new Date(u.login_time), // Assuming login_time is available
-          Organisaatiot: u.organizations.map(
-            (organization) => organization.name,
-          ), // Assuming login_time is available
-          present: u.present,
-          created_by: u.created_by,
-          logout_time: u.present ? null : new Date(u.logout_time),
-          late: u.late,        
-        }));
-        setAllUsers(userData);
-        setactiveUsers(
-          userData.filter(
-            (resp) =>
-              resp.present === true 
-              // &&
-              // resp.Vastuuhenkilö == loggedUser.username ||
-              // resp.created_by == loggedUser.username,
-          ),
-        );
-        setLoading(false);
-      })
-      .catch((error) => console.error(error));
+    fetchResponsibilities();
   }, []);
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const formJson = Object.fromEntries(formData.entries());
     const email = formJson.email;
-    handleYkvLogin(); // Call handleYkvLogin if needed
+    await handleYkvLogin(); // Call handleYkvLogin if needed
+    await fetchResponsibilities(); // Fetch responsibilities after login
     handleClose(); // Close the dialog
   };
 
@@ -224,15 +222,15 @@ const YkvLogoutFunction = ({
         user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase()),
     );
 
-    const getRowClassName = (params) => {
-      if (params.row.late) {
-        return 'late';
-      }
-      if (params.row.present) {
-        return 'on-time';
-      }
-      return '';
-    };
+  const getRowClassName = (params) => {
+    if (params.row.late) {
+      return "late";
+    }
+    if (params.row.present) {
+      return "on-time";
+    }
+    return "";
+  };
 
   return loading ? (
     <div>{t("loading")}...</div>

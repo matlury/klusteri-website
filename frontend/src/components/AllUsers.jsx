@@ -22,6 +22,8 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 
 const AllUsers = ({
+  allUsers,
+  organizations,
   handleUpdateAnotherUser,
   hasPermissionOrg,
   hasPermission,
@@ -30,10 +32,11 @@ const AllUsers = ({
   handleResRightChange,
   setUserDetailsPassword,
   userDetailsPassword,
+  fetchOrganizations,
+  getAllUsers,
 }) => {
   // State variables to manage user data and dialog visibility
-  const [allUsers, setAllUsers] = useState([]);
-  const [allOrganisations, setAllOrganisations] = useState([]);
+
   const [open, setOpen] = useState(false);
   const [userDetailsUsername, setUserDetailsUsername] = useState("");
   const [userDetailsEmail, setuserDetailsEmail] = useState("");
@@ -52,6 +55,8 @@ const AllUsers = ({
 
   // Function to open the dialog
   const handleClickOpen = () => {
+    setNewPassword("");
+    setConfirmNewPassword("");
     setOpen(true);
   };
 
@@ -68,54 +73,18 @@ const AllUsers = ({
     setuserDetailsTelegram(showThisUser.Telegram);
     setuserDetailsRole(showThisUser.Rooli);
     setuserDetailsId(showThisUser.id);
-    setuserDetailsOrganizations(showThisUser.Jäsenyydet.join(", "));
+    setuserDetailsOrganizations(showThisUser.Jäsenyydet ? showThisUser.Jäsenyydet.join(", ") : "");
     setuserDetailsResRights(showThisUser.resrights);
     handleClickOpen();
   };
 
-  // Fetching user data from the server on component mount
-  useEffect(() => {
-    axiosClient
-      .get("listobjects/users/")
-      .then((res) => {
-        const userData = res.data.map((u) => ({
-          id: u.id,
-          Käyttäjänimi: u.username,
-          email: u.email,
-          Telegram: u.telegram,
-          Rooli: ROLE_DESCRIPTIONS[u.role],
-          Jäsenyydet: u.keys.map((organization) => organization.name),
-          resrights: u.rights_for_reservation,
-        }));
-        setAllUsers(userData);
-      })
-      .catch((error) => console.error(error));
-  }, []);
-
-  // Fetching organization data from the server on component mount
-  useEffect(() => {
-    axiosClient
-      .get("listobjects/organizations/")
-      .then((res) => {
-        const orgData = res.data.map((u) => ({
-          id: u.id,
-          Organisaatio: u.name,
-          email: u.email,
-          kotisivu: u.homepage,
-          Avaimia: u.user_set.length,
-        }));
-        setAllOrganisations(orgData);
-      })
-      .catch((error) => console.error(error));
-  }, []);
-
   // Function to handle form submission (updating user details)
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
     const roleIntValue = ROLE_OPTIONS.find(
       (option) => option.label === userDetailsRole,
     ).value;
-    handleUpdateAnotherUser(
+    await handleUpdateAnotherUser(
       userDetailsId,
       userDetailsUsername,
       newPassword,
@@ -125,6 +94,22 @@ const AllUsers = ({
       roleIntValue,
       userDetailsOrganizations.split(", ").map((org) => org.trim()),
     );
+    await fetchOrganizations();
+    handleClose();
+  };
+
+  const handleKeyForm = async (userId, orgName) => {
+    await handleKeySubmit(userId, orgName);
+    await fetchOrganizations();
+    await getAllUsers();
+    handleClose();
+  };
+
+  const handleRightsFormChange = async (userId) => {
+    await handleResRightChange(userId);
+    await fetchOrganizations();
+    await getAllUsers();
+    toggleUserDetails(userId);
     handleClose();
   };
 
@@ -182,7 +167,6 @@ const AllUsers = ({
             <TextField
               label={t("newpassword")}
               type="password"
-              value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               fullWidth
               sx={{ marginBottom: "1rem" }}
@@ -191,7 +175,6 @@ const AllUsers = ({
             <TextField
               label={t("confirmnewpassword")}
               type="password"
-              value={confirmNewPassword}
               onChange={(e) => setConfirmNewPassword(e.target.value)}
               fullWidth
               sx={{ marginBottom: "1rem" }}
@@ -246,7 +229,7 @@ const AllUsers = ({
               <AccordionDetails>
                 <Autocomplete
                   id="combo-box-org"
-                  options={allOrganisations}
+                  options={organizations}
                   getOptionLabel={(option) => option.Organisaatio}
                   style={{ width: 300 }}
                   onChange={(event, newValue) => {
@@ -261,13 +244,7 @@ const AllUsers = ({
                   variant="contained"
                   className="submit-key-button"
                   data-testid="submit-key-button"
-                  onClick={() => {
-                    handleKeySubmit(
-                      userDetailsId,
-                      selectedOrganization.Organisaatio,
-                    );
-                    handleClose();
-                  }}
+                  onClick={() => {handleKeyForm(userDetailsId, selectedOrganization.Organisaatio)}}
                 >
                   {t("givekey")}
                 </Button>
@@ -282,28 +259,20 @@ const AllUsers = ({
             >
               {t("changepj")}
             </Button>
-
             {userDetailsResRights ? (
               <Button
-                onClick={() => {
-                  handleResRightChange(userDetailsId);
-                  handleClose();
-                }}
-                sx={{ marginBottom: "1rem" }} // Add spacing below the button
+              onClick={() => {handleRightsFormChange(userDetailsId)}}
+              sx={{ marginBottom: '1rem' }} // Add spacing below the button
               >
                 {t("removeresrights")}
               </Button>
-            ) : (
-              <Button
-                onClick={() => {
-                  handleResRightChange(userDetailsId);
-                  handleClose();
-                }}
-                sx={{ marginBottom: "1rem" }} // Add spacing below the button
-              >
-                {t("addresrights")}
-              </Button>
-            )}
+            ):
+            <Button
+              onClick={() => {handleRightsFormChange(userDetailsId)}}
+              sx={{ marginBottom: '1rem' }} // Add spacing below the button
+            >
+              {t("addresrights")}
+            </Button>}
 
             {/* Dialog actions */}
             <DialogActions>
