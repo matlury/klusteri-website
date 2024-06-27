@@ -11,43 +11,48 @@ jest.mock("../axios.js");
 const mockUsers = [
   {
     id: 1,
-    username: "user1",
+    Käyttäjänimi: "user1",
     email: "user1@example.com",
-    telegram: "user1_telegram",
-    role: "1",
-    keys: [{ name: "Org1" }, { name: "Org2" }],
+    Telegram: "user1_telegram",
+    Rooli: "LeppisPJ",
+    Jäsenyydet: ["Org1", "Org2"],
+    resrights: "some_resrights1",
   },
   {
     id: 2,
-    username: "user2",
+    Käyttäjänimi: "user2",
     email: "user2@example.com",
-    telegram: "user2_telegram",
-    role: "2",
-    keys: [{ name: "Org3" }],
+    Telegram: "user2_telegram",
+    Rooli: "Muu",
+    Jäsenyydet: ["Org3"],
+    resrights: "some_resrights2",
   },
 ];
 
 const mockOrganizations = [
   {
     id: 1,
-    name: "Org1",
+    Organisaatio: "Org1",
     email: "org1@example.com",
-    homepage: "org1.com",
-    user_set: [{}, {}],
+    kotisivu: "org1.com",
+    color: "blue",
+    Avaimia: 2,
   },
   {
     id: 2,
-    name: "Org2",
+    Organisaatio: "Org2",
     email: "org2@example.com",
-    homepage: "org2.com",
-    user_set: [{}],
+    kotisivu: "org2.com",
+    color: "red",
+    Avaimia: 1,
   },
   {
     id: 3,
-    name: "Org3",
+    Organisaatio: "Org3",
     email: "org3@example.com",
-    homepage: "org3.com",
-    user_set: [{}],
+    kotisivu: "org3.com",
+    color: "green",
+    Avaimia: 1,
   },
 ];
 
@@ -131,11 +136,15 @@ test(
   async () => {
     render(
       <AllUsers
+        allUsers={mockUsers}
+        organizations={mockOrganizations}
         handleUpdateAnotherUser={mockHandleUpdateAnotherUser}
         hasPermissionOrg={true}
         hasPermission={true}
         handlePJChange={mockHandlePJChange}
         handleKeySubmit={mockHandleKeySubmit}
+        fetchOrganizations={mockFetchOrganizations}
+        getAllUsers={mockGetAllUsers}
       />,
     );
 
@@ -174,11 +183,15 @@ test(
 test("closes the dialog when cancel button is clicked", async () => {
   render(
     <AllUsers
+      allUsers={mockUsers}
+      organizations={mockOrganizations}
       handleUpdateAnotherUser={mockHandleUpdateAnotherUser}
       hasPermissionOrg={true}
       hasPermission={true}
       handlePJChange={mockHandlePJChange}
       handleKeySubmit={mockHandleKeySubmit}
+      fetchOrganizations={mockFetchOrganizations}
+      getAllUsers={mockGetAllUsers}
     />,
   );
 

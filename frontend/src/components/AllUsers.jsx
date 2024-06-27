@@ -73,7 +73,7 @@ const AllUsers = ({
     setuserDetailsTelegram(showThisUser.Telegram);
     setuserDetailsRole(showThisUser.Rooli);
     setuserDetailsId(showThisUser.id);
-    setuserDetailsOrganizations(showThisUser.Jäsenyydet.join(", "));
+    setuserDetailsOrganizations(showThisUser.Jäsenyydet ? showThisUser.Jäsenyydet.join(", ") : "");
     setuserDetailsResRights(showThisUser.resrights);
     handleClickOpen();
   };
