@@ -1,6 +1,5 @@
-FROM node:iron-slim
-
-RUN npm install -g npm@10.4.0
+# Stage 1: Build the React app
+FROM node:current-alpine AS build
 
 WORKDIR /frontend
 
@@ -10,10 +9,25 @@ RUN npm install
 
 COPY . .
 
-RUN chgrp -R 0 /frontend && chmod -R g+rwX /frontend
+# Define ARG and ENV for RECAPTCHA_SITE_KEY
+ARG SITE_KEY
+ENV SITE_KEY=${SITE_KEY}
 
 RUN npm run build
 
-EXPOSE 5173
+# Stage 2: Serve with Nginx
+FROM nginx:alpine
 
-CMD ["npm", "run", "preview"]
+# Copy the build output to the Nginx html directory
+COPY --from=build /frontend/dist /usr/share/nginx/html
+
+# Copy custom Nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Ensure proper permissions for Nginx directories
+RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
+
+# Expose the necessary port
+EXPOSE 5173 8000
+
+CMD ["nginx", "-g", "daemon off;"]
