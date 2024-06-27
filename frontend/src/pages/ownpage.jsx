@@ -8,8 +8,7 @@ import CreateOrganization from "../components/CreateOrganization.jsx";
 import AllUsers from "../components/AllUsers.jsx";
 import updateaccountcheck from "../utils/updateaccountcheck.js";
 import { useTranslation } from "react-i18next";
-import { Snackbar, Alert } from '@mui/material';
-
+import { Snackbar, Alert } from "@mui/material";
 
 const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const { user, setUser } = useStateContext();
@@ -23,7 +22,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // user_details* variables for viewing and updating someone else's information
   const [userDetailsUsername, setUserDetailsUsername] = useState("");
   const [userDetailsPassword, setUserDetailsPassword] = useState("");
-  const [userDetailsConfirmPassword, setUserDetailsConfirmPassword] = useState("")
+  const [userDetailsConfirmPassword, setUserDetailsConfirmPassword] =
+    useState("");
   const [userDetailsEmail, setuserDetailsEmail] = useState("");
   const [userDetailsTelegram, setuserDetailsTelegram] = useState("");
   const [userDetailsRole, setuserDetailsRole] = useState(null);
@@ -56,7 +56,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // "success", "error", "info", "warning"
-
 
   const { t } = useTranslation();
 
@@ -163,9 +162,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       });
 
     function confirmupdate() {
-      const confirmUpdate = window.confirm(
-        t("usereditconfirm"),
-      );
+      const confirmUpdate = window.confirm(t("usereditconfirm"));
 
       if (confirmUpdate) {
         axiosClient
@@ -190,19 +187,25 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     setSnackbarMessage(message);
     setSnackbarSeverity(severity);
     setSnackbarOpen(true);
-  }
+  };
 
-  const handleUpdateAnotherUser = (userDetailsId, userDetailsUsername, userDetailsPassword, userDetailsConfirmPassword, userDetailsEmail, userDetailsTelegram, userDetailsRole, 
-    userDetailsOrganizations) => {        
+  const handleUpdateAnotherUser = (
+    userDetailsId,
+    userDetailsUsername,
+    userDetailsPassword,
+    userDetailsConfirmPassword,
+    userDetailsEmail,
+    userDetailsTelegram,
+    userDetailsRole,
+    userDetailsOrganizations,
+  ) => {
     /*
     Event handler for updating someone else's information.
     No validation here because backend takes care of it.
     */
     //event.preventDefault();
 
-    const confirmUpdate = window.confirm(
-      t("usereditforother"),
-    );
+    const confirmUpdate = window.confirm(t("usereditforother"));
 
     const updatedValues = {
       username: userDetailsUsername,
@@ -210,7 +213,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       email: userDetailsEmail,
       telegram: userDetailsTelegram,
       role: userDetailsRole,
-      id: userDetailsId, 
+      id: userDetailsId,
     };
 
     const validationError = updateaccountcheck({
@@ -220,7 +223,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       telegram: userDetailsTelegram,
       confirmPassword: userDetailsConfirmPassword,
       API_URL,
-      t
+      t,
     });
 
     if (typeof validationError === "string") {
@@ -236,7 +239,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             handleSnackbar(t("usereditsuccess"), "success");
             setTimeout(() => setSuccess(""), 5000);
             getAllUsers();
-    
+
             if (userDetailsEmail === email) {
               localStorage.setItem("loggedUser", JSON.stringify(response.data));
               setUser(response.data);
@@ -286,35 +289,39 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   };
 
   // Handles organization detail updates
-  const handleOrganizationDetails = (organization_new_name, organization_new_email, organization_new_homepage,  organization_new_color, orgId) => {
+  const handleOrganizationDetails = (
+    organization_new_name,
+    organization_new_email,
+    organization_new_homepage,
+    organization_new_color,
+    orgId,
+  ) => {
     const newOrganizationObject = {
       name: organization_new_name,
       email: organization_new_email,
       homepage: organization_new_homepage,
       color: organization_new_color,
     };
-        axiosClient
-          .put(
-            `/organizations/update_organization/${orgId}/`,
-            newOrganizationObject,
-          )
-          .then((response) => {
-            console.log("Organization created successfully!", response.data);
-            setSuccess("Järjestö muokattu onnistuneesti!");
-            handleSnackbar("Järjestö muokattu onnistuneesti!", "success");
-            setTimeout(() => setSuccess(""), 5000);
-            getOrganisations();
-          })
-          .catch((error) => {
-            console.error("Error creating account:", error);
-          });
+    axiosClient
+      .put(
+        `/organizations/update_organization/${orgId}/`,
+        newOrganizationObject,
+      )
+      .then((response) => {
+        console.log("Organization created successfully!", response.data);
+        setSuccess("Järjestö muokattu onnistuneesti!");
+        handleSnackbar("Järjestö muokattu onnistuneesti!", "success");
+        setTimeout(() => setSuccess(""), 5000);
+        getOrganisations();
+      })
+      .catch((error) => {
+        console.error("Error creating account:", error);
+      });
   };
 
   // Handles deletion of organization
   const handleDeleteOrganization = (orgId) => {
-    const confirmUpdate = window.confirm(
-      t("orgdeleteconfirm"),
-    );
+    const confirmUpdate = window.confirm(t("orgdeleteconfirm"));
 
     if (confirmUpdate) {
       axiosClient
@@ -403,9 +410,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
     // get a list of each organization the user is a member of
     const orgDict = showThisUser.keys;
-    setuserDetailsOrganizations(
-      orgDict.map(org => org.name),
-    );
+    setuserDetailsOrganizations(orgDict.map((org) => org.name));
 
     setSelectedUser((prevSelectedUser) => {
       if (prevSelectedUser === userId) {
@@ -424,9 +429,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     confirmupdate();
 
     function confirmupdate() {
-      const confirmUpdate = window.confirm(
-        t("pjchange"),
-      );
+      const confirmUpdate = window.confirm(t("pjchange"));
 
       if (confirmUpdate) {
         axiosClient
@@ -459,15 +462,16 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     confirmupdate();
 
     function confirmupdate() {
-      const confirmUpdate = window.confirm(
-        t("resrightsconfirm")
-      );
+      const confirmUpdate = window.confirm(t("resrightsconfirm"));
 
       if (confirmUpdate) {
         axiosClient
           .put(`/users/change_rights_reservation/${selectedUserId}/`)
           .then((response) => {
-            console.log("Reservation rights changed succesfully:", response.data);
+            console.log(
+              "Reservation rights changed succesfully:",
+              response.data,
+            );
             setSuccess(t("usereditsuccess"));
             handleSnackbar(t("usereditsuccess"), "success");
             setTimeout(() => setSuccess(""), 5000);
@@ -479,12 +483,12 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         console.log("User cancelled the update.");
       }
     }
-  }
+  };
 
   // Handles key submit
   //const handleKeySubmit = async (event) => {
   const handleKeySubmit = async (UserId, Organization) => {
-   // event.preventDefault();
+    // event.preventDefault();
 
     // if (!selectedUserId || !selectedOrganization) {
     //   console.error("Please select a user and an organization");
@@ -492,9 +496,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     // }
 
     // Display a confirmation dialog before handing over the key
-    const confirmKeyHandover = window.confirm(
-      t("handoverkeyconfirm")
-    );
+    const confirmKeyHandover = window.confirm(t("handoverkeyconfirm"));
 
     if (!confirmKeyHandover) {
       return;
@@ -560,7 +562,11 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         if (currentUser.role === 1) {
           setHasPermission(true);
           setHasPermissionOrg(true);
-        } else if (currentUser.role == 2 || currentUser.role == 3 || currentUser.role == 6) {
+        } else if (
+          currentUser.role == 2 ||
+          currentUser.role == 3 ||
+          currentUser.role == 6
+        ) {
           setHasPermissionOrg(true);
           setHasPermission(false);
         } else if (currentUser[0]) {
@@ -586,7 +592,11 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
             onClose={() => setSnackbarOpen(false)}
             data-testid="snackbar"
           >
-            <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
+            <Alert
+              onClose={() => setSnackbarOpen(false)}
+              severity={snackbarSeverity}
+              sx={{ width: "100%" }}
+            >
               {snackbarMessage}
             </Alert>
           </Snackbar>
@@ -676,8 +686,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                   backgroundColor: "#fff",
                   padding: "20px",
                 }}
-              >
-              </div>
+              ></div>
             )}
           </div>
         </div>
