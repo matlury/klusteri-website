@@ -25,7 +25,6 @@ const newaccountcheck = ({
         if (password.length < 8 || password.length > 20) {
             return t("mincharspass");
         }
-        console.log(password);
         if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
             return t("invalidpass");
         }
