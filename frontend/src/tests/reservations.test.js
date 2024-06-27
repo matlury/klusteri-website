@@ -17,6 +17,19 @@ afterEach(() => {
   mockAxios.reset();
 });
 
+const user = {
+  username: "example_username",
+  email: "example_email@example.com",
+  telegram: "example_telegram",
+  role: 1,
+  keys: { "tko-äly": true },
+  organization: { "tko-äly": true },
+  rights_for_reservation: true,
+  id: 1,
+};
+
+localStorage.setItem("loggedUser", JSON.stringify(user));
+
 describe("Reservations component", () => {
   it("renders Reservations component", () => {
     const { getByText } = render(<Reservations />);
