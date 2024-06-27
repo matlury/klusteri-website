@@ -12,6 +12,7 @@ const FrontPage = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [events, setEvents] = useState(null);
 
+  // Fetch the events to be shown from the backend
   useEffect(() => {
     axios
       .get(`${API_URL}/api/listobjects/events/`)
