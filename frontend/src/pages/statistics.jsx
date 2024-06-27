@@ -373,7 +373,7 @@ const Statistics = () => {
     }
   };
 
-  if (userRole === 5 || userRole == null) {
+  if (userRole == null) {
     return <p>{t("login")}</p>;
   }
 
