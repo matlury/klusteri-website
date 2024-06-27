@@ -9,6 +9,7 @@ import AllUsers from "../components/AllUsers.jsx";
 import updateaccountcheck from "../utils/updateaccountcheck.js";
 import { useTranslation } from "react-i18next";
 import { Snackbar, Alert } from "@mui/material";
+import { ROLE_DESCRIPTIONS, ROLE_OPTIONS } from "../roles.js";
 
 const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const { user, setUser } = useStateContext();
