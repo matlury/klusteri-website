@@ -214,7 +214,6 @@ const MyCalendar = () => {
       axiosClient
         .post(`events/create_event`, newEvent)
         .then((response) => {
-          console.log(t("eventsaved"), response.data);
           const updatedEvent = { ...newEvent, id: response.data.id };
           setEvents([...events, updatedEvent]);
           setShowCreateModal(false);
@@ -246,7 +245,6 @@ const MyCalendar = () => {
       axiosClient
         .delete(`events/delete_event/${eventId}/`)
         .then((response) => {
-          console.log(t("eventdeleted"), response.data);
           setEvents(events.filter((event) => event.id !== eventId));
         })
         .catch((error) => {
