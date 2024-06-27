@@ -29,7 +29,9 @@
 - Testikattavuus 70%.
 - Toimii tuotantoympäristössä.
 
-## Komentorivitoiminnot
+## Asennus ja käyttö
+
+Nettisivuja voi suorittaa lokaalisti seuraavien ohjeiden avulla:
 
 ### Backend
 
@@ -46,11 +48,12 @@ poetry shell
 ### Tietokannan rakentaminen
 Katso ohjeet tietokannan pystyttämiseksi [täältä](https://github.com/matlury/klusteri-website/blob/main/docs/database_instructions.md)
 
-Jos koodissa määriteltyjä tietokantatauluja on muokattu, on luotava uusi migraatio tietokantaa varten
+Jos koodissa määriteltyjä tietokantatauluja on muokattu, on luotava uusi migraatio tietokantaa varten. Seuraava komento luo migraatiotiedoston
 ```bash
 python manage.py makemigrations
 ```
-Omalta laitteelta löytyvän PostgreSQL-tietokannan saa alustettua valmiiden migraatioiden mukaan seuraavalla komennolla
+
+.env-tiedostossa määriteltyyn tietokantaan luodaan tietokantataulut migraatiotiedoston avulla automaattisesti seuraavalla komennolla
 ```bash
 python manage.py migrate
 ```
