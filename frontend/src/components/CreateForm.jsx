@@ -29,7 +29,7 @@ const CreateForm = ({
   setRecaptchaResponse
 }) => {
   const { t } = useTranslation();
-  const SITE_KEY = import.meta.env.SITE_KEY;
+  const SITE_KEY = process.env.VITE_SITE_KEY;
 
   const handleCaptcha = (value) => {
     setRecaptchaResponse(value);

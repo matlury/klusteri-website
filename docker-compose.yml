@@ -23,7 +23,7 @@ services:
     depends_on:
       - api
     environment:
-      - VITE_SITE_KEY=${SITE_KEY}
+      - SITE_KEY=${SITE_KEY}
     secrets:
       - site_key
 
