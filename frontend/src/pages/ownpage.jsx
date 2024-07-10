@@ -60,7 +60,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   const { t } = useTranslation();
 
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = process.env.VITE_API_URL;
   // Writes down if a user is logged in
   useEffect(() => {
     setIsLoggedIn(false);

@@ -18,7 +18,7 @@ import FormLabel from "@mui/material/FormLabel";
 import DownloadIcon from "@mui/icons-material/Download";
 import { useTranslation } from "react-i18next";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = process.env.VITE_API_URL;
 
 // This page is used to display statistics about users and organizations
 const Statistics = () => {

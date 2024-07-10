@@ -4,7 +4,7 @@ import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import FrontpageEvents from "../components/FrontpageEvents";
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = process.env.VITE_API_URL;
 
 const FrontPage = () => {
   const { t } = useTranslation();
