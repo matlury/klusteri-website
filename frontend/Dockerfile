@@ -11,7 +11,7 @@ COPY . .
 
 # Define ARG and ENV for RECAPTCHA_SITE_KEY
 ARG SITE_KEY
-ENV SITE_KEY=${SITE_KEY}
+ENV VITE_SITE_KEY=${SITE_KEY}
 
 RUN npm run build
 
