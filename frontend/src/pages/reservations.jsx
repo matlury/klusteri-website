@@ -8,7 +8,7 @@ import axios from "axios";
 import ReservationsView from "../components/ReservationsView.jsx";
 import { useTranslation } from "react-i18next";
 
-const API_URL = process.env.API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 // Set locale to Finnish and specify the first day of the week
 moment.updateLocale("fi", {
