@@ -13,6 +13,9 @@ COPY . .
 ARG SITE_KEY
 ENV VITE_SITE_KEY=${SITE_KEY}
 
+ARG API_URL
+ENV VITE_API_URL=${API_URL}
+
 RUN npm run build
 
 # Stage 2: Serve with Nginx
