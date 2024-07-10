@@ -8,11 +8,11 @@ export default defineConfig({
     host: true,
   },
   define: {
-    "process.env.API_URL": JSON.stringify(
-      process.env.API_URL || "http://localhost:8000",
+    "process.env.VITE_API_URL": JSON.stringify(
+      process.env.VITE_API_URL || "http://localhost:8000"
     ),
-    "process.env.SITE_KEY": JSON.stringify(
-      process.env.SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI", // reCAPTCHA site key, uses the testing key from Google if not set
+    "process.env.VITE_SITE_KEY": JSON.stringify(
+      process.env.VITE_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" // reCAPTCHA site key, uses the testing key from Google if not set
     ),
   },
 });
