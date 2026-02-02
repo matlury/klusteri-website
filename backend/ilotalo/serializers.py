@@ -43,6 +43,12 @@ class OrganizationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Organization size must be 0 or 1 (small or large).")
         return size
 
+class OrganizationNameSerializer(serializers.ModelSerializer):
+    """Minimal serializer for organization name and ID only to boost performance"""
+    class Meta:
+        model = Organization
+        fields = ('id', 'name')
+
 class UserSerializer(serializers.ModelSerializer):
 
     keys = OrganizationSerializer(many=True, read_only=True)
@@ -118,12 +124,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Username cannot contain @ symbol")
         return username
 
-    def validate_username(self, username):
-        """Validates that the username does not contain @ symbol so it doesn't mess with the email login"""
-        if "@" in username:
-            raise serializers.ValidationError("Username cannot contain @ symbol")
-        return username
-
     def validate_role(self, role):
         """Validates role when updating a user. Limits: 1 <= role <= 7."""
         if int(role) < 1:
@@ -169,7 +169,7 @@ class UserNoPasswordSerializer(serializers.ModelSerializer):
         exclude = ('password',)
 
 class EventSerializer(serializers.ModelSerializer):
-    """Serializes an Event object as JSON"""
+    """Serializes an Event object as JSON - Full version"""
 
     organizer = OrganizationSerializer(read_only=True)
     created_by = UserNoPasswordSerializer(read_only=True)
@@ -179,8 +179,16 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = '__all__'
 
+class EventListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for calendar and list views - Nested object for frontend compatibility"""
+    organizer = OrganizationNameSerializer(read_only=True)
+    
+    class Meta:
+        model = Event
+        fields = ('id', 'start', 'end', 'title', 'organizer', 'responsible', 'open', 'room')
+
 class CreateEventSerializer(serializers.ModelSerializer):
-    """Serializes an Event object as JSON"""
+    """Used for creating an event"""
 
     class Meta:
         model = Event

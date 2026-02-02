@@ -261,7 +261,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     try {
       const res = await 
       axiosClient.get("listobjects/organizations/")
-      const orgData = res.data.map((u) => ({
+      const rawData = res.data.results || res.data;
+      const orgData = rawData.map((u) => ({
             id: u.id,
             Organisaatio: u.name,
             email: u.email,
@@ -363,7 +364,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         setError(t("emailinuse"));
         handleSnackbar(t("emailinuse"), "error");
         setTimeout(() => setError(""), 5000);
-      } else {
+      }
+       else {
         const organizationObject = {
           name: organization_name,
           email: organization_email,
@@ -395,7 +397,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const getAllUsers = async () => {
     try {
       const response = await axiosClient.get("listobjects/users/");
-      const userData = response.data.map((u) => ({
+      const rawData = response.data.results || response.data;
+      const userData = rawData.map((u) => ({
         id: u.id,
         Käyttäjänimi: u.username,
         email: u.email,

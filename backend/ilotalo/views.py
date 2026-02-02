@@ -12,13 +12,15 @@ from .serializers import (
     UserNoPasswordSerializer,
     UserUpdateSerializer,
     EventSerializer,
+    EventListSerializer,
     CreateEventSerializer,
     NightResponsibilitySerializer,
     CreateNightResponsibilitySerializer,
     DefectFaultSerializer,
     CleaningSerializer,
     CreateCleaningSerializer,
-    CleaningSuppliesSerializer
+    CleaningSuppliesSerializer,
+    OrganizationNameSerializer
 )
 from .models import User, Organization, Event, NightResponsibility, DefectFault, Cleaning, CleaningSupplies
 from .config import Role
@@ -51,6 +53,7 @@ class UserView(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = UserNoPasswordSerializer
     queryset = User.objects.all()
+    pagination_class = None
 
 
 class OrganizationView(viewsets.ReadOnlyModelViewSet):
@@ -61,6 +64,7 @@ class OrganizationView(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = OrganizationSerializer
     queryset = Organization.objects.all()
+    pagination_class = None
 
 
 class RegisterView(APIView):
@@ -381,8 +385,40 @@ class EventView(viewsets.ReadOnlyModelViewSet):
     Only supports list and retrieve actions (read-only)
     """
 
-    serializer_class = EventSerializer
-    queryset = Event.objects.all()
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return EventListSerializer
+        return EventSerializer
+    
+    def get_queryset(self):
+        queryset = Event.objects.all().select_related('organizer', 'created_by')
+        start_date = self.request.query_params.get('start')
+        end_date = self.request.query_params.get('end')
+        all_time = self.request.query_params.get('all')
+        
+        if start_date:
+            queryset = queryset.filter(start__gte=start_date)
+        if end_date:
+            queryset = queryset.filter(end__lte=end_date)
+            
+        # Default to current month if no filters are provided and 'all' is not requested.
+        # This prevents loading thousands of historical events by accident.
+        if not start_date and not end_date and not all_time:
+            now = datetime.now()
+            queryset = queryset.filter(start__year=now.year, start__month=now.month)
+            
+        return queryset.order_by('start')
+
+    def paginate_queryset(self, queryset):
+        """
+        Pagination is enabled by default for the list view (e.g., /events/).
+        It is disabled if:
+        1. 'all' is provided (CSV exports).
+        2. 'start' or 'end' is provided (Calendar view, which handles its own data slicing).
+        """
+        if 'all' in self.request.query_params or 'start' in self.request.query_params or 'end' in self.request.query_params:
+            return None
+        return super().paginate_queryset(queryset)
 
 class CreateEventView(APIView):
     """View for creating a new event <baseurl>/api/events/create_event"""
@@ -484,6 +520,7 @@ class NightResponsibilityView(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = NightResponsibilitySerializer
     queryset = NightResponsibility.objects.all()
+    pagination_class = None
 
 class CreateNightResponsibilityView(APIView):
     """View for creating a new ykv <baseurl>/api/ykv/create_responsibility"""

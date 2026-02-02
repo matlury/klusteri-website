@@ -117,9 +117,10 @@ const CleaningSchedule = ({
     }
 
     function getOrgId(orgName) {
-      for (let i = 0; i < orgdata.data.length; i++) {
-        if (orgdata.data[i].name === orgName) {
-          return orgdata.data[i].id;
+      const orgs = orgdata.data.results || orgdata.data;
+      for (let i = 0; i < orgs.length; i++) {
+        if (orgs[i].name === orgName) {
+          return orgs[i].id;
         }
       }
     };
@@ -164,9 +165,10 @@ const CleaningSchedule = ({
     axiosClient
       .get("/listobjects/cleaning/")
       .then((res) => {
-        setRawCleaningData(res.data);
+        const rawData = res.data.results || res.data;
+        setRawCleaningData(rawData);
 
-        const cleaningData = res.data.map((u, index) => ({
+        const cleaningData = rawData.map((u, index) => ({
           id: u.week,
           week: u.week,
           date: moment().day("Monday").week(u.week),

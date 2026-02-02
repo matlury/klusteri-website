@@ -149,7 +149,8 @@ const DefectFault = ({
     axiosClient
       .get("/listobjects/defects/")
       .then((res) => {
-        const defectData = res.data.map((u, index) => ({
+        const rawData = res.data.results || res.data;
+        const defectData = rawData.map((u, index) => ({
           id: u.id, // DataGrid requires a unique 'id' for each row
           description: u.description,
           time: new Date(u.time),

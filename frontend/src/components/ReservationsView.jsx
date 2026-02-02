@@ -24,6 +24,7 @@ const ReservationsView = ({
   handleAddNewEventClick,
   handleSelectSlot,
   handleSelectEvent,
+  onNavigate,
   showCreateModal,
   handleCloseModal,
   handleInputChange,
@@ -158,6 +159,7 @@ const ReservationsView = ({
         selectable
         onSelectSlot={handleSelectSlot}
         onSelectEvent={handleSelectEvent}
+        onNavigate={onNavigate}
         firstDay={1}
         eventPropGetter={(event) => ({
           style: {

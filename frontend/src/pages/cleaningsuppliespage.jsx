@@ -125,7 +125,8 @@ const CleaningSupplies = ({
     axiosClient
       .get("/listobjects/cleaningsupplies/")
       .then((res) => {
-        const suppliesData = res.data.map((u, index) => ({
+        const rawData = res.data.results || res.data;
+        const suppliesData = rawData.map((u, index) => ({
           id: u.id, // DataGrid requires a unique 'id' for each row
           tool: u.tool,
         }));

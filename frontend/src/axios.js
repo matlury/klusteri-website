@@ -8,12 +8,14 @@ const axiosClient = axios.create({
 });
 
 // Checks the authorization of the user using axios
-
 axiosClient.interceptors.request.use((config) => {
   const token = localStorage.getItem("ACCESS_TOKEN");
-  //const refreshtoken = localStorage.getItem('REFRESH_TOKEN')
-  config.headers = config.headers || {};
-  config.headers.Authorization = `Bearer ${token}`;
+  
+  // Only add header if token exists and isn't "undefined" or "null" string
+  if (token && token !== "undefined" && token !== "null") {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  
   return config;
 });
 
@@ -23,11 +25,16 @@ axiosClient.interceptors.response.use(
   },
   (error) => {
     const { response } = error;
-    if (response.status === 401) {
+    
+    // If token is invalid or expired (401), clear local storage
+    if (response && response.status === 401) {
       localStorage.removeItem("ACCESS_TOKEN");
-      // window.location.reload()
-    } else if (response.status === 404) {
-      //Show not found
+      localStorage.removeItem("loggedUser");
+      
+      // Optional: Redirect to login if not already there
+      if (!window.location.pathname.includes('/login')) {
+        window.location.href = "/login";
+      }
     }
 
     throw error;

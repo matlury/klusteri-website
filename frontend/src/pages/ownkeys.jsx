@@ -96,7 +96,8 @@ const OwnKeys = ({
     const loginTime = getCurrentDateTime();
 
     const userdata = await axiosClient.get("/listobjects/users/");
-    const user = userdata.data.find((user) => user.id === user_id);
+    const rawUsers = userdata.data.results || userdata.data;
+    const user = rawUsers.find((user) => user.id === user_id);
     const user_orgs = user.keys.map((key) => key.id);
 
     const responsibilityObject = {
@@ -157,8 +158,9 @@ const OwnKeys = ({
   const getResponsibility = async () => {
     try {
       const response = await axiosClient.get(`listobjects/nightresponsibilities/`);
-      setAllResponsibilities(response.data);
-      const filteredResponsibilities = response.data.filter(
+      const rawData = response.data.results || response.data;
+      setAllResponsibilities(rawData);
+      const filteredResponsibilities = rawData.filter(
         (item) =>
           item.email === email ||
           (loggedUser && item.created_by === loggedUser.username),
@@ -172,8 +174,9 @@ const OwnKeys = ({
   const getActiveResponsibilities = async () => {
     try {
       const response = await axiosClient.get(`listobjects/nightresponsibilities/`);
-      setAllResponsibilities(response.data);
-      const active = response.data.filter((item) => item.present === true);
+      const rawData = response.data.results || response.data;
+      setAllResponsibilities(rawData);
+      const active = rawData.filter((item) => item.present === true);
       setActiveResponsibilities(active);
     } catch (error) {
       console.error("Error fetching responsibilities", error);

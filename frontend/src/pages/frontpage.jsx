@@ -14,10 +14,21 @@ const FrontPage = () => {
 
   // Fetch the events to be shown from the backend
   useEffect(() => {
+    const now = new Date();
+    const futureLimit = new Date();
+    futureLimit.setDate(now.getDate() + 30); // Fetch next 30 days
+
     axios
-      .get(`${API_URL}/api/listobjects/events/`)
+      .get(`${API_URL}/api/listobjects/events/`, {
+        params: {
+          start: now.toISOString(),
+          end: futureLimit.toISOString()
+        }
+      })
       .then((response) => {
-        const events = response.data
+        // Handle both paginated and non-paginated responses
+        const rawData = response.data.results || response.data;
+        const events = rawData
           .filter(
             (event) => new Date() < new Date(event.start) && event.open == true,
           )

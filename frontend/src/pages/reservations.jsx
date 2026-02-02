@@ -25,6 +25,7 @@ moment.locale("fi");
 const MyCalendar = () => {
   // State variables for event data and modals
   const [events, setEvents] = useState([]);
+  const [loadedRanges, setLoadedRanges] = useState([]); // Track ranges already fetched
   const [organizations, setOrganizations] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -46,10 +47,67 @@ const MyCalendar = () => {
 
   const { t } = useTranslation();
 
-  // Calls getEvents() to fetch events when starting the page
+  // Calls getEvents() to fetch events when starting the page or view changes
+  const [viewDate, setViewDate] = useState(new Date());
+
   useEffect(() => {
-    getEvents();
-  }, []);
+    getEvents(viewDate);
+  }, [viewDate]);
+
+  // Gets events for the current view from backend
+  const getEvents = (date, isPrefetch = false) => {
+    const startRange = isPrefetch
+      ? moment(date).subtract(1, 'months').startOf('month')
+      : moment(date).startOf('month').subtract(7, 'days');
+
+    const endRange = isPrefetch
+      ? moment(date).add(1, 'months').endOf('month')
+      : moment(date).endOf('month').add(7, 'days');
+
+    // If prefetching, we only care if the WHOLE range is already loaded.
+    // If not prefetching, we check if the requested month is already loaded.
+    const isLoaded = loadedRanges.some(range =>
+      startRange.isSameOrAfter(range.start) && endRange.isSameOrBefore(range.end)
+    );
+
+    if (isLoaded) return;
+
+    axiosClient
+      .get("/listobjects/events/", {
+        params: {
+          start: startRange.toISOString(),
+          end: endRange.toISOString()
+        }
+      })
+      .then((response) => {
+        const rawData = response.data.results || response.data;
+        const newEventsList = rawData.map((event) => ({
+          ...event,
+          start: new Date(event.start),
+          end: new Date(event.end),
+        }));
+
+        setEvents(prevEvents => {
+          const existingIds = new Set(prevEvents.map(e => e.id));
+          const uniqueNewEvents = newEventsList.filter(e => !existingIds.has(e.id));
+          return [...prevEvents, ...uniqueNewEvents];
+        });
+
+        setLoadedRanges(prev => [...prev, { start: startRange, end: endRange }]);
+
+        // If we just finished loading the current month, now trigger the background prefetch
+        if (!isPrefetch) {
+          getEvents(date, true);
+        }
+      })
+      .catch((error) => {
+        console.error(t("errorfetchevents"), error);
+      });
+  };
+
+  const handleNavigate = (newDate) => {
+    setViewDate(newDate);
+  };
 
   const startRef = useRef(0);
   const endRef = useRef(0);
@@ -71,23 +129,6 @@ const MyCalendar = () => {
     }
   }, [endRef.current.value]);
 
-  // Gets all created events from backend
-  const getEvents = () => {
-    axios
-      .get(`${API_URL}/api/listobjects/events/`)
-      .then((response) => {
-        const events = response.data.map((event) => ({
-          ...event,
-          start: new Date(event.start),
-          end: new Date(event.end),
-        }));
-        setEvents(events);
-      })
-      .catch((error) => {
-        console.error(t("errorfetchevents"), error);
-      });
-  };
-
   useEffect(() => {
     getOrganizations();
   }, []);
@@ -96,7 +137,7 @@ const MyCalendar = () => {
     axios
       .get(`${API_URL}/api/listobjects/organizations/`)
       .then((response) => {
-        const organizations = response.data;
+        const organizations = response.data.results || response.data;
         setOrganizations(organizations);
       })
       .catch((error) => {
@@ -118,8 +159,8 @@ const MyCalendar = () => {
   useEffect(() => {
     if (showCreateModal && selectedSlot) {
       if (!startRef.current || !endRef.current) {
-          startRef.current = { value: "" };
-          endRef.current = { value: "" };
+        startRef.current = { value: "" };
+        endRef.current = { value: "" };
       }
       startRef.current.value = moment(selectedSlot.start).format(
         "YYYY-MM-DDTHH:mm",
@@ -280,6 +321,7 @@ const MyCalendar = () => {
       handleAddNewEventClick={handleAddNewEventClick}
       handleSelectSlot={handleSelectSlot}
       handleSelectEvent={handleSelectEvent}
+      onNavigate={handleNavigate}
       showCreateModal={showCreateModal}
       handleCloseModal={handleCloseModal}
       handleInputChange={handleInputChange}

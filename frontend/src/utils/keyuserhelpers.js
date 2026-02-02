@@ -36,8 +36,8 @@ export const fetchAllUsersWithKeys = async ({
 }) => {
   try {
     const response = await axios.get(`${API_URL}/api/listobjects/users/`);
-    const allUsers = response.data;
-    const filteredUsers = allUsers.filter((user) =>
+    const rawData = response.data.results || response.data;
+    const filteredUsers = rawData.filter((user) =>
       checkUser(user, loggedUser, allResponsibilities),
     );
     setAllUsersWithKeys(filteredUsers);

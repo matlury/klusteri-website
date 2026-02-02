@@ -1,0 +1,29 @@
+services:
+  api:
+    build:
+      context: "./backend"
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - TEST_DB_NAME=${POSTGRES_DB}
+      - TEST_DB_USER=${POSTGRES_USER}
+      - TEST_DB_PASSWORD=${POSTGRES_PASSWORD}
+      - TEST_DB_HOST=${POSTGRES_HOST}
+      - TEST_DB_PORT=${POSTGRES_PORT:-5432}
+
+  frontend:
+    build:
+      context: "./frontend"
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    env_file:
+      - .env
+    environment:
+      - SITE_KEY=${SITE_KEY}
