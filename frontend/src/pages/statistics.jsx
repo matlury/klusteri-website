@@ -98,10 +98,7 @@ const Statistics = () => {
   useEffect(() => {
     // Changes the grid column widths when the window is resized
     if (fetchedData && userRole !== null) {
-      console.log("data", fetchedData);
-      const orgs = fetchedData.orgResponse.data
-      const resps = fetchedData.responsibilitiesResponse.data;
-      const users = fetchedData.userResponse.data;
+      const { orgs, resps, users } = fetchedData;
       processOrgStats(orgs, resps);
       processAllUserStats(users, resps, orgs);
     }
