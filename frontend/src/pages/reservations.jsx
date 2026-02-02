@@ -54,6 +54,30 @@ const MyCalendar = () => {
     getEvents(viewDate);
   }, [viewDate]);
 
+  const handleNavigate = (newDate) => {
+    setViewDate(newDate);
+  };
+
+  const startRef = useRef(0);
+  const endRef = useRef(0);
+
+  const [startTime, setStartTime] = useState(startRef.current.value);
+  const [endTime, setEndTime] = useState(endRef.current.value);
+
+  useEffect(() => {
+    setStartTime(startRef.current.value);
+  }, [startRef.current.value]);
+
+  useEffect(() => {
+    if (typeof endRef.current.value !== 'undefined') {
+      const date = new Date(endRef.current.value);
+      date.setTime(date.getTime() - (date.getTimezoneOffset() * 60 * 1000) - (1000 * 60));
+      setEndTime(date.toISOString().slice(0, 16));
+    } else {
+      setEndTime(endRef.current.value);
+    }
+  }, [endRef.current.value]);
+
   // Gets events for the current view from backend
   const getEvents = (date, isPrefetch = false) => {
     const startRange = isPrefetch
@@ -80,7 +104,7 @@ const MyCalendar = () => {
         }
       })
       .then((response) => {
-        const rawData = response.data.results || response.data;
+        const rawData = response.data;
         const newEventsList = rawData.map((event) => ({
           ...event,
           start: new Date(event.start),
@@ -105,30 +129,6 @@ const MyCalendar = () => {
       });
   };
 
-  const handleNavigate = (newDate) => {
-    setViewDate(newDate);
-  };
-
-  const startRef = useRef(0);
-  const endRef = useRef(0);
-
-  const [startTime, setStartTime] = useState(startRef.current.value);
-  const [endTime, setEndTime] = useState(endRef.current.value);
-
-  useEffect(() => {
-    setStartTime(startRef.current.value);
-  }, [startRef.current.value]);
-
-  useEffect(() => {
-    if (typeof endRef.current.value !== 'undefined') {
-      const date = new Date(endRef.current.value);
-      date.setTime(date.getTime() - (date.getTimezoneOffset() * 60 * 1000) - (1000 * 60));
-      setEndTime(date.toISOString().slice(0, 16));
-    } else {
-      setEndTime(endRef.current.value);
-    }
-  }, [endRef.current.value]);
-
   useEffect(() => {
     getOrganizations();
   }, []);
@@ -137,7 +137,7 @@ const MyCalendar = () => {
     axios
       .get(`${API_URL}/api/listobjects/organizations/`)
       .then((response) => {
-        const organizations = response.data.results || response.data;
+        const organizations = response.data;
         setOrganizations(organizations);
       })
       .catch((error) => {

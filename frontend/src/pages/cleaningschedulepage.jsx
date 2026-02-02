@@ -91,14 +91,14 @@ const CleaningSchedule = ({
   const handleSaveClose = () => {
     setSaveDialogOpen(false);
   };
-  
+
   const handleFormSubmit = async (json) => {
     const orgdata = await axiosClient.get("/listobjects/organizations/");
 
     if (allCleaning.length > 0) {
-       setError(t("cleaningerrorold"));
-       handleSnackbar(t("cleaningerrorold"), "error");
-       return;
+      setError(t("cleaningerrorold"));
+      handleSnackbar(t("cleaningerrorold"), "error");
+      return;
     }
 
     iterateThroughJSON(json);
@@ -117,7 +117,7 @@ const CleaningSchedule = ({
     }
 
     function getOrgId(orgName) {
-      const orgs = orgdata.data.results || orgdata.data;
+      const orgs = orgdata.data;
       for (let i = 0; i < orgs.length; i++) {
         if (orgs[i].name === orgName) {
           return orgs[i].id;
@@ -165,7 +165,7 @@ const CleaningSchedule = ({
     axiosClient
       .get("/listobjects/cleaning/")
       .then((res) => {
-        const rawData = res.data.results || res.data;
+        const rawData = res.data;
         setRawCleaningData(rawData);
 
         const cleaningData = rawData.map((u, index) => ({
@@ -201,9 +201,9 @@ const CleaningSchedule = ({
             {loggedUser && loggedUser.role === 1 && (
               <React.Fragment>
                 <CleanersListUploadButton setNewData={setNewData} onClick={() => handleFormSubmit(newData)} />
-                <CleanersListAutomateButton 
-                  updateNewData={setNewData} 
-                  setError={setError}/>
+                <CleanersListAutomateButton
+                  updateNewData={setNewData}
+                  setError={setError} />
                 <Button
                   startIcon={<SaveOutlinedIcon />}
                   variant="contained"
@@ -225,14 +225,14 @@ const CleaningSchedule = ({
             )}
           </Stack>
           <React.Fragment>
-            <EmptyCleanersDialog 
-              confirm={confirm} 
-              handleCloseConfirm={handleCloseConfirm} 
+            <EmptyCleanersDialog
+              confirm={confirm}
+              handleCloseConfirm={handleCloseConfirm}
               handleRemoveFormSubmit={handleRemoveFormSubmit} />
-            <SaveDialog 
-              open={saveDialogOpen} 
-              handleClose={handleSaveClose} 
-              handleSave={handleFormSubmit} 
+            <SaveDialog
+              open={saveDialogOpen}
+              handleClose={handleSaveClose}
+              handleSave={handleFormSubmit}
               newData={newData} />
           </React.Fragment>
           <React.Fragment>

@@ -97,9 +97,10 @@ const Statistics = () => {
   useEffect(() => {
     // Changes the grid column widths when the window is resized
     if (fetchedData && userRole !== null) {
-      const orgs = fetchedData.orgResponse.data.results || fetchedData.orgResponse.data;
-      const resps = fetchedData.responsibilitiesResponse.data.results || fetchedData.responsibilitiesResponse.data;
-      const users = fetchedData.userResponse.data.results || fetchedData.userResponse.data;
+      console.log("data", fetchedData);
+      const orgs = fetchedData.orgResponse.data
+      const resps = fetchedData.responsibilitiesResponse.data;
+      const users = fetchedData.userResponse.data;
       processOrgStats(orgs, resps);
       processAllUserStats(users, resps, orgs);
     }
@@ -256,14 +257,14 @@ const Statistics = () => {
       const params = new URLSearchParams();
       if (minFilter) params.append("start", minFilter);
       if (maxFilter) params.append("end", maxFilter);
-      
+
       // If no filters are set, we explicitly ask for 'all' to ensure the backend
       // doesn't just return the current month, but the full history.
       // (The filtering(e.start, e.end) logic below will still apply if dates are set)
       if (!minFilter && !maxFilter) params.append("all", "true");
 
       const response = await axiosClient.get(`listobjects/events/?${params.toString()}`);
-      const rawData = response.data.results || response.data;
+      const rawData = response.data;
       const data = [[
         "START",
         "END",

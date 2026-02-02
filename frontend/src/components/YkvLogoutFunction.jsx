@@ -157,7 +157,7 @@ const YkvLogoutFunction = ({
   const fetchResponsibilities = async () => {
     try {
       const res = await axiosClient.get("/listobjects/nightresponsibilities/");
-      const rawData = res.data.results || res.data;
+      const rawData = res.data;
       const userData = rawData.map((u) => ({
         id: u.id, // DataGrid requires a unique 'id' for each row
         Vastuuhenkilö: u.user.username,

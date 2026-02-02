@@ -108,7 +108,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       handleSnackbar(t("usereditmandfields"), "error");
       return;
     }
-  
+
     try {
       if (telegram) {
         const response = await axios.get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`);
@@ -120,7 +120,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           return;
         }
       }
-  
+
       if (password) {
         if (password !== confirmPassword) {
           setError(t("diffpass"));
@@ -141,7 +141,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           return;
         }
       }
-  
+
       const response = await axios.get(`${API_URL}/api/listobjects/users/?email=${email}`);
       const existingUsers = response.data;
       if (existingUsers.some((user) => user.email === email && user.id !== loggedUser.id)) {
@@ -150,7 +150,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         setTimeout(() => setError(""), 5000);
         return;
       }
-  
+
       const confirmUpdate = window.confirm(t("usereditconfirm"));
       if (!confirmUpdate) {
         console.log("User cancelled the update.");
@@ -218,7 +218,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       role: userDetailsRole,
       id: userDetailsId,
     };
-  
+
     try {
       const validationError = await updateaccountcheck({
         username: userDetailsUsername,
@@ -229,7 +229,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         API_URL,
         t
       });
-  
+
       if (typeof validationError === "string") {
         setError(validationError);
         handleSnackbar(validationError, "error");
@@ -241,12 +241,12 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       setSuccess(t("usereditsuccess"));
       handleSnackbar(t("usereditsuccess"), "success");
       setTimeout(() => setSuccess(""), 5000);
-  
+
       if (userDetailsEmail === email) {
         localStorage.setItem("loggedUser", JSON.stringify(response.data));
         setUser(response.data);
       }
-  
+
       await getAllUsers();
     } catch (error) {
       setError(t("usereditfail"));
@@ -259,16 +259,16 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // Keeps the organization information up-to-date
   const getOrganisations = async () => {
     try {
-      const res = await 
-      axiosClient.get("listobjects/organizations/")
-      const rawData = res.data.results || res.data;
+      const res = await
+        axiosClient.get("listobjects/organizations/")
+      const rawData = res.data;
       const orgData = rawData.map((u) => ({
-            id: u.id,
-            Organisaatio: u.name,
-            email: u.email,
-            kotisivu: u.homepage,
-            color: u.color,
-            Avaimia: u.user_set.length,
+        id: u.id,
+        Organisaatio: u.name,
+        email: u.email,
+        kotisivu: u.homepage,
+        color: u.color,
+        Avaimia: u.user_set.length,
 
       }));
       setOrganisations(orgData);
@@ -315,14 +315,14 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         .put(
           `/organizations/update_organization/${orgId}/`,
           newOrganizationObject);
-        setSuccess("Järjestö muokattu onnistuneesti!");
-        handleSnackbar("Järjestö muokattu onnistuneesti!", "success");
-        setTimeout(() => setSuccess(""), 5000);
-        await getOrganisations();
-        } catch(error) {
-          console.error("Error creating account:", error);
-        }
-    };
+      setSuccess("Järjestö muokattu onnistuneesti!");
+      handleSnackbar("Järjestö muokattu onnistuneesti!", "success");
+      setTimeout(() => setSuccess(""), 5000);
+      await getOrganisations();
+    } catch (error) {
+      console.error("Error creating account:", error);
+    }
+  };
 
   // Handles deletion of organization
   const handleDeleteOrganization = async (orgId) => {
@@ -337,7 +337,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         setSuccess(t("orgdeletesuccess"));
         handleSnackbar(t("orgdeletesuccess"), "success");
         setTimeout(() => setSuccess(""), 5000);
-      } catch(error) {
+      } catch (error) {
         setError(t("orgdeletefail"));
       }
     }
@@ -347,9 +347,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const handleCreateOrganization = async () => {
     try {
       const response = await axios
-      .get(
-        `${API_URL}/api/listobjects/organizations/?email=${organization_email}`,
-      );
+        .get(
+          `${API_URL}/api/listobjects/organizations/?email=${organization_email}`,
+        );
       const existingOrganizations = response.data;
       if (
         existingOrganizations.some((org) => org.name === organization_name)
@@ -364,8 +364,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         setError(t("emailinuse"));
         handleSnackbar(t("emailinuse"), "error");
         setTimeout(() => setError(""), 5000);
-      }
-       else {
+      } else {
         const organizationObject = {
           name: organization_name,
           email: organization_email,
@@ -381,23 +380,23 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const createOrganization = async (organizationObject) => {
     try {
       await axiosClient
-      .post("organizations/create", organizationObject);
+        .post("organizations/create", organizationObject);
       setSuccess(t("orgcreatesuccess"));
       handleSnackbar(t("orgcreatesuccess"), "success");
       setTimeout(() => setSuccess(""), 5000);
       await getOrganisations();
-    } catch(error) {
+    } catch (error) {
       console.error("Error creating organization:", error);
     }
   };
-    
+
   // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION FOR ALL USERS (ONLY VISIBLE FOR LEPPIS PJ)
 
   // Gets every users data from backend
   const getAllUsers = async () => {
     try {
       const response = await axiosClient.get("listobjects/users/");
-      const rawData = response.data.results || response.data;
+      const rawData = response.data;
       const userData = rawData.map((u) => ({
         id: u.id,
         Käyttäjänimi: u.username,

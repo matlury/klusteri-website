@@ -27,7 +27,7 @@ const FrontPage = () => {
       })
       .then((response) => {
         // Handle both paginated and non-paginated responses
-        const rawData = response.data.results || response.data;
+        const rawData = response.data;
         const events = rawData
           .filter(
             (event) => new Date() < new Date(event.start) && event.open == true,

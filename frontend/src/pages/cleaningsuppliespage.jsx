@@ -34,7 +34,7 @@ const CleaningSupplies = ({
         setLoggedUser(storedUser);
       }
     }
-    
+
   }, [propIsLoggedIn]);
 
   useEffect(() => {
@@ -125,7 +125,7 @@ const CleaningSupplies = ({
     axiosClient
       .get("/listobjects/cleaningsupplies/")
       .then((res) => {
-        const rawData = res.data.results || res.data;
+        const rawData = res.data;
         const suppliesData = rawData.map((u, index) => ({
           id: u.id, // DataGrid requires a unique 'id' for each row
           tool: u.tool,
@@ -154,9 +154,9 @@ const CleaningSupplies = ({
             <CleaningToolForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
           </React.Fragment>
           <React.Fragment>
-            <CleaningSuppliesList 
-              loggedUser={loggedUser} 
-              allCleaningSupplies={allCleaningSupplies} 
+            <CleaningSuppliesList
+              loggedUser={loggedUser}
+              allCleaningSupplies={allCleaningSupplies}
               handleDeleteClick={handleDeleteClick}
             />
             <CleaningSuppliesConfirmDialog

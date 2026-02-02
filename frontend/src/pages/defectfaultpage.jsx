@@ -35,7 +35,7 @@ const DefectFault = ({
         setLoggedUser(storedUser);
       }
     }
-    
+
   }, [propIsLoggedIn]);
 
   useEffect(() => {
@@ -149,7 +149,7 @@ const DefectFault = ({
     axiosClient
       .get("/listobjects/defects/")
       .then((res) => {
-        const rawData = res.data.results || res.data;
+        const rawData = res.data;
         const defectData = rawData.map((u, index) => ({
           id: u.id, // DataGrid requires a unique 'id' for each row
           description: u.description,
@@ -194,12 +194,12 @@ const DefectFault = ({
             <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
           </React.Fragment>
           <React.Fragment>
-            <DefectList 
-              loggedUser={loggedUser} 
-              allDefects={allDefects} 
-              activeDefects={activeDefects} 
-              handleRepairClick={handleRepairClick} 
-              handleEmailClick={handleEmailClick}/>
+            <DefectList
+              loggedUser={loggedUser}
+              allDefects={allDefects}
+              activeDefects={activeDefects}
+              handleRepairClick={handleRepairClick}
+              handleEmailClick={handleEmailClick} />
             <RepairConfirmDialog
               open={confirmRepairOpen}
               handleConfirmClose={handleConfirmRepairClose}

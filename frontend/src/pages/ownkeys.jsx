@@ -96,7 +96,7 @@ const OwnKeys = ({
     const loginTime = getCurrentDateTime();
 
     const userdata = await axiosClient.get("/listobjects/users/");
-    const rawUsers = userdata.data.results || userdata.data;
+    const rawUsers = userdata.data;
     const user = rawUsers.find((user) => user.id === user_id);
     const user_orgs = user.keys.map((key) => key.id);
 
@@ -158,7 +158,7 @@ const OwnKeys = ({
   const getResponsibility = async () => {
     try {
       const response = await axiosClient.get(`listobjects/nightresponsibilities/`);
-      const rawData = response.data.results || response.data;
+      const rawData = response.data;
       setAllResponsibilities(rawData);
       const filteredResponsibilities = rawData.filter(
         (item) =>
@@ -174,7 +174,7 @@ const OwnKeys = ({
   const getActiveResponsibilities = async () => {
     try {
       const response = await axiosClient.get(`listobjects/nightresponsibilities/`);
-      const rawData = response.data.results || response.data;
+      const rawData = response.data;
       setAllResponsibilities(rawData);
       const active = rawData.filter((item) => item.present === true);
       setActiveResponsibilities(active);
