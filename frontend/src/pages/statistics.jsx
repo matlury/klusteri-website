@@ -36,6 +36,7 @@ const generateRandomColor = (seed) => {
   return color;
 };
 
+// This page is used to display statistics about users and organizations
 const Statistics = () => {
   const [username, setUsername] = useState(null);
   const [userRole, setUserRole] = useState(null);
@@ -82,7 +83,7 @@ const Statistics = () => {
   const [pieChartData, setPieChartData] = useState([]);
   const [selectedPie, setSelectedPie] = useState(1);
 
-  // Gets the user's role from backend and fetches data. Also adjusts the grid column width if the user device is mobile
+  // Gets the user's role from backend and fetches data. 
   useEffect(() => {
     const init = async () => {
       await getPermission();
@@ -124,7 +125,11 @@ const Statistics = () => {
         axiosClient.get("listobjects/users/"),
         axiosClient.get("listobjects/nightresponsibilities/"),
       ]);
-      return { orgResponse, userResponse, responsibilitiesResponse };
+      return {
+        orgs: orgResponse.data,
+        resps: responsibilitiesResponse.data,
+        users: userResponse.data
+      };
     } catch (error) { console.error("Error fetching data", error); }
   };
 
@@ -145,7 +150,6 @@ const Statistics = () => {
   };
 
   function filtering(login_time, logout_time) {
-    // Sets the organization data and the organization member data
     const login = Date.parse(login_time);
     const logout = Date.parse(logout_time);
     const min = minFilter ? Date.parse(minFilter) : -Infinity;
@@ -153,6 +157,7 @@ const Statistics = () => {
     return (login >= min && login <= max) || (logout <= max && logout >= min);
   }
 
+  // Sets the organization data and the organization member data
   const processOrgStats = (orgData, responsibilities) => {
     const orgdata = {};
     const orgmemdata = {};
@@ -251,6 +256,7 @@ const Statistics = () => {
     if (selectedPie === 3) setPieChartData(lateArr);
   };
 
+  // Handles the creation of the event CSV file
   const handleCSV = async () => {
     try {
       // Use current filters for the CSV download
@@ -260,7 +266,6 @@ const Statistics = () => {
 
       // If no filters are set, we explicitly ask for 'all' to ensure the backend
       // doesn't just return the current month, but the full history.
-      // (The filtering(e.start, e.end) logic below will still apply if dates are set)
       if (!minFilter && !maxFilter) params.append("all", "true");
 
       const response = await axiosClient.get(`listobjects/events/?${params.toString()}`);
@@ -347,7 +352,7 @@ const Statistics = () => {
               </Grid>
               <Grid item xs={12} md={5}>
                 <Box sx={{ maxHeight: 350, overflowY: 'auto', pr: 1 }}>
-                  {pieChartData.sort((a, b) => b.value - a.value).map((item, i) => (
+                  {pieChartData.map((item, i) => (
                     <Box key={item.id || i} sx={{ display: 'flex', alignItems: 'center', mb: 1, opacity: item.value > 0 ? 1 : 0.5 }}>
                       <Box sx={{ width: 12, height: 12, bgcolor: item.color, mr: 1, borderRadius: '50%', flexShrink: 0 }} />
                       <Typography variant="caption" sx={{ fontWeight: item.value > 0 ? 'bold' : 'normal', flex: 1 }}>{item.label}</Typography>
