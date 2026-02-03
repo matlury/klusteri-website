@@ -93,10 +93,10 @@ class Event(models.Model):
         db_index=True
     )
     title = models.CharField(max_length=100, default="") # Name of the event
-    organizer = models.ForeignKey(Organization, on_delete=models.CASCADE, default=0) # Organization responsible for the event
+    organizer = models.ForeignKey(Organization, on_delete=models.CASCADE, default=0, db_column='organizer') # Organization responsible for the event
     description = models.TextField(default="")  # Description of the event
     responsible = models.CharField(max_length=100, default="")  # Person responsible for the event
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, default=0, db_column='created_by')
     open = models.BooleanField(default=True)  # Indicates whether the event is open or not
     room = models.CharField(max_length=50, default="", db_index=True)  # Room where the event takes place
 
@@ -107,7 +107,7 @@ class NightResponsibility(models.Model):
     login and logout times, and attendance status.
     """
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=0, db_column='user')
     organizations = models.ManyToManyField(Organization)
     responsible_for = models.CharField(max_length=500, default="")
     login_time = models.DateTimeField(
@@ -130,7 +130,8 @@ class DefectFault(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        default = 0
+        default = 0,
+        db_column='user'
         )
     """
     time = models.DateTimeField(
@@ -150,8 +151,8 @@ class Cleaning(models.Model):
 
     id = models.AutoField(primary_key=True)
     week = models.IntegerField(default=0)
-    big = models.ForeignKey(Organization, on_delete=models.CASCADE, default=0, related_name="big_orgs")
-    small = models.ForeignKey(Organization, on_delete=models.CASCADE, default=0, related_name="small_orgs")
+    big = models.ForeignKey(Organization, on_delete=models.CASCADE, default=0, related_name="big_orgs", db_column='big')
+    small = models.ForeignKey(Organization, on_delete=models.CASCADE, default=0, related_name="small_orgs", db_column='small')
 
 class CleaningSupplies(models.Model):
     """Model for cleaning supplies"""
