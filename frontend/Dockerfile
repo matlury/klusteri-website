@@ -18,23 +18,28 @@ ENV VITE_API_URL=${API_URL}
 
 RUN npm run build
 
-# Stage 2: Serve with Nginx
-FROM nginx:alpine
+# Stage 2: Serve with Express
+FROM node:24-alpine
 
-# Copy the build output to the Nginx html directory
-COPY --from=build /frontend/dist /usr/share/nginx/html
+WORKDIR /frontend
 
-# Copy custom Nginx configuration template
-# The entrypoint script will run envsubst on this file and output it to /etc/nginx/conf.d/default.conf
-COPY default.conf.template /etc/nginx/templates/default.conf.template
+# Copy package files and install production dependencies
+COPY package*.json ./
+RUN npm ci --only=production
 
-# Ensure proper permissions for Nginx directories
-RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
+# Copy build output and server script
+COPY --from=build /frontend/dist ./dist
+COPY server.js ./
 
-# Filter which variables should be substituted by envsubst to avoid breaking Nginx variables like $uri
-ENV NGINX_ENVSUBST_FILTER='$API_URL $SITE_KEY $VITE_API_URL $VITE_SITE_KEY'
+# Use a non-root user for OpenShift compatibility
+USER node
 
 # Expose the necessary port
-EXPOSE 5173 8000
+EXPOSE 5173
 
-CMD ["nginx", "-g", "daemon off;"]
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=5173
+
+# Run the server
+CMD ["node", "server.js"]
