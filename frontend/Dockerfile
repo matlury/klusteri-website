@@ -5,7 +5,7 @@ WORKDIR /frontend
 
 COPY package*.json ./
 
-RUN npm ci --omit=dev
+RUN npm ci
 
 COPY . .
 
