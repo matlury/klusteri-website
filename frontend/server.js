@@ -16,15 +16,32 @@ app.use(
     createProxyMiddleware({
         target: API_URL,
         changeOrigin: true,
+        timeout: 10000, // 10 second timeout
+        proxyTimeout: 10000,
+        logLevel: 'debug',
+        onProxyReq: (proxyReq, req, res) => {
+            console.log(`[${new Date().toISOString()}] Proxying: ${req.method} ${req.url} -> ${API_URL}${req.url}`);
+        },
         onProxyRes: (proxyRes, req, res) => {
+            console.log(`[${new Date().toISOString()}] Response: ${proxyRes.statusCode} in ${Date.now() - req._startTime}ms`);
             proxyRes.headers['access-control-allow-origin'] = '*';
             proxyRes.headers['access-control-allow-methods'] =
                 'GET, POST, OPTIONS, PUT, DELETE';
             proxyRes.headers['access-control-allow-headers'] =
                 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization';
         },
+        onError: (err, req, res) => {
+            console.error(`[${new Date().toISOString()}] Proxy error:`, err.message);
+            res.status(502).json({ error: 'Bad Gateway', message: err.message });
+        },
     })
 );
+
+// Add timing middleware before proxy
+app.use('/api', (req, res, next) => {
+    req._startTime = Date.now();
+    next();
+});
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'dist')));
