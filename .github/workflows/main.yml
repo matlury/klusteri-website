@@ -31,7 +31,7 @@ jobs:
 
       - name: Install Poetry
         working-directory: ./backend
-        run: pip install poetry
+        run: pip install poetry install --no-root
       
       - name: Install dependencies
         run: |
