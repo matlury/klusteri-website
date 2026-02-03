@@ -24,16 +24,15 @@ FROM nginx:alpine
 # Copy the build output to the Nginx html directory
 COPY --from=build /frontend/dist /usr/share/nginx/html
 
-# Copy custom Nginx configuration
-COPY nginx.conf /etc/nginx/nginx.conf
-
-# Create a script to inject environment variables into a config.js file
-RUN echo '#!/bin/sh' > /docker-entrypoint.d/generate_config.sh && \
-    echo 'echo "window.ENV = { API_URL: \"$API_URL\", SITE_KEY: \"$SITE_KEY\" };" > /usr/share/nginx/html/config.js' >> /docker-entrypoint.d/generate_config.sh && \
-    chmod +x /docker-entrypoint.d/generate_config.sh
+# Copy custom Nginx configuration template
+# The entrypoint script will run envsubst on this file and output it to /etc/nginx/conf.d/default.conf
+COPY default.conf.template /etc/nginx/templates/default.conf.template
 
 # Ensure proper permissions for Nginx directories
-RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx /usr/share/nginx/html
+RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
+
+# Filter which variables should be substituted by envsubst to avoid breaking Nginx variables like $uri
+ENV NGINX_ENVSUBST_FILTER='$API_URL $SITE_KEY $VITE_API_URL $VITE_SITE_KEY'
 
 # Expose the necessary port
 EXPOSE 5173 8000
