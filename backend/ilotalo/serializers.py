@@ -12,11 +12,13 @@ back to complex data types.
 More info: https://www.django-rest-framework.org/api-guide/serializers/
 """
 
+
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
         fields = '__all__'
+
 
 class UserNoPasswordSerializer(serializers.ModelSerializer):
     """
@@ -26,6 +28,7 @@ class UserNoPasswordSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         exclude = ('password',)
+
 
 class OrganizationSerializer(serializers.ModelSerializer):
     """Serializes an Organization object as JSON"""
@@ -40,7 +43,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
         """Validates size when creating a new organization."""
 
         if int(size) not in [0, 1]:
-            raise serializers.ValidationError("Organization size must be 0 or 1 (small or large).")
+            raise serializers.ValidationError(
+                "Organization size must be 0 or 1 (small or large).")
         return size
 
 
@@ -69,6 +73,7 @@ class OrganizationNameSerializer(serializers.ModelSerializer):
         model = Organization
         fields = ('id', 'name')
 
+
 class UserSerializer(serializers.ModelSerializer):
 
     keys = OrganizationSerializer(many=True, read_only=True)
@@ -80,7 +85,8 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_username(self, username):
         """Validates that the username does not contain @ symbol so it doesn't mess with the email login"""
         if "@" in username:
-            raise serializers.ValidationError("Username cannot contain @ symbol")
+            raise serializers.ValidationError(
+                "Username cannot contain @ symbol")
         return username
 
     def validate_role(self, role):
@@ -96,9 +102,11 @@ class UserSerializer(serializers.ModelSerializer):
         """Validates telegram name when creating a new user. It must not be taken."""
         user_id = self.instance.id if self.instance else None
         if tgname:
-            duplicate = User.objects.exclude(id=user_id).filter(telegram=tgname)
+            duplicate = User.objects.exclude(
+                id=user_id).filter(telegram=tgname)
             if duplicate.exists():
-                raise serializers.ValidationError("This telegram name is taken")
+                raise serializers.ValidationError(
+                    "This telegram name is taken")
         return tgname
 
     def validate(self, data):
@@ -125,7 +133,7 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
         return user
-    
+
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     """
@@ -141,7 +149,8 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     def validate_username(self, username):
         """Validates that the username does not contain @ symbol so it doesn't mess with the email login"""
         if "@" in username:
-            raise serializers.ValidationError("Username cannot contain @ symbol")
+            raise serializers.ValidationError(
+                "Username cannot contain @ symbol")
         return username
 
     def validate_role(self, role):
@@ -156,9 +165,11 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         """Checks if a telegram name is taken"""
         user_id = self.instance.id if self.instance else None
         if tgname:
-            duplicate = User.objects.exclude(id=user_id).filter(telegram=tgname)
+            duplicate = User.objects.exclude(
+                id=user_id).filter(telegram=tgname)
             if duplicate.exists():
-                raise serializers.ValidationError("This telegram name is taken")
+                raise serializers.ValidationError(
+                    "This telegram name is taken")
         return tgname
 
     def update(self, instance, validated_data):
@@ -166,8 +177,9 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         instance.email = validated_data.get('email', instance.email)
         instance.telegram = validated_data.get('telegram', instance.telegram)
         instance.role = validated_data.get('role', instance.role)
-        instance.rights_for_reservation = validated_data.get('rights_for_reservation', instance.rights_for_reservation)
-        
+        instance.rights_for_reservation = validated_data.get(
+            'rights_for_reservation', instance.rights_for_reservation)
+
         # Check if password is provided and update it if so
         password = validated_data.get('password')
         if password:
@@ -176,6 +188,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
 
 class UserNoPasswordSerializer(serializers.ModelSerializer):
     """
@@ -188,24 +201,27 @@ class UserNoPasswordSerializer(serializers.ModelSerializer):
         model = User
         exclude = ('password',)
 
+
 class EventSerializer(serializers.ModelSerializer):
     """Serializes an Event object as JSON - Full version"""
 
     organizer = OrganizationSerializer(read_only=True)
     created_by = UserNoPasswordSerializer(read_only=True)
 
-
     class Meta:
         model = Event
         fields = '__all__'
 
+
 class EventListSerializer(serializers.ModelSerializer):
     """Lightweight serializer for calendar and list views - Nested object for frontend compatibility"""
     organizer = OrganizationNameSerializer(read_only=True)
-    
+
     class Meta:
         model = Event
-        fields = ('id', 'start', 'end', 'title', 'organizer', 'responsible', 'open', 'room')
+        fields = ('id', 'start', 'end', 'title',
+                  'organizer', 'responsible', 'open', 'room')
+
 
 class CreateEventSerializer(serializers.ModelSerializer):
     """Used for creating an event"""
@@ -213,6 +229,7 @@ class CreateEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = '__all__'
+
 
 class NightResponsibilitySerializer(serializers.ModelSerializer):
     """Serializes a NightResponsibility object as JSON"""
@@ -224,12 +241,14 @@ class NightResponsibilitySerializer(serializers.ModelSerializer):
         model = NightResponsibility
         fields = '__all__'
 
+
 class CreateNightResponsibilitySerializer(serializers.ModelSerializer):
     """Used for saving a NightResponsibility object to the database"""
 
     class Meta:
         model = NightResponsibility
         fields = '__all__'
+
 
 class DefectFaultSerializer(serializers.ModelSerializer):
     """Serializes a DefectFault object as JSON"""
@@ -240,12 +259,14 @@ class DefectFaultSerializer(serializers.ModelSerializer):
         model = DefectFault
         fields = '__all__'
 
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         email = attrs.get("email", "")
         password = attrs.get("password", "")
 
-        user = User.objects.filter(email=email).first() or User.objects.filter(username=email).first()
+        user = User.objects.filter(email=email).first(
+        ) or User.objects.filter(username=email).first()
 
         if user:
             if user.role == 1 and user.first_login:
@@ -261,11 +282,13 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                 if user.check_password(password):
                     attrs["email"] = user.email
                 else:
-                    raise serializers.ValidationError("Invalid login credentials")
+                    raise serializers.ValidationError(
+                        "Invalid login credentials")
 
                 return super().validate(attrs)
         else:
             raise serializers.ValidationError("User not found")
+
 
 class OrganizationOnlyNameSerializer(serializers.ModelSerializer):
     """Serializes an Organization object as JSON"""
@@ -274,12 +297,14 @@ class OrganizationOnlyNameSerializer(serializers.ModelSerializer):
         model = Organization
         fields = ('name',)
 
+
 class CreateCleaningSerializer(serializers.ModelSerializer):
     """Used for saving a Cleaning object to the database"""
 
     class Meta:
         model = Cleaning
         fields = '__all__'
+
 
 class CleaningSerializer(serializers.ModelSerializer):
     """Used for saving a Cleaning object to the database"""
@@ -290,6 +315,7 @@ class CleaningSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cleaning
         exclude = ('id',)
+
 
 class CleaningSuppliesSerializer(serializers.ModelSerializer):
     """Serializes a Cleaningsupplies tool"""

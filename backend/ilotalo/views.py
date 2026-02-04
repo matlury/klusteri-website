@@ -38,7 +38,8 @@ JARJESTOPJ = Role.JARJESTOPJ.value
 JARJESTOVARAPJ = Role.JARJESTOVARAPJ.value
 
 # Get reCAPTCHA secret key from environment variables, use the testing key if not found
-recaptcha_secret_key = os.getenv("RECAPTCHA_SECRET_KEY", "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe")
+recaptcha_secret_key = os.getenv(
+    "RECAPTCHA_SECRET_KEY", "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe")
 
 """
 Views receive web requests and return web responses.
@@ -92,7 +93,7 @@ class RegisterView(APIView):
         # Check if the request contains valid data
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
         google_response = requests.post('https://www.google.com/recaptcha/api/siteverify', data={
             'secret': recaptcha_secret_key,
             'response': recaptcha_response,
@@ -106,6 +107,7 @@ class RegisterView(APIView):
         user = UserNoPasswordSerializer(user)
 
         return Response(user.data, status=status.HTTP_201_CREATED)
+
 
 class RetrieveUserView(APIView):
     """View for fetching a User object with a JSON web token at <baseurl>/api/users/userlist/"""
@@ -146,7 +148,7 @@ class UpdateUserView(APIView):
         """
         if not pk:
             return Response("User ID not provided", status=status.HTTP_400_BAD_REQUEST)
-        
+
         user_id = int(pk)
         if user_id == request.user.id:
             return self.update_user(request, user_id)
@@ -155,7 +157,7 @@ class UpdateUserView(APIView):
 
         if user["role"] in [LEPPISPJ, LEPPISVARAPJ]:
             return self.update_user(request, user_id, allow_password_change=(user["role"] == LEPPISPJ))
-        
+
         if user["role"] == MUOKKAUS:
             return self.update_limited_user(request, user_id)
 
@@ -167,14 +169,15 @@ class UpdateUserView(APIView):
         except ObjectDoesNotExist:
             return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
-        user_serializer = UserUpdateSerializer(instance=user_to_update, data=request.data, partial=True)
+        user_serializer = UserUpdateSerializer(
+            instance=user_to_update, data=request.data, partial=True)
 
         if user_serializer.is_valid():
             if allow_password_change and 'password' in request.data and request.data['password']:
                 user_to_update.set_password(request.data['password'])
             user_serializer.save()
             return Response(user_serializer.data, status=status.HTTP_200_OK)
-        
+
         return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def update_limited_user(self, request, user_id):
@@ -186,13 +189,15 @@ class UpdateUserView(APIView):
         if user_to_update.role not in [AVAIMELLINEN, TAVALLINEN]:
             return Response("You are not allowed to edit this user", status=status.HTTP_400_BAD_REQUEST)
 
-        user_serializer = UserUpdateSerializer(instance=user_to_update, data=request.data, partial=True)
-        
+        user_serializer = UserUpdateSerializer(
+            instance=user_to_update, data=request.data, partial=True)
+
         if user_serializer.is_valid():
             user_serializer.save()
             return Response(user_serializer.data, status=status.HTTP_200_OK)
-        
+
         return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class RemoveUserView(APIView):
     """View for removing an user <baseurl>/api/users/delete_user/<int:pk>/"""
@@ -218,6 +223,7 @@ class RemoveUserView(APIView):
         user_to_remove.delete()
 
         return Response(f"User {user_to_remove.username} successfully removed", status=status.HTTP_200_OK)
+
 
 class CreateOrganizationView(APIView):
     """View for creating a new organization <baseurl>/api/organizations/create"""
@@ -325,6 +331,7 @@ class UpdateOrganizationView(APIView):
             return Response(organization.data, status=status.HTTP_200_OK)
         return Response(organization.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class AddUserOrganizationView(APIView):
     """
     View for adding a User to an Organization at <baseurl>/api/organizations/add_user_organization/<user.id>/
@@ -393,6 +400,7 @@ class AddUserOrganizationView(APIView):
 #        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     pass
 
+
 class EventView(viewsets.ReadOnlyModelViewSet):
     """
     Displays a list of all Event objects at <baseurl>/events/
@@ -403,24 +411,25 @@ class EventView(viewsets.ReadOnlyModelViewSet):
         if self.action == 'list':
             return EventListSerializer
         return EventSerializer
-    
+
     def get_queryset(self):
         queryset = Event.objects.all().select_related('organizer', 'created_by')
         start_date = self.request.query_params.get('start')
         end_date = self.request.query_params.get('end')
         all_time = self.request.query_params.get('all')
-        
+
         if start_date:
             queryset = queryset.filter(start__gte=start_date)
         if end_date:
             queryset = queryset.filter(end__lte=end_date)
-            
+
         # Default to current month if no filters are provided and 'all' is not requested.
         # This prevents loading thousands of historical events by accident.
         if not start_date and not end_date and not all_time:
             now = datetime.now()
-            queryset = queryset.filter(start__year=now.year, start__month=now.month)
-            
+            queryset = queryset.filter(
+                start__year=now.year, start__month=now.month)
+
         return queryset.order_by('start')
 
     def paginate_queryset(self, queryset):
@@ -433,6 +442,7 @@ class EventView(viewsets.ReadOnlyModelViewSet):
         if 'all' in self.request.query_params or 'start' in self.request.query_params or 'end' in self.request.query_params:
             return None
         return super().paginate_queryset(queryset)
+
 
 class CreateEventView(APIView):
     """View for creating a new event <baseurl>/api/events/create_event"""
@@ -461,6 +471,7 @@ class CreateEventView(APIView):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+
 class RemoveEventView(APIView):
     """View for removing an event <baseurl>/api/events/delete_event/<event.id>/"""
 
@@ -476,7 +487,7 @@ class RemoveEventView(APIView):
             return Response(
                 "Event not found", status=status.HTTP_404_NOT_FOUND
             )
-        
+
         if not (user.data["role"] in [LEPPISPJ, LEPPISVARAPJ] or user.data["id"] == event_to_remove.created_by.id):
             return Response(
                 "You can't remove the event",
@@ -489,6 +500,7 @@ class RemoveEventView(APIView):
             f"Event {event_to_remove.title} successfully removed",
             status=status.HTTP_200_OK
         )
+
 
 class UpdateEventView(APIView):
     """View for updating an Event object at <baseurl>/api/events/update_event/<event.id>/"""
@@ -526,6 +538,7 @@ class UpdateEventView(APIView):
             return Response(event.data, status=status.HTTP_200_OK)
         return Response(event.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class NightResponsibilityView(viewsets.ReadOnlyModelViewSet):
     """
     Displays a list of all NightResponsibility objects at <baseurl>/ykv/
@@ -535,6 +548,7 @@ class NightResponsibilityView(viewsets.ReadOnlyModelViewSet):
     serializer_class = NightResponsibilitySerializer
     queryset = NightResponsibility.objects.all()
     pagination_class = None
+
 
 class CreateNightResponsibilityView(APIView):
     """View for creating a new ykv <baseurl>/api/ykv/create_responsibility"""
@@ -563,6 +577,7 @@ class CreateNightResponsibilityView(APIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class UpdateNightResponsibilityView(APIView):
     """View for updating a NightResponsibility object at <baseurl>/api/ykv/update_responsibility/<responsibility.id>/"""
@@ -607,6 +622,7 @@ class UpdateNightResponsibilityView(APIView):
             return Response(responsibility.data, status=status.HTTP_200_OK)
         return Response(responsibility.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class LogoutNightResponsibilityView(APIView):
     """View for logout for NightResponsibility object at <baseurl>/api/ykv/logout_responsibility/<responsibility.id>/"""
 
@@ -649,8 +665,10 @@ class LogoutNightResponsibilityView(APIView):
         # ATTENTION! Current method is bad and doesn't acknowledge timezones
         limit = datetime.now().replace(hour=5, minute=15)
         datetime_format = "%Y-%m-%d %H:%M"
-        logout_time = datetime.strptime(request.data["logout_time"], datetime_format)
-        login_time = datetime.strptime(str(responsibility_to_update.login_time)[:-16], datetime_format)
+        logout_time = datetime.strptime(
+            request.data["logout_time"], datetime_format)
+        login_time = datetime.strptime(
+            str(responsibility_to_update.login_time)[:-16], datetime_format)
 
         if (logout_time > limit) and (login_time < limit):
             request.data["late"] = True
@@ -667,6 +685,7 @@ class LogoutNightResponsibilityView(APIView):
             responsibility.save()
             return Response(responsibility.data, status=status.HTTP_200_OK)
         return Response(responsibility.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class RightsForReservationView(APIView):
     """View for changing the rights for making events at <baseurl>/api/users/change_rights_reservation/<int:pk>/"""
@@ -695,11 +714,11 @@ class RightsForReservationView(APIView):
                 return Response(user_serializer.data, status=status.HTTP_200_OK)
             return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class ResetDatabaseView(APIView):
     """View for resetting a database during Cypress tests"""
 
     def post(self, request):
-
         """
         Post requests are only accepted if the CYPRESS env.variable is "True"
         or if a Github workflow is running
@@ -717,6 +736,7 @@ class ResetDatabaseView(APIView):
             "This endpoint is for Cypress tests only",
             status=status.HTTP_403_FORBIDDEN
         )
+
 
 class HandOverKeyView(APIView):
     """View for handing over a Klusteri key at <baseurl>/api/keys/hand_over_key/<user.id>/"""
@@ -766,7 +786,8 @@ class HandOverKeyView(APIView):
             return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
         try:
-            organization_to_update = Organization.objects.get(name=request.data["organization_name"])
+            organization_to_update = Organization.objects.get(
+                name=request.data["organization_name"])
         except ObjectDoesNotExist:
             return Response("Organization not found", status=status.HTTP_404_NOT_FOUND)
         except KeyError:
@@ -794,6 +815,7 @@ class HandOverKeyView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class DefectFaultView(viewsets.ReadOnlyModelViewSet):
     """
     Displays a list of all DefectFault objects at <baseurl>/defects/
@@ -802,6 +824,7 @@ class DefectFaultView(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = DefectFaultSerializer
     queryset = DefectFault.objects.all()
+
 
 class CreateDefectFaultView(APIView):
     """View for creating a new defect/fault report <baseurl>/api/defects/create_defect"""
@@ -817,6 +840,7 @@ class CreateDefectFaultView(APIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class RepairDefectFaultView(APIView):
     """View for updating a DefectFault object at <baseurl>/api/defects/repair_defect/<defect.id>/"""
@@ -853,6 +877,7 @@ class RepairDefectFaultView(APIView):
             return Response(defectfault.data, status=status.HTTP_200_OK)
         return Response(defectfault.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class EmailDefectFaultView(APIView):
     """View for updating a DefectFault object at <baseurl>/api/defects/email_defect/<defect.id>/"""
 
@@ -888,6 +913,7 @@ class EmailDefectFaultView(APIView):
             return Response(defectfault.data, status=status.HTTP_200_OK)
         return Response(defectfault.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class UpdateDefectFaultView(APIView):
     """View for updating a DefectFault object at <baseurl>/api/defects/update_defect/<defect.id>/"""
 
@@ -921,6 +947,7 @@ class UpdateDefectFaultView(APIView):
             return Response(defect.data, status=status.HTTP_200_OK)
         return Response(defect.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class RemoveDefectFaultView(APIView):
     """View for removing a defect <baseurl>/api/defects/delete_defect/<defect.id>/"""
 
@@ -952,6 +979,7 @@ class RemoveDefectFaultView(APIView):
 
         return Response(f"Defect {defect_to_remove.description} successfully removed", status=status.HTTP_200_OK)
 
+
 class CleaningView(viewsets.ReadOnlyModelViewSet):
     """
     Displays a list of all cleaning objects at <baseurl>/cleaning/
@@ -960,6 +988,7 @@ class CleaningView(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = CleaningSerializer
     queryset = Cleaning.objects.all()
+
 
 class CreateCleaningView(APIView):
     """View for creating cleaning schedule <baseurl>/api/cleaning/create_cleaning"""
@@ -972,7 +1001,7 @@ class CreateCleaningView(APIView):
         if user.data["role"] not in [
             LEPPISPJ,
         ]:
-          return Response(
+            return Response(
                 "You can't edit cleaning schedule",
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -987,6 +1016,7 @@ class CreateCleaningView(APIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class RemoveCleaningView(APIView):
     """View for removing the cleaning schedule <baseurl>/api/cleaning/remove/all/"""
@@ -1016,7 +1046,8 @@ class RemoveCleaningView(APIView):
 
 def force_logout_ykv_logins():
     try:
-        responsibility_to_update = NightResponsibility.objects.filter(present=True)
+        responsibility_to_update = NightResponsibility.objects.filter(
+            present=True)
         if len(responsibility_to_update) == 0:
             return "Nothing to log out"
     except ObjectDoesNotExist:
@@ -1027,7 +1058,7 @@ def force_logout_ykv_logins():
 
     for resp in responsibility_to_update:
         data = {'late': True,
-                'present': False, 
+                'present': False,
                 'logout_time': logout_time}
         responsibility = NightResponsibilitySerializer(
             instance=resp, data=data, partial=True
@@ -1036,6 +1067,7 @@ def force_logout_ykv_logins():
             responsibility.save()
 
     return "logged out users"
+
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
@@ -1049,6 +1081,7 @@ class CleaningSuppliesView(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = CleaningSuppliesSerializer
     queryset = CleaningSupplies.objects.all()
+
 
 class CreateCleaningSuppliesView(APIView):
     """View for creating cleaning supplies <baseurl>/api/cleaningsupplies/create_tool"""
@@ -1066,18 +1099,19 @@ class CreateCleaningSuppliesView(APIView):
             JARJESTOPJ,
             JARJESTOVARAPJ
         ]:
-          return Response(
+            return Response(
                 "You can't edit cleaning tool",
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        serializer =CleaningSuppliesSerializer(data=request.data)
+        serializer = CleaningSuppliesSerializer(data=request.data)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-  
+
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class RemoveCleaningSuppliesView(APIView):
     """View for removing a defect <baseurl>/api/cleaningsupplies/delete_tool/<id>/"""
