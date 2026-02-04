@@ -48,11 +48,10 @@ COPY --from=builder --chown=django:django /app/.venv /app/.venv
 # Copy application code
 COPY --chown=django:django . .
 
-# Create necessary directories and collect static files
+# Create necessary directories with proper permissions
 RUN mkdir -p /app/staticfiles /app/media && \
     chown -R django:django /app && \
-    chmod -R 775 /app/staticfiles /app/media && \
-    python manage.py collectstatic --noinput --clear
+    chmod -R 775 /app/staticfiles /app/media
 
 # Switch to non-root user
 USER django
@@ -65,4 +64,4 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD python -c "import requests; requests.get('http://localhost:8000/api/users/userinfo', timeout=10)" || exit 1
 
 # Run migrations and start uvicorn (ASGI server)
-CMD ["sh", "-c", "python manage.py migrate && uvicorn backend.asgi:application --host 0.0.0.0 --port 8000 --workers 4 --loop uvloop --http httptools"]
+CMD ["sh", "-c", "python manage.py collectstatic --noinput --clear && python manage.py migrate && uvicorn backend.asgi:application --host 0.0.0.0 --port 8000 --workers 4 --loop uvloop --http httptools"]

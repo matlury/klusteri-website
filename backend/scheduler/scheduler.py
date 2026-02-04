@@ -7,16 +7,27 @@ from django.utils import timezone
 
 from ilotalo.views import force_logout_ykv_logins
 
+# Global scheduler instance
+scheduler = None
+
+
 def force_logout_ykv():
     print(force_logout_ykv_logins())
+
 
 def delete_old_job_executions():
     DjangoJobExecution.objects.delete_old_job_executions(0)
 
+
 def clear_existing_jobs():
     DjangoJob.objects.all().delete()
 
+
 def start():
+    global scheduler
+    if scheduler is not None and scheduler.running:
+        return  # Already started
+
     clear_existing_jobs()
     delete_old_job_executions()
     scheduler = BackgroundScheduler(timezone="Europe/Kiev")
@@ -32,3 +43,8 @@ def start():
     register_events(scheduler)
     scheduler.start()
     print("Scheduler started...", file=sys.stdout)
+
+
+def is_running():
+    global scheduler
+    return scheduler is not None and scheduler.running
