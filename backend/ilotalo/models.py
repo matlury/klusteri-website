@@ -9,7 +9,6 @@ from django.contrib.auth.models import (
     PermissionsMixin,
     BaseUserManager,
 )
-from django.contrib.postgres.fields import ArrayField
 
 
 class Organization(models.Model):

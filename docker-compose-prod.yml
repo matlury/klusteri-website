@@ -9,11 +9,11 @@ services:
       - .env
     environment:
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
-      - TEST_DB_NAME=${POSTGRES_DB}
-      - TEST_DB_USER=${POSTGRES_USER}
-      - TEST_DB_PASSWORD=${POSTGRES_PASSWORD}
-      - TEST_DB_HOST=${POSTGRES_HOST}
-      - TEST_DB_PORT=${POSTGRES_PORT:-5432}
+      - TEST_DB_NAME=${POSTGRES_DB:-ilotalo_dev}
+      - TEST_DB_USER=${POSTGRES_USER:-user}
+      - TEST_DB_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - TEST_DB_HOST=db
+      - TEST_DB_PORT=5432
   frontend:
     build:
       context: "./frontend"
@@ -26,3 +26,18 @@ services:
       - .env
     environment:
       - SITE_KEY=${SITE_KEY}
+  db:
+    image: postgres:18
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-ilotalo_dev}
+      - POSTGRES_USER=${POSTGRES_USER:-user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+    ports:
+      - "5433:5432"
+
+volumes:
+  postgres_data_dev:
