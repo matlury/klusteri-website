@@ -4,7 +4,7 @@
 import React, { useState } from "react";
 import { Button } from "@mui/material";
 import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined';
-import axiosClient from "../axios.js";
+import { organizationsAPI } from "../api/api.ts";
 import AutomateCleanersDialog from "./AutomateCleanersDialog.jsx";
 import { useTranslation } from "react-i18next";
 
@@ -25,7 +25,7 @@ export default function CleanersListAutomateButton({ updateNewData, setError}) {
   const handleAutomate = async (threshold) => {
     setLoading(true);
     try {
-      const response = await axiosClient.get("/listobjects/organizations/");
+      const response = await organizationsAPI.getOrganizations();
       const orgdata = response.data;
 
       // Check if orgdata is an array

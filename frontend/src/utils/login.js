@@ -1,4 +1,4 @@
-import axiosClient from "../axios.js";
+import { authAPI } from "../api/api.ts";
 
 // Handles the login function
 const login = async ({ email, password, setError, setToken, onLogin, setUser, t }) => {
@@ -8,16 +8,12 @@ const login = async ({ email, password, setError, setToken, onLogin, setUser, t 
   };
 
   // Return a promise that resolves when login is complete
-  return axiosClient
-    .post("/token/", credentials)
+  return authAPI
+    .login(credentials)
     .then(({ data }) => {
       setToken(data.access);
-      return axiosClient
-        .get("/users/userinfo", {
-          headers: {
-            Authorization: `Bearer ${data.access}`,
-          },
-        })
+      return authAPI
+        .getUserInfo()
         .then((response) => {
           setUser(response.data);
           localStorage.setItem("loggedUser", JSON.stringify(response.data));

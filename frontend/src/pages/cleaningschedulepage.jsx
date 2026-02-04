@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axiosClient from "../axios.js";
+import { organizationsAPI, cleaningAPI } from "../api/api.ts";
 import { Button, Snackbar, Alert } from "@mui/material";
 import CleanersList from "../components/CleanersList.jsx";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -93,7 +93,7 @@ const CleaningSchedule = ({
   };
 
   const handleFormSubmit = async (json) => {
-    const orgdata = await axiosClient.get("/listobjects/organizations/");
+    const orgdata = await organizationsAPI.getOrganizations();
 
     if (allCleaning.length > 0) {
       setError(t("cleaningerrorold"));
@@ -123,11 +123,11 @@ const CleaningSchedule = ({
           return orgs[i].id;
         }
       }
-    };
+    }
 
     function confirmCleaning(cleaningObject) {
-      axiosClient
-        .post(`/cleaning/create_cleaning`, cleaningObject)
+      cleaningAPI
+        .createCleaning(cleaningObject)
         .then((response) => {
           setSuccess(t("cleaningsubmitsuccess"));
           handleSnackbar(t("cleaningsubmitsuccess"), "success");
@@ -144,8 +144,8 @@ const CleaningSchedule = ({
   };
 
   const handleRemoveFormSubmit = async () => {
-    axiosClient
-      .delete(`/cleaning/remove/all`)
+    cleaningAPI
+      .deleteAllCleaning()
       .then((response) => {
         fetchCleaning();
         setSuccess(t("cleaningclearedsuccess"));
@@ -162,8 +162,8 @@ const CleaningSchedule = ({
   };
 
   const fetchCleaning = () => {
-    axiosClient
-      .get("/listobjects/cleaning/")
+    cleaningAPI
+      .getCleaning()
       .then((res) => {
         const rawData = res.data;
         setRawCleaningData(rawData);

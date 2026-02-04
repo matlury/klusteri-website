@@ -3,12 +3,9 @@ import { momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "moment/locale/fi";
 import { useStateContext } from "../context/ContextProvider.jsx";
-import axiosClient from "../axios.js";
-import axios from "axios";
+import { organizationsAPI, eventsAPI } from "../api/api.ts";
 import ReservationsView from "../components/ReservationsView.jsx";
 import { useTranslation } from "react-i18next";
-
-const API_URL = process.env.VITE_API_URL;
 
 // Set locale to Finnish and specify the first day of the week
 moment.updateLocale("fi", {
@@ -96,12 +93,10 @@ const MyCalendar = () => {
 
     if (isLoaded) return;
 
-    axiosClient
-      .get("/listobjects/events/", {
-        params: {
-          start: startRange.toISOString(),
-          end: endRange.toISOString()
-        }
+    eventsAPI
+      .getEventsWithQuery({
+        start: startRange.toISOString(),
+        end: endRange.toISOString()
       })
       .then((response) => {
         const rawData = response.data;
@@ -134,8 +129,8 @@ const MyCalendar = () => {
   }, []);
 
   const getOrganizations = () => {
-    axios
-      .get(`${API_URL}/api/listobjects/organizations/`)
+    organizationsAPI
+      .getOrganizations()
       .then((response) => {
         const organizations = response.data;
         setOrganizations(organizations);
@@ -252,8 +247,8 @@ const MyCalendar = () => {
       };
 
       // Saves the event to the database through axiosClient and fetches the event id that is automatically created in the db
-      axiosClient
-        .post(`events/create_event`, newEvent)
+      eventsAPI
+        .createEvent(newEvent)
         .then((response) => {
           const updatedEvent = { ...newEvent, id: response.data.id };
           setEvents([...events, updatedEvent]);
@@ -283,9 +278,9 @@ const MyCalendar = () => {
   // Handles deleting an event with the event id
   const handleDeleteEvent = (eventId) => {
     if (eventId) {
-      axiosClient
-        .delete(`events/delete_event/${eventId}/`)
-        .then((response) => {
+      eventsAPI
+        .deleteEvent(eventId)
+        .then(() => {
           setEvents(events.filter((event) => event.id !== eventId));
         })
         .catch((error) => {

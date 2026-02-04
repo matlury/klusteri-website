@@ -30,6 +30,8 @@ export const eventsAPI = {
   getEvents: (params = '') => axiosClient.get(`/listobjects/events/${params}`),
   getEventsWithParams: (params) => axiosClient.get(`listobjects/events/?${params.toString()}`),
   getEventsWithQuery: (params) => axiosClient.get('/listobjects/events/', { params }),
+  createEvent: (eventData) => axiosClient.post('events/create_event', eventData),
+  deleteEvent: (eventId) => axiosClient.delete(`events/delete_event/${eventId}/`),
 };
 
 // Night Responsibilities API
@@ -54,6 +56,20 @@ export const defectsAPI = {
   createDefect: (defectData) => axiosClient.post('/defects/create_defect', defectData),
   repairDefect: (id) => axiosClient.put(`defects/repair_defect/${id}/`, {}),
   emailDefect: (id) => axiosClient.put(`defects/email_defect/${id}/`, {}),
+};
+
+// Cleaning Supplies API
+export const cleaningSuppliesAPI = {
+  getCleaningSupplies: () => axiosClient.get('/listobjects/cleaningsupplies/'),
+  createTool: (toolData) => axiosClient.post('/cleaningsupplies/create_tool', toolData),
+  deleteTool: (toolId) => axiosClient.delete(`cleaningsupplies/delete_tool/${toolId}/`),
+};
+
+// Cleaning API
+export const cleaningAPI = {
+  getCleaning: () => axiosClient.get('/listobjects/cleaning/'),
+  createCleaning: (cleaningData) => axiosClient.post('/cleaning/create_cleaning', cleaningData),
+  deleteAllCleaning: () => axiosClient.delete('/cleaning/remove/all'),
 };
 
 // Generic list objects API for common patterns

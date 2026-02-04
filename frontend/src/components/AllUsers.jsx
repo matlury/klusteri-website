@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import axiosClient from "../axios.js";
+import React, { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import {
@@ -16,7 +15,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useTranslation } from "react-i18next";
-import { ROLE_DESCRIPTIONS, ROLE_OPTIONS } from "../roles.js";
+import { ROLE_OPTIONS } from "../roles.js";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -25,13 +24,9 @@ const AllUsers = ({
   allUsers,
   organizations,
   handleUpdateAnotherUser,
-  hasPermissionOrg,
-  hasPermission,
   handlePJChange,
   handleKeySubmit,
   handleResRightChange,
-  setUserDetailsPassword,
-  userDetailsPassword,
   fetchOrganizations,
   getAllUsers,
 }) => {

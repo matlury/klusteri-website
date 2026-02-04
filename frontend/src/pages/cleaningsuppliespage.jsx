@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axiosClient from "../axios.js";
+import { cleaningSuppliesAPI } from "../api/api.ts";
 import { Button } from "@mui/material";
 import CleaningToolForm from "../components/CleaningToolForm.jsx";
 import CleaningSuppliesList from "../components/CleaningSuppliesList.jsx";
@@ -76,8 +76,8 @@ const CleaningSupplies = ({
 
     function confirmCleaningSupplies(cleaningSupplyObject) {
       if (confirm) {
-        axiosClient
-          .post(`/cleaningsupplies/create_tool`, cleaningSupplyObject)
+        cleaningSuppliesAPI
+          .createTool(cleaningSupplyObject)
           .then((response) => {
             handleSnackbar(t("createtool"), "success");
             fetchSupplies();
@@ -93,8 +93,8 @@ const CleaningSupplies = ({
 
   const handleDeleteCleaningTool = (id) => {
     setButtonPopup(true);
-    axiosClient
-      .delete(`cleaningsupplies/delete_tool/${id}/`, {})
+    cleaningSuppliesAPI
+      .deleteTool(id)
       .then((response) => {
         handleSnackbar(t("deletetoolsuccess"), "success");
         fetchSupplies();
@@ -122,8 +122,8 @@ const CleaningSupplies = ({
   };
 
   const fetchSupplies = () => {
-    axiosClient
-      .get("/listobjects/cleaningsupplies/")
+    cleaningSuppliesAPI
+      .getCleaningSupplies()
       .then((res) => {
         const rawData = res.data;
         const suppliesData = rawData.map((u, index) => ({
