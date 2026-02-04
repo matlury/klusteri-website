@@ -51,8 +51,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const [hasPermission, setHasPermission] = useState(false);
   const [hasPermissionOrg, setHasPermissionOrg] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -103,8 +101,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     const user_id = loggedUser.id;
 
     if (!username || !email) {
-      setError(t("usereditmandfields"));
-      setTimeout(() => setError(""), 5000);
       handleSnackbar(t("usereditmandfields"), "error");
       return;
     }
@@ -114,29 +110,21 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         const response = await axios.get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`);
         const existingUsers = response.data;
         if (existingUsers.some((user) => user.telegram === telegram && user.id !== loggedUser.id)) {
-          setError(t("telegraminuse"));
           handleSnackbar(t("telegraminuse"), "error");
-          setTimeout(() => setError(""), 5000);
           return;
         }
       }
 
       if (password) {
         if (password !== confirmPassword) {
-          setError(t("diffpass"));
-          setTimeout(() => setError(""), 5000);
           handleSnackbar(t("diffpass"), "error");
           return;
         }
         if (password.length < 8 || password.length > 20) {
-          setError(t("mincharspass"));
-          setTimeout(() => setError(""), 5000);
           handleSnackbar(t("mincharspass"), "error");
           return;
         }
         if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
-          setError(t("invalidpass"));
-          setTimeout(() => setError(""), 5000);
           handleSnackbar(t("invalidpass"), "error");
           return;
         }
@@ -145,9 +133,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       const response = await axios.get(`${API_URL}/api/listobjects/users/?email=${email}`);
       const existingUsers = response.data;
       if (existingUsers.some((user) => user.email === email && user.id !== loggedUser.id)) {
-        setError(t("emailinuse"));
         handleSnackbar(t("emailinuse"), "error");
-        setTimeout(() => setError(""), 5000);
         return;
       }
 
@@ -160,14 +146,10 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       const updateResponse = await axiosClient.put(`/users/update/${user_id}/`, details);
       localStorage.setItem("loggedUser", JSON.stringify(updateResponse.data));
       setUser(updateResponse.data);
-      setSuccess(t("usereditsuccess"));
-      setTimeout(() => setSuccess(""), 5000);
       handleSnackbar(t("usereditsuccess"), "success");
       await getAllUsers();
     } catch (error) {
       console.error(t("usereditfail"), error);
-      setError(t("usereditfail"));
-      setTimeout(() => setError(""), 5000);
       handleSnackbar(t("usereditfail"), "error");
     }
 
@@ -204,9 +186,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
 
     if (!userDetailsUsername || !userDetailsEmail) {
-      setError(t("usereditmandfields"));
       handleSnackbar(t("usereditmandfields"), "error");
-      setTimeout(() => setError(""), 5000);
       return;
     }
 
@@ -231,16 +211,12 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       });
 
       if (typeof validationError === "string") {
-        setError(validationError);
         handleSnackbar(validationError, "error");
-        setTimeout(() => setError(""), 5000);
         return;
       }
 
       const response = await axiosClient.put(`/users/update/${userDetailsId}/`, updatedValues);
-      setSuccess(t("usereditsuccess"));
       handleSnackbar(t("usereditsuccess"), "success");
-      setTimeout(() => setSuccess(""), 5000);
 
       if (userDetailsEmail === email) {
         localStorage.setItem("loggedUser", JSON.stringify(response.data));
@@ -249,9 +225,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
       await getAllUsers();
     } catch (error) {
-      setError(t("usereditfail"));
       handleSnackbar(t("usereditfail"), "error");
-      setTimeout(() => setError(""), 5000);
     }
   };
   // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION OF THE ORGANIZATIONS
@@ -315,9 +289,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         .put(
           `/organizations/update_organization/${orgId}/`,
           newOrganizationObject);
-      setSuccess("Järjestö muokattu onnistuneesti!");
       handleSnackbar("Järjestö muokattu onnistuneesti!", "success");
-      setTimeout(() => setSuccess(""), 5000);
       await getOrganisations();
     } catch (error) {
       console.error("Error creating account:", error);
@@ -334,11 +306,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         const response = await axiosClient.delete(`/organizations/remove/${orgId}/`);
         await getOrganisations();
         await getAllUsers();
-        setSuccess(t("orgdeletesuccess"));
         handleSnackbar(t("orgdeletesuccess"), "success");
-        setTimeout(() => setSuccess(""), 5000);
       } catch (error) {
-        setError(t("orgdeletefail"));
+        handleSnackbar(t("orgdeletefail"), "error");
       }
     }
   };
@@ -354,16 +324,12 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       if (
         existingOrganizations.some((org) => org.name === organization_name)
       ) {
-        setError(t("orgcreatenamefail"));
         handleSnackbar(t("orgcreatenamefail"), "error");
-        setTimeout(() => setError(""), 5000);
       }
       if (
         existingOrganizations.some((org) => org.email === organization_email)
       ) {
-        setError(t("emailinuse"));
         handleSnackbar(t("emailinuse"), "error");
-        setTimeout(() => setError(""), 5000);
       } else {
         const organizationObject = {
           name: organization_name,
@@ -381,9 +347,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     try {
       await axiosClient
         .post("organizations/create", organizationObject);
-      setSuccess(t("orgcreatesuccess"));
       handleSnackbar(t("orgcreatesuccess"), "success");
-      setTimeout(() => setSuccess(""), 5000);
       await getOrganisations();
     } catch (error) {
       console.error("Error creating organization:", error);
@@ -454,8 +418,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           .then((response) => {
             localStorage.setItem("loggedUser", JSON.stringify(response.data));
             setUser(response.data);
-            setSuccess(t("usereditsuccess"));
-            setTimeout(() => setSuccess(""), 5000);
           })
           .catch((error) => {
             console.error("Error updating user details:", error);
@@ -478,7 +440,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         axiosClient
           .put(`/users/change_rights_reservation/${selectedUserId}/`)
           .then((response) => {
-            setSuccess(t("usereditsuccess"));
           })
           .catch((error) => {
             console.error("Error changing reservation rights:", error);
@@ -522,18 +483,15 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       // Check the response and update the UI accordingly
       if (response.status === 200) {
         // Successful key handover
-        setSuccess(t("handoverkeysuccess"));
-        setTimeout(() => {
-          setSuccess("");
-        }, 5000);
+        handleSnackbar(t("handoverkeysuccess"), "success");
         await getAllUsers();
       } else {
         // Error in key handover
-        setError("ERROR");
+        handleSnackbar("ERROR", "error");
       }
     } catch (error) {
       console.error("Error in key handover:", error);
-      setError(t("handoverkeyfail"));
+      handleSnackbar(t("handoverkeyfail"), "error");
     }
   };
 
@@ -555,7 +513,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
     const accessToken = localStorage.getItem("ACCESS_TOKEN");
     await axios
-      .get(`${API_URL}/api/users/userinfo`, {
+      .get(`/api/users/userinfo`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
