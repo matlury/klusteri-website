@@ -20,6 +20,7 @@ class Organization(models.Model):
     homepage = models.CharField(max_length=100, default="")
     color = models.CharField(max_length=7, blank=True, null=True)
 
+
 class UserAccountManager(BaseUserManager):
     """
     Custom manager for creating users.
@@ -76,6 +77,7 @@ class User(AbstractBaseUser):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "password", "role"]
 
+
 class Event(models.Model):
     """
     Represents an event with specific attributes such as start and end time, room, reservation details,
@@ -84,20 +86,27 @@ class Event(models.Model):
 
     # Fields for event attributes
     start = models.DateTimeField(
-        blank = True,
+        blank=True,
         db_index=True
     )
     end = models.DateTimeField(
-        blank = True,
+        blank=True,
         db_index=True
     )
-    title = models.CharField(max_length=100, default="") # Name of the event
-    organizer = models.ForeignKey(Organization, on_delete=models.CASCADE, default=0, db_column='organizer') # Organization responsible for the event
+    title = models.CharField(max_length=100, default="")  # Name of the event
+    # Organization responsible for the event
+    organizer = models.ForeignKey(
+        Organization, on_delete=models.CASCADE, default=0, db_column='organizer')
     description = models.TextField(default="")  # Description of the event
-    responsible = models.CharField(max_length=100, default="")  # Person responsible for the event
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, default=0, db_column='created_by')
-    open = models.BooleanField(default=True)  # Indicates whether the event is open or not
-    room = models.CharField(max_length=50, default="", db_index=True)  # Room where the event takes place
+    # Person responsible for the event
+    responsible = models.CharField(max_length=100, default="")
+    created_by = models.ForeignKey(
+        User, on_delete=models.CASCADE, default=0, db_column='created_by')
+    # Indicates whether the event is open or not
+    open = models.BooleanField(default=True)
+    # Room where the event takes place
+    room = models.CharField(max_length=50, default="", db_index=True)
+
 
 class NightResponsibility(models.Model):
     """
@@ -106,19 +115,22 @@ class NightResponsibility(models.Model):
     login and logout times, and attendance status.
     """
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=0, db_column='user')
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, default=0, db_column='user')
     organizations = models.ManyToManyField(Organization)
     responsible_for = models.CharField(max_length=500, default="")
     login_time = models.DateTimeField(
-        auto_now_add = True,
+        auto_now_add=True,
     )
     logout_time = models.DateTimeField(
-        auto_now = True,
-        blank = True,
+        auto_now=True,
+        blank=True,
     )
     present = models.BooleanField(default=True)
     late = models.BooleanField(default=False)
-    created_by = models.CharField(max_length=50, default="") # CHANGE TO FOREIGN KEY
+    created_by = models.CharField(
+        max_length=50, default="")  # CHANGE TO FOREIGN KEY
+
 
 class DefectFault(models.Model):
     """Model for defects and faults in Klusteri."""
@@ -134,28 +146,31 @@ class DefectFault(models.Model):
         )
     """
     time = models.DateTimeField(
-        auto_now_add = True,
+        auto_now_add=True,
     )
     email_sent = models.DateTimeField(
-        blank = True,
-        null = True
+        blank=True,
+        null=True
     )
     repaired = models.DateTimeField(
-        blank = True,
-        null = True
+        blank=True,
+        null=True
     )
+
 
 class Cleaning(models.Model):
     """Model for cleaningn responsibilities"""
 
     id = models.AutoField(primary_key=True)
     week = models.IntegerField(default=0)
-    big = models.ForeignKey(Organization, on_delete=models.CASCADE, default=0, related_name="big_orgs", db_column='big')
-    small = models.ForeignKey(Organization, on_delete=models.CASCADE, default=0, related_name="small_orgs", db_column='small')
+    big = models.ForeignKey(Organization, on_delete=models.CASCADE,
+                            default=0, related_name="big_orgs", db_column='big')
+    small = models.ForeignKey(Organization, on_delete=models.CASCADE,
+                              default=0, related_name="small_orgs", db_column='small')
+
 
 class CleaningSupplies(models.Model):
     """Model for cleaning supplies"""
 
     id = models.AutoField(primary_key=True)
     tool = models.CharField(max_length=100, default="", unique=True)
-
