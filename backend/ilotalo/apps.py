@@ -28,7 +28,7 @@ class IlotaloConfig(AppConfig):
 
     def ready(self):
         # Defer scheduler start to avoid async context issues
-        request_started.connect(self._delayed_scheduler_start)
+        # request_started.connect(self._delayed_scheduler_start)  # Commented out for containerized deployment
         if 'test' not in sys.argv:
             connection_created.connect(create_default_user)
 
