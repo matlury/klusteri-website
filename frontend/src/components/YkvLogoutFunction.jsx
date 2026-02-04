@@ -15,16 +15,16 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { lighten, styled } from "@mui/material/styles";
 import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
-
+import { useStateContext } from "../context/ContextProvider";
 const YkvLogoutFunction = ({
   handleYkvLogin,
   handleYkvLogout,
   allResponsibilities,
   allUsersWithKeys,
-  loggedUser,
   responsibility,
   setResponsibility,
 }) => {
+  const { user: loggedUser } = useStateContext();
   const [open, setOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
@@ -32,9 +32,7 @@ const YkvLogoutFunction = ({
   const [search, setSearch] = useState("");
   const [minFilter, setMinFilter] = useState("");
   const [maxFilter, setMaxFilter] = useState("");
-
   const { t } = useTranslation();
-
   const handleMaxFilterChange = (event) => {
     setMaxFilter(event.target.value);
   };

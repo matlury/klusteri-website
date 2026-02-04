@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useStateContext } from "./context/ContextProvider.jsx";
 import {
   BrowserRouter as Router,
   Route,
@@ -87,18 +88,18 @@ const Sidebar = ({ isLoggedIn, handleDrawerClose }) => {
   const location = useLocation();
 
   const icons = [
-    <HomeOutlinedIcon />,
-    <InfoOutlinedIcon />,
-    <CalendarMonthOutlinedIcon />,
-    <BedtimeOutlinedIcon />,
-    <ManageAccountsOutlinedIcon />,
-    <BarChartIcon />,
-    <LocationOnOutlinedIcon />,
-    <BuildOutlinedIcon />,
-    <CleaningServicesIcon />,
-    <CleaningServicesIcon />,
-    <FactCheckOutlinedIcon />,
-    <AdminPanelSettingsOutlinedIcon />,
+    <HomeOutlinedIcon key="home" />,
+    <InfoOutlinedIcon key="info" />,
+    <CalendarMonthOutlinedIcon key="calendar" />,
+    <BedtimeOutlinedIcon key="bedtime" />,
+    <ManageAccountsOutlinedIcon key="accounts" />,
+    <BarChartIcon key="bar" />,
+    <LocationOnOutlinedIcon key="location" />,
+    <BuildOutlinedIcon key="build" />,
+    <CleaningServicesIcon key="cleaning1" />,
+    <CleaningServicesIcon key="cleaning2" />,
+    <FactCheckOutlinedIcon key="factcheck" />,
+    <AdminPanelSettingsOutlinedIcon key="admin" />,
   ];
 
   const routes = [
@@ -193,11 +194,9 @@ const AppContent = ({ window }) => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
 
-  const [showLoginPage, setShowLoginPage] = React.useState(true);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-  const [loggedUser, setLoggedUser] = React.useState(
-    JSON.parse(localStorage.getItem("loggedUser")) || null,
-  );
+  // Removed unused showLoginPage state
+  const { user: loggedUser, setUser } = useStateContext();
+  const isLoggedIn = !!loggedUser;
 
   const [loginDialogOpen, setLoginDialogOpen] = React.useState(false);
 
@@ -212,10 +211,6 @@ const AppContent = ({ window }) => {
 
   React.useEffect(() => {
     i18n.changeLanguage(localStorage.getItem("lang") || "fi");
-    const loggedInStatus = localStorage.getItem("isLoggedIn");
-    if (loggedInStatus === "true") {
-      setIsLoggedIn(true);
-    }
   }, []);
 
   // Handles the sidebar closing on mobile
@@ -236,23 +231,19 @@ const AppContent = ({ window }) => {
 
   // Hides login page and shows create new user page
   const handleCreateNewUser = () => {
-    setShowLoginPage(false);
+    // No-op: showLoginPage state removed
   };
 
-  // Sets localstorage value to true, if someone is logged in
+  // Sets login dialog state only
   const handleLogin = () => {
-    setIsLoggedIn(true);
-    localStorage.setItem("isLoggedIn", "true");
     setLoginDialogOpen(false); // Close the dialog upon successful login
   };
 
-  // Removes localstorage value if someone logs out
+  // Removes user from context and navigates to front page
   const handleLogout = () => {
     localStorage.removeItem("ACCESS_TOKEN");
     localStorage.removeItem("loggedUser");
-    localStorage.removeItem("isLoggedIn");
-    setLoggedUser(null);
-    setIsLoggedIn(false);
+    setUser(null);
     navigate("/etusivu"); // Navigate to front page after logging out
   };
 
@@ -430,47 +421,15 @@ const AppContent = ({ window }) => {
           <Route path="/etusivu" element={<FrontPage />} />
           <Route path="/christina_regina" element={<ChristinaRegina />} />
           <Route path="/varaukset" element={<Reservations />} />
-          <Route
-            path="/ykv"
-            element={
-              <OwnKeys isLoggedIn={isLoggedIn} loggedUser={loggedUser} />
-            }
-          />
-          <Route
-            path="/omat_tiedot"
-            element={<OwnPage isLoggedIn={isLoggedIn} />}
-          />
+          <Route path="/ykv" element={<OwnKeys />} />
+          <Route path="/omat_tiedot" element={<OwnPage />} />
           <Route path="/tilastot" element={<Statistics />} />
           <Route path="/yhteystiedot" element={<Contacts />} />
-          <Route
-            path="/viat"
-            element={
-              <DefectFault isLoggedIn={isLoggedIn} loggedUser={loggedUser} />
-            }
-          />
-          <Route
-            path="/siivousvuorot"
-            element={
-              <CleaningSchedule
-                isLoggedIn={isLoggedIn}
-                loggedUser={loggedUser}
-              />
-            }
-          />
-          <Route
-            path="/saannot_ja_ohjeet"
-            element={<Rules_and_Instructions />}
-          />
+          <Route path="/viat" element={<DefectFault />} />
+          <Route path="/siivousvuorot" element={<CleaningSchedule />} />
+          <Route path="/saannot_ja_ohjeet" element={<Rules_and_Instructions />} />
           <Route path="/tietosuojaseloste" element={<PrivacyPolicy />} />
-          <Route
-            path="/siivoustarvikkeet"
-            element={
-              <CleaningSupplies
-                isLoggedIn={isLoggedIn}
-                loggedUser={loggedUser}
-              />
-            }
-          />
+          <Route path="/siivoustarvikkeet" element={<CleaningSupplies />} />
         </Routes>
         <LoginDialog
           open={loginDialogOpen}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useStateContext } from "../context/ContextProvider.jsx";
 import { organizationsAPI, cleaningAPI } from "../api/api.ts";
 import { Button, Snackbar, Alert } from "@mui/material";
 import CleanersList from "../components/CleanersList.jsx";
@@ -13,54 +14,30 @@ import SaveDialog from "../components/SaveDialog";
 import Stack from '@mui/material/Stack';
 import { useTranslation } from "react-i18next";
 
-const CleaningSchedule = ({
-  isLoggedIn: propIsLoggedIn,
-  loggedUser: propLoggedUser,
-}) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
-  const [loggedUser, setLoggedUser] = useState(propLoggedUser);
+const CleaningSchedule = () => {
+  const { user: loggedUser } = useStateContext();
+  const isLoggedIn = !!loggedUser;
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [confirm, setConfirmOpen] = useState(false);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
-
   const [allCleaning, setAllCleaning] = useState([]);
   const [rawCleaningData, setRawCleaningData] = useState(null);
   const [newData, setNewData] = useState(null);
   const [loading, setLoading] = useState(true);
-
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-
   const { t } = useTranslation();
 
-  useEffect(() => {
-    setIsLoggedIn(propIsLoggedIn);
-    if (propIsLoggedIn) {
-      const storedUser = JSON.parse(localStorage.getItem("loggedUser"));
-      if (storedUser) {
-        setLoggedUser(storedUser);
-      }
-    }
-  }, [propIsLoggedIn]);
+  // No need to sync isLoggedIn or loggedUser from props/localStorage
 
   useEffect(() => {
     if (isLoggedIn && loggedUser) {
       fetchCleaning();
     }
   }, [isLoggedIn, loggedUser]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (loggedUser) {
-        await fetchCleaning();
-      }
-    };
-
-    fetchData();
-  }, [loggedUser]);
 
   const handleSnackbar = (message, severity) => {
     setSnackbarMessage(message);
@@ -198,7 +175,7 @@ const CleaningSchedule = ({
           <h2>{t("cleaningschedule")}</h2>
           <Stack direction="row" spacing={2}>
             <CleanersListJSONButton cleaners={rawCleaningData} />
-            {loggedUser && loggedUser.role === 1 && (
+            {isLoggedIn && loggedUser.role === 1 && (
               <React.Fragment>
                 <CleanersListUploadButton setNewData={setNewData} onClick={() => handleFormSubmit(newData)} />
                 <CleanersListAutomateButton

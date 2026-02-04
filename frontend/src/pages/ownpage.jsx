@@ -10,20 +10,20 @@ import { useTranslation } from "react-i18next";
 import { Snackbar, Alert } from "@mui/material";
 import { ROLE_DESCRIPTIONS } from "../roles.js";
 
-const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
+const OwnPage = () => {
   const { user, setUser } = useStateContext();
-  const [username, setUsername] = useState("");
+  const isLoggedIn = !!user;
+  const [username, setUsername] = useState(user?.username || "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [telegram, setTelegram] = useState("");
-  const [role, setRole] = useState("5");
+  const [email, setEmail] = useState(user?.email || "");
+  const [telegram, setTelegram] = useState(user?.telegram || "");
+  const [role, setRole] = useState(user?.role || "5");
 
   // user_details* variables for viewing and updating someone else's information
   const [userDetailsUsername, setUserDetailsUsername] = useState("");
   const [userDetailsPassword, setUserDetailsPassword] = useState("");
-  const [userDetailsConfirmPassword, setUserDetailsConfirmPassword] =
-    useState("");
+  const [userDetailsConfirmPassword, setUserDetailsConfirmPassword] = useState("");
   const [userDetailsEmail, setuserDetailsEmail] = useState("");
   const [userDetailsTelegram, setuserDetailsTelegram] = useState("");
   const [userDetailsRole, setuserDetailsRole] = useState(null);
@@ -49,7 +49,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   const [hasPermission, setHasPermission] = useState(false);
   const [hasPermissionOrg, setHasPermissionOrg] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -57,26 +56,17 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   const { t } = useTranslation();
 
-  // Initialize component data on mount
   useEffect(() => {
-    const loggedUser = JSON.parse(localStorage.getItem("loggedUser")) || null;
-    if (loggedUser) {
-      setIsLoggedIn(true);
-      setUsername(loggedUser.username);
-      setEmail(loggedUser.email);
-      setTelegram(loggedUser.telegram);
-      setRole(loggedUser.role);
-
-      // Fetch all necessary data once when user is logged in
+    if (isLoggedIn && user) {
+      setUsername(user.username);
+      setEmail(user.email);
+      setTelegram(user.telegram);
+      setRole(user.role);
       getOrganisations();
       getAllUsers();
       getPermission();
-    } else {
-      setIsLoggedIn(false);
     }
-  }, []); // Run only once on mount
-
-  // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION OF THE LOGGED IN USER
+  }, [isLoggedIn, user]);
 
   // Handles the user info update when the 'Vahvista Muutokset' button is clicked and gives error messages if the new username, email or telegram are taken by some other user
   const handleUserDetails = async (event) => {
@@ -90,8 +80,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       telegram: telegram,
     };
 
-    const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
-    const user_id = loggedUser.id;
+    const user_id = user.id;
 
     if (!username || !email) {
       handleSnackbar(t("usereditmandfields"), "error");
@@ -102,7 +91,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       if (telegram) {
         const response = await usersAPI.getUsersByTelegram(telegram);
         const existingUsers = response.data;
-        if (existingUsers.some((user) => user.telegram === telegram && user.id !== loggedUser.id)) {
+        if (existingUsers.some((u) => u.telegram === telegram && u.id !== user.id)) {
           handleSnackbar(t("telegraminuse"), "error");
           return;
         }
@@ -125,7 +114,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
       const response = await usersAPI.getUsersByEmail(email);
       const existingUsers = response.data;
-      if (existingUsers.some((user) => user.email === email && user.id !== loggedUser.id)) {
+      if (existingUsers.some((u) => u.email === email && u.id !== user.id)) {
         handleSnackbar(t("emailinuse"), "error");
         return;
       }
@@ -137,7 +126,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       }
 
       const updateResponse = await usersAPI.updateUser(user_id, details);
-      localStorage.setItem("loggedUser", JSON.stringify(updateResponse.data));
+      setUser(updateResponse.data);
       setUser(updateResponse.data);
       handleSnackbar(t("usereditsuccess"), "success");
       await getAllUsers();

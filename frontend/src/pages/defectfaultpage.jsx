@@ -6,13 +6,12 @@ import DefectList from "../components/DefectList";
 import RepairConfirmDialog from "../components/RepairConfirmDialog.jsx";
 import EmailConfirmDialog from "../components/EmailConfirmDialog.jsx";
 import { useTranslation } from "react-i18next";
+import { useStateContext } from "../context/ContextProvider";
 
-const DefectFault = ({
-  isLoggedIn: propIsLoggedIn,
-  loggedUser: propLoggedUser,
-}) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
-  const [loggedUser, setLoggedUser] = useState(propLoggedUser);
+const DefectFault = () => {
+  const { user } = useStateContext();
+  const isLoggedIn = !!user;
+  const loggedUser = user;
   const [open, setOpen] = useState(false);
   const [activeDefects, setActiveDefects] = useState([]);
   const [allDefects, setAllDefects] = useState([]);
@@ -24,17 +23,6 @@ const DefectFault = ({
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const { t } = useTranslation();
-
-  useEffect(() => {
-    setIsLoggedIn(propIsLoggedIn);
-    if (propIsLoggedIn) {
-      const storedUser = JSON.parse(localStorage.getItem("loggedUser"));
-      if (storedUser) {
-        setLoggedUser(storedUser);
-      }
-    }
-
-  }, [propIsLoggedIn]);
 
   useEffect(() => {
     if (isLoggedIn && loggedUser) {
@@ -190,7 +178,6 @@ const DefectFault = ({
           </React.Fragment>
           <React.Fragment>
             <DefectList
-              loggedUser={loggedUser}
               allDefects={allDefects}
               activeDefects={activeDefects}
               handleRepairClick={handleRepairClick}
