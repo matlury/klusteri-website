@@ -1,13 +1,13 @@
-import axiosClient from "../axios.js";
+import { authAPI, usersAPI } from "../api/api.ts";
 
-export const getPermission = async ({ API_URL, setHasPermission }) => {
+export const getPermission = async ({ setHasPermission }) => {
   /*
         Check if the logged user has permissions for something
         This prevents harm caused by localstorage manipulation
         */
 
-  await axiosClient
-    .get(`/users/userinfo`)
+  await authAPI
+    .getUserInfo()
     .then((response) => {
       const currentUser = response.data;
       if (currentUser.role === 1) {
@@ -24,16 +24,14 @@ export const getPermission = async ({ API_URL, setHasPermission }) => {
 
 // fetch each user with keys if someone is logged in
 export const fetchAllUsersWithKeys = async ({
-  API_URL,
   setAllUsersWithKeys,
   loggedUser,
-  allResponsibilities,
 }) => {
   try {
-    const response = await axiosClient.get(`/listobjects/users/`);
+    const response = await usersAPI.getUsers();
     const rawData = response.data;
     const filteredUsers = rawData.filter((user) =>
-      checkUser(user, loggedUser, allResponsibilities),
+      checkUser(user, loggedUser),
     );
     setAllUsersWithKeys(filteredUsers);
   } catch (error) {
@@ -42,7 +40,7 @@ export const fetchAllUsersWithKeys = async ({
 };
 
 // check if a user is valid for making an YKV-login
-const checkUser = (user, loggedUser, allResponsibilities) => {
+const checkUser = (user, loggedUser) => {
   if (user.role === 5) {
     return false;
   }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axiosClient from "../axios.js";
+import { usersAPI, nightResponsibilitiesAPI, ykvAPI } from "../api/api.ts";
 import { getCurrentDateTime } from "../utils/timehelpers.js";
 import {
   getPermission,
@@ -33,7 +33,7 @@ const OwnKeys = ({
   // fetches all users
   const fetchAllUsers = async () => {
     try {
-      const response = await axiosClient.get(`listobjects/users/`);
+      const response = await usersAPI.getUsers();
       setAllUsers(response.data);
     } catch (error) {
       console.error("Error fetching all users", error);
@@ -62,7 +62,7 @@ const OwnKeys = ({
   // fetches all of the responsibilities and the ones that the logged user has done
   const fetchResponsibilitiesData = async () => {
     try {
-      const response = await axiosClient.get(`listobjects/nightresponsibilities/`);
+      const response = await nightResponsibilitiesAPI.getNightResponsibilities();
       const rawData = response.data;
       setAllResponsibilities(rawData);
 
@@ -138,7 +138,7 @@ const OwnKeys = ({
 
     async function confirmYKV(responsibilityObject) {
       try {
-        await axiosClient.post(`/ykv/create_responsibility`, responsibilityObject);
+        await ykvAPI.createResponsibility(responsibilityObject);
         handleSnackbar(t("ykvsuccess"), "success");
         await fetchResponsibilitiesData();
       } catch (error) {
@@ -167,7 +167,7 @@ const OwnKeys = ({
   // handles the end of taking responsibility
   const handleYkvLogout = async (id) => {
     try {
-      await axiosClient.put(`ykv/logout_responsibility/${id}/`, {
+      await ykvAPI.logoutResponsibility(id, {
         logout_time: getCurrentDateTime(),
       });
       handleSnackbar(t("ykvlogoutsuccess"), "success");

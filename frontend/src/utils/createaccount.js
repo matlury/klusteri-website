@@ -1,7 +1,6 @@
-import axiosClient from "../axios.js";
+import { usersAPI } from "../api/api.ts";
 
 const createaccount = ({
-  API_URL,
   email,
   username,
   password,
@@ -17,8 +16,8 @@ const createaccount = ({
     */
 
   return new Promise((resolve) => {
-    axiosClient
-      .get(`/listobjects/users/?email=${email}`)
+    usersAPI
+      .getUsers()
       .then((response) => {
         const existingUsers = response.data;
         if (existingUsers.some((user) => user.email === email)) {
@@ -39,9 +38,9 @@ const createaccount = ({
             keys: null,
             recaptcha_response: recaptchaResponse
           };
-          axiosClient
-            .post(`/users/register`, userObject)
-            .then((response) => {
+          usersAPI
+            .registerUser(userObject)
+            .then(() => {
               setUserCreated(true);
               onAccountCreated && onAccountCreated();
 

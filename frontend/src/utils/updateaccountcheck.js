@@ -1,4 +1,4 @@
-import axiosClient from "../axios.js";
+import { usersAPI } from "../api/api.ts";
 
 const updateAccountCheck = async ({
   username,
@@ -6,7 +6,6 @@ const updateAccountCheck = async ({
   email,
   telegram,
   confirmPassword,
-  API_URL,
   t
 }) => {
   if (username) {
@@ -39,8 +38,8 @@ const updateAccountCheck = async ({
   }
   if (telegram) {
     return new Promise((resolve) => {
-      axiosClient
-        .get(`/listobjects/users/?telegram=${telegram}`)
+      usersAPI
+        .getUsersByTelegram(telegram)
         .then((response) => {
           const existingUsers = response.data;
           if (existingUsers.some((user) => user.telegram === telegram && user.username !== username)) {

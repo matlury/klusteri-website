@@ -1,18 +1,16 @@
 /* istanbul ignore file */
 // this file is ignored in the tests because jest doesn't work with the charts
-import React, { useEffect, useState, useRef } from "react";
-import axiosClient from "../axios";
+import React, { useEffect, useState } from "react";
+import { usersAPI, organizationsAPI, eventsAPI, nightResponsibilitiesAPI, authAPI } from "../api/api.ts";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { LineChart } from "@mui/x-charts/LineChart";
-import { Grid, Box, Typography, TextField, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, Stack } from "@mui/material";
+import { Grid, Box, Typography, TextField, Radio, RadioGroup, FormControlLabel, FormControl, Stack } from "@mui/material";
 import { CSVLink } from "react-csv";
 import { getCurrentDateTime } from "../utils/timehelpers";
 import Button from "@mui/material/Button";
 import DownloadIcon from "@mui/icons-material/Download";
 import { useTranslation } from "react-i18next";
-
-const API_URL = process.env.VITE_API_URL;
 
 // Color palette for organizations
 const ORG_COLORS = [
@@ -117,9 +115,9 @@ const Statistics = () => {
   const fetchData = async () => {
     try {
       const [orgResponse, userResponse, responsibilitiesResponse] = await Promise.all([
-        axiosClient.get("listobjects/organizations/"),
-        axiosClient.get("listobjects/users/"),
-        axiosClient.get("listobjects/nightresponsibilities/"),
+        organizationsAPI.getOrganizations(),
+        usersAPI.getUsers(),
+        nightResponsibilitiesAPI.getNightResponsibilities(),
       ]);
       return {
         orgs: orgResponse.data,
@@ -133,7 +131,7 @@ const Statistics = () => {
     const accessToken = localStorage.getItem("ACCESS_TOKEN");
     if (accessToken) {
       try {
-        const response = await axiosClient.get(`/users/userinfo`);
+        const response = await authAPI.getUserInfo();
         setUsername(response.data.username);
         setUserRole(response.data.role);
       } catch (e) {
@@ -262,7 +260,7 @@ const Statistics = () => {
       // doesn't just return the current month, but the full history.
       if (!minFilter && !maxFilter) params.append("all", "true");
 
-      const response = await axiosClient.get(`listobjects/events/?${params.toString()}`);
+      const response = await eventsAPI.getEventsWithParams(params);
       const rawData = response.data;
       const data = [[
         "START",

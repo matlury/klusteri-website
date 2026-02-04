@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useStateContext } from "../context/ContextProvider";
-import axiosClient from "../axios.js";
+import { usersAPI, organizationsAPI, keysAPI, authAPI } from "../api/api.ts";
 import UserPage from "../components/UserPage.jsx";
 import OrganisationPage from "../components/OrganisationPage.jsx";
 import CreateOrganization from "../components/CreateOrganization.jsx";
@@ -8,7 +8,7 @@ import AllUsers from "../components/AllUsers.jsx";
 import updateaccountcheck from "../utils/updateaccountcheck.js";
 import { useTranslation } from "react-i18next";
 import { Snackbar, Alert } from "@mui/material";
-import { ROLE_DESCRIPTIONS, ROLE_OPTIONS } from "../roles.js";
+import { ROLE_DESCRIPTIONS } from "../roles.js";
 
 const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   const { user, setUser } = useStateContext();
@@ -106,7 +106,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
     try {
       if (telegram) {
-        const response = await axiosClient.get(`/listobjects/users/?telegram=${telegram}`);
+        const response = await usersAPI.getUsersByTelegram(telegram);
         const existingUsers = response.data;
         if (existingUsers.some((user) => user.telegram === telegram && user.id !== loggedUser.id)) {
           handleSnackbar(t("telegraminuse"), "error");
@@ -129,7 +129,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         }
       }
 
-      const response = await axiosClient.get(`/listobjects/users/?email=${email}`);
+      const response = await usersAPI.getUsersByEmail(email);
       const existingUsers = response.data;
       if (existingUsers.some((user) => user.email === email && user.id !== loggedUser.id)) {
         handleSnackbar(t("emailinuse"), "error");
@@ -142,7 +142,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         return;
       }
 
-      const updateResponse = await axiosClient.put(`/users/update/${user_id}/`, details);
+      const updateResponse = await usersAPI.updateUser(user_id, details);
       localStorage.setItem("loggedUser", JSON.stringify(updateResponse.data));
       setUser(updateResponse.data);
       handleSnackbar(t("usereditsuccess"), "success");
@@ -214,7 +214,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         return;
       }
 
-      const response = await axiosClient.put(`/users/update/${userDetailsId}/`, updatedValues);
+      const response = await usersAPI.updateUser(userDetailsId, updatedValues);
       handleSnackbar(t("usereditsuccess"), "success");
 
       if (userDetailsEmail === email) {
@@ -232,8 +232,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // Keeps the organization information up-to-date
   const getOrganisations = async () => {
     try {
-      const res = await
-        axiosClient.get("listobjects/organizations/")
+      const res = await organizationsAPI.getOrganizations();
       const rawData = res.data;
       const orgData = rawData.map((u) => ({
         id: u.id,
@@ -284,10 +283,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       color: organization_new_color,
     };
     try {
-      await axiosClient
-        .put(
-          `/organizations/update_organization/${orgId}/`,
-          newOrganizationObject);
+      await organizationsAPI.updateOrganization(orgId, newOrganizationObject);
       handleSnackbar("Järjestö muokattu onnistuneesti!", "success");
       await getOrganisations();
     } catch (error) {
@@ -302,7 +298,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     );
     if (confirmUpdate) {
       try {
-        const response = await axiosClient.delete(`/organizations/remove/${orgId}/`);
+        await organizationsAPI.deleteOrganization(orgId);
         await getOrganisations();
         await getAllUsers();
         handleSnackbar(t("orgdeletesuccess"), "success");
@@ -315,10 +311,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // Handles the creation of organizations
   const handleCreateOrganization = async () => {
     try {
-      const response = await axiosClient
-        .get(
-          `/listobjects/organizations/?email=${organization_email}`,
-        );
+      const response = await organizationsAPI.getOrganizationsByEmail(organization_email);
       const existingOrganizations = response.data;
       if (
         existingOrganizations.some((org) => org.name === organization_name)
@@ -344,8 +337,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   };
   const createOrganization = async (organizationObject) => {
     try {
-      await axiosClient
-        .post("organizations/create", organizationObject);
+      await organizationsAPI.createOrganization(organizationObject);
       handleSnackbar(t("orgcreatesuccess"), "success");
       await getOrganisations();
     } catch (error) {
@@ -358,7 +350,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // Gets every users data from backend
   const getAllUsers = async () => {
     try {
-      const response = await axiosClient.get("listobjects/users/");
+      const response = await usersAPI.getUsers();
       const rawData = response.data;
       const userData = rawData.map((u) => ({
         id: u.id,
@@ -407,13 +399,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       const confirmUpdate = window.confirm(t("pjchange"));
 
       if (confirmUpdate) {
-        axiosClient
-          .put(`/users/update/${selectedUserId}/`, { role: 1 })
+        usersAPI
+          .updateUser(selectedUserId, { role: 1 })
           .then((response) => {
             console.log("Role updated successfully:", response.data);
           });
-        axiosClient
-          .put(`/users/update/${loggedUserId}/`, { role: 5 })
+        usersAPI
+          .updateUser(loggedUserId, { role: 5 })
           .then((response) => {
             localStorage.setItem("loggedUser", JSON.stringify(response.data));
             setUser(response.data);
@@ -436,9 +428,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       const confirmUpdate = window.confirm(t("resrightsconfirm"));
 
       if (confirmUpdate) {
-        axiosClient
-          .put(`/users/change_rights_reservation/${selectedUserId}/`)
-          .then((response) => {
+        usersAPI
+          .changeReservationRights(selectedUserId)
+          .then(() => {
           })
           .catch((error) => {
             console.error("Error changing reservation rights:", error);
@@ -467,12 +459,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
 
     try {
-      const response = await axiosClient.put(
-        `/keys/hand_over_key/${UserId}/`,
-        {
-          organization_name: Organization,
-        }
-      );
+      const response = await keysAPI.handOverKey(UserId, {
+        organization_name: Organization,
+      });
       // Check the response and update the UI accordingly
       if (response.status === 200) {
         // Successful key handover
@@ -504,8 +493,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     This prevents harm caused by localstorage manipulation
     */
 
-    await axiosClient
-      .get(`/users/userinfo`)
+    await authAPI
+      .getUserInfo()
       .then((response) => {
         const currentUser = response.data;
         if (currentUser.role === 1) {

@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import FrontpageEvents from "../components/FrontpageEvents";
-import axiosClient from "../axios.js";
-
-const API_URL = process.env.VITE_API_URL;
+import { eventsAPI } from "../api/api.ts";
 
 const FrontPage = () => {
   const { t } = useTranslation();
@@ -18,12 +16,10 @@ const FrontPage = () => {
     const futureLimit = new Date();
     futureLimit.setDate(now.getDate() + 30); // Fetch next 30 days
 
-    axiosClient
-      .get(`/listobjects/events/`, {
-        params: {
-          start: now.toISOString(),
-          end: futureLimit.toISOString()
-        }
+    eventsAPI
+      .getEventsWithQuery({
+        start: now.toISOString(),
+        end: futureLimit.toISOString()
       })
       .then((response) => {
         // Handle both paginated and non-paginated responses

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axiosClient from "../axios.js";
+import { defectsAPI } from "../api/api.ts";
 import { Button, Snackbar, Alert } from "@mui/material";
 import DefectForm from "../components/DefectForm";
 import DefectList from "../components/DefectList";
@@ -16,9 +16,7 @@ const DefectFault = ({
   const [open, setOpen] = useState(false);
   const [activeDefects, setActiveDefects] = useState([]);
   const [allDefects, setAllDefects] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [selectedDefectId, setSelectedDefectId] = useState(null);
-  const [buttonPopup, setButtonPopup] = useState(false);
   const [confirmRepairOpen, setConfirmRepairOpen] = useState(false);
   const [confirmEmailOpen, setConfirmEmailOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -77,9 +75,9 @@ const DefectFault = ({
 
     function confirmDefectFault(defectFaultObject) {
       if (confirm) {
-        axiosClient
-          .post(`/defects/create_defect`, defectFaultObject)
-          .then((response) => {
+        defectsAPI
+          .createDefect(defectFaultObject)
+          .then(() => {
             handleSnackbar(t("defectcreatesuccess"), "success");
             fetchDefects();
           })
@@ -92,10 +90,9 @@ const DefectFault = ({
   };
 
   const handleDefectFaultRepair = (id) => {
-    setButtonPopup(true);
-    axiosClient
-      .put(`defects/repair_defect/${id}/`, {})
-      .then((response) => {
+    defectsAPI
+      .repairDefect(id)
+      .then(() => {
         handleSnackbar(t("defectfixsuccess"), "success");
         fetchDefects();
       })
@@ -105,10 +102,9 @@ const DefectFault = ({
   };
 
   const handleSendEmail = (id) => {
-    setButtonPopup(true);
-    axiosClient
-      .put(`defects/email_defect/${id}/`, {})
-      .then((response) => {
+    defectsAPI
+      .emailDefect(id)
+      .then(() => {
         handleSnackbar(t("defectmailsuccess"), "success");
         fetchDefects();
       })
@@ -146,11 +142,11 @@ const DefectFault = ({
   };
 
   const fetchDefects = () => {
-    axiosClient
-      .get("/listobjects/defects/")
+    defectsAPI
+      .getDefects()
       .then((res) => {
         const rawData = res.data;
-        const defectData = rawData.map((u, index) => ({
+        const defectData = rawData.map((u) => ({
           id: u.id, // DataGrid requires a unique 'id' for each row
           description: u.description,
           time: new Date(u.time),
@@ -164,7 +160,6 @@ const DefectFault = ({
               resp.repaired === "Ei"
           ),
         );
-        setLoading(false);
       })
       .catch((error) => console.error(error));
   };
