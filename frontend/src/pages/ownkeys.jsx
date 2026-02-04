@@ -26,8 +26,6 @@ const OwnKeys = ({
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
-  const API_URL = process.env.VITE_API_URL;
-
   const { t } = useTranslation();
 
   // fetches all users
@@ -88,7 +86,7 @@ const OwnKeys = ({
       if (isLoggedIn && loggedUser) {
         // Fetch permission only once if not already set
         if (!hasPermission) {
-          await getPermission({ API_URL, setHasPermission });
+          await getPermission({ setHasPermission });
           return false
         }
         // Fetch all users once
@@ -100,7 +98,7 @@ const OwnKeys = ({
 
     fetchAllData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoggedIn, loggedUser?.id, API_URL, hasPermission]); // Only refetch if login status or user ID changes
+  }, [isLoggedIn, loggedUser?.id, hasPermission]); // Only refetch if login status or user ID changes
 
   const handleYkvLogin = async () => {
     const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));

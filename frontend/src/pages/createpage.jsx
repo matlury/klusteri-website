@@ -17,8 +17,6 @@ const NewAccountPage = ({ onAccountCreated }) => {
   const [userCreated, setUserCreated] = useState(false);
   const [recaptchaResponse, setRecaptchaResponse] = useState("");
 
-  const API_URL = process.env.VITE_API_URL;
-
   const { t } = useTranslation();
 
   const handleCreateAccount = async () => {
@@ -28,14 +26,12 @@ const NewAccountPage = ({ onAccountCreated }) => {
       email,
       telegram,
       confirmPassword,
-      API_URL,
       t
     });
     if (typeof response === "string") {
       setError(response);
     } else if (response === true) {
       const resp = await createaccount({
-        API_URL,
         email,
         username,
         password,

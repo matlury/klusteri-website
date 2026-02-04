@@ -57,7 +57,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   const { t } = useTranslation();
 
-  const API_URL = process.env.VITE_API_URL;
   // Writes down if a user is logged in
   useEffect(() => {
     setIsLoggedIn(false);
@@ -205,7 +204,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         email: userDetailsEmail,
         telegram: userDetailsTelegram,
         confirmPassword: userDetailsConfirmPassword,
-        API_URL,
         t
       });
 
