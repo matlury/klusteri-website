@@ -14,6 +14,9 @@ services:
       - TEST_DB_PASSWORD=${POSTGRES_PASSWORD:-password}
       - TEST_DB_HOST=db
       - TEST_DB_PORT=5432
+    depends_on:
+      - db
+    restart: unless-stopped
   frontend:
     build:
       context: "./frontend"

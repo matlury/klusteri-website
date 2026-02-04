@@ -63,5 +63,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD python -c "import requests; requests.get('http://localhost:8000/api/users/userinfo', timeout=10)" || exit 1
 
-# Run migrations and start uvicorn (ASGI server)
-CMD ["sh", "-c", "mkdir -p /app/staticfiles && python manage.py collectstatic --noinput && python manage.py migrate && uvicorn backend.asgi:application --host 0.0.0.0 --port 8000 --workers 4 --loop uvloop --http httptools"]
+# Run migrations and start Django runserver (for nginx reverse proxy)
+CMD ["sh", "-c", "mkdir -p /app/staticfiles && python manage.py collectstatic --noinput && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
