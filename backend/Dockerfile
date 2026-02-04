@@ -59,5 +59,5 @@ USER django
 # Expose port
 EXPOSE 8000
 
-# Run migrations and start gunicorn
-CMD ["sh", "-c", "mkdir -p /app/staticfiles && chown -R django:django /app/staticfiles && python manage.py collectstatic --noinput && python manage.py migrate && gunicorn backend.wsgi:application --bind 0.0.0.0:8000 --workers 4 --threads 2 --worker-class gthread --max-requests 1000 --max-requests-jitter 50 --timeout 30 --keep-alive 10"]
+# Run migrations and start uvicorn (ASGI server)
+CMD ["sh", "-c", "python manage.py collectstatic --noinput --clear && python manage.py migrate && uvicorn backend.asgi:application --host 0.0.0.0 --port 8000 --workers 4 --loop uvloop --http httptools"]
