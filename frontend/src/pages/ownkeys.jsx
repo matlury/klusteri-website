@@ -89,11 +89,10 @@ const OwnKeys = ({
         // Fetch permission only once if not already set
         if (!hasPermission) {
           await getPermission({ API_URL, setHasPermission });
+          return false
         }
-
         // Fetch all users once
         await fetchAllUsers();
-
         // Fetch responsibilities (consolidated)
         await fetchResponsibilitiesData();
       }
