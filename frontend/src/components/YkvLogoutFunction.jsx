@@ -23,6 +23,8 @@ const YkvLogoutFunction = ({
   allUsersWithKeys,
   responsibility,
   setResponsibility,
+  selectedForYKV,
+  setSelectedForYKV,
 }) => {
   const { user: loggedUser } = useStateContext();
   const [open, setOpen] = useState(false);
@@ -257,9 +259,12 @@ const YkvLogoutFunction = ({
             />
 
             <Autocomplete
+              multiple
               id="combo-box-demo"
               options={allUsersWithKeys}
               getOptionLabel={(option) => option.username}
+              value={selectedForYKV}
+              onChange={(event, newValue) => setSelectedForYKV(newValue)}
               style={{ width: 300 }}
               renderInput={(params) => (
                 <TextField

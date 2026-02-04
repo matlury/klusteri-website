@@ -21,7 +21,7 @@ from .serializers import (
     CleaningSerializer,
     CreateCleaningSerializer,
     CleaningSuppliesSerializer,
-    OrganizationNameSerializer
+    UserMinimalSerializer
 )
 from .models import User, Organization, Event, NightResponsibility, DefectFault, Cleaning, CleaningSupplies
 from .config import Role
@@ -53,9 +53,14 @@ class UserView(viewsets.ReadOnlyModelViewSet):
     Only supports list and retrieve actions (read-only)
     """
 
-    serializer_class = UserNoPasswordSerializer
     queryset = User.objects.all()
     pagination_class = None
+
+    def get_serializer_class(self):
+        # Use minimal serializer for list action (used by YKV etc.)
+        if self.action == 'list':
+            return UserMinimalSerializer
+        return UserNoPasswordSerializer
 
 
 class OrganizationView(viewsets.ReadOnlyModelViewSet):
@@ -126,7 +131,7 @@ class RetrieveUserView(APIView):
             the matching user's unique identifier (email address)
         """
         user = request.user
-        user = UserSerializer(user)
+        user = UserNoPasswordSerializer(user)
 
         return Response(user.data, status=status.HTTP_200_OK)
 
@@ -550,6 +555,22 @@ class NightResponsibilityView(viewsets.ReadOnlyModelViewSet):
     pagination_class = None
 
 
+ALLOWED_RESPONSIBILITY_ROLES = [
+    LEPPISPJ, LEPPISVARAPJ, MUOKKAUS, AVAIMELLINEN, JARJESTOPJ]
+
+# Eligible users for responsibility endpoint
+
+
+class EligibleResponsibilityUsersView(APIView):
+    """Endpoint to get users eligible to take responsibility <baseurl>/users/ykv/"""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        users = User.objects.filter(role__in=ALLOWED_RESPONSIBILITY_ROLES)
+        serializer = UserMinimalSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class CreateNightResponsibilityView(APIView):
     """View for creating a new ykv <baseurl>/api/ykv/create_responsibility"""
 
@@ -558,13 +579,7 @@ class CreateNightResponsibilityView(APIView):
     def post(self, request):
         user = UserSerializer(request.user)
 
-        if user.data["role"] not in [
-            LEPPISPJ,
-            LEPPISVARAPJ,
-            MUOKKAUS,
-            AVAIMELLINEN,
-            JARJESTOPJ
-        ]:
+        if user.data["role"] not in ALLOWED_RESPONSIBILITY_ROLES:
             return Response(
                 "You can't take responsibility",
                 status=status.HTTP_400_BAD_REQUEST,
@@ -588,13 +603,7 @@ class UpdateNightResponsibilityView(APIView):
     def put(self, request, pk=None):
         user = UserSerializer(request.user)
 
-        if user.data["role"] not in [
-            LEPPISPJ,
-            LEPPISVARAPJ,
-            MUOKKAUS,
-            AVAIMELLINEN,
-            JARJESTOPJ
-        ]:
+        if user.data["role"] not in ALLOWED_RESPONSIBILITY_ROLES:
             return Response(
                 "You can't edit this",
                 status=status.HTTP_400_BAD_REQUEST,
@@ -632,13 +641,7 @@ class LogoutNightResponsibilityView(APIView):
     def put(self, request, pk=None):
         user = UserSerializer(request.user)
 
-        if user.data["role"] not in [
-            LEPPISPJ,
-            LEPPISVARAPJ,
-            MUOKKAUS,
-            AVAIMELLINEN,
-            JARJESTOPJ
-        ]:
+        if user.data["role"] not in ALLOWED_RESPONSIBILITY_ROLES:
             return Response(
                 "You can't edit this",
                 status=status.HTTP_400_BAD_REQUEST,

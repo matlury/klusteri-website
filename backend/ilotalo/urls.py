@@ -27,11 +27,13 @@ from .views import (
     CleaningSuppliesView,
     CreateCleaningSuppliesView,
     RemoveCleaningSuppliesView,
+    EligibleResponsibilityUsersView,
 )
 
 """Define URL endpoints for the ilotalo app"""
 
 urlpatterns = [
+    path("ykv/", EligibleResponsibilityUsersView.as_view()),
     path("register", RegisterView.as_view()),
     path("userinfo", RetrieveUserView.as_view()),
     path("update/<int:pk>/", UpdateUserView.as_view()),
@@ -41,12 +43,15 @@ urlpatterns = [
     path("delete_event/<int:pk>/", RemoveEventView.as_view()),
     path("update_event/<int:pk>/", UpdateEventView.as_view()),
     path("create_responsibility", CreateNightResponsibilityView.as_view()),
-    path("update_responsibility/<int:pk>/", UpdateNightResponsibilityView.as_view()),
+    path("update_responsibility/<int:pk>/",
+         UpdateNightResponsibilityView.as_view()),
     path("update_organization/<int:pk>/", UpdateOrganizationView.as_view()),
     path("add_user_organization/<int:pk>/", AddUserOrganizationView.as_view()),
-    path("logout_responsibility/<int:pk>/", LogoutNightResponsibilityView.as_view()),
+    path("logout_responsibility/<int:pk>/",
+         LogoutNightResponsibilityView.as_view()),
     path("update_organization/<int:pk>/", UpdateOrganizationView.as_view()),
-    path("change_rights_reservation/<int:pk>/", RightsForReservationView.as_view()),
+    path("change_rights_reservation/<int:pk>/",
+         RightsForReservationView.as_view()),
     path("hand_over_key/<int:pk>/", HandOverKeyView.as_view()),
     path("reset", ResetDatabaseView.as_view()),
     path("delete_user/<int:pk>/", RemoveUserView.as_view()),

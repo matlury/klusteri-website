@@ -44,6 +44,7 @@ export const nightResponsibilitiesAPI = {
 export const ykvAPI = {
   createResponsibility: (responsibilityData) => axiosClient.post('/ykv/create_responsibility', responsibilityData),
   logoutResponsibility: (responsibilityId, data) => axiosClient.put(`ykv/logout_responsibility/${responsibilityId}/`, data),
+  getEligibleUsers: () => axiosClient.get('users/ykv/'),
 };
 
 // Keys API

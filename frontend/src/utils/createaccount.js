@@ -12,55 +12,52 @@ const createaccount = ({
   t
 }) => {
   /*
-    Send request to server to check if email is already in use
+    Create user account
     */
 
   return new Promise((resolve) => {
+    const userObject = {
+      username,
+      password,
+      email,
+      telegram,
+      role: 5,
+      organization: null,
+      keys: null,
+      recaptcha_response: recaptchaResponse
+    };
     usersAPI
-      .getUsers()
-      .then((response) => {
-        const existingUsers = response.data;
-        if (existingUsers.some((user) => user.email === email)) {
-          resolve(t("emailinuse"));
-          return
-        }
-        if (existingUsers.some((user) => user.username === username)) {
-          resolve(t("usernameinuse"));
-          return
-        } else {
-          const userObject = {
-            username,
-            password,
-            email,
-            telegram,
-            role: 5,
-            organization: null,
-            keys: null,
-            recaptcha_response: recaptchaResponse
-          };
-          usersAPI
-            .registerUser(userObject)
-            .then(() => {
-              setUserCreated(true);
-              onAccountCreated && onAccountCreated();
+      .registerUser(userObject)
+      .then(() => {
+        setUserCreated(true);
+        onAccountCreated && onAccountCreated();
 
-              // Set timeout to hide success message after 5 seconds
-              setTimeout(() => {
-                setUserCreated(false);
-              }, 5000);
-            })
-            .catch((error) => {
-              console.error("Error creating account:", error);
-              resolve(t("errorcreate"));
-              return
-            });
-          setShowLoginPage(true);
-        }
+        // Set timeout to hide success message after 5 seconds
+        setTimeout(() => {
+          setUserCreated(false);
+        }, 5000);
+        setShowLoginPage(true);
+        resolve(true);
       })
       .catch((error) => {
-        console.error("Error checking email:", error);
-        resolve(t("erroremail"));
-        return
+        console.error("Error creating account:", error);
+        // Handle specific validation errors from backend
+        if (error.response && error.response.data) {
+          const errors = error.response.data;
+          if (errors.email) {
+            resolve(t("emailinuse"));
+            return;
+          }
+          if (errors.username) {
+            resolve(t("usernameinuse"));
+            return;
+          }
+          if (errors.telegram) {
+            resolve(t("telegraminuse"));
+            return;
+          }
+        }
+        resolve(t("errorcreate"));
       });
   });
 };

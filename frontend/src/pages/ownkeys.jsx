@@ -15,7 +15,6 @@ const OwnKeys = () => {
   const [responsibility, setResponsibility] = useState("");
   const [allResponsibilities, setAllResponsibilities] = useState([]);
   const [allUsersWithKeys, setAllUsersWithKeys] = useState([]);
-  const [allUsers, setAllUsers] = useState([]);
   const [selectedForYKV, setSelectedForYKV] = useState([]);
   const [hasPermission, setHasPermission] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -23,33 +22,16 @@ const OwnKeys = () => {
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const { t } = useTranslation();
 
-  // fetches all users
-  const fetchAllUsers = async () => {
+  // fetches eligible users for YKV
+  const fetchEligibleUsers = async () => {
     try {
-      const response = await usersAPI.getUsers();
-      setAllUsers(response.data);
+      const response = await ykvAPI.getEligibleUsers();
+      // Filter out the logged-in user if present
+      const filteredUsers = response.data.filter(user => user.id !== loggedUser.id);
+      setAllUsersWithKeys(filteredUsers);
     } catch (error) {
-      console.error("Error fetching all users", error);
+      console.error("Error fetching eligible users", error);
     }
-  };
-
-  // check if a user is valid for making an YKV-login
-  const checkUser = (user) => {
-    if (user.role === 5) {
-      return false;
-    }
-    if (loggedUser && user.id === loggedUser.id) {
-      return false;
-    }
-    return true;
-  };
-
-  // sets filtered users for YKV selection
-  const setFilteredUsersForYKV = () => {
-    const filteredUsers = allUsers.filter((user) =>
-      checkUser(user),
-    );
-    setAllUsersWithKeys(filteredUsers);
   };
 
   // fetches all of the responsibilities and the ones that the logged user has done
@@ -58,9 +40,6 @@ const OwnKeys = () => {
       const response = await nightResponsibilitiesAPI.getNightResponsibilities();
       const rawData = response.data;
       setAllResponsibilities(rawData);
-
-      // Update filtered users after responsibilities are fetched
-      setFilteredUsersForYKV();
     } catch (error) {
       console.error("Error fetching responsibilities", error);
     }
@@ -74,7 +53,7 @@ const OwnKeys = () => {
           await getPermission({ setHasPermission });
           return false;
         }
-        await fetchAllUsers();
+        await fetchEligibleUsers();
         await fetchResponsibilitiesData();
       }
     };
@@ -85,27 +64,20 @@ const OwnKeys = () => {
   const handleYkvLogin = async () => {
     if (!loggedUser) return;
     const user_id = loggedUser.id;
-    const email = loggedUser.email;
     const loginTime = getCurrentDateTime();
-    const user = allUsers.find((user) => user.id === user_id);
-    const user_orgs = user.keys.map((key) => key.id);
     const responsibilityObject = {
       user: user_id,
-      email: email,
       responsible_for: responsibility,
       login_time: loginTime,
       created_by: loggedUser.username,
-      organizations: user_orgs,
     };
     await confirmYKV(responsibilityObject);
     for (const user of selectedForYKV) {
       const responsibilityObject = {
         user: user.id,
-        email: user.email,
         responsible_for: responsibility,
         login_time: loginTime,
         created_by: loggedUser.username,
-        organizations: user_orgs,
       };
       await confirmYKV(responsibilityObject);
     }
@@ -170,6 +142,8 @@ const OwnKeys = () => {
               allUsersWithKeys={allUsersWithKeys}
               responsibility={responsibility}
               setResponsibility={setResponsibility}
+              selectedForYKV={selectedForYKV}
+              setSelectedForYKV={setSelectedForYKV}
             />
           )}
           <Snackbar

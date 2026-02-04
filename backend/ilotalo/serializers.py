@@ -13,13 +13,6 @@ More info: https://www.django-rest-framework.org/api-guide/serializers/
 """
 
 
-class UserSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = '__all__'
-
-
 class UserNoPasswordSerializer(serializers.ModelSerializer):
     """
     Serializes a User object as JSON without displaying the hashed password
@@ -28,6 +21,15 @@ class UserNoPasswordSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         exclude = ('password',)
+
+
+class UserMinimalSerializer(serializers.ModelSerializer):
+    """
+    Minimal serializer for user id and username only
+    """
+    class Meta:
+        model = User
+        fields = ('id', 'username')
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -83,11 +85,29 @@ class UserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate_username(self, username):
-        """Validates that the username does not contain @ symbol so it doesn't mess with the email login"""
+        """Validates that the username does not contain @ symbol and is not already taken."""
         if "@" in username:
             raise serializers.ValidationError(
                 "Username cannot contain @ symbol")
+        user_id = self.instance.id if self.instance else None
+        if username:
+            duplicate = User.objects.exclude(
+                id=user_id).filter(username=username)
+            if duplicate.exists():
+                raise serializers.ValidationError(
+                    "This username is already taken")
         return username
+
+    def validate_email(self, email):
+        """Validates that the email is not already taken."""
+        user_id = self.instance.id if self.instance else None
+        if email:
+            duplicate = User.objects.exclude(
+                id=user_id).filter(email=email)
+            if duplicate.exists():
+                raise serializers.ValidationError(
+                    "This email is already in use")
+        return email
 
     def validate_role(self, role):
         """Validates role when creating a new user. Limits: 1 <= role <= 7."""
@@ -147,11 +167,29 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         exclude = ('password',)  # Exclude password field from serialization
 
     def validate_username(self, username):
-        """Validates that the username does not contain @ symbol so it doesn't mess with the email login"""
+        """Validates that the username does not contain @ symbol and is not already taken."""
         if "@" in username:
             raise serializers.ValidationError(
                 "Username cannot contain @ symbol")
+        user_id = self.instance.id if self.instance else None
+        if username:
+            duplicate = User.objects.exclude(
+                id=user_id).filter(username=username)
+            if duplicate.exists():
+                raise serializers.ValidationError(
+                    "This username is already taken")
         return username
+
+    def validate_email(self, email):
+        """Validates that the email is not already taken."""
+        user_id = self.instance.id if self.instance else None
+        if email:
+            duplicate = User.objects.exclude(
+                id=user_id).filter(email=email)
+            if duplicate.exists():
+                raise serializers.ValidationError(
+                    "This email is already in use")
+        return email
 
     def validate_role(self, role):
         """Validates role when updating a user. Limits: 1 <= role <= 7."""
@@ -188,18 +226,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
-
-
-class UserNoPasswordSerializer(serializers.ModelSerializer):
-    """
-    Serializes a User object as JSON without displaying the hashed password
-    """
-
-    keys = OrganizationSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = User
-        exclude = ('password',)
 
 
 class EventSerializer(serializers.ModelSerializer):

@@ -66,26 +66,11 @@ const newaccountcheck = ({
   }
 
   /*
-    Check if telegram is provided and unique
+    Check if telegram is provided (uniqueness checked by backend)
     */
   if (telegram) {
-    return new Promise((resolve) => {
-      usersAPI
-        .getUsersByTelegram(telegram)
-        .then((response) => {
-          const existingUsers = response.data;
-          if (existingUsers.some((user) => user.telegram === telegram)) {
-            resolve(t("telegraminuse"));
-          } else {
-            // Proceed with account creation
-            resolve(true);
-          }
-        })
-        .catch((error) => {
-          console.error("Error checking telegram:", error);
-          resolve(t("errortelegram"));
-        });
-    });
+    // Telegram validation is now handled by the backend
+    return true;
   } else {
     // Proceed with account creation
     return true;

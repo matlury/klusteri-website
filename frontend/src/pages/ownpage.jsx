@@ -88,15 +88,7 @@ const OwnPage = () => {
     }
 
     try {
-      if (telegram) {
-        const response = await usersAPI.getUsersByTelegram(telegram);
-        const existingUsers = response.data;
-        if (existingUsers.some((u) => u.telegram === telegram && u.id !== user.id)) {
-          handleSnackbar(t("telegraminuse"), "error");
-          return;
-        }
-      }
-
+      // Validation is now handled by the backend
       if (password) {
         if (password !== confirmPassword) {
           handleSnackbar(t("diffpass"), "error");
@@ -112,13 +104,6 @@ const OwnPage = () => {
         }
       }
 
-      const response = await usersAPI.getUsersByEmail(email);
-      const existingUsers = response.data;
-      if (existingUsers.some((u) => u.email === email && u.id !== user.id)) {
-        handleSnackbar(t("emailinuse"), "error");
-        return;
-      }
-
       const confirmUpdate = window.confirm(t("usereditconfirm"));
       if (!confirmUpdate) {
         console.log("User cancelled the update.");
@@ -132,6 +117,22 @@ const OwnPage = () => {
       await getAllUsers();
     } catch (error) {
       console.error(t("usereditfail"), error);
+      // Handle specific validation errors from backend
+      if (error.response && error.response.data) {
+        const errors = error.response.data;
+        if (errors.email) {
+          handleSnackbar(t("emailinuse"), "error");
+          return;
+        }
+        if (errors.username) {
+          handleSnackbar(t("usernameinuse"), "error");
+          return;
+        }
+        if (errors.telegram) {
+          handleSnackbar(t("telegraminuse"), "error");
+          return;
+        }
+      }
       handleSnackbar(t("usereditfail"), "error");
     }
 
