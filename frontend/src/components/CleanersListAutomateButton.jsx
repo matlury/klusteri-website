@@ -25,7 +25,7 @@ export default function CleanersListAutomateButton({ updateNewData, setError}) {
   const handleAutomate = async (threshold) => {
     setLoading(true);
     try {
-      const response = await organizationsAPI.getOrganizations();
+      const response = await organizationsAPI.organizationsWithKeys();
       const orgdata = response.data;
 
       // Check if orgdata is an array

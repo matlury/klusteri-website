@@ -43,6 +43,26 @@ class OrganizationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Organization size must be 0 or 1 (small or large).")
         return size
 
+
+class OrganizationListSerializer(serializers.ModelSerializer):
+    """Serializes an Organization object as JSON without heavy nested relationships"""
+
+    user_set = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Organization
+        fields = '__all__'
+
+    def get_user_set(self, obj):
+        # Only include user count if explicitly requested via query parameter
+        request = self.context.get('request')
+        if request and request.query_params.get('include_user_count') == 'true':
+            # Count users with this organization in their keys
+            count = User.objects.filter(keys=obj).count()
+            return [None] * count
+        return None
+
+
 class OrganizationNameSerializer(serializers.ModelSerializer):
     """Minimal serializer for organization name and ID only to boost performance"""
     class Meta:

@@ -9,6 +9,7 @@ from django.db.models import Q, Count
 from .serializers import (
     UserSerializer,
     OrganizationSerializer,
+    OrganizationListSerializer,
     UserNoPasswordSerializer,
     UserUpdateSerializer,
     EventSerializer,
@@ -65,6 +66,19 @@ class OrganizationView(viewsets.ReadOnlyModelViewSet):
     serializer_class = OrganizationSerializer
     queryset = Organization.objects.all()
     pagination_class = None
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return OrganizationListSerializer
+        return OrganizationSerializer
+
+    def get_serializer(self, *args, **kwargs):
+        """
+        Override to pass request context to serializer for conditional field inclusion
+        """
+        serializer_class = self.get_serializer_class()
+        kwargs['context'] = self.get_serializer_context()
+        return serializer_class(*args, **kwargs)
 
 
 class RegisterView(APIView):

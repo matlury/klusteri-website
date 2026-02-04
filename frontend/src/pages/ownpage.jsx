@@ -57,9 +57,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   const { t } = useTranslation();
 
-  // Writes down if a user is logged in
+  // Initialize component data on mount
   useEffect(() => {
-    setIsLoggedIn(false);
     const loggedUser = JSON.parse(localStorage.getItem("loggedUser")) || null;
     if (loggedUser) {
       setIsLoggedIn(true);
@@ -67,19 +66,15 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       setEmail(loggedUser.email);
       setTelegram(loggedUser.telegram);
       setRole(loggedUser.role);
-      getOrganisations();
-      getPermission();
-    }
-  }, [user || propIsLoggedIn]);
 
-  // Fetches the organisations if a user is logged in
-  useEffect(() => {
-    if (isLoggedIn) {
+      // Fetch all necessary data once when user is logged in
       getOrganisations();
       getAllUsers();
       getPermission();
+    } else {
+      setIsLoggedIn(false);
     }
-  }, [isLoggedIn]);
+  }, []); // Run only once on mount
 
   // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION OF THE LOGGED IN USER
 
@@ -230,8 +225,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // Keeps the organization information up-to-date
   const getOrganisations = async () => {
     try {
-      const res = await organizationsAPI.getOrganizations();
+      const res = await organizationsAPI.organizationsWithKeys();
       const rawData = res.data;
+      console.log("Fetched organizations:", rawData);
       const orgData = rawData.map((u) => ({
         id: u.id,
         Organisaatio: u.name,
@@ -246,10 +242,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    getOrganisations();
-  }, []);
 
   // Shows the information of organizations after clicking the view-button
   const toggleOrgDetails = (orgId) => {

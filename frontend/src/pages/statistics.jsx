@@ -115,7 +115,7 @@ const Statistics = () => {
   const fetchData = async () => {
     try {
       const [orgResponse, userResponse, responsibilitiesResponse] = await Promise.all([
-        organizationsAPI.getOrganizations(),
+        organizationsAPI.organizationsWithKeys(),
         usersAPI.getUsers(),
         nightResponsibilitiesAPI.getNightResponsibilities(),
       ]);

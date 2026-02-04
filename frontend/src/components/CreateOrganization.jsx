@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
@@ -52,10 +52,6 @@ const CreateOrganization = ({
   const handleSnackbarClose = () => {
     setErrorFields({});
   };
-
-  useEffect(() => {
-    fetchOrganizations();
-  }, []);
 
   return (
     <div>
