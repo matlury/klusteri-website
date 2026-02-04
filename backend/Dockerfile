@@ -50,7 +50,8 @@ COPY --chown=django:django . .
 
 # Create necessary directories with proper permissions
 RUN mkdir -p /app/staticfiles /app/media && \
-    chown -R django:django /app
+    chown -R django:django /app && \
+    chmod -R 755 /app/staticfiles /app/media
 
 # Switch to non-root user
 USER django
@@ -59,4 +60,4 @@ USER django
 EXPOSE 8000
 
 # Run migrations and start gunicorn
-CMD ["sh", "-c", "python manage.py collectstatic --noinput && python manage.py migrate && gunicorn backend.wsgi:application --bind 0.0.0.0:8000 --workers 4 --threads 2 --worker-class gthread --max-requests 1000 --max-requests-jitter 50 --timeout 30 --keep-alive 10"]
+CMD ["sh", "-c", "mkdir -p /app/staticfiles && chown -R django:django /app/staticfiles && python manage.py collectstatic --noinput && python manage.py migrate && gunicorn backend.wsgi:application --bind 0.0.0.0:8000 --workers 4 --threads 2 --worker-class gthread --max-requests 1000 --max-requests-jitter 50 --timeout 30 --keep-alive 10"]
