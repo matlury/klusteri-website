@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import FrontpageEvents from "../components/FrontpageEvents";
-import axios from "axios";
+import axiosClient from "../axios.js";
 
 const API_URL = process.env.VITE_API_URL;
 
@@ -18,8 +18,8 @@ const FrontPage = () => {
     const futureLimit = new Date();
     futureLimit.setDate(now.getDate() + 30); // Fetch next 30 days
 
-    axios
-      .get(`${API_URL}/api/listobjects/events/`, {
+    axiosClient
+      .get(`/listobjects/events/`, {
         params: {
           start: now.toISOString(),
           end: futureLimit.toISOString()

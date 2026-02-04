@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosClient from "../axios.js";
 
 const newaccountcheck = ({
   username,
@@ -71,8 +71,8 @@ const newaccountcheck = ({
     */
   if (telegram) {
     return new Promise((resolve) => {
-      axios
-        .get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`)
+      axiosClient
+        .get(`/listobjects/users/?telegram=${telegram}`)
         .then((response) => {
           const existingUsers = response.data;
           if (existingUsers.some((user) => user.telegram === telegram)) {

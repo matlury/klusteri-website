@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useStateContext } from "../context/ContextProvider";
-import axios from "axios";
 import axiosClient from "../axios.js";
 import UserPage from "../components/UserPage.jsx";
 import OrganisationPage from "../components/OrganisationPage.jsx";
@@ -107,7 +106,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
     try {
       if (telegram) {
-        const response = await axios.get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`);
+        const response = await axiosClient.get(`/listobjects/users/?telegram=${telegram}`);
         const existingUsers = response.data;
         if (existingUsers.some((user) => user.telegram === telegram && user.id !== loggedUser.id)) {
           handleSnackbar(t("telegraminuse"), "error");
@@ -130,7 +129,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         }
       }
 
-      const response = await axios.get(`${API_URL}/api/listobjects/users/?email=${email}`);
+      const response = await axiosClient.get(`/listobjects/users/?email=${email}`);
       const existingUsers = response.data;
       if (existingUsers.some((user) => user.email === email && user.id !== loggedUser.id)) {
         handleSnackbar(t("emailinuse"), "error");
@@ -316,9 +315,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // Handles the creation of organizations
   const handleCreateOrganization = async () => {
     try {
-      const response = await axios
+      const response = await axiosClient
         .get(
-          `${API_URL}/api/listobjects/organizations/?email=${organization_email}`,
+          `/listobjects/organizations/?email=${organization_email}`,
         );
       const existingOrganizations = response.data;
       if (
@@ -468,17 +467,11 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
 
     try {
-      const accessToken = localStorage.getItem("ACCESS_TOKEN");
-      const response = await axios.put(
-        `${API_URL}/api/keys/hand_over_key/${UserId}/`,
+      const response = await axiosClient.put(
+        `/keys/hand_over_key/${UserId}/`,
         {
           organization_name: Organization,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
+        }
       );
       // Check the response and update the UI accordingly
       if (response.status === 200) {
@@ -511,13 +504,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     This prevents harm caused by localstorage manipulation
     */
 
-    const accessToken = localStorage.getItem("ACCESS_TOKEN");
-    await axios
-      .get(`/api/users/userinfo`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
+    await axiosClient
+      .get(`/users/userinfo`)
       .then((response) => {
         const currentUser = response.data;
         if (currentUser.role === 1) {

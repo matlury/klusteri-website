@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosClient from "../axios.js";
 
 export const getPermission = async ({ API_URL, setHasPermission }) => {
   /*
@@ -6,13 +6,8 @@ export const getPermission = async ({ API_URL, setHasPermission }) => {
         This prevents harm caused by localstorage manipulation
         */
 
-  const accessToken = localStorage.getItem("ACCESS_TOKEN");
-  await axios
-    .get(`${API_URL}/api/users/userinfo`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    })
+  await axiosClient
+    .get(`/users/userinfo`)
     .then((response) => {
       const currentUser = response.data;
       if (currentUser.role === 1) {
@@ -35,7 +30,7 @@ export const fetchAllUsersWithKeys = async ({
   allResponsibilities,
 }) => {
   try {
-    const response = await axios.get(`${API_URL}/api/listobjects/users/`);
+    const response = await axiosClient.get(`/listobjects/users/`);
     const rawData = response.data;
     const filteredUsers = rawData.filter((user) =>
       checkUser(user, loggedUser, allResponsibilities),

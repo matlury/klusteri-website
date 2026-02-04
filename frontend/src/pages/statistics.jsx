@@ -1,7 +1,6 @@
 /* istanbul ignore file */
 // this file is ignored in the tests because jest doesn't work with the charts
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
 import axiosClient from "../axios";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { BarChart } from "@mui/x-charts/BarChart";
@@ -134,9 +133,7 @@ const Statistics = () => {
     const accessToken = localStorage.getItem("ACCESS_TOKEN");
     if (accessToken) {
       try {
-        const response = await axios.get(`${API_URL}/api/users/userinfo`, {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
+        const response = await axiosClient.get(`/users/userinfo`);
         setUsername(response.data.username);
         setUserRole(response.data.role);
       } catch (e) {
