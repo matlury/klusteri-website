@@ -35,7 +35,6 @@ const OwnKeys = () => {
 
   // check if a user is valid for making an YKV-login
   const checkUser = (user) => {
-    console.log("Checking user:", user, "against loggedUser:", loggedUser);
     if (user.role === 5) {
       return false;
     }
@@ -69,7 +68,6 @@ const OwnKeys = () => {
 
 
   useEffect(() => {
-    console.log("loggedUser changed:", loggedUser);
     const fetchAllData = async () => {
       if (isLoggedIn && loggedUser) {
         if (!hasPermission) {
@@ -126,7 +124,6 @@ const OwnKeys = () => {
 
   // function that checks if the user logged in (if there are no responsibilities, the user cant be logged in either)
   function checkIfLoggedIn() {
-    console.log("Checking if user is logged in for YKV:", loggedUser);
     if (loggedUser) {
       if (loggedUser.role !== 5) {
         return true;
