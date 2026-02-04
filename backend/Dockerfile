@@ -1,67 +1,33 @@
-# Multi-stage build for production
-FROM python:3.10.13-slim-bullseye as builder
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Poetry
-RUN pip install poetry
+# Production-ready Django application
+FROM python:3.10.13-bullseye
 
 # Set environment variables
-ENV POETRY_NO_INTERACTION=1 \
-    POETRY_VIRTUALENVS_IN_PROJECT=1 \
-    POETRY_VIRTUALENVS_CREATE=1 \
-    POETRY_CACHE_DIR=/tmp/poetry_cache
+ENV POETRY_VIRTUALENVS_IN_PROJECT=true \
+    PYTHONUNBUFFERED=1 \
+    DJANGO_SETTINGS_MODULE=backend.settings
 
-# Copy poetry files
-WORKDIR /app
+WORKDIR /backend
+
+# Copy dependency files first for better caching
 COPY pyproject.toml poetry.lock ./
 
-# Install dependencies
-RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
-
-# Production stage
-FROM python:3.10.13-slim-bullseye as production
-
-# Install runtime system dependencies
-RUN apt-get update && apt-get install -y \
-    libpq5 \
-    && rm -rf /var/lib/apt/lists/*
-
-# Create non-root user
-RUN groupadd -r django && useradd -r -g django django
-
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    DJANGO_SETTINGS_MODULE=backend.settings \
-    PATH="/app/.venv/bin:$PATH"
-
-WORKDIR /app
-
-# Copy virtual environment from builder
-COPY --from=builder --chown=django:django /app/.venv /app/.venv
+# Install Poetry and dependencies
+RUN pip install poetry && \
+    poetry config virtualenvs.create false && \
+    poetry install --without dev --no-root
 
 # Copy application code
-COPY --chown=django:django . .
+COPY . .
 
-# Create necessary directories with proper permissions
-RUN mkdir -p /app/staticfiles /app/media && \
-    chown -R django:django /app && \
-    chmod -R 775 /app/staticfiles /app/media
-
-# Switch to non-root user
+# Create non-root user for security
+RUN useradd -m -u 1000 django && \
+    chown -R django:django /backend
 USER django
 
-# Expose port
 EXPOSE 8000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8000/api/users/userinfo', timeout=10)" || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD python -c "import requests; requests.get('http://localhost:8000/api/users/userinfo', timeout=5)" || exit 1
 
-# Run migrations and start Django runserver
-CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120"]
