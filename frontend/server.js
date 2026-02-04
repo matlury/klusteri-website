@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5173;
-const API_URL = process.env.API_URL || 'http://api:8000';
+const API_URL = process.env.API_URL || 'http://localhost:8000';
 
 // Proxy API requests
 app.use(
@@ -18,7 +18,7 @@ app.use(
         changeOrigin: true,
         timeout: 10000, // 10 second timeout
         proxyTimeout: 10000,
-        logLevel: 'debug',
+        logLevel: process.env.NODE_ENV !== 'production' && 'debug',
         onProxyReq: (proxyReq, req, res) => {
             console.log(`[${new Date().toISOString()}] Proxying: ${req.method} ${req.url} -> ${API_URL}${req.url}`);
         },

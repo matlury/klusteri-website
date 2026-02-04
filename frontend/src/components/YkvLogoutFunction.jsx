@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axiosClient from "../axios.js";
 import { DataGrid } from "@mui/x-data-grid";
 import {
   Button,
@@ -20,19 +19,11 @@ import { useTranslation } from "react-i18next";
 const YkvLogoutFunction = ({
   handleYkvLogin,
   handleYkvLogout,
-  idToLogout,
-  buttonPopup,
-  setButtonPopup,
-  activeResponsibilities,
-  setIdToLogout,
+  allResponsibilities,
+  allUsersWithKeys,
   loggedUser,
-  setEditButtonPopup,
-  editButtonPopup,
-  setRespToEdit,
-  handleYkvEdit,
   responsibility,
   setResponsibility,
-  addedResponsibility,
 }) => {
   const [open, setOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -69,7 +60,6 @@ const YkvLogoutFunction = ({
 
   const handleRemove = async (id) => {
     await handleYkvLogout(id);
-    await fetchResponsibilities();
     setConfirmOpen(false);
   };
 
@@ -154,16 +144,14 @@ const YkvLogoutFunction = ({
     { field: "late", headerName: t("resp_act"), width: 200, renderCell: getLateIcon },
   ];
 
-  const fetchResponsibilities = async () => {
-    try {
-      const res = await axiosClient.get("/listobjects/nightresponsibilities/");
-      const rawData = res.data;
-      const userData = rawData.map((u) => ({
-        id: u.id, // DataGrid requires a unique 'id' for each row
+  useEffect(() => {
+    if (allResponsibilities && allResponsibilities.length > 0) {
+      const userData = allResponsibilities.map((u) => ({
+        id: u.id,
         Vastuuhenkilö: u.user.username,
         Vastuussa: u.responsible_for,
-        YKV_sisäänkirjaus: new Date(u.login_time), // Assuming login_time is available
-        Organisaatiot: u.organizations.map((organization) => organization.name), // Assuming login_time is available
+        YKV_sisäänkirjaus: new Date(u.login_time),
+        Organisaatiot: u.organizations.map((organization) => organization.name),
         present: u.present,
         created_by: u.created_by,
         logout_time: u.present ? null : new Date(u.logout_time),
@@ -172,22 +160,16 @@ const YkvLogoutFunction = ({
       setAllUsers(userData);
       setActiveUsers(userData.filter((resp) => resp.present === true));
       setLoading(false);
-    } catch (error) {
-      console.error(error);
+    } else if (allResponsibilities && allResponsibilities.length === 0) {
+      setAllUsers([]);
+      setActiveUsers([]);
+      setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchResponsibilities();
-  }, []);
+  }, [allResponsibilities]);
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const formJson = Object.fromEntries(formData.entries());
-    const email = formJson.email;
     await handleYkvLogin(); // Call handleYkvLogin if needed
-    await fetchResponsibilities(); // Fetch responsibilities after login
     handleClose(); // Close the dialog
   };
 
@@ -209,7 +191,7 @@ const YkvLogoutFunction = ({
     (user) =>
       user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
       user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase()),
-    ).filter((user) => filtering(user.YKV_sisäänkirjaus, user.logout_time));
+  ).filter((user) => filtering(user.YKV_sisäänkirjaus, user.logout_time));
 
   const ownUsers = allUsers
     .filter(
@@ -278,8 +260,8 @@ const YkvLogoutFunction = ({
 
             <Autocomplete
               id="combo-box-demo"
-              options={allUsers}
-              getOptionLabel={(option) => option.Vastuuhenkilö}
+              options={allUsersWithKeys}
+              getOptionLabel={(option) => option.username}
               style={{ width: 300 }}
               renderInput={(params) => (
                 <TextField
