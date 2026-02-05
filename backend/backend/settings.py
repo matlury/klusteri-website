@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "ilotalo",
-    'django_apscheduler'
+    # 'django_apscheduler'  # DISABLED: Causes slow startup in production
 ]
 
 MIDDLEWARE = [
@@ -192,3 +192,46 @@ CORS_ORIGIN_WHITELIST = [
     "https://klusteri-website-front-matlury-test.apps.ocp-prod-0.k8s.it.helsinki.fi",
     "https://klusteri.ext.ocp-prod-0.k8s.it.helsinki.fi"
 ]
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'ilotalo': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
