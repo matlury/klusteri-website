@@ -1,11 +1,11 @@
 # Stage 1: Build the React app
-FROM node:24-alpine AS build
+FROM node:current-alpine AS build
 
 WORKDIR /frontend
 
 COPY package*.json ./
 
-RUN npm ci
+RUN npm install
 
 COPY . .
 
@@ -18,24 +18,19 @@ ENV VITE_API_URL=${API_URL}
 
 RUN npm run build
 
-# Stage 2: Serve with nginx
+# Stage 2: Serve with Nginx
 FROM nginx:alpine
 
-# Install envsubst for environment variable substitution
-RUN apk add --no-cache gettext
-
-# Copy nginx configuration template
-COPY nginx.conf /etc/nginx/nginx.conf.template
-
-# Copy build output to nginx html directory
+# Copy the build output to the Nginx html directory
 COPY --from=build /frontend/dist /usr/share/nginx/html
 
-# Use a non-root user for OpenShift compatibility
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nextjs -u 1001
+# Copy custom Nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Ensure proper permissions for Nginx directories
+RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
 
 # Expose the necessary port
 EXPOSE 5173
 
-# Substitute environment variables and run nginx
-CMD ["/bin/sh", "-c", "envsubst '${API_URL}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"]
+CMD ["nginx", "-g", "daemon off;"]
