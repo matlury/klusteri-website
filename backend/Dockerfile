@@ -1,5 +1,5 @@
 # Stage 1: Builder stage
-FROM python:3.11-slim AS builder
+FROM python:3.10.13-bullseye AS builder
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -21,7 +21,7 @@ COPY pyproject.toml poetry.lock ./
 RUN poetry install --without dev --no-root
 
 # Stage 2: Production stage
-FROM python:3.11-slim
+FROM python:3.10.13-bullseye
 
 # Create non-root user for OpenShift compatibility
 RUN useradd -m -r appuser && \
@@ -29,7 +29,7 @@ RUN useradd -m -r appuser && \
     chown -R appuser /app
 
 # Copy Python packages from builder stage
-COPY --from=builder /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
+COPY --from=builder /usr/local/lib/python3.10/site-packages/ /usr/local/lib/python3.10/site-packages/
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
 
 # Set the working directory
