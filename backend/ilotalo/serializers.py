@@ -1,5 +1,6 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
+from django.db.models import Q
 from rest_framework import serializers
 from .models import User, Organization, Event, NightResponsibility, DefectFault, Cleaning, CleaningSupplies
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -291,29 +292,32 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         email = attrs.get("email", "")
         password = attrs.get("password", "")
 
-        user = User.objects.filter(email=email).first(
-        ) or User.objects.filter(username=email).first()
+        # Search by email or username in a single query
+        user = User.objects.filter(Q(email=email) | Q(username=email)).first()
 
         if user:
+            # Handle first login for role 1 (admin)
             if user.role == 1 and user.first_login:
                 user.first_login = False
                 user.save()
-
-                refresh = self.get_token(user)
-                data = {}
-                data['refresh'] = str(refresh)
-                data['access'] = str(refresh.access_token)
-                return data
+                # Skip password check for first admin login as per existing logic
             else:
-                if user.check_password(password):
-                    attrs["email"] = user.email
-                else:
-                    raise serializers.ValidationError(
-                        "Invalid login credentials")
+                # check_password() is computationally expensive (PBKDF2/BCrypt)
+                # By checking it here and NOT calling super().validate(), we avoid double hashing.
+                if not user.check_password(password):
+                    raise serializers.ValidationError("Invalid login credentials")
 
-                return super().validate(attrs)
-        else:
-            raise serializers.ValidationError("User not found")
+            # Set self.user as expected by SimpleJWT
+            self.user = user
+
+            # Generate tokens manually (equivalent to TokenObtainPairSerializer.validate)
+            refresh = self.get_token(self.user)
+            data = {}
+            data['refresh'] = str(refresh)
+            data['access'] = str(refresh.access_token)
+            return data
+
+        raise serializers.ValidationError("User not found")
 
 
 class OrganizationOnlyNameSerializer(serializers.ModelSerializer):

@@ -1,11 +1,9 @@
 import sys
 from django.apps import AppConfig
 from django.db import connection
-from django.db.backends.signals import connection_created
+from django.db.models.signals import post_migrate
 from django.db.utils import OperationalError
 from django.contrib.auth import get_user_model
-from asgiref.sync import sync_to_async
-from django.core.signals import request_started
 
 
 def create_default_user(sender, **kwargs):
@@ -29,9 +27,12 @@ class IlotaloConfig(AppConfig):
     def ready(self):
         # Defer scheduler start to avoid async context issues
         # DISABLED: Scheduler causes 10-14s delay on first request in production
+        # from django.core.signals import request_started
         # request_started.connect(self._delayed_scheduler_start)
+        
         if 'test' not in sys.argv:
-            connection_created.connect(create_default_user)
+            # Use post_migrate instead of connection_created to avoid checking on every request
+            post_migrate.connect(create_default_user, sender=self)
 
     def _delayed_scheduler_start(self, **kwargs):
         """Start scheduler after first request to avoid async context issues"""
