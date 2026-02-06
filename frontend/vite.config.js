@@ -6,6 +6,16 @@ export default defineConfig({
   plugins: [react(), envCompatible()],
   server: {
     host: true,
+    port: 5173,
+    watch: {
+      usePolling: true,
+    },
+    proxy: {
+      "/api": {
+        target: "http://api:8000",
+        changeOrigin: true,
+      },
+    },
   },
   define: {
     "process.env.VITE_API_URL": JSON.stringify(

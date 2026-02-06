@@ -3,6 +3,8 @@ services:
     build:
       context: "./backend"
       dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend:/backend
     ports:
       - "8000:8000"
     depends_on:
@@ -21,7 +23,10 @@ services:
   frontend:
     build:
       context: "./frontend"
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./frontend:/frontend
+      - /frontend/node_modules
     ports:
       - "5173:5173"
     depends_on:
@@ -30,6 +35,8 @@ services:
       - .env
     environment:
       - SITE_KEY=${SITE_KEY}
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
 
   db:
     image: postgres:18

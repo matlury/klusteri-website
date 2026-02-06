@@ -8,9 +8,7 @@ const UserPage = ({
   setUsername,
   email,
   setEmail,
-  password,
   setPassword,
-  confirmPassword,
   setConfirmPassword,
   telegram,
   setTelegram,
@@ -21,15 +19,13 @@ const UserPage = ({
   return (
     <form>
       <h2>{t("owninfo")}</h2>
-      <div>
+      <div style={{ display: "flex", flexDirection: "column", rowGap: "0.6em", width: "300px" }}>
         <TextField
           id="username"
           label={t("username")}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
-      </div>
-      <div>
         <TextField
           id="password"
           data-testid="password-field"
@@ -37,8 +33,6 @@ const UserPage = ({
           type="password"
           onChange={(e) => setPassword(e.target.value)}
         />
-      </div>
-      <div>
         <TextField
           id="confirmPassword"
           data-testid="confirm-password-field"
@@ -46,33 +40,26 @@ const UserPage = ({
           type="password"
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
-      </div>
-      <div>
         <TextField
           id="email"
           label={t("email")}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-      </div>
-      <div>
         <TextField
           id="telegram"
           label="Telegram"
           value={telegram}
           onChange={(e) => setTelegram(e.target.value)}
         />
-      </div>
-      <Button
-        onClick={handleUserDetails}
-        variant="contained"
-        className="create-user-button"
-        data-testid="saveuserdata"
-      >
-        {t("save")}{" "}
-      </Button>
-
-      <div>
+        <Button
+          onClick={handleUserDetails}
+          variant="contained"
+          className="create-user-button"
+          data-testid="saveuserdata"
+        >
+          {t("save")}{" "}
+        </Button>
         {t("userrole")}: {ROLE_DESCRIPTIONS[role]}
       </div>
     </form>

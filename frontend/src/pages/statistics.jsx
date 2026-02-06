@@ -35,11 +35,11 @@ const generateRandomColor = (seed) => {
 
 // This page is used to display statistics about users and organizations
 const Statistics = () => {
-  const [username, setUsername] = useState(null);
+  const [, setUsername] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [orgColorMap, setOrgColorMap] = useState({});
   // YKV by organization
-  const [orgStatsData, setOrgStatsData] = useState([]);
+  const [, setOrgStatsData] = useState([]);
 
   // YKV count by user
   const [allUserStatsData, setAllUserStatsData] = useState([]);
@@ -65,16 +65,16 @@ const Statistics = () => {
 
   // YKV login and logout times per hour data
   const [logTimesData, setLogTimesData] = useState(null);
-  const [widthDivider, setWidthDivider] = useState(2.5);
+  const [, setWidthDivider] = useState(2.5);
 
   // YKV per weekday data
   const [logsPerWeekDayData, setLogsPerWeekDayData] = useState([]);
 
   // Keys by organization
-  const [orgMembersData, setOrgMembersData] = useState([]);
+  const [, setOrgMembersData] = useState([]);
 
   // Late YKV logouts by organization
-  const [orgLateData, setOrgLateData] = useState([]);
+  const [, setOrgLateData] = useState([]);
 
   // Data to be displayed in the pie chart and the selected pie chart option
   const [pieChartData, setPieChartData] = useState([]);
@@ -311,8 +311,30 @@ const Statistics = () => {
           <Box sx={{ p: 2, bgcolor: 'background.paper', boxShadow: 1, borderRadius: 2 }}>
             <Typography variant="h6" sx={{ mb: 2 }}>{t("timefilter")}</Typography>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-              <TextField label={t("start")} type="datetime-local" value={minFilter} onChange={(e) => setMinFilter(e.target.value)} InputLabelProps={{ shrink: true }} fullWidth />
-              <TextField label={t("end")} type="datetime-local" value={maxFilter} onChange={(e) => setMaxFilter(e.target.value)} InputLabelProps={{ shrink: true }} fullWidth />
+              <TextField
+                label={t("start")}
+                type="datetime-local"
+                value={minFilter}
+                onChange={(e) => setMinFilter(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                fullWidth
+                sx={{
+                  "& .MuiInputBase-input": { fontSize: "0.875rem" },
+                  "& .MuiInputLabel-root": { fontSize: "0.875rem" }
+                }}
+              />
+              <TextField
+                label={t("end")}
+                type="datetime-local"
+                value={maxFilter}
+                onChange={(e) => setMaxFilter(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                fullWidth
+                sx={{
+                  "& .MuiInputBase-input": { fontSize: "0.875rem" },
+                  "& .MuiInputLabel-root": { fontSize: "0.875rem" }
+                }}
+              />
             </Stack>
           </Box>
         </Grid>
