@@ -191,7 +191,8 @@ CORS_ORIGIN_WHITELIST = [
     "https://klusteri-website-front-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi",
     "https://klusteri-website-frontend-test-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi",
     "https://klusteri-website-front-matlury-test.apps.ocp-prod-0.k8s.it.helsinki.fi",
-    "https://klusteri.ext.ocp-prod-0.k8s.it.helsinki.fi"
+    "https://klusteri.ext.ocp-prod-0.k8s.it.helsinki.fi",
+    "https://ilotalo-new-test-v2.matlu.fi/"
 ]
 
 # Logging configuration
