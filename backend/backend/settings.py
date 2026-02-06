@@ -58,6 +58,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "ilotalo.middleware.RequestTimeMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -224,6 +225,11 @@ LOGGING = {
             'propagate': False,
         },
         'django.request': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.db.backends': {
             'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
