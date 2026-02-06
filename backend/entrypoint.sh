@@ -9,13 +9,8 @@ python manage.py migrate --no-input
 echo "Django setup complete!"
 echo "Starting Gunicorn..."
 exec gunicorn --bind 0.0.0.0:8000 \
-    --workers 4 \
-    --worker-class sync \
-    --worker-connections 1000 \
-    --max-requests 1000 \
-    --max-requests-jitter 50 \
-    --timeout 30 \
-    --keep-alive 2 \
+    --workers 1 \
+    --timeout 120 \
     --access-logfile - \
     --error-logfile - \
     backend.wsgi:application
