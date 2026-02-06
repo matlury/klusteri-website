@@ -303,8 +303,17 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                 # Skip password check for first admin login as per existing logic
             else:
                 # check_password() is computationally expensive (PBKDF2/BCrypt)
-                # By checking it here and NOT calling super().validate(), we avoid double hashing.
-                if not user.check_password(password):
+                import time
+                import logging
+                logger = logging.getLogger(__name__)
+                
+                start_hash = time.time()
+                is_valid = user.check_password(password)
+                hash_duration = time.time() - start_hash
+                
+                logger.info(f"Password hashing took {hash_duration:.4f}s for user {user.username}")
+
+                if not is_valid:
                     raise serializers.ValidationError("Invalid login credentials")
 
             # Set self.user as expected by SimpleJWT
