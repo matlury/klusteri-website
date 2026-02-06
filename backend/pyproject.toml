@@ -18,6 +18,8 @@ psycopg2-binary = "^2.9.9"
 # django-apscheduler = "^0.6.2"  # DISABLED: Causes slow startup
 gunicorn = "^21.2.0"
 gevent = "^24.2.1"
+uvicorn = {extras = ["standard"], version = "^0.27.0"}
+asgiref = "^3.7.2"
 requests = "^2.32.3"
 
 

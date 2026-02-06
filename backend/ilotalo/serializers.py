@@ -1,9 +1,13 @@
+import time
+import logging
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 from django.db.models import Q
 from rest_framework import serializers
 from .models import User, Organization, Event, NightResponsibility, DefectFault, Cleaning, CleaningSupplies
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+logger = logging.getLogger(__name__)
 
 
 """
@@ -303,10 +307,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                 # Skip password check for first admin login as per existing logic
             else:
                 # check_password() is computationally expensive (PBKDF2/BCrypt)
-                import time
-                import logging
-                logger = logging.getLogger(__name__)
-                
                 start_hash = time.time()
                 is_valid = user.check_password(password)
                 hash_duration = time.time() - start_hash
