@@ -28,7 +28,9 @@ COPY --from=build /frontend/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Ensure proper permissions for Nginx directories
-RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
+RUN mkdir -p /var/cache/nginx /var/run /var/log/nginx && \
+    chmod -R g+rwx /var/cache/nginx /var/run /var/log/nginx && \
+    chown -R nginx:nginx /var/cache/nginx /var/run /var/log/nginx
 
 # Expose the necessary port
 EXPOSE 5173

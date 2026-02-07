@@ -135,20 +135,20 @@ const ReservationsView = ({
         </div>
       )}
       <h2>{t("reservations_res")}</h2>
-      {res_rights && 
+      {res_rights &&
         <div className="add-event-button">
-        <Button
-          id="createEvent"
-          variant="contained"
-          onClick={handleAddNewEventClick}
-          style={{
-            padding: "7px",
-            margin: "10px",
-          }}
-        >
-          {t("reservations_add")}
-        </Button>
-      </div>  
+          <Button
+            id="createEvent"
+            variant="contained"
+            onClick={handleAddNewEventClick}
+            style={{
+              padding: "7px",
+              margin: "10px",
+            }}
+          >
+            {t("reservations_add")}
+          </Button>
+        </div>
       }
       <Calendar
         localizer={localizer}
@@ -283,7 +283,7 @@ const ReservationsView = ({
                 <MenuItem value="Kokoushuone">{t("Kokoushuone")}</MenuItem>
                 <MenuItem value="Kerhotila">{t("Kerhotila")}</MenuItem>
                 <MenuItem value="Oleskelutila">{t("Oleskelutila")}</MenuItem>
-                <MenuItem value="ChristinaRegina">ChristinaRegina</MenuItem>
+                <MenuItem value="ChristinaRegina">Christina Regina</MenuItem>
               </Select>
             </FormControl>
           </div>
@@ -332,15 +332,15 @@ const ReservationsView = ({
           )}
         </DialogContent>
         <DialogActions>
-          {(selectedEvent && (selectedEvent.created_by.username === username || admin)) && 
-          <Button
-          id="deleteEvent"
-          variant="contained"
-          color="error"
-          onClick={() => handleDeleteEvent(selectedEvent.id)}
-          >
-          {t("remove_event")}
-          </Button>
+          {(selectedEvent && (selectedEvent.created_by.username === username || admin)) &&
+            <Button
+              id="deleteEvent"
+              variant="contained"
+              color="error"
+              onClick={() => handleDeleteEvent(selectedEvent.id)}
+            >
+              {t("remove_event")}
+            </Button>
           }
           <Button id="closeEvent" variant="outlined" onClick={handleCloseModal}>
             {t("close")}
