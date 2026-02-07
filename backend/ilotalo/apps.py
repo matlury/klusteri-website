@@ -1,4 +1,5 @@
 import sys
+import os
 from django.apps import AppConfig
 from django.db import connection
 from django.db.models.signals import post_migrate
@@ -29,8 +30,25 @@ class IlotaloConfig(AppConfig):
         # DISABLED: Scheduler causes 10-14s delay on first request in production
         # from django.core.signals import request_started
         # request_started.connect(self._delayed_scheduler_start)
-        
-        if 'test' not in sys.argv:
+
+        # Prefer an explicit testing detection to avoid running
+        # startup side-effects (creating default users, starting scheduler)
+        # during test runs. Check settings, common argv flag and env vars.
+        try:
+            from django.conf import settings
+            settings_testing = getattr(settings, "TESTING", False)
+        except Exception:
+            settings_testing = False
+
+        is_testing = (
+            settings_testing
+            or 'test' in sys.argv
+            or 'pytest' in sys.modules
+            or os.environ.get('PYTEST_CURRENT_TEST') is not None
+            or os.environ.get('RUNNING_TESTS') == '1'
+        )
+
+        if not is_testing:
             # Use post_migrate instead of connection_created to avoid checking on every request
             post_migrate.connect(create_default_user, sender=self)
 

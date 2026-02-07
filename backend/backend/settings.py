@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 import os
+import sys
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -186,6 +187,16 @@ AUTH_USER_MODEL = "ilotalo.User"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Detect running under tests so other modules can skip side-effects.
+# Prefer an explicit env var set by the test runner, but also fall back to
+# common indicators (pytest in modules or 'test' in argv).
+TESTING = (
+    os.environ.get("RUNNING_TESTS") == "1"
+    or os.environ.get("PYTEST_CURRENT_TEST") is not None
+    or "pytest" in sys.modules
+    or "test" in sys.argv
+)
 
 
 CORS_ORIGIN_WHITELIST = [
