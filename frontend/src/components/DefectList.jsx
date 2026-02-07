@@ -4,10 +4,12 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
+import { useStateContext } from "@context/ContextProvider";
 
-const DefectList = ({ loggedUser, allDefects, activeDefects, handleRepairClick, handleEmailClick }) => {
+const DefectList = ({ allDefects, activeDefects, handleRepairClick, handleEmailClick }) => {
   const { t } = useTranslation();
-  
+  const { user: loggedUser } = useStateContext();
+
   const columns = [
     { field: "description", headerName: t("desc"), width: 400 },
     { field: "time", headerName: t("time"), width: 200 },

@@ -7,8 +7,7 @@ import {
 import "@testing-library/jest-dom";
 import DefectFault from "../../src/pages/defectfaultpage";
 import mockAxios from "../../__mocks__/axios";
-import i18n from "../i18n.js";
-import { ContextProvider } from "../../src/context/ContextProvider";
+import { ContextProvider } from "@context/ContextProvider";
 
 localStorage.setItem("lang", "fi")
 
@@ -45,7 +44,7 @@ describe("DefectFault Component", () => {
 
     render(
       <ContextProvider>
-        <DefectFault isLoggedIn={true} loggedUser={user} />
+        <DefectFault />
       </ContextProvider>
     );
 
@@ -76,7 +75,7 @@ describe("DefectFault Component", () => {
     await waitFor(() => {
       // Mock the axios post request
       mockAxios.mockResponseFor({ url: "defects/create_defect" }, responseObj);
-      
+
       expect(mockAxios.post).toHaveBeenCalledWith(
         "defects/create_defect",
         {

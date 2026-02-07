@@ -3,13 +3,11 @@ import {
   fireEvent,
   waitFor,
   screen,
-  within,
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import CleaningSupplies from "../../src/pages/cleaningsuppliespage.jsx";
 import mockAxios from "../../__mocks__/axios";
-import i18n from "../i18n.js";
-import { ContextProvider } from "../../src/context/ContextProvider";
+import { ContextProvider } from "@context/ContextProvider";
 
 localStorage.setItem("lang", "fi");
 
