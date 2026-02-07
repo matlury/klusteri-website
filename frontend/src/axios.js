@@ -3,16 +3,8 @@ import axios from "axios";
 // Get API_URL from environment or use a default value
 const API_URL = process.env.VITE_API_URL;
 
-// Normalize baseURL: 
-// - If API_URL is '/' or empty, we want '/api'
-// - If API_URL already ends with '/api', use it as is
-// - Otherwise, append '/api'
-const baseURL = (API_URL === '/' || !API_URL) 
-  ? '/api' 
-  : (API_URL.endsWith('/api') ? API_URL : `${API_URL}/api`);
-
 const axiosClient = axios.create({
-  baseURL: baseURL,
+  baseURL: API_URL,
 });
 
 // Checks the authorization of the user using axios
