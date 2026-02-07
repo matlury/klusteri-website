@@ -206,9 +206,7 @@ const Sidebar = ({ isLoggedIn, handleDrawerClose, collapsed, onToggle }) => {
             </Tooltip>
           ) : content;
         })}
-      </List>
-      <Divider />
-      <List>
+        <Divider />
         <ListItem disablePadding sx={{ display: 'block' }}>
           <ListItemButton
             onClick={onToggle}
@@ -227,7 +225,7 @@ const Sidebar = ({ isLoggedIn, handleDrawerClose, collapsed, onToggle }) => {
             >
               {collapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
             </ListItemIcon>
-            {!collapsed && <ListItemText primary={t("collapse")} />}
+            {!collapsed && <ListItemText primary={collapsed ? t("expand") : t("collapse")} />}
           </ListItemButton>
         </ListItem>
       </List>
