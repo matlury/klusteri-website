@@ -63,8 +63,6 @@ import Tooltip from "@mui/material/Tooltip";
 import { useTranslation } from "react-i18next";
 import i18n from "./i18n";
 
-const drawerWidth = 240;
-
 // Login dialog component
 const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
   const { t } = useTranslation();
@@ -153,17 +151,17 @@ const Sidebar = ({ isLoggedIn, handleDrawerClose, collapsed, onToggle }) => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Box sx={{ padding: collapsed ? "8px" : "16px", width: "100%", textAlign: 'center' }}>
-        <a href="/">
+        <Link to="/" onClick={handleDrawerClose}>
           <img
             src={matlu}
             alt="logo"
-            style={{ 
-              height: collapsed ? "40px" : "auto", 
+            style={{
+              height: collapsed ? "40px" : "auto",
               width: collapsed ? "40px" : "100%",
-              objectFit: 'contain' 
+              objectFit: 'contain'
             }}
           />
-        </a>
+        </Link>
       </Box>
       <Divider />
       <List sx={{ flexGrow: 1, overflowX: 'hidden' }}>
@@ -426,8 +424,8 @@ const AppContent = ({ window }) => {
       </AppBar>
       <Box
         component="nav"
-        sx={{ 
-          width: { sm: currentDrawerWidth }, 
+        sx={{
+          width: { sm: currentDrawerWidth },
           flexShrink: { sm: 0 },
           transition: (theme) =>
             theme.transitions.create("width", {
@@ -459,7 +457,7 @@ const AppContent = ({ window }) => {
             isLoggedIn={isLoggedIn}
             handleDrawerClose={handleDrawerClose}
             collapsed={false}
-            onToggle={() => {}}
+            onToggle={() => { }}
           />
         </Drawer>
         <Drawer
