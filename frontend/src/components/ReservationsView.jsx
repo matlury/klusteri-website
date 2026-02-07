@@ -153,9 +153,10 @@ const ReservationsView = ({
       <Calendar
         localizer={localizer}
         events={events}
+
         startAccessor="start"
         endAccessor="end"
-        style={{ height: 500 }}
+        style={{ height: "calc(100vh - 200px)", minHeight: "500px" }}
         selectable
         onSelectSlot={handleSelectSlot}
         onSelectEvent={handleSelectEvent}
@@ -167,7 +168,8 @@ const ReservationsView = ({
             borderRadius: "5px",
             border: "none",
             color: "#fff",
-            padding: "5px",
+            padding: "2px 5px",
+            fontSize: "0.75rem",
             margin: "0 3px",
             cursor: "pointer",
           },
