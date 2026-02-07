@@ -4,6 +4,7 @@ import {
   waitFor,
   screen,
 } from "@testing-library/react";
+import { act } from "react";
 import "@testing-library/jest-dom";
 import CleaningSupplies from "../../src/pages/cleaningsuppliespage.jsx";
 import mockAxios from "../../__mocks__/axios";
@@ -71,7 +72,9 @@ describe("Cleaningsupplies Component", () => {
     // Wait for the axios requests to complete
     await waitFor(() => {
       // Mock the axios post request
-      mockAxios.mockResponseFor({ url: "cleaningsupplies/create_tool" }, responseObj);
+      act(() => {
+        mockAxios.mockResponseFor({ url: "cleaningsupplies/create_tool" }, responseObj);
+      });
 
       expect(mockAxios.post).toHaveBeenCalledWith(
         "cleaningsupplies/create_tool",
@@ -121,7 +124,9 @@ describe("Cleaningsupplies Component", () => {
 
     await waitFor(() => {
       // Mock the axios get request
-      mockAxios.mockResponseFor({ url: "listobjects/cleaningsupplies/" }, responseObj);
+      act(() => {
+        mockAxios.mockResponseFor({ url: "listobjects/cleaningsupplies/" }, responseObj);
+      });
     })
 
     await waitFor(() => {

@@ -4,6 +4,7 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
+import { act } from "react";
 import "@testing-library/jest-dom";
 import OwnKeys from "../../src/pages/ownkeys";
 import { ContextProvider } from "@context/ContextProvider";
@@ -48,12 +49,18 @@ describe("OwnKeys Component", () => {
 
     // mock permission and responsibilities responses (respond after requests issued)
     await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
-    mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+    act(() => {
+      mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+    });
     await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
     // respond to eligible users request (ykv) which happens after permission is set
-    mockAxios.mockResponseFor({ url: "users/ykv/" }, { data: [] });
+    act(() => {
+      mockAxios.mockResponseFor({ url: "users/ykv/" }, { data: [] });
+    });
     await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
-    mockAxios.mockResponseFor({ url: "listobjects/nightresponsibilities/" }, { data: [] });
+    act(() => {
+      mockAxios.mockResponseFor({ url: "listobjects/nightresponsibilities/" }, { data: [] });
+    });
 
     // open the create dialog and assert fields inside
     const createBtn = getByTestId("opencreateform");
@@ -87,11 +94,17 @@ describe("OwnKeys Component", () => {
     );
     // respond to initial requests before interacting with the UI
     await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
-    mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+    act(() => {
+      mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+    });
     await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
-    mockAxios.mockResponseFor({ url: "users/ykv/" }, { data: [] });
+    act(() => {
+      mockAxios.mockResponseFor({ url: "users/ykv/" }, { data: [] });
+    });
     await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
-    mockAxios.mockResponseFor({ url: "listobjects/nightresponsibilities/" }, { data: [] });
+    act(() => {
+      mockAxios.mockResponseFor({ url: "listobjects/nightresponsibilities/" }, { data: [] });
+    });
     const create_form = getByTestId("opencreateform");
     fireEvent.click(create_form);
     const resp_field_input = await findByRole("textbox", { name: "Kenestä otat vastuun?" });
@@ -100,9 +113,13 @@ describe("OwnKeys Component", () => {
     fireEvent.click(respButton);
 
     await waitFor(() => expect(mockAxios.post).toHaveBeenCalled());
-    mockAxios.mockResponseFor({ url: "ykv/create_responsibility" }, { data: {} });
+    act(() => {
+      mockAxios.mockResponseFor({ url: "ykv/create_responsibility" }, { data: {} });
+    });
     await waitFor(() => expect(mockAxios.get).toHaveBeenCalledWith("listobjects/nightresponsibilities/"));
-    mockAxios.mockResponseFor({ url: "listobjects/nightresponsibilities/" }, { data: [] });
+    act(() => {
+      mockAxios.mockResponseFor({ url: "listobjects/nightresponsibilities/" }, { data: [] });
+    });
     await waitFor(() => {
       const snackbar = getByTestId("snackbar");
       expect(snackbar).toBeInTheDocument();
@@ -295,11 +312,17 @@ describe("OwnKeys Component", () => {
       ],
     };
     await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
-    mockAxios.mockResponseFor({ url: "users/userinfo" }, responsedata);
+    act(() => {
+      mockAxios.mockResponseFor({ url: "users/userinfo" }, responsedata);
+    });
     await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
-    mockAxios.mockResponseFor({ url: "users/ykv/" }, { data: [] });
+    act(() => {
+      mockAxios.mockResponseFor({ url: "users/ykv/" }, { data: [] });
+    });
     await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
-    mockAxios.mockResponseFor({ url: "listobjects/nightresponsibilities/" }, response);
+    act(() => {
+      mockAxios.mockResponseFor({ url: "listobjects/nightresponsibilities/" }, response);
+    });
 
     await waitFor(() => {
       expect(mockAxios.get).toHaveBeenCalledWith("users/userinfo");

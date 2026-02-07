@@ -4,6 +4,7 @@ import {
   waitFor,
   screen,
 } from "@testing-library/react";
+import { act } from "react";
 import "@testing-library/jest-dom";
 import DefectFault from "../../src/pages/defectfaultpage";
 import mockAxios from "../../__mocks__/axios";
@@ -74,7 +75,9 @@ describe("DefectFault Component", () => {
     // Wait for the axios requests to complete
     await waitFor(() => {
       // Mock the axios post request
-      mockAxios.mockResponseFor({ url: "defects/create_defect" }, responseObj);
+      act(() => {
+        mockAxios.mockResponseFor({ url: "defects/create_defect" }, responseObj);
+      });
 
       expect(mockAxios.post).toHaveBeenCalledWith(
         "defects/create_defect",

@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { act } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import CleaningSchedule from '../pages/cleaningschedulepage.jsx';
 import CleanersList from '../components/CleanersList.jsx';
-import axiosClient from '../axios.js';
 import mockAxios from "../../__mocks__/axios";
 import { ContextProvider } from "@context/ContextProvider";
 import "@testing-library/jest-dom";
@@ -20,13 +19,11 @@ const user = {
 
 const mockCleaningData = [
     {
-        id: 1,
         week: 1,
         big: { name: 'Matrix' },
         small: { name: 'Vasara' },
     },
     {
-        id: 2,
         week: 2,
         big: { name: 'TKO-äly' },
         small: { name: 'Synop' },
@@ -36,11 +33,11 @@ const mockCleaningData = [
 describe('CleaningSchedule Component', () => {
     beforeEach(() => {
         mockAxios.reset();
-        localStorage.setItem("loggedUser", JSON.stringify(user));
+        localStorage.clear();
+        localStorage.setItem("lang", "fi")
     });
 
     test('renders login prompt if not logged in', () => {
-        localStorage.removeItem("loggedUser");
         render(
             <ContextProvider>
                 <CleaningSchedule />
@@ -50,16 +47,25 @@ describe('CleaningSchedule Component', () => {
     });
 
     test('fetches and displays cleaning schedule when logged in', async () => {
-        axiosClient.get.mockResolvedValueOnce({ data: mockCleaningData });
+        // CleanersList expects processed data (with id and string names)
+        const processedData = mockCleaningData.map(item => ({
+            id: item.week,
+            week: item.week,
+            big: item.big.name,
+            small: item.small.name,
+            date: "2024-01-01" // date is handled by moment in real component
+        }));
 
-        render(<CleanersList allCleaners={mockCleaningData} />);
+        render(
+            <ContextProvider>
+                <CleanersList allCleaners={processedData} />
+            </ContextProvider>
+        );
 
-        await waitFor(() => {
-            expect(screen.findByText('Matrix')).resolves.toBeInTheDocument();
-        });
+        expect(await screen.findByText('Matrix')).toBeInTheDocument();
     });
 
-    test('renders all content when logged as leppispj', () => {
+    test('renders all content when logged as leppispj', async () => {
         window.confirm = jest.fn(() => true);
         localStorage.setItem("ACCESS_TOKEN", "example_token");
         localStorage.setItem("loggedUser", JSON.stringify(user));
@@ -69,6 +75,13 @@ describe('CleaningSchedule Component', () => {
                 <CleaningSchedule />
             </ContextProvider>
         );
+
+        await waitFor(() => expect(mockAxios.get).toHaveBeenCalledWith("listobjects/cleaning/"));
+        act(() => {
+            // Here we provide the raw API format
+            mockAxios.mockResponse({ data: mockCleaningData });
+        });
+
         expect(screen.getByText('Siivousvuorot')).toBeInTheDocument();
         expect(screen.getByText('Tuo lista')).toBeInTheDocument();
         expect(screen.getByText('Vie lista')).toBeInTheDocument();

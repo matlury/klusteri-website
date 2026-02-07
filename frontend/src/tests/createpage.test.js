@@ -1,4 +1,5 @@
 import { render, fireEvent, waitFor } from "@testing-library/react";
+import { act } from "react";
 import NewAccountPage from "../../src/pages/createpage";
 import mockAxios from "../../__mocks__/axios";
 import "@testing-library/jest-dom";
@@ -193,7 +194,9 @@ describe("Createpage", () => {
       }));
     });
 
-    mockAxios.mockResponse({ data: { message: "Success" } });
+    act(() => {
+      mockAxios.mockResponse({ data: { message: "Success" } });
+    });
 
     await waitFor(() => {
       expect(getByText("Käyttäjä luotu onnistuneesti")).toBeInTheDocument();
@@ -221,11 +224,13 @@ describe("Createpage", () => {
       }));
     });
 
-    mockAxios.mockError({
-      response: {
-        status: 400,
-        data: { email: ["Sähköposti on jo käytössä."] }
-      }
+    act(() => {
+      mockAxios.mockError({
+        response: {
+          status: 400,
+          data: { email: ["Sähköposti on jo käytössä."] }
+        }
+      });
     });
 
     await waitFor(() => {

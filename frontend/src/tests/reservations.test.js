@@ -3,7 +3,9 @@ import {
   fireEvent,
   waitFor,
   screen,
-} from "@testing-library/react"; import "@testing-library/jest-dom";
+} from "@testing-library/react";
+import { act } from "react";
+ import "@testing-library/jest-dom";
 import Reservations from "../../src/pages/reservations";
 import mockAxios from "../../__mocks__/axios.js";
 import { ContextProvider } from "@context/ContextProvider";
@@ -106,7 +108,9 @@ describe("Reservations component", () => {
     }
 
     await waitFor(() => {
-      mockAxios.mockResponse(response);
+      act(() => {
+        mockAxios.mockResponse(response);
+      });
     })
 
     await waitFor(() => {

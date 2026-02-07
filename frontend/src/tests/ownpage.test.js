@@ -6,6 +6,7 @@ import {
   within,
   screen,
 } from "@testing-library/react";
+import { act } from "react";
 import OwnPage from "../pages/ownpage";
 import mockAxios from "../../__mocks__/axios";
 import { ContextProvider } from "@context/ContextProvider";
@@ -51,13 +52,19 @@ it("opens with role 5", async () => {
 
   // Mock initial requests
   await waitFor(() => {
-    mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+    act(() => {
+      mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+    });
   });
   await waitFor(() => {
-    mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
+    act(() => {
+      mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
+    });
   });
   await waitFor(() => {
-    mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [] });
+    act(() => {
+      mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [] });
+    });
   });
 
   expect(getByLabelText("Käyttäjänimi")).toBeInTheDocument();
@@ -156,13 +163,19 @@ it("User updating works", async () => {
 
   // Mock initial requests
   await waitFor(() => {
-    mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+    act(() => {
+      mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+    });
   });
   await waitFor(() => {
-    mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
+    act(() => {
+      mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
+    });
   });
   await waitFor(() => {
-    mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [] });
+    act(() => {
+      mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [] });
+    });
   });
 
   const username_field = getByLabelText("Käyttäjänimi");
@@ -215,7 +228,9 @@ it("User updating works", async () => {
   fireEvent.click(saveButton);
 
   await waitFor(() => expect(mockAxios.put).toHaveBeenCalled());
-  mockAxios.mockResponse(resp_updated);
+  act(() => {
+    mockAxios.mockResponse(resp_updated);
+  });
 
   await waitFor(() => {
     expect(mockAxios.put).toHaveBeenCalledWith("users/update/1/", {
@@ -256,13 +271,19 @@ describe("User updating errors", () => {
 
     // Mock initial requests
     await waitFor(() => {
-      mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+      act(() => {
+        mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+      });
     });
     await waitFor(() => {
-      mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
+      act(() => {
+        mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
+      });
     });
     await waitFor(() => {
-      mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [] });
+      act(() => {
+        mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [] });
+      });
     });
 
     const username_field = getByLabelText("Käyttäjänimi");
@@ -303,13 +324,19 @@ describe("User updating errors", () => {
 
     // Mock initial requests
     await waitFor(() => {
-      mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+      act(() => {
+        mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+      });
     });
     await waitFor(() => {
-      mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
+      act(() => {
+        mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
+      });
     });
     await waitFor(() => {
-      mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [] });
+      act(() => {
+        mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [] });
+      });
     });
 
     const telegram = getByLabelText("Telegram");
@@ -356,13 +383,19 @@ describe("Organizations", () => {
 
     // Mock 3 initial requests for role 1 (register mocks sequentially)
     await waitFor(() => {
-      mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
+      act(() => {
+        mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
+      });
     });
     await waitFor(() => {
-      mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [] });
+      act(() => {
+        mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [] });
+      });
     });
     await waitFor(() => {
-      mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+      act(() => {
+        mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+      });
     });
 
     const resp = {
@@ -405,26 +438,30 @@ describe("Organizations", () => {
         const submit = modal.getByText("Luo järjestö");
         fireEvent.click(submit);
 
-        mockAxios.mockResponseFor(
-          { url: "listobjects/organizations/?email=tko@aly.com" },
-          {
-            data: [
-              {
-                id: 1,
-                user_set: [],
-                name: "matrix",
-                email: "mat@rix.com",
-                homepage: "matrix.org",
-                color: "",
-              },
-            ],
-          },
-        );
+        act(() => {
+          mockAxios.mockResponseFor(
+            { url: "listobjects/organizations/?email=tko@aly.com" },
+            {
+              data: [
+                {
+                  id: 1,
+                  user_set: [],
+                  name: "matrix",
+                  email: "mat@rix.com",
+                  homepage: "matrix.org",
+                  color: "",
+                },
+              ],
+            },
+          );
+        });
 
         expect(mockAxios.get).toHaveBeenCalledWith(
           "listobjects/organizations/?email=tko@aly.com",
         );
-        mockAxios.mockResponseFor({ url: "organizations/create" }, resp);
+        act(() => {
+          mockAxios.mockResponseFor({ url: "organizations/create" }, resp);
+        });
 
         expect(mockAxios.post).toHaveBeenCalledWith("organizations/create", {
           color: "",
