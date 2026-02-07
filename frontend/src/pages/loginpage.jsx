@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import NewAccountPage from "./createpage";
-import { useStateContext } from "../context/ContextProvider.jsx";
+import { useStateContext } from "@context/ContextProvider";
 import login from "../utils/login.js";
 import LoginForm from "../components/LoginForm.jsx";
 import { useTranslation } from "react-i18next";

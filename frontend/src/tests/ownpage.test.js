@@ -8,7 +8,7 @@ import {
 } from "@testing-library/react";
 import OwnPage from "../pages/ownpage";
 import mockAxios from "../../__mocks__/axios";
-import { ContextProvider } from "../../src/context/ContextProvider";
+import { ContextProvider } from "@context/ContextProvider";
 
 localStorage.setItem("lang", "fi");
 

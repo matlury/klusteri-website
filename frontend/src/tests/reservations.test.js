@@ -3,15 +3,12 @@ import {
   fireEvent,
   waitFor,
   screen,
-} from "@testing-library/react";import "@testing-library/jest-dom";
+} from "@testing-library/react"; import "@testing-library/jest-dom";
 import Reservations from "../../src/pages/reservations";
 import mockAxios from "../../__mocks__/axios.js";
-import i18n from "../i18n.js";
-import { ContextProvider } from "../../src/context/ContextProvider";
+import { ContextProvider } from "@context/ContextProvider";
 
 localStorage.setItem("lang", "fi")
-import { momentLocalizer } from "react-big-calendar";
-import moment from "moment";
 
 afterEach(() => {
   // cleaning up the mess left behind the previous test
@@ -58,7 +55,7 @@ describe("Reservations component", () => {
 
     fireEvent.change(startTimeField, { target: { value: "2024-06-11T10:00" } });
     fireEvent.change(endTimeField, { target: { value: "2024-06-11T12:00" } });
-  
+
     expect(startTimeField.value).toBe("2024-06-11T10:00");
     expect(endTimeField.value).toBe("2024-06-11T12:00");
 
@@ -82,8 +79,9 @@ describe("Reservations component", () => {
       </ContextProvider>
     );
 
-    const response = {data: [
-      {
+    const response = {
+      data: [
+        {
           "id": 1,
           "start": "2024-06-03T07:26:24.237284Z",
           "end": "2024-06-03T07:26:24.237298Z",
@@ -93,8 +91,8 @@ describe("Reservations component", () => {
           "responsible": "Vastuuhenkilö",
           "open": true,
           "room": "Kokoushuone"
-      },
-      {
+        },
+        {
           "id": 2,
           "start": "2024-06-03T07:30:22.141739Z",
           "end": "2024-06-03T07:30:22.141755Z",
@@ -104,7 +102,7 @@ describe("Reservations component", () => {
           "responsible": "Vastuuhenkilö",
           "open": false,
           "room": "Kerhotila"
-      }]
+        }]
     }
 
     await waitFor(() => {
@@ -115,7 +113,7 @@ describe("Reservations component", () => {
       const reservationButton = getByText("Lataa tapahtumat CSV-muodossa");
       fireEvent.click(reservationButton);
     })
-  }) 
+  })
 
   // it('booking with role 1', async () => {
   //   const { getByText, getByPlaceholderText, queryByText } = render(<Reservations />)

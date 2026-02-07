@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useStateContext } from "../context/ContextProvider.jsx";
+import { useStateContext } from "@context/ContextProvider";
 import { cleaningSuppliesAPI } from "../api/api.ts";
 import { Button } from "@mui/material";
 import CleaningToolForm from "../components/CleaningToolForm.jsx";

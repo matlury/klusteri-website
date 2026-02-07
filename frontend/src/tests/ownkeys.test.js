@@ -6,7 +6,7 @@ import {
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import OwnKeys from "../../src/pages/ownkeys";
-import { ContextProvider } from "../../src/context/ContextProvider";
+import { ContextProvider } from "@context/ContextProvider";
 import mockAxios from "../../__mocks__/axios";
 
 localStorage.setItem("lang", "fi")

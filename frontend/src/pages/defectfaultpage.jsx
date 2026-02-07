@@ -6,7 +6,7 @@ import DefectList from "../components/DefectList";
 import RepairConfirmDialog from "../components/RepairConfirmDialog.jsx";
 import EmailConfirmDialog from "../components/EmailConfirmDialog.jsx";
 import { useTranslation } from "react-i18next";
-import { useStateContext } from "../context/ContextProvider";
+import { useStateContext } from "@context/ContextProvider";
 
 const DefectFault = () => {
   const { user } = useStateContext();

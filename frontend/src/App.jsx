@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useStateContext } from "./context/ContextProvider.jsx";
+import { useStateContext } from "@context/ContextProvider";
 import {
   BrowserRouter as Router,
   Route,

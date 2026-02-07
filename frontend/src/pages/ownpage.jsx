@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useStateContext } from "../context/ContextProvider";
+import { useStateContext } from "@context/ContextProvider";
 import { usersAPI, organizationsAPI, keysAPI, authAPI } from "../api/api.ts";
 import UserPage from "../components/UserPage.jsx";
 import OrganisationPage from "../components/OrganisationPage.jsx";

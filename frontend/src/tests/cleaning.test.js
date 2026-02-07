@@ -4,7 +4,7 @@ import CleaningSchedule from '../pages/cleaningschedulepage.jsx';
 import CleanersList from '../components/CleanersList.jsx';
 import axiosClient from '../axios.js';
 import mockAxios from "../../__mocks__/axios";
-import { ContextProvider } from "../../src/context/ContextProvider";
+import { ContextProvider } from "@context/ContextProvider";
 import "@testing-library/jest-dom";
 
 localStorage.setItem("lang", "fi")

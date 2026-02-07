@@ -15,7 +15,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { lighten, styled } from "@mui/material/styles";
 import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
-import { useStateContext } from "../context/ContextProvider";
+import { useStateContext } from "@context/ContextProvider";
 const YkvLogoutFunction = ({
   handleYkvLogin,
   handleYkvLogout,

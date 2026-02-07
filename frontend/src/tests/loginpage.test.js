@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { render, fireEvent, waitFor } from "@testing-library/react";
 import LoginPage from "../pages/loginpage";
-import { ContextProvider } from "../context/ContextProvider";
+import { ContextProvider } from "@context/ContextProvider";
 import axiosClient from "../axios.js";
 import i18n from "../i18n.js";
 

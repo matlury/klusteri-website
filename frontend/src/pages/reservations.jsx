@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "moment/locale/fi";
-import { useStateContext } from "../context/ContextProvider.jsx";
+import { useStateContext } from "@context/ContextProvider";
 import { organizationsAPI, eventsAPI } from "../api/api.ts";
 import ReservationsView from "../components/ReservationsView.jsx";
 import { useTranslation } from "react-i18next";
