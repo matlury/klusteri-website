@@ -96,12 +96,12 @@ class Event(models.Model):
     title = models.CharField(max_length=100, default="")  # Name of the event
     # Organization responsible for the event
     organizer = models.ForeignKey(
-        Organization, on_delete=models.CASCADE, default=0, db_column='organizer')
+        Organization, on_delete=models.CASCADE, db_column='organizer')
     description = models.TextField(default="")  # Description of the event
     # Person responsible for the event
     responsible = models.CharField(max_length=100, default="")
     created_by = models.ForeignKey(
-        User, on_delete=models.CASCADE, default=0, db_column='created_by')
+        User, on_delete=models.SET_NULL, null=True, blank=True, db_column='created_by')
     # Indicates whether the event is open or not
     open = models.BooleanField(default=True)
     # Room where the event takes place
@@ -116,7 +116,7 @@ class NightResponsibility(models.Model):
     """
 
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, default=0, db_column='user')
+        User, on_delete=models.CASCADE, db_column='user')
     organizations = models.ManyToManyField(Organization)
     responsible_for = models.CharField(max_length=500, default="")
     login_time = models.DateTimeField(
@@ -164,9 +164,9 @@ class Cleaning(models.Model):
     id = models.AutoField(primary_key=True)
     week = models.IntegerField(default=0)
     big = models.ForeignKey(Organization, on_delete=models.CASCADE,
-                            default=0, related_name="big_orgs", db_column='big')
+                            related_name="big_orgs", db_column='big')
     small = models.ForeignKey(Organization, on_delete=models.CASCADE,
-                              default=0, related_name="small_orgs", db_column='small')
+                              related_name="small_orgs", db_column='small')
 
 
 class CleaningSupplies(models.Model):

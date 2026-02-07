@@ -260,6 +260,16 @@ class CreateEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = '__all__'
+        read_only_fields = ('created_by',)
+
+    def validate(self, data):
+        """
+        Verify that organizer is provided.
+        created_by is set in the view.
+        """
+        if not data.get('organizer'):
+            raise serializers.ValidationError({"organizer": "Organizer is required."})
+        return data
 
 
 class NightResponsibilitySerializer(serializers.ModelSerializer):

@@ -18,7 +18,9 @@ const login = async ({ email, password, setError, setToken, onLogin, setUser, t 
           setUser(response.data);
           localStorage.setItem("loggedUser", JSON.stringify(response.data));
           localStorage.setItem("isLoggedIn", true);
-          onLogin();
+          if (typeof onLogin === 'function') {
+            onLogin();
+          }
         });
     })
     .catch((err) => {
