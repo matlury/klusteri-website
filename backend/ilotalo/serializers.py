@@ -169,7 +169,13 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        exclude = ('password',)  # Exclude password field from serialization
+        fields = '__all__'
+        extra_kwargs = {
+            'password': {'write_only': True, 'required': False},
+            'username': {'required': False},
+            'email': {'required': False},
+            'role': {'required': False},
+        }
 
     def validate_username(self, username):
         """Validates that the username does not contain @ symbol and is not already taken."""
