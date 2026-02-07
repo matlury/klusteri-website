@@ -2218,6 +2218,38 @@ class TestDjangoAPI(TestCase):
 
 
     def test_update_password(self):
+        """A user can update their password and authenticate with the new password."""
+
+        new_password = "UusiSalasana123!"
+
+        # Update password for the tavallinen user
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{self.tavallinen_id}/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={"password": new_password},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Verify that we can obtain a token with the new password
+        token_resp = self.client.post(
+            "http://localhost:8000/api/token/",
+            data={"email": self.user.get("email"), "password": new_password},
+            format="json",
+        )
+
+        self.assertEqual(token_resp.status_code, status.HTTP_200_OK)
+        self.assertIn("access", token_resp.data)
+
+        # Verify that the old password no longer works
+        old_token_resp = self.client.post(
+            "http://localhost:8000/api/token/",
+            data={"email": self.user.get("email"), "password": "vahvaSalasana1234"},
+            format="json",
+        )
+
+        self.assertNotEqual(old_token_resp.status_code, status.HTTP_200_OK)
         """An authorized user can update their email address"""
 
         # update the email address
