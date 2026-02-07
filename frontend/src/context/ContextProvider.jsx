@@ -8,10 +8,10 @@ const StateContext = createContext({
   timeLeft: null,
 
   // Functions to update state values
-  setUser: () => {},
-  setToken: () => {},
-  setNotification: () => {},
-  setTimeLeft: () => {},
+  setUser: () => { },
+  setToken: () => { },
+  setNotification: () => { },
+  setTimeLeft: () => { },
 });
 
 // ContextProvider component to provide state to child components
@@ -26,7 +26,11 @@ export const ContextProvider = ({ children }) => {
   const [timeLeft, setTimeLeft] = useState(30 * 60);
 
   useEffect(() => {
-    localStorage.setItem("loggedUser", JSON.stringify(user));
+    if (user === null) {
+      localStorage.removeItem("loggedUser");
+    } else {
+      localStorage.setItem("loggedUser", JSON.stringify(user));
+    }
   }, [user]);
 
   useEffect(() => {

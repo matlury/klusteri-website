@@ -8,6 +8,7 @@ import "@testing-library/jest-dom";
 import DefectFault from "../../src/pages/defectfaultpage";
 import mockAxios from "../../__mocks__/axios";
 import i18n from "../i18n.js";
+import { ContextProvider } from "../../src/context/ContextProvider";
 
 localStorage.setItem("lang", "fi")
 
@@ -18,7 +19,11 @@ afterEach(() => {
 
 describe("DefectFault Component", () => {
   it("doesn't open without logging in", () => {
-    render(<DefectFault />);
+    render(
+      <ContextProvider>
+        <DefectFault />
+      </ContextProvider>
+    );
     expect(screen.getByText("Kirjaudu sisään")).toBeInTheDocument();
   });
 
@@ -36,9 +41,13 @@ describe("DefectFault Component", () => {
 
     window.confirm = jest.fn(() => true);
     localStorage.setItem("ACCESS_TOKEN", "example_token");
-    localStorage.setItem("loggeduser", JSON.stringify(user));
+    localStorage.setItem("loggedUser", JSON.stringify(user));
 
-    render(<DefectFault isLoggedIn={true} loggedUser={user} />);
+    render(
+      <ContextProvider>
+        <DefectFault isLoggedIn={true} loggedUser={user} />
+      </ContextProvider>
+    );
 
     // Simulate opening the defect creation dialog
     fireEvent.click(screen.getByTestId("defectfaultdialog"));
@@ -66,16 +75,16 @@ describe("DefectFault Component", () => {
     // Wait for the axios requests to complete
     await waitFor(() => {
       // Mock the axios post request
-      mockAxios.mockResponseFor({ url: "/defects/create_defect" }, responseObj);
+      mockAxios.mockResponseFor({ url: "defects/create_defect" }, responseObj);
       
       expect(mockAxios.post).toHaveBeenCalledWith(
-        "/defects/create_defect",
+        "defects/create_defect",
         {
           description: "jääkapin ovi rikki",
         }
       );
 
-      expect(mockAxios.get).toHaveBeenCalledWith("/listobjects/defects/");
+      expect(mockAxios.get).toHaveBeenCalledWith("listobjects/defects/");
     });
 
     // Check if the description appears in the document

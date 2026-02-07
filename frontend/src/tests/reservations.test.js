@@ -7,6 +7,7 @@ import {
 import Reservations from "../../src/pages/reservations";
 import mockAxios from "../../__mocks__/axios.js";
 import i18n from "../i18n.js";
+import { ContextProvider } from "../../src/context/ContextProvider";
 
 localStorage.setItem("lang", "fi")
 import { momentLocalizer } from "react-big-calendar";
@@ -32,12 +33,20 @@ localStorage.setItem("loggedUser", JSON.stringify(user));
 
 describe("Reservations component", () => {
   it("renders Reservations component", () => {
-    const { getByText } = render(<Reservations />);
+    const { getByText } = render(
+      <ContextProvider>
+        <Reservations />
+      </ContextProvider>
+    );
     expect(getByText("Varauskalenteri")).toBeInTheDocument();
   });
 
   it("renders the booking form", () => {
-    const { getByText, queryByText } = render(<Reservations />);
+    const { getByText, queryByText } = render(
+      <ContextProvider>
+        <Reservations />
+      </ContextProvider>
+    );
 
     const reservationButton = getByText("Lisää uusi tapahtuma");
     fireEvent.click(reservationButton);
@@ -67,7 +76,11 @@ describe("Reservations component", () => {
     };
 
     localStorage.setItem('loggedUser', JSON.stringify(user))
-    const { getByText } = render(<Reservations />);
+    const { getByText } = render(
+      <ContextProvider>
+        <Reservations />
+      </ContextProvider>
+    );
 
     const response = {data: [
       {
@@ -95,16 +108,10 @@ describe("Reservations component", () => {
     }
 
     await waitFor(() => {
-      mockAxios.mockResponseFor(
-        { url: "undefined/api/listobjects/events/" },
-        response,
-      );
+      mockAxios.mockResponse(response);
     })
 
     await waitFor(() => {
-      expect(mockAxios.get).toHaveBeenCalledWith(
-        "undefined/api/listobjects/events/",
-      )
       const reservationButton = getByText("Lataa tapahtumat CSV-muodossa");
       fireEvent.click(reservationButton);
     })

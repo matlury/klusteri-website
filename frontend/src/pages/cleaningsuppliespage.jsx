@@ -53,7 +53,8 @@ const CleaningSupplies = () => {
     confirmCleaningSupplies(cleaningSupplyObject);
 
     function confirmCleaningSupplies(cleaningSupplyObject) {
-      if (confirm) {
+      const confirmMessage = t("confirm_create_tool") || "Confirm create cleaning tool?";
+      if (window.confirm(confirmMessage)) {
         cleaningSuppliesAPI
           .createTool(cleaningSupplyObject)
           .then((response) => {

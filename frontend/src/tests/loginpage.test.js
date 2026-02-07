@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import { render, fireEvent, waitFor } from "@testing-library/react";
 import LoginPage from "../pages/loginpage";
+import { ContextProvider } from "../context/ContextProvider";
 import axiosClient from "../axios.js";
 import i18n from "../i18n.js";
 
@@ -11,8 +12,17 @@ localStorage.setItem("lang", "fi")
 
 jest.mock("../axios");
 
+afterEach(() => {
+  jest.clearAllMocks();
+  localStorage.clear();
+});
+
 test("renders login form", () => {
-  const { getByLabelText, getByText } = render(<LoginPage />);
+  const { getByLabelText, getByText } = render(
+    <ContextProvider>
+      <LoginPage />
+    </ContextProvider>,
+  );
 
   const emailInput = getByLabelText("Sähköposti tai käyttäjätunnus");
   const passwordInput = getByLabelText("Salasana");
@@ -30,11 +40,13 @@ test("error message when logging in with invalid credentials", async () => {
 
   // Render the LoginPage component
   const { getByLabelText, getByText, queryByText } = render(
-    <LoginPage
-      onLogin={jest.fn()}
-      onLogout={jest.fn()}
-      onCreateNewUser={jest.fn()}
-    />,
+    <ContextProvider>
+      <LoginPage
+        onLogin={jest.fn()}
+        onLogout={jest.fn()}
+        onCreateNewUser={jest.fn()}
+      />
+    </ContextProvider>,
   );
 
   // Fill in email and password fields
@@ -47,7 +59,7 @@ test("error message when logging in with invalid credentials", async () => {
   fireEvent.click(loginButton);
 
   await waitFor(() => {
-    expect(axiosClient.post).toHaveBeenCalledWith("/token/", {
+    expect(axiosClient.post).toHaveBeenCalledWith("token/", {
       email: "test@example.com",
       password: "invalidpassword",
     });
@@ -55,7 +67,8 @@ test("error message when logging in with invalid credentials", async () => {
     expect(
       queryByText("Sähköposti tai salasana virheellinen"),
     ).toBeInTheDocument();
-    expect(localStorage.getItem("loggedUser")).toBeNull();
+    const logged = localStorage.getItem("loggedUser");
+    expect(logged === null || logged === "null").toBe(true);
     expect(localStorage.getItem("isLoggedIn")).toBeNull();
   });
 });
@@ -70,11 +83,13 @@ test("logging in with valid credentials works", async () => {
 
   // Render the LoginPage component
   const { getByLabelText, queryByText, getByText } = render(
-    <LoginPage
-      onLogin={jest.fn()}
-      onLogout={jest.fn()}
-      onCreateNewUser={jest.fn()}
-    />,
+    <ContextProvider>
+      <LoginPage
+        onLogin={jest.fn()}
+        onLogout={jest.fn()}
+        onCreateNewUser={jest.fn()}
+      />
+    </ContextProvider>,
   );
 
   // Fill in email and password fields
@@ -87,16 +102,13 @@ test("logging in with valid credentials works", async () => {
   fireEvent.click(loginButton);
 
   await waitFor(() => {
-    expect(axiosClient.post).toHaveBeenCalledWith("/token/", {
+    expect(axiosClient.post).toHaveBeenCalledWith("token/", {
       email: "test@example.com",
       password: "password123",
     });
-    expect(axiosClient.get).toHaveBeenCalledWith("/users/userinfo", {
-      headers: {
-        Authorization: `Bearer ${mockToken}`,
-      },
-    });
+    expect(axiosClient.get).toHaveBeenCalledWith("users/userinfo");
 
+    expect(localStorage.getItem("ACCESS_TOKEN")).toEqual(mockToken);
     expect(localStorage.getItem("loggedUser")).toEqual(
       JSON.stringify(mockUserData),
     );

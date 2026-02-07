@@ -3,7 +3,6 @@ import "@testing-library/jest-dom";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import Contacts from "../../src/pages/contacts";
 import ChristinaRegina from "../../src/pages/christina_regina";
-import i18n from "../i18n.js";
 
 
 jest.mock("../../src/ChristinaRegina.png", () => "mock-christina-regina.png");
@@ -20,7 +19,7 @@ test("redirects to ChristinaRegina page when the link button is clicked", () => 
     </MemoryRouter>
   );
 
- 
+
   const linkButton = getByTestId("christina-regina-link");
 
   expect(linkButton).toBeInTheDocument();

@@ -8,36 +8,32 @@ import {
 } from "@testing-library/react";
 import OwnPage from "../pages/ownpage";
 import mockAxios from "../../__mocks__/axios";
-import i18n from "../i18n.js";
+import { ContextProvider } from "../../src/context/ContextProvider";
 
 localStorage.setItem("lang", "fi");
 
 afterEach(() => {
   mockAxios.reset();
+  localStorage.clear();
 });
 
 beforeEach(() => {
   mockAxios.reset();
+  localStorage.clear();
 });
-
-const user = {
-  username: "example_username",
-  email: "example_email@example.com",
-  telegram: "example_telegram",
-  role: 1,
-};
-
-localStorage.setItem("loggedUser", JSON.stringify(user));
 
 describe("OwnPage Component", () => {
   it("opens without logging in", () => {
-    localStorage.setItem("loggedUser", null);
-    const { getByText } = render(<OwnPage isLoggedIn={false} />);
+    const { getByText } = render(
+      <ContextProvider>
+        <OwnPage isLoggedIn={false} />
+      </ContextProvider>
+    );
     expect(getByText("Kirjaudu sisään")).toBeInTheDocument();
   });
 });
 
-it("opens with role 5", () => {
+it("opens with role 5", async () => {
   const user = {
     username: "example_username",
     email: "example_email@example.com",
@@ -45,7 +41,25 @@ it("opens with role 5", () => {
     role: 5,
   };
   localStorage.setItem("loggedUser", JSON.stringify(user));
-  const { getByText, getByLabelText } = render(<OwnPage isLoggedIn={true} />);
+  localStorage.setItem("ACCESS_TOKEN", "example_token");
+
+  const { getByText, getByLabelText } = render(
+    <ContextProvider>
+      <OwnPage isLoggedIn={true} />
+    </ContextProvider>
+  );
+
+  // Mock initial requests
+  await waitFor(() => {
+    mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+  });
+  await waitFor(() => {
+    mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
+  });
+  await waitFor(() => {
+    mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [] });
+  });
+
   expect(getByLabelText("Käyttäjänimi")).toBeInTheDocument();
   expect(getByLabelText("Salasana")).toBeInTheDocument();
   expect(getByLabelText("Vahvista salasana")).toBeInTheDocument();
@@ -133,9 +147,23 @@ it("User updating works", async () => {
   window.confirm = jest.fn(() => true);
   localStorage.setItem("ACCESS_TOKEN", "example_token");
   localStorage.setItem("loggedUser", JSON.stringify(user));
-  const { getByText, getByLabelText, getByTestId } = render(
-    <OwnPage isLoggedIn={true} />,
+
+  const { getByLabelText, getByTestId } = render(
+    <ContextProvider>
+      <OwnPage isLoggedIn={true} />
+    </ContextProvider>
   );
+
+  // Mock initial requests
+  await waitFor(() => {
+    mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+  });
+  await waitFor(() => {
+    mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
+  });
+  await waitFor(() => {
+    mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [] });
+  });
 
   const username_field = getByLabelText("Käyttäjänimi");
   fireEvent.change(username_field, { target: { value: "username_example" } });
@@ -147,75 +175,6 @@ it("User updating works", async () => {
 
   const telegram_field = getByLabelText("Telegram");
   fireEvent.change(telegram_field, { target: { value: "telegram_example" } });
-
-  const responseObj = {
-    data: [
-      {
-        id: 1,
-        keys: [
-          {
-            id: 1,
-            user_set: [
-              {
-                id: 1,
-                last_login: null,
-                username: "example_username",
-                password: "",
-                email: "example_email@example.com",
-                confirmPassword: "",
-                telegram: "example_telegram",
-                role: 1,
-                keys: [1, 2],
-              },
-            ],
-            name: "tko-äly",
-            email: "tko@aly.org",
-            homepage: "tko-aly.com",
-            size: 1,
-          },
-        ],
-        last_login: null,
-        username: "example_username",
-        password: "",
-        email: "example_email@example.com",
-        confirmPassword: "",
-        telegram: "example_telegram",
-        role: 1,
-      },
-      {
-        id: 2,
-        keys: [
-          {
-            id: 2,
-            user_set: [
-              {
-                id: 2,
-                last_login: null,
-                username: "example_username_two",
-                password: "",
-                email: "example_email_two@example.com",
-                confirmPassword: "",
-                telegram: "example_telegram_two",
-                role: 1,
-                keys: [2],
-              },
-            ],
-            name: "matrix",
-            email: "matrix@aly.org",
-            homepage: "matrix.com",
-            size: 1,
-          },
-        ],
-        last_login: null,
-        username: "example_username_two",
-        password: "",
-        email: "example_email_two@example.com",
-        confirmPassword: "",
-        telegram: "example_telegram_two",
-        role: 1,
-      },
-    ],
-  };
 
   const resp_updated = {
     data: {
@@ -255,35 +214,11 @@ it("User updating works", async () => {
   const saveButton = getByTestId("saveuserdata");
   fireEvent.click(saveButton);
 
+  await waitFor(() => expect(mockAxios.put).toHaveBeenCalled());
+  mockAxios.mockResponse(resp_updated);
+
   await waitFor(() => {
-    mockAxios.mockResponseFor(
-      { url: "undefined/api/listobjects/users/?telegram=telegram_example" },
-      responseObj,
-    );
-  });
-  await waitFor(() => {
-    mockAxios.mockResponseFor(
-      {
-        url: "undefined/api/listobjects/users/?email=email_example@example.com",
-      },
-      responseObj,
-    );
-  });
-  await waitFor(() => {
-    mockAxios.mockResponseFor({ url: "/users/update/1/" }, resp_updated);
-  });
-  await waitFor(() => {
-    expect(mockAxios.get).toHaveBeenCalledWith(
-      "undefined/api/listobjects/users/?telegram=telegram_example",
-    );
-  });
-  await waitFor(() => {
-    expect(mockAxios.get).toHaveBeenCalledWith(
-      "undefined/api/listobjects/users/?email=email_example@example.com",
-    );
-  });
-  await waitFor(() => {
-    expect(mockAxios.put).toHaveBeenCalledWith("/users/update/1/", {
+    expect(mockAxios.put).toHaveBeenCalledWith("users/update/1/", {
       email: "email_example@example.com",
       password: "",
       telegram: "telegram_example",
@@ -312,9 +247,23 @@ describe("User updating errors", () => {
     window.confirm = jest.fn(() => true);
     localStorage.setItem("ACCESS_TOKEN", "example_token");
     localStorage.setItem("loggedUser", JSON.stringify(user));
-    const { getByText, getByLabelText, getByTestId } = render(
-      <OwnPage isLoggedIn={true} />,
+
+    const { getByLabelText, getByTestId } = render(
+      <ContextProvider>
+        <OwnPage isLoggedIn={true} />
+      </ContextProvider>
     );
+
+    // Mock initial requests
+    await waitFor(() => {
+      mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+    });
+    await waitFor(() => {
+      mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
+    });
+    await waitFor(() => {
+      mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [] });
+    });
 
     const username_field = getByLabelText("Käyttäjänimi");
     fireEvent.change(username_field, { target: { value: "" } });
@@ -345,85 +294,38 @@ describe("User updating errors", () => {
     window.confirm = jest.fn(() => true);
     localStorage.setItem("ACCESS_TOKEN", "example_token");
     localStorage.setItem("loggedUser", JSON.stringify(user));
-    const { getByText, getByLabelText, getByTestId } = render(
-      <OwnPage isLoggedIn={true} />,
+
+    const { getByLabelText, getByTestId } = render(
+      <ContextProvider>
+        <OwnPage isLoggedIn={true} />
+      </ContextProvider>
     );
+
+    // Mock initial requests
+    await waitFor(() => {
+      mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+    });
+    await waitFor(() => {
+      mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
+    });
+    await waitFor(() => {
+      mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [] });
+    });
 
     const telegram = getByLabelText("Telegram");
     fireEvent.change(telegram, { target: { value: "example_telegram_two" } });
 
-    const responseObj = {
-      data: [
-        {
-          id: 1,
-          keys: [
-            {
-              id: 1,
-              user_set: [
-                {
-                  id: 1,
-                  last_login: null,
-                  username: "example_username",
-                  email: "example_email@example.com",
-                  telegram: "example_telegram",
-                  role: 1,
-                  keys: [1, 2],
-                },
-              ],
-              name: "tko-äly",
-              email: "tko@aly.org",
-              homepage: "tko-aly.com",
-              size: 1,
-            },
-          ],
-          last_login: null,
-          username: "example_username",
-          email: "example_email@example.com",
-          telegram: "example_telegram",
-          role: 1,
-        },
-        {
-          id: 2,
-          keys: [
-            {
-              id: 2,
-              user_set: [
-                {
-                  id: 2,
-                  last_login: null,
-                  username: "example_username_two",
-                  email: "example_email_two@example.com",
-                  telegram: "example_telegram_two",
-                  role: 1,
-                  keys: [2],
-                },
-              ],
-              name: "matrix",
-              email: "matrix@aly.org",
-              homepage: "matrix.com",
-              size: 1,
-            },
-          ],
-          last_login: null,
-          username: "example_username_two",
-          email: "example_email_two@example.com",
-          telegram: "example_telegram_two",
-          role: 1,
-        },
-      ],
-    };
-
     const saveButton = getByTestId("saveuserdata");
     fireEvent.click(saveButton);
 
-    await waitFor(() => {
-      mockAxios.mockResponseFor(
-        {
-          url: "undefined/api/listobjects/users/?telegram=example_telegram_two",
-        },
-        responseObj,
-      );
+    await waitFor(() => expect(mockAxios.put).toHaveBeenCalled());
+    mockAxios.mockError({
+      response: {
+        status: 400,
+        data: { telegram: ["Telegram is already in use"] }
+      }
     });
+
     await waitFor(() => {
       const snackbar = getByTestId("snackbar");
       expect(snackbar).toBeInTheDocument();
@@ -431,118 +333,7 @@ describe("User updating errors", () => {
         "MuiAlert-standardError",
       );
     });
-    await waitFor(() => {
-      expect(mockAxios.get).toHaveBeenCalledWith(
-        "undefined/api/listobjects/users/?telegram=example_telegram_two",
-      );
-    });
   });
-
-//   it("Update fails with used email", async () => {
-//     const user = {
-//       username: "example_username",
-//       email: "example_email@example.com",
-//       telegram: "example_telegram",
-//       role: 5,
-//       id: 1,
-//     };
-//     window.confirm = jest.fn(() => true);
-//     localStorage.setItem("ACCESS_TOKEN", "example_token");
-//     localStorage.setItem("loggedUser", JSON.stringify(user));
-//     const { getByText, getByLabelText, getByTestId } = render(
-//       <OwnPage isLoggedIn={true} />,
-//     );
-
-//     const email = getByLabelText("Sähköposti");
-//     fireEvent.change(email, {
-//       target: { value: "example_email_two@example.com" },
-//     });
-
-//     const responseObj = {
-//       data: [
-//         {
-//           id: 1,
-//           keys: [
-//             {
-//               id: 1,
-//               user_set: [
-//                 {
-//                   id: 1,
-//                   last_login: null,
-//                   username: "example_username",
-//                   email: "example_email@example.com",
-//                   telegram: "example_telegram",
-//                   role: 1,
-//                   keys: [1, 2],
-//                 },
-//               ],
-//               name: "tko-äly",
-//               email: "tko@aly.org",
-//               homepage: "tko-aly.com",
-//               size: 1,
-//             },
-//           ],
-//           last_login: null,
-//           username: "example_username",
-//           email: "example_email@example.com",
-//           telegram: "example_telegram",
-//           role: 1,
-//         },
-//         {
-//           id: 2,
-//           keys: [
-//             {
-//               id: 2,
-//               user_set: [
-//                 {
-//                   id: 2,
-//                   last_login: null,
-//                   username: "example_username_two",
-//                   email: "example_email_two@example.com",
-//                   telegram: "example_telegram_two",
-//                   role: 1,
-//                   keys: [2],
-//                 },
-//               ],
-//               name: "matrix",
-//               email: "matrix@aly.org",
-//               homepage: "matrix.com",
-//               size: 1,
-//             },
-//           ],
-//           last_login: null,
-//           username: "example_username_two",
-//           email: "example_email_two@example.com",
-//           telegram: "example_telegram_two",
-//           role: 1,
-//         },
-//       ],
-//     };
-
-//     const saveButton = getByTestId("saveuserdata");
-//     fireEvent.click(saveButton);
-
-//     await waitFor(() => {
-//       mockAxios.mockResponseFor(
-//         {
-//           url: "undefined/api/listobjects/users/?email=example_email_two@example.com",
-//         },
-//         responseObj,
-//       );
-//     });
-//     await waitFor(() => {
-//       const snackbar = getByTestId("snackbar");
-//       expect(snackbar).toBeInTheDocument();
-//       expect(within(snackbar).getByRole("alert")).toHaveClass(
-//         "MuiAlert-standardError",
-//       );
-//     });
-//     await waitFor(() => {
-//       expect(mockAxios.get).toHaveBeenCalledWith(
-//         "undefined/api/listobjects/users/?email=example_email_two@example.com",
-//       );
-//     });
-//   });
 });
 
 describe("Organizations", () => {
@@ -556,26 +347,23 @@ describe("Organizations", () => {
     };
     localStorage.setItem("ACCESS_TOKEN", "example_token");
     localStorage.setItem("loggedUser", JSON.stringify(user));
-    const { getByText, getByLabelText, getByTestId } = render(
-      <OwnPage isLoggedIn={true} />,
+
+    const { getByTestId } = render(
+      <ContextProvider>
+        <OwnPage isLoggedIn={true} />
+      </ContextProvider>
     );
 
-    const responseObj = {
-      data: [
-        {
-          id: 1,
-          keys: [],
-          last_login: null,
-          username: "leppis",
-          email: "leppis@testi.com",
-          telegram: "",
-          role: 1,
-          rights_for_reservation: false,
-          password:
-            "pbkdf2_sha256$720000$59HfEsJBpE0mRjEioNCe4t$UPY39IbZDP4/QNry7oH4b87/JF4IfTQSrVia4zpV7jc=",
-        },
-      ],
-    };
+    // Mock 3 initial requests for role 1 (register mocks sequentially)
+    await waitFor(() => {
+      mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
+    });
+    await waitFor(() => {
+      mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [] });
+    });
+    await waitFor(() => {
+      mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+    });
 
     const resp = {
       data: {
@@ -588,19 +376,9 @@ describe("Organizations", () => {
       },
     };
 
-    await waitFor(() => {
-      mockAxios.mockResponseFor(
-        { url: "undefined/api/users/userinfo" },
-        responseObj,
-      );
-    });
-
     await waitFor(
       async () => {
-        expect(mockAxios.get).toHaveBeenCalledWith(
-          "undefined/api/users/userinfo",
-          { headers: { Authorization: "Bearer example_token" } },
-        );
+        expect(mockAxios.get).toHaveBeenCalledWith("users/userinfo");
 
         const createForm = getByTestId("createneworgbutton");
         fireEvent.click(createForm);
@@ -628,7 +406,7 @@ describe("Organizations", () => {
         fireEvent.click(submit);
 
         mockAxios.mockResponseFor(
-          { url: "undefined/api/listobjects/organizations/?email=tko@aly.com" },
+          { url: "listobjects/organizations/?email=tko@aly.com" },
           {
             data: [
               {
@@ -644,7 +422,7 @@ describe("Organizations", () => {
         );
 
         expect(mockAxios.get).toHaveBeenCalledWith(
-          "undefined/api/listobjects/organizations/?email=tko@aly.com",
+          "listobjects/organizations/?email=tko@aly.com",
         );
         mockAxios.mockResponseFor({ url: "organizations/create" }, resp);
 
@@ -657,9 +435,9 @@ describe("Organizations", () => {
         await waitFor(() => {
           const snackbar = getByTestId("snackbar");
           expect(snackbar).toBeInTheDocument();
-//          expect(within(snackbar).getByRole("alert")).toHaveClass(
-//            "MuiAlert-standardSuccess",
-//          );
+          //          expect(within(snackbar).getByRole("alert")).toHaveClass(
+          //            "MuiAlert-standardSuccess",
+          //          );
         });
       },
       { timeout: 10000 },

@@ -163,15 +163,13 @@ test("renders upcoming events", async () => {
   };
 
   await waitFor(() => {
-    mockAxios.mockResponseFor(
-      { url: "undefined/api/listobjects/events/" },
-      responseObj,
-    );
+    mockAxios.mockResponse(responseObj);
   });
 
   await waitFor(() => {
     expect(mockAxios.get).toHaveBeenCalledWith(
-      "undefined/api/listobjects/events/",
+      "listobjects/events/",
+      expect.any(Object)
     );
 
     expect(getByText("Test event - tko-äly")).toBeInTheDocument();
@@ -252,15 +250,13 @@ test("event description dialog works correctly", async () => {
   };
 
   await waitFor(() => {
-    mockAxios.mockResponseFor(
-      { url: "undefined/api/listobjects/events/" },
-      responseObj,
-    );
+    mockAxios.mockResponse(responseObj);
   });
 
   await waitFor(() => {
     expect(mockAxios.get).toHaveBeenCalledWith(
-      "undefined/api/listobjects/events/",
+      "listobjects/events/",
+      expect.any(Object)
     );
 
     const moreDetailsButton = getByText("Lisätietoja");

@@ -1,9 +1,7 @@
-import { render, fireEvent, waitFor, within } from "@testing-library/react";
+import { render, fireEvent, waitFor } from "@testing-library/react";
 import NewAccountPage from "../../src/pages/createpage";
-import axiosClient from "../axios.js";
 import mockAxios from "../../__mocks__/axios";
 import "@testing-library/jest-dom";
-import i18n from "../i18n.js";
 
 // Test value for the reCAPTCHA site key
 process.env.VITE_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
@@ -11,15 +9,6 @@ process.env.VITE_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
 localStorage.setItem("lang", "fi")
 
 describe("NewAccountPage", () => {
-  beforeEach(() => {
-    axiosClient.post.mockResolvedValue({ data: {} });
-  });
-
-  // test("renders the component", () => {
-  //   const { getByText } = render(<NewAccountPage />);
-  //   expect(getByText("Luo tili")).toBeTruthy();
-  // });
-
   test("displays error when fields are empty", async () => {
     const { getByText, getByRole } = render(<NewAccountPage />);
 
@@ -181,7 +170,7 @@ describe("Createpage", () => {
   afterEach(() => {
     mockAxios.reset();
   })
-  
+
   test("register works with correct info", async () => {
     const { getByText, getByLabelText, getByRole } = render(<NewAccountPage />);
 
@@ -197,31 +186,16 @@ describe("Createpage", () => {
 
     fireEvent.click(getByRole('button', { name: /Luo tili/i }));
 
-    const resp = {data: [
-      {
-        "id": 2,
-        "keys": [],
-        "last_login": null,
-        "username": "esa123",
-        "email": "esa123@abc.com",
-        "telegram": "",
-        "role": 1
-    },
-    {
-        "id": 1,
-        "keys": [],
-        "last_login": null,
-        "username": "example_username",
-        "email": "example_email@example.com",
-        "telegram": "example_telegram",
-        "role": 1
-    }
-    ]}
+    await waitFor(() => {
+      expect(mockAxios.post).toHaveBeenCalledWith("users/register", expect.objectContaining({
+        email: "test@example.com",
+        username: "testuser",
+      }));
+    });
 
-    mockAxios.get.mockResolvedValueOnce(resp);
+    mockAxios.mockResponse({ data: { message: "Success" } });
 
     await waitFor(() => {
-      expect(mockAxios.get).toHaveBeenCalledWith("undefined/api/listobjects/users/?email=test@example.com");
       expect(getByText("Käyttäjä luotu onnistuneesti")).toBeInTheDocument();
     });
   })
@@ -241,37 +215,25 @@ describe("Createpage", () => {
 
     fireEvent.click(getByRole('button', { name: /Luo tili/i }));
 
-    const resp = {data: [
-      {
-        "id": 2,
-        "keys": [],
-        "last_login": null,
-        "username": "esa123",
-        "email": "esa123@abc.com",
-        "telegram": "",
-        "role": 1
-    },
-    {
-        "id": 1,
-        "keys": [],
-        "last_login": null,
-        "username": "example_username",
-        "email": "example_email@example.com",
-        "telegram": "example_telegram",
-        "role": 1
-    }
-    ]}
+    await waitFor(() => {
+      expect(mockAxios.post).toHaveBeenCalledWith("users/register", expect.objectContaining({
+        email: "example_email@example.com",
+      }));
+    });
 
-    mockAxios.get.mockResolvedValueOnce(resp);
+    mockAxios.mockError({
+      response: {
+        status: 400,
+        data: { email: ["Sähköposti on jo käytössä."] }
+      }
+    });
 
     await waitFor(() => {
-      expect(mockAxios.get).toHaveBeenCalledWith("undefined/api/listobjects/users/?email=example_email@example.com");
-      
       const errorMessage = getByText((content, element) => {
         return element.tagName.toLowerCase() === 'p' && content.includes("Sähköposti on jo käytössä.");
       });
-  
-      expect(within(errorMessage).getByText("Sähköposti on jo käytössä.")).toBeInTheDocument();
+
+      expect(errorMessage).toBeInTheDocument();
     });
   })
 });

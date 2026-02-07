@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Get API_URL from environment or use a default value
-const API_URL = process.env.VITE_API_URL;
+const API_URL = process.env.VITE_API_URL || "http://localhost:8000/api/";
 
 const axiosClient = axios.create({
   baseURL: API_URL,
