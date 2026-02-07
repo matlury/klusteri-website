@@ -388,7 +388,9 @@
         "openevents": "Avoimet tapahtumat",
         "loadingevents": "Ladataan tapahtumia...",
         "moredetails": "Lisätietoja",
-        "noevents": "Ei tapahtumia"
+        "noevents": "Ei tapahtumia",
+        "collapse": "Pienennä",
+        "expand": "Laajenna"
       }
     },
     "en": {
@@ -780,7 +782,9 @@
         "openevents": "Open events",
         "loadingevents": "Loading events...",
         "moredetails": "More details",
-        "noevents": "No events"
+        "noevents": "No events",
+        "collapse": "Collapse",
+        "expand": "Expand"
       }
     }
 }
