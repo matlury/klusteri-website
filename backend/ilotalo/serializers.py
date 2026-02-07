@@ -96,8 +96,10 @@ class UserSerializer(serializers.ModelSerializer):
                 "Username cannot contain @ symbol")
         user_id = self.instance.id if self.instance else None
         if username:
-            duplicate = User.objects.exclude(
-                id=user_id).filter(username=username)
+            duplicate = User.objects.all()
+            if user_id:
+                duplicate = duplicate.exclude(id=user_id)
+            duplicate = duplicate.filter(username=username)
             if duplicate.exists():
                 raise serializers.ValidationError(
                     "This username is already taken")
@@ -107,8 +109,10 @@ class UserSerializer(serializers.ModelSerializer):
         """Validates that the email is not already taken."""
         user_id = self.instance.id if self.instance else None
         if email:
-            duplicate = User.objects.exclude(
-                id=user_id).filter(email=email)
+            duplicate = User.objects.all()
+            if user_id:
+                duplicate = duplicate.exclude(id=user_id)
+            duplicate = duplicate.filter(email=email)
             if duplicate.exists():
                 raise serializers.ValidationError(
                     "This email is already in use")
@@ -127,8 +131,10 @@ class UserSerializer(serializers.ModelSerializer):
         """Validates telegram name when creating a new user. It must not be taken."""
         user_id = self.instance.id if self.instance else None
         if tgname:
-            duplicate = User.objects.exclude(
-                id=user_id).filter(telegram=tgname)
+            duplicate = User.objects.all()
+            if user_id:
+                duplicate = duplicate.exclude(id=user_id)
+            duplicate = duplicate.filter(telegram=tgname)
             if duplicate.exists():
                 raise serializers.ValidationError(
                     "This telegram name is taken")
@@ -138,13 +144,14 @@ class UserSerializer(serializers.ModelSerializer):
         """Validates password when creating a new user. We use Django's own validation function for this."""
         password = data.get("password")
 
-        try:
-            validate_password(password)
-        except exceptions.ValidationError as e:
-            serializer_errors = serializers.as_serializer_error(e)
-            raise exceptions.ValidationError(
-                {"password": serializer_errors["non_field_errors"]}
-            )
+        if password:
+            try:
+                validate_password(password)
+            except exceptions.ValidationError as e:
+                serializer_errors = serializers.as_serializer_error(e)
+                raise exceptions.ValidationError(
+                    {"password": serializer_errors["non_field_errors"]}
+                )
         return data
 
     def create(self, validated_data):
@@ -184,8 +191,10 @@ class UserUpdateSerializer(serializers.ModelSerializer):
                 "Username cannot contain @ symbol")
         user_id = self.instance.id if self.instance else None
         if username:
-            duplicate = User.objects.exclude(
-                id=user_id).filter(username=username)
+            duplicate = User.objects.all()
+            if user_id:
+                duplicate = duplicate.exclude(id=user_id)
+            duplicate = duplicate.filter(username=username)
             if duplicate.exists():
                 raise serializers.ValidationError(
                     "This username is already taken")
@@ -195,8 +204,10 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         """Validates that the email is not already taken."""
         user_id = self.instance.id if self.instance else None
         if email:
-            duplicate = User.objects.exclude(
-                id=user_id).filter(email=email)
+            duplicate = User.objects.all()
+            if user_id:
+                duplicate = duplicate.exclude(id=user_id)
+            duplicate = duplicate.filter(email=email)
             if duplicate.exists():
                 raise serializers.ValidationError(
                     "This email is already in use")
@@ -214,8 +225,10 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         """Checks if a telegram name is taken"""
         user_id = self.instance.id if self.instance else None
         if tgname:
-            duplicate = User.objects.exclude(
-                id=user_id).filter(telegram=tgname)
+            duplicate = User.objects.all()
+            if user_id:
+                duplicate = duplicate.exclude(id=user_id)
+            duplicate = duplicate.filter(telegram=tgname)
             if duplicate.exists():
                 raise serializers.ValidationError(
                     "This telegram name is taken")
