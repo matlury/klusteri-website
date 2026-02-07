@@ -174,12 +174,15 @@ class UpdateUserView(APIView):
         except ObjectDoesNotExist:
             return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
+        data = request.data.copy()
+        # If password change is not allowed, remove it from data to prevent update
+        if not allow_password_change and 'password' in data:
+            data.pop('password')
+
         user_serializer = UserUpdateSerializer(
-            instance=user_to_update, data=request.data, partial=True)
+            instance=user_to_update, data=data, partial=True)
 
         if user_serializer.is_valid():
-            if allow_password_change and 'password' in request.data and request.data['password']:
-                user_to_update.set_password(request.data['password'])
             user_serializer.save()
             return Response(user_serializer.data, status=status.HTTP_200_OK)
 
