@@ -156,21 +156,22 @@ const ReservationsView = ({
 
         startAccessor="start"
         endAccessor="end"
-        style={{ height: "calc(100vh - 200px)", minHeight: "500px" }}
+        style={{ height: "calc(100vh - 250px)", minHeight: "500px" }}
         selectable
         onSelectSlot={handleSelectSlot}
         onSelectEvent={handleSelectEvent}
         onNavigate={onNavigate}
         firstDay={1}
+        popup={true}
         eventPropGetter={(event) => ({
           style: {
             backgroundColor: event.open === true ? "#4caf50" : "#F08080",
-            borderRadius: "5px",
+            borderRadius: "3px",
             border: "none",
             color: "#fff",
             padding: "2px 5px",
             fontSize: "0.75rem",
-            margin: "0 3px",
+            margin: "0 1px 1px 1px",
             cursor: "pointer",
           },
         })}
@@ -334,7 +335,7 @@ const ReservationsView = ({
           )}
         </DialogContent>
         <DialogActions>
-          {(selectedEvent && (selectedEvent.created_by.username === username || admin)) &&
+          {(selectedEvent && (selectedEvent.created_by?.username === username || admin)) &&
             <Button
               id="deleteEvent"
               variant="contained"
