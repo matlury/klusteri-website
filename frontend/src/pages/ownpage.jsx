@@ -217,7 +217,6 @@ const OwnPage = () => {
     try {
       const res = await organizationsAPI.organizationsWithKeys();
       const rawData = res.data;
-      console.log("Fetched organizations:", rawData);
       const orgData = rawData.map((u) => ({
         id: u.id,
         Organisaatio: u.name,

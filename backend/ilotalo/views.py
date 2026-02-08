@@ -476,7 +476,7 @@ class CreateEventView(APIView):
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
         serializer.save(created_by=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -831,6 +831,7 @@ class DefectFaultView(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = DefectFaultSerializer
     queryset = DefectFault.objects.all()
+    pagination_class = None
 
 
 class CreateDefectFaultView(APIView):
@@ -995,6 +996,7 @@ class CleaningView(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = CleaningSerializer
     queryset = Cleaning.objects.all()
+    pagination_class = None
 
 
 class CreateCleaningView(APIView):
@@ -1088,6 +1090,7 @@ class CleaningSuppliesView(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = CleaningSuppliesSerializer
     queryset = CleaningSupplies.objects.all()
+    pagination_class = None
 
 
 class CreateCleaningSuppliesView(APIView):

@@ -84,7 +84,7 @@ const DefectFault = () => {
         handleSnackbar(t("defectfixsuccess"), "success");
         fetchDefects();
       })
-      .catch((error) => {
+      .catch(() => {
         handleSnackbar(t("defectfixfail"), "error");
       });
   };
@@ -96,7 +96,7 @@ const DefectFault = () => {
         handleSnackbar(t("defectmailsuccess"), "success");
         fetchDefects();
       })
-      .catch((error) => {
+      .catch(() => {
         handleSnackbar(t("defectmailfail"), "error");
       });
   };
