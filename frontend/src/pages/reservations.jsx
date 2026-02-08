@@ -6,6 +6,7 @@ import { useStateContext } from "@context/ContextProvider";
 import { organizationsAPI, eventsAPI } from "../api/api.ts";
 import ReservationsView from "../components/ReservationsView.jsx";
 import { useTranslation } from "react-i18next";
+import { Snackbar, Alert } from "@mui/material";
 
 // Set locale to Finnish and specify the first day of the week
 moment.updateLocale("fi", {
@@ -43,6 +44,24 @@ const MyCalendar = () => {
   const { user } = useStateContext();
 
   const { t } = useTranslation();
+
+  // Snackbar state
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("info");
+
+  const handleSnackbar = (message, severity = "info") => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
 
   // Calls getEvents() to fetch events when starting the page or view changes
   const [viewDate, setViewDate] = useState(new Date());
@@ -146,7 +165,7 @@ const MyCalendar = () => {
       setSelectedSlot({ start, end });
       setShowCreateModal(true);
     } else {
-      alert(t("erroreventlogin"));
+      handleSnackbar(t("erroreventlogin"), "info");
     }
   };
 
@@ -202,7 +221,7 @@ const MyCalendar = () => {
     const open = isOpen === "avoin" ? true : false;
 
     if (duration > 24) {
-      alert(t("errorlongevent"));
+      handleSnackbar(t("errorlongevent"), "warning");
       return;
     }
     if (
@@ -229,7 +248,7 @@ const MyCalendar = () => {
       });
 
       if (isRoomOccupied) {
-        alert(t("erroreventroom"));
+        handleSnackbar(t("erroreventroom"), "error");
         return;
       }
 
@@ -253,6 +272,7 @@ const MyCalendar = () => {
           const updatedEvent = { ...newEvent, id: response.data.id };
           setEvents([...events, updatedEvent]);
           setShowCreateModal(false);
+          handleSnackbar(t("eventsuccess"), "success");
           setEventDetails({
             title: "",
             organizer: "",
@@ -267,11 +287,11 @@ const MyCalendar = () => {
           });
         })
         .catch((error) => {
-          alert(t("errorevent"));
+          handleSnackbar(t("errorevent"), "error");
           console.error(t("errorevent"), error);
         });
     } else {
-      alert(t("erroreventfields"));
+      handleSnackbar(t("erroreventfields"), "warning");
     }
   };
 
@@ -312,26 +332,42 @@ const MyCalendar = () => {
 
   // Renders the calendar view, event modals and possible night responsibilities
   return (
-    <ReservationsView
-      handleAddNewEventClick={handleAddNewEventClick}
-      handleSelectSlot={handleSelectSlot}
-      handleSelectEvent={handleSelectEvent}
-      onNavigate={handleNavigate}
-      showCreateModal={showCreateModal}
-      handleCloseModal={handleCloseModal}
-      handleInputChange={handleInputChange}
-      eventDetails={eventDetails}
-      handleAddEvent={handleAddEvent}
-      showInfoModal={showInfoModal}
-      localizer={localizer}
-      events={events}
-      startRef={startTime}
-      endRef={endTime}
-      selectedEvent={selectedEvent}
-      handleDeleteEvent={handleDeleteEvent}
-      moment={moment}
-      organizations={organizations}
-    />
+    <>
+      <ReservationsView
+        handleAddNewEventClick={handleAddNewEventClick}
+        handleSelectSlot={handleSelectSlot}
+        handleSelectEvent={handleSelectEvent}
+        onNavigate={handleNavigate}
+        showCreateModal={showCreateModal}
+        handleCloseModal={handleCloseModal}
+        handleInputChange={handleInputChange}
+        eventDetails={eventDetails}
+        handleAddEvent={handleAddEvent}
+        showInfoModal={showInfoModal}
+        localizer={localizer}
+        events={events}
+        startRef={startTime}
+        endRef={endTime}
+        selectedEvent={selectedEvent}
+        handleDeleteEvent={handleDeleteEvent}
+        moment={moment}
+        organizations={organizations}
+      />
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        data-testid="snackbar"
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
 
