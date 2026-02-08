@@ -173,12 +173,13 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     """
 
     keys = OrganizationSerializer(many=True, read_only=True)
+    current_password = serializers.CharField(write_only=True, required=False, allow_blank=True)
 
     class Meta:
         model = User
         fields = '__all__'
         extra_kwargs = {
-            'password': {'write_only': True, 'required': False},
+            'password': {'write_only': True, 'required': False, 'allow_blank': True},
             'username': {'required': False},
             'email': {'required': False},
             'role': {'required': False},
@@ -234,18 +235,42 @@ class UserUpdateSerializer(serializers.ModelSerializer):
                     "This telegram name is taken")
         return tgname
 
+    def validate(self, data):
+        """Validates password when updating a user."""
+        current_password = data.get("current_password")
+        new_password = data.get("password")
+
+        # Skip validation if no fields are actually being changed (might happen in some UI flows)
+        # but usually, we want to enforce current_password for any update to OwnPage fields.
+        if not self.instance:
+            return data
+
+        # Check if the current password is correct
+        if not current_password or not self.instance.check_password(current_password):
+            raise exceptions.ValidationError({"current_password": "Invalid current password."})
+
+        if new_password:  # If new password is provided
+            try:
+                validate_password(new_password)
+            except exceptions.ValidationError as e:
+                serializer_errors = serializers.as_serializer_error(e)
+                raise exceptions.ValidationError(
+                    {"password": serializer_errors["non_field_errors"]}
+                )
+        return data
+
     def update(self, instance, validated_data):
         """Update the user instance with validated data."""
+        instance.username = validated_data.get('username', instance.username)
         instance.email = validated_data.get('email', instance.email)
         instance.telegram = validated_data.get('telegram', instance.telegram)
         instance.role = validated_data.get('role', instance.role)
         instance.rights_for_reservation = validated_data.get(
             'rights_for_reservation', instance.rights_for_reservation)
 
-        # Check if password is provided and update it if so
+        # Check if password is provided and not empty, and update it if so
         password = validated_data.get('password')
         if password:
-            validate_password(password)  # Validate the password
             instance.set_password(password)
 
         instance.save()

@@ -7,8 +7,28 @@ import CreateOrganization from "../components/CreateOrganization.jsx";
 import AllUsers from "../components/AllUsers.jsx";
 import updateaccountcheck from "../utils/updateaccountcheck.js";
 import { useTranslation } from "react-i18next";
-import { Snackbar, Alert } from "@mui/material";
+import { Snackbar, Alert, Tabs, Tab, Box } from "@mui/material";
 import { ROLE_DESCRIPTIONS } from "../roles.js";
+
+const TabPanel = (props) => {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          {children}
+        </Box>
+      )}
+    </div>
+  );
+};
 
 const OwnPage = () => {
   const { user, setUser } = useStateContext();
@@ -16,9 +36,17 @@ const OwnPage = () => {
   const [username, setUsername] = useState(user?.username || "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [email, setEmail] = useState(user?.email || "");
   const [telegram, setTelegram] = useState(user?.telegram || "");
   const [role, setRole] = useState(user?.role || "5");
+
+  const [tabValue, setTabValue] = useState(0);
+
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
+
 
   // user_details* variables for viewing and updating someone else's information
   const [userDetailsUsername, setUserDetailsUsername] = useState("");
@@ -76,6 +104,7 @@ const OwnPage = () => {
       username: username,
       password: password,
       confirmPassword: confirmPassword,
+      current_password: currentPassword,
       email: email,
       telegram: telegram,
     };
@@ -84,6 +113,11 @@ const OwnPage = () => {
 
     if (!username || !email) {
       handleSnackbar(t("usereditmandfields"), "error");
+      return;
+    }
+
+    if (!currentPassword) {
+      handleSnackbar(t("currentpasswordrequired"), "error");
       return;
     }
 
@@ -112,14 +146,22 @@ const OwnPage = () => {
 
       const updateResponse = await usersAPI.updateUser(user_id, details);
       setUser(updateResponse.data);
-      setUser(updateResponse.data);
       handleSnackbar(t("usereditsuccess"), "success");
       await getAllUsers();
+
+      // Clear passwords after successful update
+      setPassword("");
+      setConfirmPassword("");
+      setCurrentPassword("");
     } catch (error) {
       console.error(t("usereditfail"), error);
       // Handle specific validation errors from backend
       if (error.response && error.response.data) {
         const errors = error.response.data;
+        if (errors.current_password) {
+          handleSnackbar(t("invalidcurrentpassword"), "error");
+          return;
+        }
         if (errors.email) {
           handleSnackbar(t("emailinuse"), "error");
           return;
@@ -135,9 +177,6 @@ const OwnPage = () => {
       }
       handleSnackbar(t("usereditfail"), "error");
     }
-
-    setPassword("");
-    setConfirmPassword("");
   };
 
   const handleSnackbar = (message, severity) => {
@@ -520,22 +559,39 @@ const OwnPage = () => {
           <div style={{ display: "flex" }}>
             <div id="left_content">
               <div id="leftleft_content">
-                {
+                <Box sx={{ width: '100%', borderBottom: 1, borderColor: 'divider' }}>
+                  <Tabs value={tabValue} onChange={handleTabChange} aria-label="user settings tabs">
+                    <Tab label={t("owninfo")} />
+                    <Tab label={t("changepassword")} />
+                  </Tabs>
+                </Box>
+                <TabPanel value={tabValue} index={0}>
                   <UserPage
+                    mode="info"
                     username={username}
                     setUsername={setUsername}
-                    password={password}
-                    setPassword={setPassword}
-                    confirmPassword={confirmPassword}
-                    setConfirmPassword={setConfirmPassword}
                     email={email}
                     setEmail={setEmail}
                     telegram={telegram}
                     setTelegram={setTelegram}
+                    currentPassword={currentPassword}
+                    setCurrentPassword={setCurrentPassword}
                     handleUserDetails={handleUserDetails}
                     role={role}
                   />
-                }
+                </TabPanel>
+                <TabPanel value={tabValue} index={1}>
+                  <UserPage
+                    mode="password"
+                    password={password}
+                    setPassword={setPassword}
+                    confirmPassword={confirmPassword}
+                    setConfirmPassword={setConfirmPassword}
+                    currentPassword={currentPassword}
+                    setCurrentPassword={setCurrentPassword}
+                    handleUserDetails={handleUserDetails}
+                  />
+                </TabPanel>
                 {
                   <OrganisationPage
                     organizations={organisations}
