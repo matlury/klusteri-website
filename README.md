@@ -78,6 +78,10 @@ Testit voi ajaa myös pytestin avulla
 ```bash
 poetry run coverage run --branch -m pytest
 ```
+Testit voi ajaa myös rinnakkain
+```bash
+pytest -n auto
+```
 Tällöin testikattavuusraportin saa tulostettua konsoliin komennolla
 ```
 coverage report

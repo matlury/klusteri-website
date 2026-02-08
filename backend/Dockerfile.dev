@@ -11,8 +11,8 @@ RUN chmod -R 777 *
 RUN pip install poetry
 
 RUN poetry config virtualenvs.create false
-
-RUN poetry install --without dev --no-root
+#  --without dev
+RUN poetry install --no-root
 
 EXPOSE 8000
 

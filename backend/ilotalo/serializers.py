@@ -1,4 +1,3 @@
-import time
 import logging
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
@@ -6,6 +5,7 @@ from django.db.models import Q
 from rest_framework import serializers
 from .models import User, Organization, Event, NightResponsibility, DefectFault, Cleaning, CleaningSupplies
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from .config import Role
 
 logger = logging.getLogger(__name__)
 
@@ -140,19 +140,19 @@ class UserSerializer(serializers.ModelSerializer):
                     "This telegram name is taken")
         return tgname
 
-    def validate(self, data):
+    def validate(self, attrs):
         """Validates password when creating a new user. We use Django's own validation function for this."""
-        password = data.get("password")
+        password = attrs.get("password")
 
         if password:
             try:
                 validate_password(password)
             except exceptions.ValidationError as e:
                 serializer_errors = serializers.as_serializer_error(e)
-                raise exceptions.ValidationError(
+                raise serializers.ValidationError(
                     {"password": serializer_errors["non_field_errors"]}
                 )
-        return data
+        return attrs
 
     def create(self, validated_data):
         """Create the new user after data validation."""
@@ -173,7 +173,8 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     """
 
     keys = OrganizationSerializer(many=True, read_only=True)
-    current_password = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    current_password = serializers.CharField(
+        write_only=True, required=False, allow_blank=True)
 
     class Meta:
         model = User
@@ -235,29 +236,44 @@ class UserUpdateSerializer(serializers.ModelSerializer):
                     "This telegram name is taken")
         return tgname
 
-    def validate(self, data):
+    def validate(self, attrs):
         """Validates password when updating a user."""
-        current_password = data.get("current_password")
-        new_password = data.get("password")
+        current_password = attrs.get("current_password")
+        new_password = attrs.get("password")
 
         # Skip validation if no fields are actually being changed (might happen in some UI flows)
-        # but usually, we want to enforce current_password for any update to OwnPage fields.
         if not self.instance:
-            return data
+            return attrs
 
-        # Check if the current password is correct
-        if not current_password or not self.instance.check_password(current_password):
-            raise exceptions.ValidationError({"current_password": "Invalid current password."})
+        request_user = self.context['request'].user
 
-        if new_password:  # If new password is provided
+        # Bypass current_password check if LEPPISPJ is updating another user
+        if request_user.role == Role.LEPPISPJ.value and self.instance.id != request_user.id:
+            # If a new password is provided, validate it. Current_password not needed here.
+            if new_password:
+                try:
+                    validate_password(new_password)
+                except exceptions.ValidationError as e:
+                    serializer_errors = serializers.as_serializer_error(e)
+                    raise serializers.ValidationError(
+                        {"password": serializer_errors["non_field_errors"]}
+                    )
+            return attrs  # LEPPISPJ can update other fields without knowing target's password
+
+        # For self-updates or non-LEPPISPJ updates of other users:
+        # Only require current_password if a new password is explicitly being set
+        if new_password:
+            if not current_password or not self.instance.check_password(current_password):
+                raise serializers.ValidationError(
+                    {"current_password": "Invalid current password."})
             try:
                 validate_password(new_password)
             except exceptions.ValidationError as e:
                 serializer_errors = serializers.as_serializer_error(e)
-                raise exceptions.ValidationError(
+                raise serializers.ValidationError(
                     {"password": serializer_errors["non_field_errors"]}
                 )
-        return data
+        return attrs
 
     def update(self, instance, validated_data):
         """Update the user instance with validated data."""
@@ -306,14 +322,15 @@ class CreateEventSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('created_by',)
 
-    def validate(self, data):
+    def validate(self, attrs):
         """
         Verify that organizer is provided.
         created_by is set in the view.
         """
-        if not data.get('organizer'):
-            raise serializers.ValidationError({"organizer": "Organizer is required."})
-        return data
+        if not attrs.get('organizer'):
+            raise serializers.ValidationError(
+                {"organizer": "Organizer is required."})
+        return attrs
 
 
 class NightResponsibilitySerializer(serializers.ModelSerializer):
@@ -360,15 +377,10 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                 user.save()
                 # Skip password check for first admin login as per existing logic
             else:
-                # check_password() is computationally expensive (PBKDF2/BCrypt)
-                start_hash = time.time()
                 is_valid = user.check_password(password)
-                hash_duration = time.time() - start_hash
-                
-                logger.info(f"Password hashing took {hash_duration:.4f}s for user {user.username}")
-
                 if not is_valid:
-                    raise serializers.ValidationError("Invalid login credentials")
+                    raise serializers.ValidationError(
+                        "Invalid login credentials")
 
             # Set self.user as expected by SimpleJWT
             self.user = user
@@ -377,7 +389,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             refresh = self.get_token(self.user)
             data = {}
             data['refresh'] = str(refresh)
-            data['access'] = str(refresh.access_token)
+            data['access'] = str(refresh.access_token)  # type: ignore
             return data
 
         raise serializers.ValidationError("User not found")

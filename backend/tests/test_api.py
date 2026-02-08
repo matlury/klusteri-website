@@ -552,6 +552,43 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["telegram"], "newtg")
 
+    def test_leppispj_updates_user_role_without_password(self):
+        """LeppisPJ can update another user's role without requiring their password."""
+        # Create a new regular user
+        new_user_data = {
+            "username": "testuser",
+            "password": "testpassword123",
+            "email": "testuser@example.com",
+            "telegram": "testuser_tg",
+            "role": 5, # Tavallinen user
+        }
+        response = self.client.post(
+            "http://localhost:8000/api/users/register",
+            data=new_user_data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        new_user_id = response.data["id"]
+
+        # LeppisPJ updates the testuser's role to MUOKKAUS (role 3)
+        # No 'current_password' for testuser is provided, as LeppisPJ wouldn't know it.
+        update_data = {
+            "role": 3,
+        }
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{new_user_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data=update_data,
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["role"], 3)
+
+        # Verify the role change in the database
+        updated_user = User.objects.get(id=new_user_id)
+        self.assertEqual(updated_user.role, 3)
+
 #    ERROR WITH NEW DATABASE STRUCTURE
 #    def test_updating_as_muokkaus_tavallinen(self):
 #        """
@@ -2233,7 +2270,7 @@ class TestDjangoAPI(TestCase):
         response = self.client.put(
             f"http://localhost:8000/api/users/update/{self.tavallinen_id}/",
             headers={"Authorization": f"Bearer {self.access_token}"},
-            data={"password": new_password},
+            data={"password": new_password, "current_password": "vahvaSalasana1234"},
             format="json",
         )
 

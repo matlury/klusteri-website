@@ -71,7 +71,7 @@ class User(AbstractBaseUser):
     rights_for_reservation = models.BooleanField(default=False)
     first_login = models.BooleanField(default=False)
 
-    objects = UserAccountManager()
+    objects: UserAccountManager = UserAccountManager()
 
     # USERNAME_FIELD defines the unique identifier of a User object. It can be i.e. username or email
     USERNAME_FIELD = "email"

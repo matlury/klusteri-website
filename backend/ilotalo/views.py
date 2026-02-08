@@ -183,7 +183,7 @@ class UpdateUserView(APIView):
             data.pop('password')
 
         user_serializer = UserUpdateSerializer(
-            instance=user_to_update, data=data, partial=True)
+            instance=user_to_update, data=data, partial=True, context={'request': request})
 
         if user_serializer.is_valid():
             user_serializer.save()
@@ -717,7 +717,7 @@ class RightsForReservationView(APIView):
             }
 
             user_serializer = UserUpdateSerializer(
-                instance=user_to_update, data=data, partial=True
+                instance=user_to_update, data=data, partial=True, context={'request': request}
             )
             if user_serializer.is_valid():
                 user_serializer.save()
@@ -816,7 +816,7 @@ class HandOverKeyView(APIView):
             updated_data["role"] = 4
 
         serializer = UserUpdateSerializer(
-            instance=user_to_update, data=updated_data, partial=True
+            instance=user_to_update, data=updated_data, partial=True, context={'request': request}
         )
 
         if serializer.is_valid():
