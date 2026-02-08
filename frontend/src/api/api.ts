@@ -19,6 +19,7 @@ export const usersAPI = {
 // Organizations API
 export const organizationsAPI = {
   getOrganizations: () => axiosClient.get('listobjects/organizations/'),
+  getOrganization: (orgId) => axiosClient.get(`listobjects/organizations/${orgId}/`),
   organizationsWithKeys: () => axiosClient.get('listobjects/organizations/?include_user_count=true'),
   getOrganizationsByEmail: (email) => axiosClient.get(`listobjects/organizations/?email=${email}`),
   createOrganization: (orgData) => axiosClient.post('organizations/create', orgData),

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar } from "@mui/material";
+import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 const CreateOrganization = ({
@@ -29,6 +29,7 @@ const CreateOrganization = ({
     setOrganizationEmail("");
     setOrganizationHomePage("");
     setOrganizationColor("");
+    setErrorFields({});
   };
 
   // Function to handle organization creation and close dialog
@@ -63,68 +64,64 @@ const CreateOrganization = ({
 
   return (
     <div>
-      <Button onClick={handleClickOpen} variant="contained" className="open-dialog-button" data-testid="createneworgbutton">
+      <Button onClick={handleClickOpen} variant="contained" className="open-dialog-button" data-testid="createneworgbutton" sx={{ mt: 2, mb: 2 }}>
         {t("createneworg")}
       </Button>
       
-      <Dialog open={open} onClose={handleClose} maxWidth="md">
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>{t("createneworg")}</DialogTitle>
-        <DialogContent sx={{ width: "400px" }}>
-          <form>
-            <div style={{ marginBottom: "1rem" }}>
-              <TextField
-                id="name"
-                label={t("name")}
-                value={organization_name}
-                onChange={(e) => setOrganizationName(e.target.value)}
-                fullWidth
-                required // Make required
-                error={errorFields.name} // Show error if field is empty
-                data-testid="organization-name"
-              />
-            </div>
-            <div style={{ marginBottom: "1rem" }}>
-              <TextField
-                id="email"
-                label={t("email")}
-                className="organization-email"
-                value={organization_email}
-                onChange={(e) => setOrganizationEmail(e.target.value)}
-                fullWidth
-                required // Make required
-                error={errorFields.email} // Show error if field is empty
-                data-testid="organization-email"
-              />
-            </div>
-            <div style={{ marginBottom: "1rem" }}>
-              <TextField
-                id="homepage"
-                label={t("homepage")}
-                value={organization_homepage}
-                onChange={(e) => setOrganizationHomePage(e.target.value)}
-                fullWidth
-                required // Make required
-                error={errorFields.homepage} // Show error if field is empty
-                data-testid="organization-homepage"
-              />
-            </div>
-            <div style={{ marginBottom: "1rem" }}>
-              <TextField
-                id="color"
-                label={t("color")}
-                value={organization_color}
-                onChange={(e) => setOrganizationColor(e.target.value)}
-                fullWidth
-              />
-            </div>
-          </form>
+        <DialogContent>
+          <Box component="form" sx={{ mt: 1 }}>
+            <TextField
+              id="name"
+              label={t("name")}
+              value={organization_name}
+              onChange={(e) => setOrganizationName(e.target.value)}
+              fullWidth
+              required
+              error={!!errorFields.name}
+              data-testid="organization-name"
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              id="email"
+              label={t("email")}
+              className="organization-email"
+              value={organization_email}
+              onChange={(e) => setOrganizationEmail(e.target.value)}
+              fullWidth
+              required
+              error={!!errorFields.email}
+              data-testid="organization-email"
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              id="homepage"
+              label={t("homepage")}
+              value={organization_homepage}
+              onChange={(e) => setOrganizationHomePage(e.target.value)}
+              fullWidth
+              required
+              error={!!errorFields.homepage}
+              data-testid="organization-homepage"
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              id="color"
+              label={t("color")}
+              value={organization_color}
+              onChange={(e) => setOrganizationColor(e.target.value)}
+              fullWidth
+              sx={{ mb: 1 }}
+            />
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-          {t("cancel")}
+            {t("cancel")}
           </Button>
           <Button onClick={handleCreateAndClose} variant="contained" className="create-organization-button" data-testid="create-organization-button">
-          {t("createorg")}
+            {t("createorg")}
           </Button>
         </DialogActions>
       </Dialog>
@@ -133,7 +130,7 @@ const CreateOrganization = ({
         open={Object.keys(errorFields).length > 0}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
-        message="Kaikki pakolliset kentät tulee täyttää."
+        message={t("allmandfieldsrequired")}
       />
     </div>
   );

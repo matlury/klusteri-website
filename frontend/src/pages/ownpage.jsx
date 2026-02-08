@@ -520,10 +520,12 @@ const OwnPage = () => {
                 {
                   <OrganisationPage
                     organizations={organisations}
+                    allUsers={allUsers}
                     hasPermissionOrg={hasPermissionOrg}
                     handleOrganizationDetails={handleOrganizationDetails}
                     handleDeleteOrganization={handleDeleteOrganization}
                     fetchOrganizations={getOrganisations}
+                    currentUserRole={user?.role}
                   />
                 }
                 {hasPermission === true && (
