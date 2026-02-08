@@ -14,7 +14,7 @@ pytest-django = "^4.8.0"
 djangorestframework-simplejwt = "^5.3.1"
 python-dotenv = "^1.0.1"
 psycopg2-binary = "^2.9.9"
-# django-apscheduler = "^0.6.2"  # DISABLED: Causes slow startup
+django-apscheduler = "^0.6.2"
 gunicorn = "^21.2.0"
 gevent = "^24.2.1"
 uvicorn = {extras = ["standard"], version = "^0.27.0"}

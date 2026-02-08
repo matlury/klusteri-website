@@ -30,7 +30,7 @@ def start():
 
     clear_existing_jobs()
     delete_old_job_executions()
-    scheduler = BackgroundScheduler(timezone="Europe/Kiev")
+    scheduler = BackgroundScheduler(timezone="Europe/Helsinki")
     scheduler.add_jobstore(DjangoJobStore(), "default")
     scheduler.add_job(
         force_logout_ykv,

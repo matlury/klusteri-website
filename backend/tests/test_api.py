@@ -1,3 +1,5 @@
+import requests
+from unittest.mock import patch, MagicMock
 from django.test import TestCase
 from rest_framework.serializers import ValidationError
 from rest_framework.test import APIClient
@@ -13,6 +15,22 @@ Unit tests for back end features
 
 class TestDjangoAPI(TestCase):
     def setUp(self):
+        # Mock reCAPTCHA verification globally for the duration of setUp and tests
+        # Only affects the reCAPTCHA URL
+        self.original_post = requests.post
+        self.patcher = patch('requests.post')
+        self.mock_post = self.patcher.start()
+
+        def side_effect(url, *args, **kwargs):
+            if 'recaptcha/api/siteverify' in url:
+                mock_response = MagicMock()
+                mock_response.json.return_value = {'success': True}
+                mock_response.status_code = 200
+                return mock_response
+            return self.original_post(url, *args, **kwargs)
+
+        self.mock_post.side_effect = side_effect
+
         self.client = APIClient()
 
         # Create a mock Tavallinen (role 5) user for testing
@@ -199,6 +217,9 @@ class TestDjangoAPI(TestCase):
         )
 
         self.tko_aly_id = response.data["id"]
+
+    def tearDown(self):
+        self.patcher.stop()
 
     def test_creating_user(self):
         """A new user can be created if the parameters are valid"""

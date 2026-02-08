@@ -26,11 +26,6 @@ class IlotaloConfig(AppConfig):
     name = "ilotalo"
 
     def ready(self):
-        # Defer scheduler start to avoid async context issues
-        # DISABLED: Scheduler causes 10-14s delay on first request in production
-        # from django.core.signals import request_started
-        # request_started.connect(self._delayed_scheduler_start)
-
         # Prefer an explicit testing detection to avoid running
         # startup side-effects (creating default users, starting scheduler)
         # during test runs. Check settings, common argv flag and env vars.
@@ -51,15 +46,23 @@ class IlotaloConfig(AppConfig):
         if not is_testing:
             # Use post_migrate instead of connection_created to avoid checking on every request
             post_migrate.connect(create_default_user, sender=self)
+            
+            # Re-enable scheduler start on first request
+            # This ensures it doesn't slow down dev server startup or migrations
+            from django.core.signals import request_started
+            request_started.connect(self._delayed_scheduler_start)
 
     def _delayed_scheduler_start(self, **kwargs):
         """Start scheduler after first request to avoid async context issues"""
+        # Ensure we only run this once by disconnecting the signal immediately
+        from django.core.signals import request_started
+        request_started.disconnect(self._delayed_scheduler_start)
+        
         try:
             if self._check_scheduler_tables():
                 from scheduler import scheduler
                 if not scheduler.is_running():
                     scheduler.start()
-                    print("Scheduler started...")
         except OperationalError:
             pass
 
