@@ -175,7 +175,7 @@ const CleaningSchedule = () => {
           <h2>{t("cleaningschedule")}</h2>
           <Stack direction="row" spacing={2}>
             <CleanersListJSONButton cleaners={rawCleaningData} />
-            {isLoggedIn && loggedUser.role === 1 && (
+            {isLoggedIn && loggedUser.role === Role.LEPPISPJ && (
               <React.Fragment>
                 <CleanersListUploadButton setNewData={setNewData} onClick={() => handleFormSubmit(newData)} />
                 <CleanersListAutomateButton

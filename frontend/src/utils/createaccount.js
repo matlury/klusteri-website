@@ -21,7 +21,7 @@ const createaccount = ({
       password,
       email,
       telegram,
-      role: 5,
+      role: Role.TAVALLINEN,
       organization: null,
       keys: null,
       recaptcha_response: recaptchaResponse

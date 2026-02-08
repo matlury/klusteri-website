@@ -1,4 +1,5 @@
 import { authAPI, usersAPI } from "../api/api.ts";
+import { Role } from "../roles.js";
 
 export const getPermission = async ({ setHasPermission }) => {
   /*
@@ -10,10 +11,10 @@ export const getPermission = async ({ setHasPermission }) => {
     .getUserInfo()
     .then((response) => {
       const currentUser = response.data;
-      if (currentUser.role === 1) {
+      if (currentUser.role === Role.LEPPISPJ) {
         setHasPermission(true);
       } else if (currentUser[0]) {
-        if (currentUser[0].role === 1) {
+        if (currentUser[0].role === Role.LEPPISPJ) {
           setHasPermission(true);
         }
       } else {
@@ -41,7 +42,7 @@ export const fetchAllUsersWithKeys = async ({
 
 // check if a user is valid for making an YKV-login
 const checkUser = (user, loggedUser) => {
-  if (user.role === 5) {
+  if (user.role === Role.TAVALLINEN) {
     return false;
   }
   if (user.id === loggedUser.id) {

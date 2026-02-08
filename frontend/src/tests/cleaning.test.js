@@ -5,6 +5,7 @@ import CleanersList from '../components/CleanersList.jsx';
 import mockAxios from "../../__mocks__/axios";
 import { ContextProvider } from "@context/ContextProvider";
 import "@testing-library/jest-dom";
+import { Role } from '../roles';
 
 localStorage.setItem("lang", "fi")
 
@@ -12,7 +13,7 @@ const user = {
     username: "example_username",
     email: "example_email@example.com",
     telegram: "example_telegram",
-    role: 1,
+    role: Role.LEPPISPJ,
     rights_for_reservation: true,
     id: 1,
 };

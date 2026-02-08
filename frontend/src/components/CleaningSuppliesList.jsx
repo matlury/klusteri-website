@@ -4,6 +4,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import { useTranslation } from "react-i18next";
 import { DataGrid } from '@mui/x-data-grid';
 import { useStateContext } from '@context/ContextProvider';
+import { Role } from '../roles';
 
 
 const CleaningSuppliesList = ({ allCleaningSupplies, handleDeleteClick }) => {
@@ -33,7 +34,7 @@ const CleaningSuppliesList = ({ allCleaningSupplies, handleDeleteClick }) => {
     { field: "tool", headerName: t("cleaningtool"), width: 400 },
   ];
 
-  if (loggedUser && loggedUser.role === 1) {
+  if (loggedUser && loggedUser.role === Role.LEPPISPJ) {
     return (
       <DataGrid
         rows={allCleaningSupplies}

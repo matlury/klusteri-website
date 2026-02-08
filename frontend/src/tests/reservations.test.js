@@ -9,6 +9,7 @@ import { act } from "react";
 import Reservations from "../../src/pages/reservations";
 import mockAxios from "../../__mocks__/axios.js";
 import { ContextProvider } from "@context/ContextProvider";
+import { Role } from '../../src/roles';
 
 localStorage.setItem("lang", "fi")
 
@@ -21,7 +22,7 @@ const user = {
   username: "example_username",
   email: "example_email@example.com",
   telegram: "example_telegram",
-  role: 1,
+  role: Role.LEPPISPJ,
   keys: { "tko-äly": true },
   organization: { "tko-äly": true },
   rights_for_reservation: true,
@@ -70,7 +71,7 @@ describe("Reservations component", () => {
       username: 'example_username',
       email: 'example_email@example.com',
       telegram: 'example_telegram',
-      role: 1,
+      role: Role.LEPPISPJ,
       rights_for_reservation: true
     };
 
@@ -126,7 +127,7 @@ describe("Reservations component", () => {
   //     username: 'example_username',
   //     email: 'example_email@example.com',
   //     telegram: 'example_telegram',
-  //     role: 1,
+  //     role: Role.LEPPISPJ,
   //     keys: {},
   //     organization: {},
   //     rights_for_reservation: true

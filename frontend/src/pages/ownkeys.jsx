@@ -8,6 +8,7 @@ import {
 import YkvLogoutFunction from "../components/YkvLogoutFunction.jsx";
 import { useTranslation } from "react-i18next";
 import { Snackbar, Alert } from '@mui/material';
+import { Role } from "../roles.js";
 
 const OwnKeys = () => {
   const { user: loggedUser } = useStateContext();
@@ -97,7 +98,7 @@ const OwnKeys = () => {
   // function that checks if the user logged in (if there are no responsibilities, the user cant be logged in either)
   function checkIfLoggedIn() {
     if (loggedUser) {
-      if (loggedUser.role !== 5) {
+      if (loggedUser.role !== Role.TAVALLINEN) {
         return true;
       }
       return false;

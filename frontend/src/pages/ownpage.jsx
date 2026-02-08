@@ -8,7 +8,7 @@ import AllUsers from "../components/AllUsers.jsx";
 import updateaccountcheck from "../utils/updateaccountcheck.js";
 import { useTranslation } from "react-i18next";
 import { Snackbar, Alert, Tabs, Tab, Box } from "@mui/material";
-import { ROLE_DESCRIPTIONS } from "../roles.js";
+import { ROLE_DESCRIPTIONS, Role } from "../roles.js";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -39,7 +39,8 @@ const OwnPage = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [email, setEmail] = useState(user?.email || "");
   const [telegram, setTelegram] = useState(user?.telegram || "");
-  const [role, setRole] = useState(user?.role || "5");
+  const [role, setRole] = useState(user?.role || Role.TAVALLINEN);
+
 
   const [tabValue, setTabValue] = useState(0);
 
@@ -418,12 +419,12 @@ const OwnPage = () => {
 
       if (confirmUpdate) {
         usersAPI
-          .updateUser(selectedUserId, { role: 1 })
+          .updateUser(selectedUserId, { role: Role.LEPPISPJ })
           .then((response) => {
             console.log("Role updated successfully:", response.data);
           });
         usersAPI
-          .updateUser(loggedUserId, { role: 5 })
+          .updateUser(loggedUserId, { role: Role.TAVALLINEN })
           .then((response) => {
             localStorage.setItem("loggedUser", JSON.stringify(response.data));
             setUser(response.data);
@@ -515,18 +516,18 @@ const OwnPage = () => {
       .getUserInfo()
       .then((response) => {
         const currentUser = response.data;
-        if (currentUser.role === 1) {
+        if (currentUser.role === Role.LEPPISPJ) {
           setHasPermission(true);
           setHasPermissionOrg(true);
         } else if (
-          currentUser.role == 2 ||
-          currentUser.role == 3 ||
-          currentUser.role == 6
+          currentUser.role == Role.LEPPISVARAPJ ||
+          currentUser.role == Role.MUOKKAUS ||
+          currentUser.role == Role.JARJESTOPJ
         ) {
           setHasPermissionOrg(true);
           setHasPermission(false);
         } else if (currentUser[0]) {
-          if (currentUser[0].role === 1) {
+          if (currentUser[0].role === Role.LEPPISPJ) {
             setHasPermission(true);
             setHasPermissionOrg(true);
           }

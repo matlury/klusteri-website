@@ -16,6 +16,8 @@ import { lighten, styled } from "@mui/material/styles";
 import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
 import { useStateContext } from "@context/ContextProvider";
+import { Role } from '../roles';
+
 const YkvLogoutFunction = ({
   handleYkvLogin,
   handleYkvLogout,
@@ -316,7 +318,7 @@ const YkvLogoutFunction = ({
           </Button>
         </DialogActions>
       </Dialog>
-      {loggedUser.role !== 5 && (
+      {loggedUser.role !== Role.TAVALLINEN && (
         <div>
           <TextField
             label={t("YKVsearch")}
@@ -328,7 +330,7 @@ const YkvLogoutFunction = ({
         </div>
       )}
 
-      {loggedUser.role !== 1 && loggedUser.role !== 5 && (
+      {loggedUser.role !== Role.LEPPISPJ && loggedUser.role !== Role.TAVALLINEN && (
         <div>
           <h2>{t("ownresps")}</h2>
           <StyledDataGrid
@@ -341,7 +343,7 @@ const YkvLogoutFunction = ({
         </div>
       )}
 
-      {loggedUser.role === 1 && (
+      {loggedUser.role === Role.LEPPISPJ && (
         <div>
           <h2>{t("allresps")}</h2>
           <div>

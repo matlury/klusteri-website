@@ -9,6 +9,7 @@ import "@testing-library/jest-dom";
 import DefectFault from "../../src/pages/defectfaultpage";
 import mockAxios from "../../__mocks__/axios";
 import { ContextProvider } from "@context/ContextProvider";
+import { Role } from '../../src/roles';
 
 localStorage.setItem("lang", "fi")
 
@@ -32,7 +33,7 @@ describe("DefectFault Component", () => {
       username: "example_username",
       email: "example_email@example.com",
       telegram: "example_telegram",
-      role: 1,
+      role: Role.LEPPISPJ,
       keys: { "tko-äly": true },
       organization: { "tko-äly": true },
       rights_for_reservation: true,

@@ -34,14 +34,13 @@ describe("OwnPage Component", () => {
   });
 });
 
-it("opens with role 5", async () => {
-  const user = {
-    username: "example_username",
-    email: "example_email@example.com",
-    telegram: "example_telegram",
-    role: 5,
-  };
-  localStorage.setItem("loggedUser", JSON.stringify(user));
+  it("opens with role 5", async () => {
+    const user = {
+      username: "example_username",
+      email: "example_email@example.com",
+      telegram: "example_telegram",
+      role: Role.TAVALLINEN,
+    };  localStorage.setItem("loggedUser", JSON.stringify(user));
   localStorage.setItem("ACCESS_TOKEN", "example_token");
 
   const { getByText, getByLabelText } = render(
@@ -148,7 +147,7 @@ it("User updating works", async () => {
     confirmPassword: "example_password123",
     email: "example_email@example.com",
     telegram: "example_telegram",
-    role: 5,
+    role: Role.TAVALLINEN,
     id: 1,
   };
   window.confirm = jest.fn(() => true);
@@ -369,7 +368,7 @@ describe("Organizations", () => {
       username: "leppis",
       email: "leppis@testi.com",
       telegram: "",
-      role: 1,
+      role: Role.LEPPISPJ,
       id: 1,
     };
     localStorage.setItem("ACCESS_TOKEN", "example_token");

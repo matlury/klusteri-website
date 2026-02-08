@@ -9,6 +9,7 @@ import "@testing-library/jest-dom";
 import FrontPage from "../../src/pages/frontpage";
 import i18n from "../i18n.js";
 import mockAxios from "../../__mocks__/axios";
+import { Role } from '../../src/roles';
 
 localStorage.setItem("lang", "fi");
 
@@ -52,7 +53,7 @@ test("renders upcoming events", async () => {
               username: "leppis",
               email: "leppis@testi.com",
               telegram: "",
-              role: 1,
+              role: Role.LEPPISPJ,
               rights_for_reservation: false,
               keys: [1],
             },
@@ -74,7 +75,7 @@ test("renders upcoming events", async () => {
                   username: "leppis",
                   email: "leppis@testi.com",
                   telegram: "",
-                  role: 1,
+                  role: Role.LEPPISPJ,
                   rights_for_reservation: false,
                   keys: [1],
                 },
@@ -111,7 +112,7 @@ test("renders upcoming events", async () => {
               username: "leppis",
               email: "leppis@testi.com",
               telegram: "",
-              role: 1,
+              role: Role.LEPPISPJ,
               rights_for_reservation: false,
               keys: [1],
             },
@@ -133,7 +134,7 @@ test("renders upcoming events", async () => {
                   username: "leppis",
                   email: "leppis@testi.com",
                   telegram: "",
-                  role: 1,
+                  role: Role.LEPPISPJ,
                   rights_for_reservation: false,
                   keys: [1],
                 },
@@ -198,7 +199,7 @@ test("event description dialog works correctly", async () => {
               username: "leppis",
               email: "leppis@testi.com",
               telegram: "",
-              role: 1,
+              role: Role.LEPPISPJ,
               rights_for_reservation: false,
               keys: [1],
             },
@@ -220,7 +221,7 @@ test("event description dialog works correctly", async () => {
                   username: "leppis",
                   email: "leppis@testi.com",
                   telegram: "",
-                  role: 1,
+                  role: Role.LEPPISPJ,
                   rights_for_reservation: false,
                   keys: [1],
                 },

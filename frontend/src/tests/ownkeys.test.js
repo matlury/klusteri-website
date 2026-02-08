@@ -9,6 +9,7 @@ import "@testing-library/jest-dom";
 import OwnKeys from "../../src/pages/ownkeys";
 import { ContextProvider } from "@context/ContextProvider";
 import mockAxios from "../../__mocks__/axios";
+import { Role } from '../../src/roles';
 
 localStorage.setItem("lang", "fi")
 
@@ -32,7 +33,7 @@ describe("OwnKeys Component", () => {
       username: "example_username",
       email: "example_email@example.com",
       telegram: "example_telegram",
-      role: 1,
+      role: Role.LEPPISPJ,
       keys: { "tko-äly": true },
       organization: { "tko-äly": true },
       rights_for_reservation: true,
@@ -76,7 +77,7 @@ describe("OwnKeys Component", () => {
       username: "example_username",
       email: "example_email@example.com",
       telegram: "example_telegram",
-      role: 1,
+      role: Role.LEPPISPJ,
       keys: { "tko-äly": true },
       organization: { "tko-äly": true },
       rights_for_reservation: true,
@@ -145,7 +146,7 @@ describe("OwnKeys Component", () => {
       username: "example_username",
       email: "example_email@example.com",
       telegram: "example_telegram",
-      role: 1,
+      role: Role.LEPPISPJ,
       keys: { "tko-äly": true },
       organization: { "tko-äly": true },
       rights_for_reservation: true,
@@ -175,7 +176,7 @@ describe("OwnKeys Component", () => {
                   username: "example_username",
                   email: "example_email@example.com",
                   telegram: "telegram",
-                  role: 1,
+                  role: Role.LEPPISPJ,
                   keys: [1],
                 },
               ],
@@ -197,7 +198,7 @@ describe("OwnKeys Component", () => {
                     username: "example_username",
                     email: "example_email@example.com",
                     telegram: "telegram",
-                    role: 1,
+                    role: Role.LEPPISPJ,
                     keys: [1],
                   },
                 ],
@@ -211,7 +212,7 @@ describe("OwnKeys Component", () => {
             username: "example_username",
             email: "example_username@example.com",
             telegram: "telegram",
-            role: 1,
+            role: Role.LEPPISPJ,
           },
           responsible_for: "fuksit",
           login_time: "2024-05-30T09:38:07.170043Z",
@@ -232,7 +233,7 @@ describe("OwnKeys Component", () => {
                   username: "example_username",
                   email: "example_email@example.com",
                   telegram: "telegram",
-                  role: 1,
+                  role: Role.LEPPISPJ,
                   keys: [1],
                 },
               ],
@@ -254,7 +255,7 @@ describe("OwnKeys Component", () => {
                     username: "example_username",
                     email: "example_email@example.com",
                     telegram: "telegram",
-                    role: 1,
+                    role: Role.LEPPISPJ,
                     keys: [1],
                   },
                 ],
@@ -268,7 +269,7 @@ describe("OwnKeys Component", () => {
             username: "example_username",
             email: "example_email@example.com",
             telegram: "telegram",
-            role: 1,
+            role: Role.LEPPISPJ,
           },
           responsible_for: "gary",
           login_time: "2024-05-30T09:59:11.497510Z",
@@ -293,7 +294,7 @@ describe("OwnKeys Component", () => {
                   username: "example_username",
                   email: "example_email@example.com",
                   telegram: "telegram",
-                  role: 1,
+                  role: Role.LEPPISPJ,
                   keys: [1],
                 },
               ],
@@ -307,7 +308,7 @@ describe("OwnKeys Component", () => {
           username: "example_username",
           email: "example_email@example.com",
           telegram: "telegram",
-          role: 1,
+          role: Role.LEPPISPJ,
         },
       ],
     };
@@ -338,12 +339,12 @@ describe("OwnKeys Component", () => {
     });
   });
 
-  //  it("time filtering works", async () => {
-  //    const user = {
-  //      username: "example_username",
-  //      email: "example_email@example.com",
-  //      telegram: "example_telegram",
-  //      role: 1,
+  //it("time filtering works", async () => {
+  // const user = {
+  // username: "example_username",
+  // email: "example_email@example.com",
+  // telegram: "example_telegram",
+  //      role: Role.LEPPISPJ,
   //      keys: {"tko-äly": true},
   //      organization: {"tko-äly": true},
   //      rights_for_reservation: true,

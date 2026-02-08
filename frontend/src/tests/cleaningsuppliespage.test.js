@@ -9,6 +9,7 @@ import "@testing-library/jest-dom";
 import CleaningSupplies from "../../src/pages/cleaningsuppliespage.jsx";
 import mockAxios from "../../__mocks__/axios";
 import { ContextProvider } from "@context/ContextProvider";
+import { Role } from '../../src/roles';
 
 localStorage.setItem("lang", "fi");
 
@@ -32,7 +33,7 @@ describe("Cleaningsupplies Component", () => {
       username: "superman",
       email: "superman@example.com",
       telegram: "super_telegram",
-      role: 1,
+      role: Role.LEPPISPJ,
       keys: { "tko-äly": true },
       organization: { "tko-äly": true },
       rights_for_reservation: true,
@@ -95,7 +96,7 @@ describe("Cleaningsupplies Component", () => {
       username: "superman",
       email: "superman@example.com",
       telegram: "super_telegram",
-      role: 1,
+      role: Role.LEPPISPJ,
       keys: { "tko-äly": true },
       organization: { "tko-äly": true },
       rights_for_reservation: true,
