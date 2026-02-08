@@ -338,7 +338,7 @@ const OwnPage = () => {
         email: u.email,
         Telegram: u.telegram,
         Rooli: ROLE_DESCRIPTIONS[u.role],
-        Jäsenyydet: u.keys.map((organization) => organization.name),
+        Jäsenyydet: u.keys ? u.keys.map((organization) => organization.name) : [],
         resrights: u.rights_for_reservation,
       }));
       setAllUsers(userData);

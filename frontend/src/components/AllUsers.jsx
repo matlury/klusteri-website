@@ -239,7 +239,7 @@ const AllUsers = ({
                   variant="contained"
                   className="submit-key-button"
                   data-testid="submit-key-button"
-                  onClick={() => {handleKeyForm(userDetailsId, selectedOrganization.Organisaatio)}}
+                  onClick={() => { handleKeyForm(userDetailsId, selectedOrganization.Organisaatio) }}
                 >
                   {t("givekey")}
                 </Button>
@@ -256,18 +256,18 @@ const AllUsers = ({
             </Button>
             {userDetailsResRights ? (
               <Button
-              onClick={() => {handleRightsFormChange(userDetailsId)}}
-              sx={{ marginBottom: '1rem' }} // Add spacing below the button
+                onClick={() => { handleRightsFormChange(userDetailsId) }}
+                sx={{ marginBottom: '1rem' }} // Add spacing below the button
               >
                 {t("removeresrights")}
               </Button>
-            ):
-            <Button
-              onClick={() => {handleRightsFormChange(userDetailsId)}}
-              sx={{ marginBottom: '1rem' }} // Add spacing below the button
-            >
-              {t("addresrights")}
-            </Button>}
+            ) :
+              <Button
+                onClick={() => { handleRightsFormChange(userDetailsId) }}
+                sx={{ marginBottom: '1rem' }} // Add spacing below the button
+              >
+                {t("addresrights")}
+              </Button>}
 
             {/* Dialog actions */}
             <DialogActions>
