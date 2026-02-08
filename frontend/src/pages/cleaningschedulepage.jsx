@@ -13,6 +13,7 @@ import CleanersListAutomateButton from "../components/CleanersListAutomateButton
 import SaveDialog from "../components/SaveDialog";
 import Stack from '@mui/material/Stack';
 import { useTranslation } from "react-i18next";
+import { Role } from "../roles";
 
 const CleaningSchedule = () => {
   const { user: loggedUser } = useStateContext();

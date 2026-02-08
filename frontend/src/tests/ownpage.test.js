@@ -10,6 +10,7 @@ import { act } from "react";
 import OwnPage from "../pages/ownpage";
 import mockAxios from "../../__mocks__/axios";
 import { ContextProvider } from "@context/ContextProvider";
+import { Role } from "../roles";
 
 localStorage.setItem("lang", "fi");
 
@@ -67,8 +68,6 @@ describe("OwnPage Component", () => {
   });
 
   expect(getByLabelText("Käyttäjänimi")).toBeInTheDocument();
-  expect(getByLabelText("Salasana")).toBeInTheDocument();
-  expect(getByLabelText("Vahvista salasana")).toBeInTheDocument();
   expect(getByLabelText("Sähköposti")).toBeInTheDocument();
   expect(getByLabelText("Telegram")).toBeInTheDocument();
   expect(getByText("Käyttäjän rooli: Tavallinen")).toBeInTheDocument();
@@ -188,6 +187,9 @@ it("User updating works", async () => {
   const telegram_field = getByLabelText("Telegram");
   fireEvent.change(telegram_field, { target: { value: "telegram_example" } });
 
+  const current_password_field = getByLabelText("Nykyinen salasana");
+  fireEvent.change(current_password_field, { target: { value: "example_password123" } });
+
   const resp_updated = {
     data: {
       id: 1,
@@ -238,6 +240,7 @@ it("User updating works", async () => {
       telegram: "telegram_example",
       confirmPassword: "",
       username: "username_example",
+      current_password: "example_password123",
     });
   });
   await waitFor(() => {
@@ -340,6 +343,9 @@ describe("User updating errors", () => {
 
     const telegram = getByLabelText("Telegram");
     fireEvent.change(telegram, { target: { value: "example_telegram_two" } });
+
+    const current_password_field = getByLabelText("Nykyinen salasana");
+    fireEvent.change(current_password_field, { target: { value: "example_password123" } });
 
     const saveButton = getByTestId("saveuserdata");
     fireEvent.click(saveButton);

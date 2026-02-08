@@ -2,6 +2,7 @@ import { render, fireEvent, waitFor, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import axiosClient from "../axios.js";
 import AllUsers from "../components/AllUsers";
+import { Role } from "../roles";
 
 localStorage.setItem("lang", "fi");
 
@@ -10,21 +11,21 @@ jest.mock("../axios.js");
 const mockUsers = [
   {
     id: 1,
-    Käyttäjänimi: "user1",
+    username: "user1",
     email: "user1@example.com",
-    Telegram: "user1_telegram",
-    Rooli: "LeppisPJ",
-    Jäsenyydet: ["Org1", "Org2"],
-    resrights: "some_resrights1",
+    telegram: "user1_telegram",
+    role: Role.LEPPISPJ,
+    memberships: ["Org1", "Org2"],
+    resrights: true,
   },
   {
     id: 2,
-    Käyttäjänimi: "user2",
+    username: "user2",
     email: "user2@example.com",
-    Telegram: "user2_telegram",
-    Rooli: "Muu",
-    Jäsenyydet: ["Org3"],
-    resrights: "some_resrights2",
+    telegram: "user2_telegram",
+    role: Role.TAVALLINEN,
+    memberships: ["Org3"],
+    resrights: false,
   },
 ];
 
@@ -124,9 +125,11 @@ test("opens and populates the user details dialog", async () => {
     expect(
       screen.getByTestId("telegram-input").querySelector("input"),
     ).toHaveValue("user1_telegram");
-    expect(
-      screen.getByTestId("role-select").querySelector("input"),
-    ).toHaveValue("LeppisPJ");
+    const roleSelect = screen.getByTestId("role-select");
+    const roleInput = roleSelect.querySelector("input");
+    expect(roleInput).toBeInTheDocument();
+    expect(roleInput.value).toBe(String(Role.LEPPISPJ));
+    expect(roleSelect.textContent).toContain("Leppis PJ");
   });
 });
 

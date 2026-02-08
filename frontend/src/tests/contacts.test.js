@@ -5,7 +5,7 @@ import Contacts from "../../src/pages/contacts";
 import ChristinaRegina from "../../src/pages/christina_regina";
 
 
-jest.mock("../../src/ChristinaRegina.png", () => "mock-christina-regina.png");
+jest.mock("/ChristinaRegina.png", () => "mock-christina-regina.png");
 
 localStorage.setItem("lang", "fi");
 

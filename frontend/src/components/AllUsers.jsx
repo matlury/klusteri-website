@@ -66,12 +66,12 @@ const AllUsers = ({
   // Function to toggle user details in the dialog
   const toggleUserDetails = (userId) => {
     const showThisUser = allUsers.find((user) => user.id === userId);
-    setUserDetailsUsername(showThisUser.Käyttäjänimi);
+    setUserDetailsUsername(showThisUser.username);
     setuserDetailsEmail(showThisUser.email);
-    setuserDetailsTelegram(showThisUser.Telegram);
-    setuserDetailsRole(showThisUser.Rooli);
+    setuserDetailsTelegram(showThisUser.telegram);
+    setuserDetailsRole(showThisUser.role);
     setuserDetailsId(showThisUser.id);
-    setuserDetailsOrganizations(showThisUser.Jäsenyydet ? showThisUser.Jäsenyydet.join(", ") : "");
+    setuserDetailsOrganizations(showThisUser.memberships ? showThisUser.memberships.join(", ") : "");
     setuserDetailsResRights(showThisUser.resrights);
     handleClickOpen();
   };
@@ -129,13 +129,12 @@ const AllUsers = ({
         </Button>
       ),
     },
-    { field: "Käyttäjänimi", headerName: t("username"), width: 150 },
+    { field: "username", headerName: t("username"), width: 150 },
     { field: "email", headerName: t("email"), width: 200 },
-    { field: "Telegram", headerName: "Telegram", width: 200 },
-    { field: "Rooli", headerName: t("role"), width: 80 },
-    { field: "Jäsenyydet", headerName: t("resp_orgs"), width: 200 },
+    { field: "telegram", headerName: "Telegram", width: 200 },
+    { field: "role", headerName: t("role"), width: 80 },
+    { field: "memberships", headerName: t("resp_orgs"), width: 200 },
   ];
-
   return (
     <div>
       {/* Display DataGrid for users */}
@@ -208,13 +207,16 @@ const AllUsers = ({
               id="user_new_role"
               value={userDetailsRole}
               label={t("role")}
-              onChange={(e) => setuserDetailsRole(e.target.value)}
+              onChange={(e) => {
+                console.log(e)
+                setuserDetailsRole(e.target.value)
+              }}
               fullWidth
               sx={{ marginBottom: "1rem" }}
               data-testid="role-select"
             >
               {ROLE_OPTIONS.map((option) => (
-                <MenuItem key={option.value} value={option.label}>
+                <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>
               ))}

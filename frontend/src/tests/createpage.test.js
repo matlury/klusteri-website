@@ -3,6 +3,7 @@ import { act } from "react";
 import NewAccountPage from "../../src/pages/createpage";
 import mockAxios from "../../__mocks__/axios";
 import "@testing-library/jest-dom";
+import { Role } from "../roles";
 
 // Test value for the reCAPTCHA site key
 process.env.VITE_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';

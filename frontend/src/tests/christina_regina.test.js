@@ -5,7 +5,7 @@ import "@testing-library/jest-dom";
 localStorage.setItem("lang", "fi")
 
 // Mock the image import
-jest.mock("../ChristinaRegina.png", () => "placeholder.png");
+jest.mock("/ChristinaRegina.png", () => "placeholder.png");
 
 describe("ChristinaRegina Component", () => {
   it("renders without errors", () => {

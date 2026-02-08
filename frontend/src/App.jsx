@@ -40,7 +40,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { MenuItem, Menu } from "@mui/material";
 import TranslateIcon from "@mui/icons-material/Translate";
-import matlu from "./matlu.png";
+import matlu from "/matlu.png";
 
 import FrontPage from "./pages/frontpage";
 import LoginPage from "./pages/loginpage";

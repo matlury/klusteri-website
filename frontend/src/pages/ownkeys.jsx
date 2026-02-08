@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useStateContext } from "@context/ContextProvider";
-import { usersAPI, nightResponsibilitiesAPI, ykvAPI } from "../api/api.ts";
+import { nightResponsibilitiesAPI, ykvAPI } from "../api/api.ts";
 import { getCurrentDateTime } from "../utils/timehelpers.js";
 import {
   getPermission,

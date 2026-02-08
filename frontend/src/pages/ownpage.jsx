@@ -8,7 +8,7 @@ import AllUsers from "../components/AllUsers.jsx";
 import updateaccountcheck from "../utils/updateaccountcheck.js";
 import { useTranslation } from "react-i18next";
 import { Snackbar, Alert, Tabs, Tab, Box } from "@mui/material";
-import { ROLE_DESCRIPTIONS, Role } from "../roles.js";
+import { Role } from "../roles.js";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -373,11 +373,11 @@ const OwnPage = () => {
       const rawData = response.data;
       const userData = rawData.map((u) => ({
         id: u.id,
-        Käyttäjänimi: u.username,
+        username: u.username,
         email: u.email,
-        Telegram: u.telegram,
-        Rooli: ROLE_DESCRIPTIONS[u.role],
-        Jäsenyydet: u.keys ? u.keys.map((organization) => organization.name) : [],
+        telegram: u.telegram,
+        role: u.role,
+        memberships: u.keys ? u.keys.map((organization) => organization.name) : [],
         resrights: u.rights_for_reservation,
       }));
       setAllUsers(userData);
@@ -395,7 +395,7 @@ const OwnPage = () => {
     setuserDetailsId(showThisUser.id);
 
     // get a list of each organization the user is a member of
-    const orgDict = showThisUser.keys;
+    const orgDict = showThisUser.memberships;
     setuserDetailsOrganizations(orgDict.map((org) => org.name));
 
     setSelectedUser((prevSelectedUser) => {
