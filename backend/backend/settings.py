@@ -42,6 +42,7 @@ ALLOWED_HOSTS = [
     "klusteri-website-db-test-matlury-test.apps.ocp-prod-0.k8s.it.helsinki.fi",
     "ilotalo-new.matlu.fi",
     "api.matlury-test.svc.cluster.local",
+    'ilotalo-new-test-v2.matlu.fi'
 ]
 
 
