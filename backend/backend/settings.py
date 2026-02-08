@@ -58,7 +58,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "ilotalo",
-    # 'django_apscheduler'  # DISABLED: Causes slow startup in production
+    "django_apscheduler",
 ]
 
 MIDDLEWARE = [
