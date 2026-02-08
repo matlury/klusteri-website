@@ -59,6 +59,9 @@ class UserView(viewsets.ReadOnlyModelViewSet):
     def get_serializer_class(self):
         # Use minimal serializer for list action (used by YKV etc.)
         if self.action == 'list':
+            # Management roles can see all user details in the list
+            if self.request.user.is_authenticated and self.request.user.role in [LEPPISPJ, LEPPISVARAPJ, MUOKKAUS, JARJESTOPJ]:
+                return UserNoPasswordSerializer
             return UserMinimalSerializer
         return UserNoPasswordSerializer
 
