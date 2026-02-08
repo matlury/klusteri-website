@@ -93,11 +93,13 @@ class Event(models.Model):
         blank=True,
         db_index=True
     )
-    title = models.CharField(max_length=100, default="")  # Name of the event
+    # Name of the event
+    title = models.CharField(max_length=100, default="")
     # Organization responsible for the event
     organizer = models.ForeignKey(
         Organization, on_delete=models.CASCADE, db_column='organizer')
-    description = models.TextField(default="")  # Description of the event
+    # Description of the event
+    description = models.TextField(default="")
     # Person responsible for the event
     responsible = models.CharField(max_length=100, default="")
     created_by = models.ForeignKey(
@@ -128,8 +130,8 @@ class NightResponsibility(models.Model):
     )
     present = models.BooleanField(default=True)
     late = models.BooleanField(default=False)
-    created_by = models.CharField(
-        max_length=50, default="")  # CHANGE TO FOREIGN KEY
+    created_by = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name='night_responsibilities_created')
 
 
 class DefectFault(models.Model):

@@ -131,7 +131,7 @@ describe("OwnKeys Component", () => {
     expect(mockAxios.post).toHaveBeenCalledWith(
       "ykv/create_responsibility",
       expect.objectContaining({
-        created_by: "example_username",
+        created_by: user.id,
         responsible_for: "fuksit",
         user: user.id,
       }),
@@ -219,7 +219,7 @@ describe("OwnKeys Component", () => {
           logout_time: "2024-05-30T09:59:08.135103Z",
           present: true,
           late: false,
-          created_by: "example_username",
+          created_by: { username: "example_username" },
         },
         {
           id: 2,
@@ -276,7 +276,7 @@ describe("OwnKeys Component", () => {
           logout_time: "2024-05-30T09:59:11.497533Z",
           present: true,
           late: false,
-          created_by: "example_username",
+          created_by: { username: "example_username" },
         },
       ],
     };

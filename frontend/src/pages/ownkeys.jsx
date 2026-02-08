@@ -70,7 +70,7 @@ const OwnKeys = () => {
       user: user_id,
       responsible_for: responsibility,
       login_time: loginTime,
-      created_by: loggedUser.username,
+      created_by: loggedUser.id,
     };
     await confirmYKV(responsibilityObject);
     for (const user of selectedForYKV) {
@@ -78,7 +78,7 @@ const OwnKeys = () => {
         user: user.id,
         responsible_for: responsibility,
         login_time: loginTime,
-        created_by: loggedUser.username,
+        created_by: loggedUser.id,
       };
       await confirmYKV(responsibilityObject);
     }

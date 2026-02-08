@@ -155,7 +155,7 @@ const YkvLogoutFunction = ({
         YKV_sisäänkirjaus: new Date(u.login_time),
         Organisaatiot: u.organizations.map((organization) => organization.name),
         present: u.present,
-        created_by: u.created_by,
+        created_by: u.created_by?.username || "",
         logout_time: u.present ? null : new Date(u.logout_time),
         late: u.late,
       }));

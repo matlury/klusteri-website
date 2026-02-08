@@ -338,6 +338,7 @@ class NightResponsibilitySerializer(serializers.ModelSerializer):
 
     organizations = OrganizationSerializer(many=True, read_only=True)
     user = UserNoPasswordSerializer(read_only=True)
+    created_by = UserNoPasswordSerializer(read_only=True)
 
     class Meta:
         model = NightResponsibility
