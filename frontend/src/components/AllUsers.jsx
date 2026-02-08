@@ -158,6 +158,7 @@ const AllUsers = ({
               fullWidth
               sx={{ marginBottom: "1rem" }} // Add spacing below the field
               data-testid="username-input"
+              style={{ marginTop: "0.5em" }}
             />
             <TextField
               label={t("newpassword")}
