@@ -19,6 +19,9 @@ import { ROLE_OPTIONS } from "../roles.js";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import Tooltip from "@mui/material/Tooltip";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import Box from "@mui/material/Box";
 
 const AllUsers = ({
   allUsers,
@@ -194,7 +197,12 @@ const AllUsers = ({
               sx={{ marginBottom: "1rem" }} // Add spacing below the field
               data-testid="telegram-input"
             />
-            <InputLabel id="user-role-label">{t("role")}</InputLabel>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, marginBottom: '0.5rem' }}>
+              <InputLabel id="user-role-label">{t("role")}</InputLabel>
+              <Tooltip title={<Box sx={{ whiteSpace: 'pre-line' }}>{t("role_info")}</Box>} arrow>
+                <InfoOutlinedIcon color="primary" sx={{ fontSize: 20, cursor: 'pointer' }} />
+              </Tooltip>
+            </Box>
             <Select
               labelId="user-role-label"
               id="user_new_role"
