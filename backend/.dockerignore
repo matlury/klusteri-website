@@ -1,1 +1,18 @@
 .env
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+ENV/
+.git/
+.github/
+.vscode/
+.idea/
+*.log
+db.sqlite3
+.python-version
+# poetry.lock and pyproject.toml are needed for dependencies
