@@ -48,33 +48,9 @@ const OwnPage = () => {
     setTabValue(newValue);
   };
 
-
-  // user_details* variables for viewing and updating someone else's information
-  const [userDetailsUsername, setUserDetailsUsername] = useState("");
-  const [userDetailsPassword, setUserDetailsPassword] = useState("");
-  const [userDetailsConfirmPassword, setUserDetailsConfirmPassword] = useState("");
-  const [userDetailsEmail, setuserDetailsEmail] = useState("");
-  const [userDetailsTelegram, setuserDetailsTelegram] = useState("");
-  const [userDetailsRole, setuserDetailsRole] = useState(null);
-  const [userDetailsOrganizations, setuserDetailsOrganizations] = useState([]);
-  const [userDetailsId, setuserDetailsId] = useState("");
-
   const [organisations, setOrganisations] = useState([]);
-  const [selectedOrg, setSelectedOrg] = useState(null);
-
-  const [organization_email, setOrganizationEmail] = useState("");
-  const [organization_name, setOrganizationName] = useState("");
-  const [organization_homepage, setOrganizationHomePage] = useState("");
-  const [organization_color, setOrganizationColor] = useState("");
-
-  const [organization_new_email, setOrganizationNewEmail] = useState("");
-  const [organization_new_name, setOrganizationNewName] = useState("");
-  const [organization_new_homepage, setOrganizationNewHomePage] = useState("");
-  const [organization_new_color, setOrganizationNewColor] = useState("");
 
   const [allUsers, setAllUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedOrganization, setSelectedOrganization] = useState(null);
 
   const [hasPermission, setHasPermission] = useState(false);
   const [hasPermissionOrg, setHasPermissionOrg] = useState(false);
@@ -194,7 +170,6 @@ const OwnPage = () => {
     userDetailsEmail,
     userDetailsTelegram,
     userDetailsRole,
-    userDetailsOrganizations,
   ) => {
     /*
     Event handler for updating someone else's information.
@@ -272,21 +247,6 @@ const OwnPage = () => {
     }
   };
 
-  // Shows the information of organizations after clicking the view-button
-  const toggleOrgDetails = (orgId) => {
-    const organization = organisations.find((org) => org.id === orgId);
-    setOrganizationNewName(organization.name);
-    setOrganizationNewEmail(organization.email);
-    setOrganizationNewHomePage(organization.homepage);
-    setOrganizationNewColor(organization.color);
-    setSelectedOrg((prevSelectedOrg) => {
-      if (prevSelectedOrg === orgId) {
-        return null;
-      }
-      return orgId;
-    });
-  };
-
   // Handles organization detail updates
   const handleOrganizationDetails = async (
     organization_new_name,
@@ -328,26 +288,20 @@ const OwnPage = () => {
   };
 
   // Handles the creation of organizations
-  const handleCreateOrganization = async () => {
+  const handleCreateOrganization = async (organizationObject) => {
     try {
-      const response = await organizationsAPI.getOrganizationsByEmail(organization_email);
+      const response = await organizationsAPI.getOrganizationsByEmail(organizationObject.email);
       const existingOrganizations = response.data;
       if (
-        existingOrganizations.some((org) => org.name === organization_name)
+        existingOrganizations.some((org) => org.name === organizationObject.name)
       ) {
         handleSnackbar(t("orgcreatenamefail"), "error");
       }
       if (
-        existingOrganizations.some((org) => org.email === organization_email)
+        existingOrganizations.some((org) => org.email === organizationObject.email)
       ) {
         handleSnackbar(t("emailinuse"), "error");
       } else {
-        const organizationObject = {
-          name: organization_name,
-          email: organization_email,
-          homepage: organization_homepage,
-          color: organization_color,
-        };
         await createOrganization(organizationObject);
       }
     } catch (error) {
@@ -384,26 +338,6 @@ const OwnPage = () => {
     } catch (error) {
       console.error("Error fetching all users:", error);
     }
-  };
-
-  const toggleUserDetails = (userId) => {
-    const showThisUser = allUsers.find((user) => user.id === userId);
-    setUserDetailsUsername(showThisUser.username);
-    setuserDetailsEmail(showThisUser.email);
-    setuserDetailsTelegram(showThisUser.telegram);
-    setuserDetailsRole(showThisUser.role);
-    setuserDetailsId(showThisUser.id);
-
-    // get a list of each organization the user is a member of
-    const orgDict = showThisUser.memberships;
-    setuserDetailsOrganizations(orgDict.map((org) => org.name));
-
-    setSelectedUser((prevSelectedUser) => {
-      if (prevSelectedUser === userId) {
-        return null;
-      }
-      return userId;
-    });
   };
 
   // Handles PJ change
@@ -496,16 +430,6 @@ const OwnPage = () => {
     }
   };
 
-  // Handles select user
-  const handleSelectUser = (event) => {
-    setSelectedUser(event.target.value);
-  };
-
-  // Handles select organization
-  const handleSelectOrganization = (event) => {
-    setSelectedOrganization(event.target.value);
-  };
-
   const getPermission = async () => {
     /*
     Check if the logged user has permissions for something
@@ -596,33 +520,14 @@ const OwnPage = () => {
                 {
                   <OrganisationPage
                     organizations={organisations}
-                    selectedOrg={selectedOrg}
                     hasPermissionOrg={hasPermissionOrg}
-                    organization_new_name={organization_new_name}
-                    setOrganizationNewName={setOrganizationNewName}
-                    organization_new_homepage={organization_new_homepage}
-                    setOrganizationNewHomePage={setOrganizationNewHomePage}
-                    organization_new_email={organization_new_email}
-                    setOrganizationNewEmail={setOrganizationNewEmail}
-                    organization_new_color={organization_new_color}
-                    setOrganizationNewColor={setOrganizationNewColor}
                     handleOrganizationDetails={handleOrganizationDetails}
-                    hasPermission={hasPermission}
                     handleDeleteOrganization={handleDeleteOrganization}
-                    toggleOrgDetails={toggleOrgDetails}
                     fetchOrganizations={getOrganisations}
                   />
                 }
                 {hasPermission === true && (
                   <CreateOrganization
-                    organization_name={organization_name}
-                    setOrganizationName={setOrganizationName}
-                    organization_email={organization_email}
-                    setOrganizationEmail={setOrganizationEmail}
-                    organization_homepage={organization_homepage}
-                    setOrganizationHomePage={setOrganizationHomePage}
-                    organization_color={organization_color}
-                    setOrganizationColor={setOrganizationColor}
                     handleCreateOrganization={handleCreateOrganization}
                     fetchOrganizations={getOrganisations}
                   />
@@ -631,20 +536,8 @@ const OwnPage = () => {
                   <AllUsers
                     allUsers={allUsers}
                     organizations={organisations}
-                    toggleUserDetails={toggleUserDetails}
-                    userDetailsUsername={userDetailsUsername}
-                    setUserDetailsUsername={setUserDetailsUsername}
-                    userDetailsEmail={userDetailsEmail}
-                    setuserDetailsEmail={setuserDetailsEmail}
-                    userDetailsTelegram={userDetailsTelegram}
-                    userDetailsRole={userDetailsRole}
-                    setuserDetailsRole={setuserDetailsRole}
-                    userDetailsOrganizations={userDetailsOrganizations}
-                    hasPermissionOrg={hasPermissionOrg}
                     handleUpdateAnotherUser={handleUpdateAnotherUser}
-                    hasPermission={hasPermission}
                     handlePJChange={handlePJChange}
-                    selectedUser={selectedUser}
                     handleKeySubmit={handleKeySubmit}
                     handleResRightChange={handleResRightChange}
                     fetchOrganizations={getOrganisations}

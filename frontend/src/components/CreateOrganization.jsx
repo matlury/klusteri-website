@@ -3,14 +3,6 @@ import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, S
 import { useTranslation } from "react-i18next";
 
 const CreateOrganization = ({
-  organization_name,
-  setOrganizationName,
-  organization_email,
-  setOrganizationEmail,
-  organization_homepage,
-  setOrganizationHomePage,
-  organization_color,
-  setOrganizationColor,
   handleCreateOrganization,
   fetchOrganizations,
 }) => {
@@ -18,6 +10,11 @@ const CreateOrganization = ({
   // State variables to manage dialog visibility and field validation
   const [open, setOpen] = useState(false);
   const [errorFields, setErrorFields] = useState({});
+
+  const [organization_name, setOrganizationName] = useState("");
+  const [organization_email, setOrganizationEmail] = useState("");
+  const [organization_homepage, setOrganizationHomePage] = useState("");
+  const [organization_color, setOrganizationColor] = useState("");
 
   // Function to open the dialog
   const handleClickOpen = () => {
@@ -27,6 +24,11 @@ const CreateOrganization = ({
   // Function to close the dialog
   const handleClose = () => {
     setOpen(false);
+    // Clear fields
+    setOrganizationName("");
+    setOrganizationEmail("");
+    setOrganizationHomePage("");
+    setOrganizationColor("");
   };
 
   // Function to handle organization creation and close dialog
@@ -39,7 +41,13 @@ const CreateOrganization = ({
 
     if (Object.keys(errors).length === 0) {
       // All fields are filled, proceed with organization creation
-      await handleCreateOrganization();
+      const organizationObject = {
+        name: organization_name,
+        email: organization_email,
+        homepage: organization_homepage,
+        color: organization_color,
+      };
+      await handleCreateOrganization(organizationObject);
       await fetchOrganizations();
       handleClose();
     } else {

@@ -40,7 +40,6 @@ const AllUsers = ({
   const [userDetailsEmail, setuserDetailsEmail] = useState("");
   const [userDetailsTelegram, setuserDetailsTelegram] = useState("");
   const [userDetailsRole, setuserDetailsRole] = useState("");
-  const [userDetailsOrganizations, setuserDetailsOrganizations] = useState("");
   const [userDetailsId, setuserDetailsId] = useState("");
   const [userDetailsResRights, setuserDetailsResRights] = useState(false);
   const [selectedOrganization, setSelectedOrganization] = useState(null);
@@ -71,7 +70,6 @@ const AllUsers = ({
     setuserDetailsTelegram(showThisUser.telegram);
     setuserDetailsRole(showThisUser.role);
     setuserDetailsId(showThisUser.id);
-    setuserDetailsOrganizations(showThisUser.memberships ? showThisUser.memberships.join(", ") : "");
     setuserDetailsResRights(showThisUser.resrights);
     handleClickOpen();
   };
@@ -90,7 +88,6 @@ const AllUsers = ({
       userDetailsEmail,
       userDetailsTelegram,
       roleIntValue,
-      userDetailsOrganizations.split(", ").map((org) => org.trim()),
     );
     await fetchOrganizations();
     handleClose();
