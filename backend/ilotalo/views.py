@@ -25,9 +25,14 @@ from .serializers import (
 )
 from .models import User, Organization, Event, NightResponsibility, DefectFault, Cleaning, CleaningSupplies
 from .config import Role
-from datetime import datetime, timezone
+from datetime import datetime, timedelta
+from django.utils import timezone
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer
+from icalendar import Calendar, Event as ICalEvent
+from django.http import HttpResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 LEPPISPJ = Role.LEPPISPJ.value
 LEPPISVARAPJ = Role.LEPPISVARAPJ.value
@@ -453,6 +458,46 @@ class EventView(viewsets.ReadOnlyModelViewSet):
         if 'all' in self.request.query_params or 'start' in self.request.query_params or 'end' in self.request.query_params:
             return None
         return super().paginate_queryset(queryset)
+
+
+class EventICalView(APIView):
+    """
+    Returns an iCalendar (.ics) file containing all events from the last 3 months onwards.
+    Publicly accessible to allow calendar subscriptions.
+    Cached for 15 minutes to reduce server load.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    @method_decorator(cache_page(60 * 15))
+    def get(self, request):
+        cal = Calendar()
+        cal.add('prodid', '-//Ilotalo Events Calendar//matlu.fi//')
+        cal.add('version', '2.0')
+        cal.add('x-wr-calname', 'Ilotalo Varaukset')
+        cal.add('x-wr-timezone', 'Europe/Helsinki')
+
+        # Limit to last 30 days and all future events to keep the file size reasonable
+        # but provide enough context.
+        start_limit = timezone.now() - timedelta(days=30)
+        events = Event.objects.filter(start__gte=start_limit).select_related('organizer')
+
+        for e in events:
+            event = ICalEvent()
+            event.add('summary', e.title)
+            event.add('dtstart', e.start)
+            event.add('dtend', e.end)
+            
+            description = f"Järjestäjä: {e.organizer.name}\nVastuuhenkilö: {e.responsible}\n\n{e.description}"
+            event.add('description', description)
+            event.add('location', e.room)
+            event.add('uid', f"event-{e.id}@ilotalo-new.matlu.fi")
+            event.add('dtstamp', timezone.now())
+            
+            cal.add_component(event)
+
+        response = HttpResponse(cal.to_ical(), content_type="text/calendar; charset=utf-8")
+        response['Content-Disposition'] = 'attachment; filename="ilotalo_events.ics"'
+        return response
 
 
 class CreateEventView(APIView):

@@ -29,7 +29,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 # Ensure proper permissions for Nginx directories
 RUN touch /var/run/nginx.pid && \
-    mkdir -p /var/cache/nginx /var/log/nginx && \
+    mkdir -p /var/cache/nginx/api_cache /var/log/nginx && \
     chmod -R g+w /var/cache/nginx /var/run /var/log/nginx /var/run/nginx.pid && \
     chgrp -R 0 /var/cache/nginx /var/run /var/log/nginx /var/run/nginx.pid
 

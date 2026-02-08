@@ -28,12 +28,14 @@ from .views import (
     CreateCleaningSuppliesView,
     RemoveCleaningSuppliesView,
     EligibleResponsibilityUsersView,
+    EventICalView,
 )
 
 """Define URL endpoints for the ilotalo app"""
 
 urlpatterns = [
     path("ykv/", EligibleResponsibilityUsersView.as_view()),
+    path("ical/", EventICalView.as_view(), name="event-ical"),
     path("register", RegisterView.as_view()),
     path("userinfo", RetrieveUserView.as_view()),
     path("update/<int:pk>/", UpdateUserView.as_view()),

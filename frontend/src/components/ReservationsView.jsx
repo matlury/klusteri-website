@@ -17,6 +17,7 @@ import {
 import { CSVLink } from "react-csv";
 import { getCurrentDateTime } from "../utils/timehelpers";
 import DownloadIcon from '@mui/icons-material/Download';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import OrgSelect from "./OrganizationChooseBox";
 import { useTranslation } from "react-i18next";
 
@@ -88,6 +89,13 @@ const ReservationsView = ({
     }
   };
 
+  const handleICal = () => {
+    // Construct the absolute URL for the ical endpoint
+    const icalUrl = `${window.location.origin}/api/events/ical/`;
+    // Opening it in a new window/tab usually triggers the calendar app or download
+    window.open(icalUrl, "_blank");
+  };
+
   const date = getCurrentDateTime();
 
   const CSVDownload = (props) => {
@@ -110,30 +118,47 @@ const ReservationsView = ({
 
   return (
     <div className="textbox">
-      {admin && (
-        <div className="csv-download-button">
-          <Button
-            id="donwloadCSV"
-            variant="contained"
-            onClick={handleCSV}
-            style={{
-              padding: "7px",
-              margin: "10px",
-              float: "right",
-            }}
-            startIcon={<DownloadIcon />}
-          >
-            {t("csvdownload")}
-          </Button>
-          {shouldDownload && CSVdata && (
-            <CSVDownload
-              data={CSVdata}
-              filename={`klusteri-events-${date}.csv`}
-              target="_blank"
-            />
-          )}
-        </div>
-      )}
+      <div style={{ float: "right", display: "flex", gap: "10px", margin: "10px" }}>
+        <Button
+          id="downloadICal"
+          variant="outlined"
+          onClick={handleICal}
+          size="small"
+          style={{
+            padding: "5px 10px",
+            minHeight: "32px",
+            fontSize: "0.75rem"
+          }}
+          startIcon={<CalendarMonthIcon />}
+        >
+          {t("icaldownload")}
+        </Button>
+        {admin && (
+          <>
+            <Button
+              id="donwloadCSV"
+              variant="contained"
+              onClick={handleCSV}
+              size="small"
+              style={{
+                padding: "5px 10px",
+                minHeight: "32px",
+                fontSize: "0.75rem"
+              }}
+              startIcon={<DownloadIcon />}
+            >
+              {t("csvdownload")}
+            </Button>
+            {shouldDownload && CSVdata && (
+              <CSVDownload
+                data={CSVdata}
+                filename={`klusteri-events-${date}.csv`}
+                target="_blank"
+              />
+            )}
+          </>
+        )}
+      </div>
       <h2>{t("reservations_res")}</h2>
       {res_rights &&
         <div className="add-event-button">

@@ -339,7 +339,7 @@ const Statistics = () => {
           </Box>
         </Grid>
         <Grid item xs={12} md={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', md: 'flex-end' } }}>
-          <Button variant="contained" onClick={handleCSV} startIcon={<DownloadIcon />} size="large" sx={{ height: 56 }}>{t("csvdownload")}</Button>
+          <Button variant="contained" onClick={handleCSV} startIcon={<DownloadIcon />} size="large" fullWidth sx={{ minHeight: 56, py: 1.5 }}>{t("csvdownload")}</Button>
           {shouldDownload && CSVdata && <CSVLink data={CSVdata} filename={`klusteri-events-${date}.csv`} target="_blank" asyncOnClick={true}><DownloadIcon /></CSVLink>}
         </Grid>
 
