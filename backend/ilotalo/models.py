@@ -125,7 +125,7 @@ class NightResponsibility(models.Model):
         auto_now_add=True,
     )
     logout_time = models.DateTimeField(
-        auto_now=True,
+        null=True,
         blank=True,
     )
     present = models.BooleanField(default=True)
