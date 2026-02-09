@@ -30,9 +30,31 @@ axiosClient.interceptors.response.use(
       localStorage.removeItem("ACCESS_TOKEN");
       localStorage.removeItem("loggedUser");
 
-      // Optional: Redirect to login if not already there
-      if (!window.location.pathname.includes('/login')) {
-        window.location.href = "/login";
+      const publicRoutes = [
+        "/",
+        "/etusivu",
+        "/christina_regina",
+        "/varaukset",
+        "/yhteystiedot",
+        "/saannot_ja_ohjeet",
+        "/tietosuojaseloste"
+      ];
+
+      // Normalize current path for comparison (remove trailing slash)
+      const currentPath = window.location.pathname === "/" 
+        ? "/" 
+        : window.location.pathname.replace(/\/$/, "");
+      
+      const isPublic = publicRoutes.some(route => {
+        const normalizedRoute = route === "/" ? "/" : route.replace(/\/$/, "");
+        return normalizedRoute === currentPath;
+      });
+
+      if (!isPublic) {
+        window.location.href = "/";
+      } else {
+        // Just reload to clear React state if we are on a public page
+        window.location.reload();
       }
     }
 
