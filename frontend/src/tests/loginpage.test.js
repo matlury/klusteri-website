@@ -12,6 +12,17 @@ localStorage.setItem("lang", "fi")
 
 jest.mock("../axios");
 
+const originalLocation = window.location;
+
+beforeAll(() => {
+  delete window.location;
+  window.location = { ...originalLocation, reload: jest.fn() };
+});
+
+afterAll(() => {
+  window.location = originalLocation;
+});
+
 afterEach(() => {
   jest.clearAllMocks();
   localStorage.clear();
