@@ -62,6 +62,18 @@ npm run dev
 - E2E: `cd frontend && npx cypress open`
 - Coverage: `poetry run coverage run --branch -m pytest && coverage report`
 
+### Backend Testing Tips
+- **Run in Docker**: If local environment setup is complex, run tests inside the container:
+  ```bash
+  docker exec ilotalo-new-api-1 pytest tests/test_views.py
+  ```
+- **Test Settings**: Pytest uses `backend/test_settings.py` (via `pytest.ini`). This enables `TESTING = True`.
+- **Database**: Django's `TestCase` automatically handles database creation/tear-down and wraps tests in transactions.
+- **Mocking**: Use `unittest.mock.patch` for external APIs (like reCAPTCHA) or signals.
+- **iCal Testing**: Use the `icalendar` library to parse and verify `.ics` responses.
+- **Model Creation**: Ensure all required fields are provided. E.g., `User.objects.create_user` requires `username`, `email`, `password`, `telegram`, and `role`.
+- **Signal Testing**: When testing `AppConfig.ready()`, remember it's called once at startup. Use fresh instances or patch `sys.argv`/modules to simulate different environments.
+
 ### Docker Development
 ```bash
 docker-compose -f docker-compose-dev.yml up --build

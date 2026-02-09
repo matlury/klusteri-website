@@ -479,23 +479,25 @@ class EventICalView(APIView):
         # Limit to last 30 days and all future events to keep the file size reasonable
         # but provide enough context.
         start_limit = timezone.now() - timedelta(days=30)
-        events = Event.objects.filter(start__gte=start_limit).select_related('organizer')
+        events = Event.objects.filter(
+            start__gte=start_limit).select_related('organizer')
 
         for e in events:
             event = ICalEvent()
             event.add('summary', e.title)
             event.add('dtstart', e.start)
             event.add('dtend', e.end)
-            
+
             description = f"Järjestäjä: {e.organizer.name}\nVastuuhenkilö: {e.responsible}\n\n{e.description}"
             event.add('description', description)
             event.add('location', e.room)
             event.add('uid', f"event-{e.id}@ilotalo-new.matlu.fi")
             event.add('dtstamp', timezone.now())
-            
+
             cal.add_component(event)
 
-        response = HttpResponse(cal.to_ical(), content_type="text/calendar; charset=utf-8")
+        response = HttpResponse(
+            cal.to_ical(), content_type="text/calendar; charset=utf-8")
         response['Content-Disposition'] = 'attachment; filename="ilotalo_events.ics"'
         return response
 
@@ -716,24 +718,31 @@ class LogoutNightResponsibilityView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Check if logout is later than 7.15
-        # ATTENTION! Current method is bad and doesn't acknowledge timezones
-        limit = datetime.now().replace(hour=5, minute=15)
+        # Check if logout is later than 7:15 AM Finland/Helsinki time
+        # We convert to naive local datetimes for comparison if they are aware
+        # as the 'limit' is constructed as a naive datetime.
         datetime_format = "%Y-%m-%d %H:%M"
         logout_time = datetime.strptime(
             request.data["logout_time"], datetime_format)
-        login_time = datetime.strptime(
-            str(responsibility_to_update.login_time)[:-16], datetime_format)
 
+        # Create limit at 7:15 AM on the same day as logout
+        limit = logout_time.replace(hour=7, minute=15, second=0, microsecond=0)
+
+        # Get naive local time from the login_time field
+        login_time = timezone.localtime(
+            responsibility_to_update.login_time).replace(tzinfo=None)
+
+        data = {}
         if (logout_time > limit) and (login_time < limit):
-            request.data["late"] = True
+            data["late"] = True
         else:
-            request.data["late"] = False
+            data["late"] = False
 
-        request.data["present"] = False
+        data["present"] = False
+        data["logout_time"] = request.data["logout_time"]
 
         responsibility = NightResponsibilitySerializer(
-            instance=responsibility_to_update, data=request.data, partial=True
+            instance=responsibility_to_update, data=data, partial=True
         )
 
         if responsibility.is_valid():
