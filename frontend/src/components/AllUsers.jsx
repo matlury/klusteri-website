@@ -77,9 +77,7 @@ const AllUsers = ({
   // Function to handle form submission (updating user details)
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    const roleIntValue = ROLE_OPTIONS.find(
-      (option) => option.label === userDetailsRole,
-    ).value;
+    const roleIntValue = userDetailsRole;
     await handleUpdateAnotherUser(
       userDetailsId,
       userDetailsUsername,
@@ -128,7 +126,7 @@ const AllUsers = ({
     },
     { field: "username", headerName: t("username"), width: 150 },
     { field: "email", headerName: t("email"), width: 200 },
-    { field: "telegram", headerName: "Telegram", width: 200 },
+    { field: "telegram", headerName: t("telegram"), width: 200 },
     { field: "role", headerName: t("role"), width: 80 },
     { field: "memberships", headerName: t("resp_orgs"), width: 200 },
   ];
@@ -185,7 +183,7 @@ const AllUsers = ({
               data-testid="email-input"
             />
             <TextField
-              label="Telegram"
+              label={t("telegram")}
               id="user_new_telegram"
               value={userDetailsTelegram}
               onChange={(e) => setuserDetailsTelegram(e.target.value)}
