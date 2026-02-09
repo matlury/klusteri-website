@@ -17,11 +17,19 @@ const OwnKeys = () => {
   const [allResponsibilities, setAllResponsibilities] = useState([]);
   const [allUsersWithKeys, setAllUsersWithKeys] = useState([]);
   const [selectedForYKV, setSelectedForYKV] = useState([]);
+  const [selectedOrg, setSelectedOrg] = useState(null);
   const [hasPermission, setHasPermission] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const { t } = useTranslation();
+
+  // Set default organization when loggedUser is available
+  useEffect(() => {
+    if (loggedUser && loggedUser.keys && loggedUser.keys.length > 0 && !selectedOrg) {
+      setSelectedOrg(loggedUser.keys[0]);
+    }
+  }, [loggedUser, selectedOrg]);
 
   // fetches eligible users for YKV
   const fetchEligibleUsers = async () => {
@@ -66,11 +74,14 @@ const OwnKeys = () => {
     if (!loggedUser) return;
     const user_id = loggedUser.id;
     const loginTime = getCurrentDateTime();
+    const organizations = selectedOrg ? [selectedOrg.id] : [];
+    
     const responsibilityObject = {
       user: user_id,
       responsible_for: responsibility,
       login_time: loginTime,
       created_by: loggedUser.id,
+      organizations: organizations,
     };
     await confirmYKV(responsibilityObject);
     for (const user of selectedForYKV) {
@@ -79,6 +90,7 @@ const OwnKeys = () => {
         responsible_for: responsibility,
         login_time: loginTime,
         created_by: loggedUser.id,
+        organizations: organizations,
       };
       await confirmYKV(responsibilityObject);
     }
@@ -145,6 +157,8 @@ const OwnKeys = () => {
               setResponsibility={setResponsibility}
               selectedForYKV={selectedForYKV}
               setSelectedForYKV={setSelectedForYKV}
+              selectedOrg={selectedOrg}
+              setSelectedOrg={setSelectedOrg}
             />
           )}
 

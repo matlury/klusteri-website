@@ -18,10 +18,18 @@ More info: https://www.django-rest-framework.org/api-guide/serializers/
 """
 
 
+class OrganizationNameSerializer(serializers.ModelSerializer):
+    """Minimal serializer for organization name and ID only to boost performance"""
+    class Meta:
+        model = Organization
+        fields = ('id', 'name')
+
+
 class UserNoPasswordSerializer(serializers.ModelSerializer):
     """
     Serializes a User object as JSON without displaying the hashed password
     """
+    keys = OrganizationNameSerializer(many=True, read_only=True)
 
     class Meta:
         model = User
@@ -72,13 +80,6 @@ class OrganizationListSerializer(serializers.ModelSerializer):
             count = User.objects.filter(keys=obj).count()
             return [None] * count
         return None
-
-
-class OrganizationNameSerializer(serializers.ModelSerializer):
-    """Minimal serializer for organization name and ID only to boost performance"""
-    class Meta:
-        model = Organization
-        fields = ('id', 'name')
 
 
 class UserSerializer(serializers.ModelSerializer):

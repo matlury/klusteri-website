@@ -27,6 +27,8 @@ const YkvLogoutFunction = ({
   setResponsibility,
   selectedForYKV,
   setSelectedForYKV,
+  selectedOrg,
+  setSelectedOrg,
 }) => {
   const { user: loggedUser } = useStateContext();
   const [open, setOpen] = useState(false);
@@ -217,6 +219,12 @@ const YkvLogoutFunction = ({
     return "";
   };
 
+  const filteredActiveUsers = activeUsers.filter(
+    (user) =>
+      user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
+      user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase())
+  );
+
   return loading ? (
     <div>{t("loading")}...</div>
   ) : (
@@ -261,13 +269,31 @@ const YkvLogoutFunction = ({
             />
 
             <Autocomplete
+              id="org-select"
+              options={loggedUser.keys || []}
+              getOptionLabel={(option) => option.name}
+              value={selectedOrg}
+              onChange={(event, newValue) => setSelectedOrg(newValue)}
+              fullWidth
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label={t("organisation")}
+                  variant="standard"
+                  required
+                />
+              )}
+              sx={{ mt: 2 }}
+            />
+
+            <Autocomplete
               multiple
               id="combo-box-demo"
               options={allUsersWithKeys}
               getOptionLabel={(option) => option.username}
               value={selectedForYKV}
               onChange={(event, newValue) => setSelectedForYKV(newValue)}
-              style={{ width: 300 }}
+              fullWidth
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -275,6 +301,7 @@ const YkvLogoutFunction = ({
                   variant="standard"
                 />
               )}
+              sx={{ mt: 2 }}
             />
           </DialogContent>
           <DialogActions>
@@ -293,10 +320,11 @@ const YkvLogoutFunction = ({
       </React.Fragment>
 
       <DataGrid
-        rows={activeUsers}
+        rows={filteredActiveUsers}
         columns={columns}
         pageSize={5}
         rowsPerPageOptions={[5, 10, 20]}
+        disableRowSelectionOnClick
       />
 
       <Dialog open={confirmOpen} onClose={handleConfirmClose}>
@@ -339,6 +367,7 @@ const YkvLogoutFunction = ({
             pageSize={5}
             rowsPerPageOptions={[5, 10, 20]}
             getRowClassName={getRowClassName}
+            disableRowSelectionOnClick
           />
         </div>
       )}
@@ -368,6 +397,7 @@ const YkvLogoutFunction = ({
             pageSize={5}
             rowsPerPageOptions={[5, 10, 20]}
             getRowClassName={getRowClassName}
+            disableRowSelectionOnClick
           />
         </div>
       )}
