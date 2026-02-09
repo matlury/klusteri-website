@@ -87,7 +87,7 @@ const UserPage = ({
         />
         <TextField
           id="telegram"
-          label="Telegram"
+          label={t("telegram")}
           value={telegram}
           onChange={(e) => setTelegram(e.target.value)}
         />
