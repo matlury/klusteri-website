@@ -8,7 +8,7 @@ import { organizationsAPI } from "../api/api.ts";
 import AutomateCleanersDialog from "./AutomateCleanersDialog.jsx";
 import { useTranslation } from "react-i18next";
 
-export default function CleanersListAutomateButton({ updateNewData, setError}) {
+export default function CleanersListAutomateButton({ updateNewData, notifyError}) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -30,7 +30,7 @@ export default function CleanersListAutomateButton({ updateNewData, setError}) {
 
       // Check if orgdata is an array
       if (!Array.isArray(orgdata)) {
-        setError(t("cleaningautomatefail"));
+        notifyError(t("cleaningautomatefail"), "error");
         throw new Error("Unexpected API response format");
       }
 
@@ -53,10 +53,7 @@ export default function CleanersListAutomateButton({ updateNewData, setError}) {
       return list;
     } catch (error) {
       console.error("Error fetching organization data:", error);
-      setError(t("cleaningautomatefail"));
-      setTimeout(() => {
-        setError(null);
-      }, 5000);
+      notifyError(t("cleaningautomatefail"), "error");
     } finally {
       setLoading(false);
     }

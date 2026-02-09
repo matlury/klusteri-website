@@ -18,15 +18,11 @@ import { Role } from "../roles";
 const CleaningSchedule = () => {
   const { user: loggedUser } = useStateContext();
   const isLoggedIn = !!loggedUser;
-  const [open, setOpen] = useState(false);
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
   const [confirm, setConfirmOpen] = useState(false);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [allCleaning, setAllCleaning] = useState([]);
   const [rawCleaningData, setRawCleaningData] = useState(null);
   const [newData, setNewData] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
@@ -45,14 +41,6 @@ const CleaningSchedule = () => {
     setSnackbarSeverity(severity);
     setSnackbarOpen(true);
   }
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   const handleClickRemove = () => {
     setConfirmOpen(true);
@@ -74,7 +62,6 @@ const CleaningSchedule = () => {
     const orgdata = await organizationsAPI.getOrganizations();
 
     if (allCleaning.length > 0) {
-      setError(t("cleaningerrorold"));
       handleSnackbar(t("cleaningerrorold"), "error");
       return;
     }
@@ -106,16 +93,12 @@ const CleaningSchedule = () => {
     function confirmCleaning(cleaningObject) {
       cleaningAPI
         .createCleaning(cleaningObject)
-        .then((response) => {
-          setSuccess(t("cleaningsubmitsuccess"));
+        .then(() => {
           handleSnackbar(t("cleaningsubmitsuccess"), "success");
-          setTimeout(() => setSuccess(""), 5000);
           fetchCleaning();
         })
         .catch((error) => {
-          setError(t("cleaningsubmitfail"));
           handleSnackbar(t("cleaningsubmitfail"), "error");
-          setTimeout(() => setError(""), 5000);
           console.error("Error submitting cleaning", error);
         });
     }
@@ -124,17 +107,13 @@ const CleaningSchedule = () => {
   const handleRemoveFormSubmit = async () => {
     cleaningAPI
       .deleteAllCleaning()
-      .then((response) => {
+      .then(() => {
         fetchCleaning();
-        setSuccess(t("cleaningclearedsuccess"));
         handleSnackbar(t("cleaningclearedsuccess"), "success");
-        setTimeout(() => setSuccess(""), 5000);
       })
       .catch((error) => {
         console.error("Error deleting cleaners:", error + " " + error.response.data);
-        setError(t("cleaningclearfail"));
         handleSnackbar(t("cleaningclearfail"), "error");
-        setTimeout(() => setError(""), 5000);
       });
     setConfirmOpen(false);
   };
@@ -146,7 +125,7 @@ const CleaningSchedule = () => {
         const rawData = res.data;
         setRawCleaningData(rawData);
 
-        const cleaningData = rawData.map((u, index) => ({
+        const cleaningData = rawData.map((u) => ({
           id: u.week,
           week: u.week,
           date: moment().day("Monday").week(u.week),
@@ -154,7 +133,6 @@ const CleaningSchedule = () => {
           small: u.small.name,
         }));
         setAllCleaning(cleaningData);
-        setLoading(false);
       })
       .catch((error) => console.error(error));
   };
@@ -181,7 +159,7 @@ const CleaningSchedule = () => {
                 <CleanersListUploadButton setNewData={setNewData} onClick={() => handleFormSubmit(newData)} />
                 <CleanersListAutomateButton
                   updateNewData={setNewData}
-                  setError={setError} />
+                  notifyError={handleSnackbar} />
                 <Button
                   startIcon={<SaveOutlinedIcon />}
                   variant="contained"
