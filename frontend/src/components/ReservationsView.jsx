@@ -347,8 +347,8 @@ const ReservationsView = ({
               <Typography variant="body1">
                 {t("reservations_resp")}: {selectedEvent.responsible}
               </Typography>
-              <Typography variant="body1">
-                {t("reservations_desc")}: {selectedEvent.description}
+              <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                {t("reservations_desc")}: {selectedEvent.description || (<i>{t("nodescription")}</i>)}
               </Typography>
               <Typography variant="body1">
                 {t("reservations_openness")}: {selectedEvent.open === true ? t("reservations_open") : t("reservations_closed")}

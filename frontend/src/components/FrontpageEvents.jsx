@@ -46,6 +46,11 @@ const FrontpageEvents = ({ events }) => {
                 })}{" "}
                 @ {t(event.room)}
               </Typography>
+              <Typography variant="body2" sx={{ mt: 1.5, fontStyle: 'italic' }}>
+                {event.description && event.description.length > 100
+                  ? `${event.description.substring(0, 100)}...`
+                  : event.description}
+              </Typography>
             </CardContent>
             <CardActions sx={{ justifyContent: "center" }}>
               <Button size="small" onClick={() => handleClickOpen(event.id)}>
@@ -62,8 +67,8 @@ const FrontpageEvents = ({ events }) => {
               {event.title} - {event.organizer.name}
             </DialogTitle>
             <DialogContent>
-              <DialogContentText>
-                {event.description}
+              <DialogContentText sx={{ whiteSpace: 'pre-wrap' }}>
+                {event.description || (<i>{t("nodescription")}</i>)}
                 <br />
                 <br />
                 {event.start.toLocaleDateString("no-NO", {

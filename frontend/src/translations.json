@@ -406,6 +406,7 @@
       "loadingevents": "Ladataan tapahtumia...",
       "moredetails": "Lisätietoja",
       "noevents": "Ei tapahtumia",
+      "nodescription": "Ei kuvausta",
       "collapse": "Pienennä",
       "expand": "Laajenna"
     }
@@ -817,6 +818,7 @@
       "loadingevents": "Loading events...",
       "moredetails": "More details",
       "noevents": "No events",
+      "nodescription": "No description",
       "collapse": "Collapse",
       "expand": "Expand"
     }

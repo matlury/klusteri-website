@@ -307,11 +307,12 @@ class EventSerializer(serializers.ModelSerializer):
 class EventListSerializer(serializers.ModelSerializer):
     """Lightweight serializer for calendar and list views - Nested object for frontend compatibility"""
     organizer = OrganizationNameSerializer(read_only=True)
+    created_by = UserMinimalSerializer(read_only=True)
 
     class Meta:
         model = Event
         fields = ('id', 'start', 'end', 'title',
-                  'organizer', 'responsible', 'open', 'room')
+                  'organizer', 'responsible', 'open', 'room', 'description', 'created_by')
 
 
 class CreateEventSerializer(serializers.ModelSerializer):
