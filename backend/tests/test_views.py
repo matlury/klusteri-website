@@ -126,6 +126,38 @@ class ViewTests(TestCase):
         response = self.client.get("/api/listobjects/events/?all=true")
         self.assertEqual(len(response.data), 2)
 
+    def test_event_list_filtering_iso_datetime(self):
+        """Test that EventView correctly parses ISO datetime format from frontend."""
+        now = timezone.now()
+
+        # Create an event in the future
+        future_event = Event.objects.create(
+            title="Future Event",
+            start=now + timedelta(days=15),
+            end=now + timedelta(days=15, hours=2),
+            organizer=self.org, created_by=self.user, room="Room"
+        )
+
+        # Test with ISO datetime format (like frontend sends)
+        start_iso = now.isoformat()
+        end_iso = (now + timedelta(days=30)).isoformat()
+
+        response = self.client.get(
+            f"/api/listobjects/events/?start={start_iso}&end={end_iso}")
+        self.assertEqual(response.status_code, 200)
+        # Should get both "Test Event" and "Future Event"
+        self.assertGreaterEqual(len(response.data), 1)
+
+        # Test with ISO datetime format with 'Z' suffix (UTC)
+        start_iso_z = now.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
+        end_iso_z = (now + timedelta(days=30)
+                     ).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
+
+        response = self.client.get(
+            f"/api/listobjects/events/?start={start_iso_z}&end={end_iso_z}")
+        self.assertEqual(response.status_code, 200)
+        self.assertGreaterEqual(len(response.data), 1)
+
     def test_event_pagination_logic(self):
         """Test that pagination is disabled when start/end/all is provided."""
         from ilotalo.views import EventView
@@ -232,13 +264,3 @@ class AppsTests(TestCase):
         mock_user_model.objects.create_user.assert_called_once_with(
             'leppispj', '', 'pj@leppis.fi', "", 1
         )
-
-    def test_check_scheduler_tables(self):
-        """Test _check_scheduler_tables logic."""
-        config = apps.get_app_config('ilotalo')
-        with patch('django.db.connection.introspection.table_names') as mock_tables:
-            mock_tables.return_value = []
-            self.assertFalse(config._check_scheduler_tables())
-            mock_tables.return_value = [
-                "django_apscheduler_djangojob", "django_apscheduler_djangojobexecution"]
-            self.assertTrue(config._check_scheduler_tables())

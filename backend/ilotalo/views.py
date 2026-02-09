@@ -435,16 +435,38 @@ class EventView(viewsets.ReadOnlyModelViewSet):
         all_time = self.request.query_params.get('all')
 
         if start_date:
-            # Parse date string to timezone-aware datetime
-            start_dt = datetime.strptime(start_date, '%Y-%m-%d')
-            start_dt = timezone.make_aware(start_dt, dt_timezone.utc)
+            # Parse ISO datetime string (handles both 'YYYY-MM-DD' and 'YYYY-MM-DDTHH:MM:SS.sssZ')
+            # Fix URL encoding: '+' becomes ' ' in query params, restore it
+            start_date_normalized = start_date.replace(
+                ' ', '+').replace('Z', '+00:00')
+            try:
+                start_dt = datetime.fromisoformat(start_date_normalized)
+            except ValueError:
+                # Fallback to date-only parsing for backwards compatibility
+                start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+                start_dt = timezone.make_aware(start_dt, dt_timezone.utc)
+
+            # Ensure timezone-aware
+            if timezone.is_naive(start_dt):
+                start_dt = timezone.make_aware(start_dt, dt_timezone.utc)
             queryset = queryset.filter(start__gte=start_dt)
+
         if end_date:
-            # Parse date string to timezone-aware datetime
-            end_dt = datetime.strptime(end_date, '%Y-%m-%d')
-            # Set to end of day
-            end_dt = end_dt.replace(hour=23, minute=59, second=59)
-            end_dt = timezone.make_aware(end_dt, dt_timezone.utc)
+            # Parse ISO datetime string (handles both 'YYYY-MM-DD' and 'YYYY-MM-DDTHH:MM:SS.sssZ')
+            # Fix URL encoding: '+' becomes ' ' in query params, restore it
+            end_date_normalized = end_date.replace(
+                ' ', '+').replace('Z', '+00:00')
+            try:
+                end_dt = datetime.fromisoformat(end_date_normalized)
+            except ValueError:
+                # Fallback to date-only parsing for backwards compatibility
+                end_dt = datetime.strptime(end_date, '%Y-%m-%d')
+                end_dt = end_dt.replace(hour=23, minute=59, second=59)
+                end_dt = timezone.make_aware(end_dt, dt_timezone.utc)
+
+            # Ensure timezone-aware
+            if timezone.is_naive(end_dt):
+                end_dt = timezone.make_aware(end_dt, dt_timezone.utc)
             queryset = queryset.filter(end__lte=end_dt)
 
         # Default to current month if no filters are provided and 'all' is not requested.

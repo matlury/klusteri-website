@@ -65,7 +65,7 @@ npm run dev
 ### Backend Testing Tips
 - **Run in Docker**: If local environment setup is complex, run tests inside the container:
   ```bash
-  docker exec ilotalo-new-api-1 pytest tests/test_views.py
+  docker exec ilotalo-new-api-1 pytest tests/test_views.py -n auto
   ```
 - **Test Settings**: Pytest uses `backend/test_settings.py` (via `pytest.ini`). This enables `TESTING = True`.
 - **Database**: Django's `TestCase` automatically handles database creation/tear-down and wraps tests in transactions.
