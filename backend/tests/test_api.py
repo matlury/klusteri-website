@@ -581,7 +581,7 @@ class TestDjangoAPI(TestCase):
             "password": "testpassword123",
             "email": "testuser@example.com",
             "telegram": "testuser_tg",
-            "role": 5, # Tavallinen user
+            "role": 5,  # Tavallinen user
         }
         response = self.client.post(
             "http://localhost:8000/api/users/register",
@@ -1442,8 +1442,9 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(ykv_created.data["logout_time"][:19], current_time.strftime(
-            "%Y-%m-%dT%H:%M:%S"))
+        # Verify logout_time remains unchanged since role 5 user cannot modify it
+        self.assertEqual(
+            ykv_created.data["logout_time"][:16], "1970-01-02T14:00")
 
     def test_logout_ykv_empty(self):
         """An authorized user can logout ykv"""
@@ -2291,7 +2292,8 @@ class TestDjangoAPI(TestCase):
         response = self.client.put(
             f"http://localhost:8000/api/users/update/{self.tavallinen_id}/",
             headers={"Authorization": f"Bearer {self.access_token}"},
-            data={"password": new_password, "current_password": "vahvaSalasana1234"},
+            data={"password": new_password,
+                  "current_password": "vahvaSalasana1234"},
             format="json",
         )
 

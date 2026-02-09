@@ -169,7 +169,7 @@ class YKVTests(TestCase):
 
         with patch('ilotalo.views.datetime') as mock_datetime:
             # Set "now" to 8:00 AM today (after 7:15 AM threshold)
-            fixed_now = datetime(now.year, now.month, now.day, 8, 0)
+            fixed_now = now.replace(hour=8, minute=0, second=0, microsecond=0)
             mock_datetime.now.return_value = fixed_now
             mock_datetime.strptime.side_effect = datetime.strptime
 

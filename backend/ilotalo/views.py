@@ -25,7 +25,7 @@ from .serializers import (
 )
 from .models import User, Organization, Event, NightResponsibility, DefectFault, Cleaning, CleaningSupplies
 from .config import Role
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone as dt_timezone
 from django.utils import timezone
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer
@@ -435,14 +435,22 @@ class EventView(viewsets.ReadOnlyModelViewSet):
         all_time = self.request.query_params.get('all')
 
         if start_date:
-            queryset = queryset.filter(start__gte=start_date)
+            # Parse date string to timezone-aware datetime
+            start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+            start_dt = timezone.make_aware(start_dt, dt_timezone.utc)
+            queryset = queryset.filter(start__gte=start_dt)
         if end_date:
-            queryset = queryset.filter(end__lte=end_date)
+            # Parse date string to timezone-aware datetime
+            end_dt = datetime.strptime(end_date, '%Y-%m-%d')
+            # Set to end of day
+            end_dt = end_dt.replace(hour=23, minute=59, second=59)
+            end_dt = timezone.make_aware(end_dt, dt_timezone.utc)
+            queryset = queryset.filter(end__lte=end_dt)
 
         # Default to current month if no filters are provided and 'all' is not requested.
         # This prevents loading thousands of historical events by accident.
         if not start_date and not end_date and not all_time:
-            now = datetime.now()
+            now = timezone.now()
             queryset = queryset.filter(
                 start__year=now.year, start__month=now.month)
 
@@ -1119,8 +1127,7 @@ def force_logout_ykv_logins():
     except ObjectDoesNotExist:
         return "Nothing to log out"
 
-    datetime_format = "%Y-%m-%d %H:%M"
-    logout_time = datetime.strptime(str(datetime.now())[:-10], datetime_format)
+    logout_time = timezone.now()
 
     for resp in responsibility_to_update:
         data = {'late': True,
