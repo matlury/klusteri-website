@@ -318,14 +318,16 @@ const OrganisationPage = ({
                       />
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Tooltip title={hasResRights ? t("removeresrights") : t("addresrights")}>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleToggleResRights(user.id, user.rights_for_reservation)}
-                            disabled={isPendingRemoval || !canManageResRights}
-                            color={resRightsChanged ? "primary" : "default"}
-                          >
-                            {hasResRights ? <EventAvailableIcon color="success" /> : <EventBusyIcon color="error" />}
-                          </IconButton>
+                          <span>
+                            <IconButton
+                              size="small"
+                              onClick={() => handleToggleResRights(user.id, user.rights_for_reservation)}
+                              disabled={isPendingRemoval || !canManageResRights}
+                              color={resRightsChanged ? "primary" : "default"}
+                            >
+                              {hasResRights ? <EventAvailableIcon color="success" /> : <EventBusyIcon color="error" />}
+                            </IconButton>
+                          </span>
                         </Tooltip>
                         <IconButton edge="end" onClick={() => handleToggleRemoveKeyholder(user.id)}>
                           {isPendingRemoval ? <RestoreIcon /> : <ClearIcon />}
@@ -350,13 +352,15 @@ const OrganisationPage = ({
                       />
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Tooltip title={hasResRights ? t("removeresrights") : t("addresrights")}>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleToggleResRights(user.id, user.rights_for_reservation)}
-                            disabled={!canManageResRights}
-                          >
-                            {hasResRights ? <EventAvailableIcon color="success" /> : <EventBusyIcon color="error" />}
-                          </IconButton>
+                          <span>
+                            <IconButton
+                              size="small"
+                              onClick={() => handleToggleResRights(user.id, user.rights_for_reservation)}
+                              disabled={!canManageResRights}
+                            >
+                              {hasResRights ? <EventAvailableIcon color="success" /> : <EventBusyIcon color="error" />}
+                            </IconButton>
+                          </span>
                         </Tooltip>
                         <IconButton edge="end" onClick={() => handleRemovePendingAddition(user.id)}>
                           <ClearIcon />
@@ -412,11 +416,12 @@ const OrganisationPage = ({
               <DeleteIcon /> {t("deleteorg")}
             </Button>
             <div style={{ flexGrow: 1 }} />
-            <Button onClick={handleClose}>{t("cancel")}</Button>
+            <Button onClick={handleClose} data-testid="cancel-org-edit">{t("cancel")}</Button>
             <Button
               variant="contained"
               color="primary"
               id="confirm_org_change"
+              data-testid="confirm-org-edit"
               className="confirm_org_change"
               onClick={handleFormSubmit}
             >

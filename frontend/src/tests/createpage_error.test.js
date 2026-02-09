@@ -25,7 +25,9 @@ test("unexpected error", async () => {
     fireEvent.change(password2Input, { target: { value: "salasana1" } });
     fireEvent.change(usernameInput, { target: { value: "testuser" } });
 
-    fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    await waitFor(() => {
+        fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    });
 
     await waitFor(() => {
         expect(getByText("Virhe käyttäjän luonnissa.")).toBeInTheDocument();

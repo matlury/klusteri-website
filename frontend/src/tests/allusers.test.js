@@ -112,7 +112,9 @@ test("opens and populates the user details dialog", async () => {
     expect(screen.getByText("user1@example.com")).toBeInTheDocument();
   });
 
-  fireEvent.click(screen.getByTestId("edit-button-1"));
+  await waitFor(() => {
+    fireEvent.click(screen.getByTestId("edit-button-1"));
+  });
 
   await waitFor(() => {
     expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -154,13 +156,17 @@ test(
       expect(screen.getByText("user1@example.com")).toBeInTheDocument();
     });
 
+    await waitFor(() => {
     fireEvent.click(screen.getByTestId("edit-button-1"));
+  });
 
     await waitFor(() => {
       expect(screen.getByRole("dialog")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByTestId("expand-key-accordion"));
+    await waitFor(() => {
+      fireEvent.click(screen.getByTestId("expand-key-accordion"));
+    });
 
     const orgDropdown = screen
       .getByTestId("organization-autocomplete")
@@ -173,7 +179,9 @@ test(
 
     fireEvent.click(screen.getByText("Org2"));
 
-    fireEvent.click(screen.getByTestId("submit-key-button"));
+    await waitFor(() => {
+      fireEvent.click(screen.getByTestId("submit-key-button"));
+    });
 
     await waitFor(() => {
       expect(mockHandleKeySubmit).toHaveBeenCalledWith(1, "Org2");
@@ -201,13 +209,17 @@ test("closes the dialog when cancel button is clicked", async () => {
     expect(screen.getByText("user1@example.com")).toBeInTheDocument();
   });
 
-  fireEvent.click(screen.getByTestId("edit-button-1"));
+  await waitFor(() => {
+    fireEvent.click(screen.getByTestId("edit-button-1"));
+  });
 
   await waitFor(() => {
     expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 
-  fireEvent.click(screen.getByTestId("cancel-button"));
+  await waitFor(() => {
+    fireEvent.click(screen.getByTestId("cancel-button"));
+  });
 
   await waitFor(() => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();

@@ -50,14 +50,18 @@ describe("DefectFault Component", () => {
     );
 
     // Simulate opening the defect creation dialog
-    fireEvent.click(screen.getByTestId("defectfaultdialog"));
+    await waitFor(() => {
+      fireEvent.click(screen.getByTestId("defectfaultdialog"));
+    });
 
     // Fill in the defect description
     const descriptionInput = screen.getByTestId("description").querySelector("input");
     fireEvent.change(descriptionInput, { target: { value: "jääkapin ovi rikki" } });
 
     // Simulate clicking the create button
-    fireEvent.click(screen.getByTestId("createdefect"));
+    await waitFor(() => {
+      fireEvent.click(screen.getByTestId("createdefect"));
+    });
 
     // Mock the response
     const responseObj = {

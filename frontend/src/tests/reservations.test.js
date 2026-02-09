@@ -40,7 +40,7 @@ describe("Reservations component", () => {
     expect(getByText("Varauskalenteri")).toBeInTheDocument();
   });
 
-  it("renders the booking form", () => {
+  it("renders the booking form", async () => {
     const { getByText, queryByText } = render(
       <ContextProvider>
         <Reservations />
@@ -48,7 +48,9 @@ describe("Reservations component", () => {
     );
 
     const reservationButton = getByText("Lisää uusi tapahtuma");
-    fireEvent.click(reservationButton);
+    await waitFor(() => {
+      fireEvent.click(reservationButton);
+    });
 
     expect(queryByText("Lisää tapahtuma")).toBeInTheDocument();
 
@@ -62,7 +64,9 @@ describe("Reservations component", () => {
     expect(endTimeField.value).toBe("2024-06-11T12:00");
 
     const closeButton = getByText("Sulje");
-    fireEvent.click(closeButton);
+    await waitFor(() => {
+      fireEvent.click(closeButton);
+    });
   });
 
   it("csv download button works", async () => {

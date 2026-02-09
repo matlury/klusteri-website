@@ -56,7 +56,9 @@ describe("Change Password Functionality", () => {
     await setupMocks();
 
     const changePasswordTab = getByText("Vaihda salasana");
-    fireEvent.click(changePasswordTab);
+    await waitFor(() => {
+      fireEvent.click(changePasswordTab);
+    });
 
     expect(getByLabelText("Vanha salasana")).toBeInTheDocument();
     expect(getByLabelText("Uusi salasana")).toBeInTheDocument();
@@ -74,14 +76,18 @@ describe("Change Password Functionality", () => {
     await setupMocks();
 
     const changePasswordTab = getByText("Vaihda salasana");
-    fireEvent.click(changePasswordTab);
+    await waitFor(() => {
+      fireEvent.click(changePasswordTab);
+    });
 
     fireEvent.change(getByLabelText("Vanha salasana"), { target: { value: "oldpassword123" } });
     fireEvent.change(getByLabelText("Uusi salasana"), { target: { value: "newpassword123" } });
     fireEvent.change(getByLabelText("Vahvista uusi salasana"), { target: { value: "newpassword123" } });
 
     const saveButton = getByTestId("savepassword");
-    fireEvent.click(saveButton);
+    await waitFor(() => {
+      fireEvent.click(saveButton);
+    });
 
     await waitFor(() => expect(mockAxios.put).toHaveBeenCalled());
 
@@ -114,14 +120,18 @@ describe("Change Password Functionality", () => {
     await setupMocks();
 
     const changePasswordTab = getByText("Vaihda salasana");
-    fireEvent.click(changePasswordTab);
+    await waitFor(() => {
+      fireEvent.click(changePasswordTab);
+    });
 
     fireEvent.change(getByLabelText("Vanha salasana"), { target: { value: "oldpassword123" } });
     fireEvent.change(getByLabelText("Uusi salasana"), { target: { value: "newpassword123" } });
     fireEvent.change(getByLabelText("Vahvista uusi salasana"), { target: { value: "wrongpassword" } });
 
     const saveButton = getByTestId("savepassword");
-    fireEvent.click(saveButton);
+    await waitFor(() => {
+      fireEvent.click(saveButton);
+    });
 
     await waitFor(() => {
       const snackbar = getByTestId("snackbar");
@@ -141,14 +151,18 @@ describe("Change Password Functionality", () => {
     await setupMocks();
 
     const changePasswordTab = getByText("Vaihda salasana");
-    fireEvent.click(changePasswordTab);
+    await waitFor(() => {
+      fireEvent.click(changePasswordTab);
+    });
 
     fireEvent.change(getByLabelText("Vanha salasana"), { target: { value: "oldpassword123" } });
     fireEvent.change(getByLabelText("Uusi salasana"), { target: { value: "short" } });
     fireEvent.change(getByLabelText("Vahvista uusi salasana"), { target: { value: "short" } });
 
     const saveButton = getByTestId("savepassword");
-    fireEvent.click(saveButton);
+    await waitFor(() => {
+      fireEvent.click(saveButton);
+    });
 
     await waitFor(() => {
       const snackbar = getByTestId("snackbar");
@@ -169,22 +183,28 @@ describe("Change Password Functionality", () => {
     await setupMocks();
 
     const changePasswordTab = getByText("Vaihda salasana");
-    fireEvent.click(changePasswordTab);
+    await waitFor(() => {
+      fireEvent.click(changePasswordTab);
+    });
 
     fireEvent.change(getByLabelText("Vanha salasana"), { target: { value: "wrongold" } });
     fireEvent.change(getByLabelText("Uusi salasana"), { target: { value: "newpassword123" } });
     fireEvent.change(getByLabelText("Vahvista uusi salasana"), { target: { value: "newpassword123" } });
 
     const saveButton = getByTestId("savepassword");
-    fireEvent.click(saveButton);
+    await waitFor(() => {
+      fireEvent.click(saveButton);
+    });
 
     await waitFor(() => expect(mockAxios.put).toHaveBeenCalled());
 
-    mockAxios.mockError({
-      response: {
-        status: 400,
-        data: { current_password: ["Invalid password"] }
-      }
+    await waitFor(() => {
+      mockAxios.mockError({
+        response: {
+          status: 400,
+          data: { current_password: ["Invalid password"] }
+        }
+      });
     });
 
     await waitFor(() => {

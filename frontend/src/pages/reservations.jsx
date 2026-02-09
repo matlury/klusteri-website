@@ -74,25 +74,27 @@ const MyCalendar = () => {
     setViewDate(newDate);
   };
 
-  const startRef = useRef(0);
-  const endRef = useRef(0);
+  const startRef = useRef({ value: "" });
+  const endRef = useRef({ value: "" });
 
-  const [startTime, setStartTime] = useState(startRef.current.value);
-  const [endTime, setEndTime] = useState(endRef.current.value);
-
-  useEffect(() => {
-    setStartTime(startRef.current.value);
-  }, [startRef.current.value]);
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
 
   useEffect(() => {
-    if (typeof endRef.current.value !== 'undefined') {
+    if (startRef.current) {
+      setStartTime(startRef.current.value || "");
+    }
+  }, [startRef.current?.value]);
+
+  useEffect(() => {
+    if (endRef.current && typeof endRef.current.value !== 'undefined' && endRef.current.value !== "") {
       const date = new Date(endRef.current.value);
       date.setTime(date.getTime() - (date.getTimezoneOffset() * 60 * 1000) - (1000 * 60));
       setEndTime(date.toISOString().slice(0, 16));
-    } else {
-      setEndTime(endRef.current.value);
+    } else if (endRef.current) {
+      setEndTime(endRef.current.value || "");
     }
-  }, [endRef.current.value]);
+  }, [endRef.current?.value]);
 
   // Gets events for the current view from backend
   const getEvents = (date, isPrefetch = false) => {

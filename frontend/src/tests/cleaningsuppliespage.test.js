@@ -50,14 +50,18 @@ describe("Cleaningsupplies Component", () => {
     );
 
     // Simulate opening of the dialog for creating new cleaning tool:
-    fireEvent.click(screen.getByTestId("addcleaningsupplies"));
+    await waitFor(() => {
+      fireEvent.click(screen.getByTestId("addcleaningsupplies"));
+    });
 
     // Fill in the defect description
     const descriptionInput = screen.getByTestId("description").querySelector("input");
     fireEvent.change(descriptionInput, { target: { value: "imuri" } });
 
     // Simulate clicking the create button
-    fireEvent.click(screen.getByTestId("createtool"));
+    await waitFor(() => {
+      fireEvent.click(screen.getByTestId("createtool"));
+    });
 
     // Mock the response
     const responseObj = {
@@ -128,10 +132,14 @@ describe("Cleaningsupplies Component", () => {
     expect(await screen.findByText("imuri")).toBeInTheDocument();
 
     // // Simulate clicking the trashcan for delete:
-    fireEvent.click(screen.getByTestId("delete-tool-button"));
+    await waitFor(() => {
+      fireEvent.click(screen.getByTestId("delete-tool-button"));
+    });
 
 
-    fireEvent.click(screen.getByTestId("confirmdelete"));
+    await waitFor(() => {
+      fireEvent.click(screen.getByTestId("confirmdelete"));
+    });
 
     //   await waitFor(() => {
     //   expect(screen.getByText("Siivousvälineen poisto onnistui")).toBeInTheDocument();

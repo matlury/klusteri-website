@@ -65,7 +65,9 @@ describe("OwnKeys Component", () => {
   
       // open the create dialog and assert fields inside
       const createBtn = getByTestId("opencreateform");
-      fireEvent.click(createBtn);
+      await waitFor(() => {
+        fireEvent.click(createBtn);
+      });
       await waitFor(() => {
         expect(getByText("Kenestä otat vastuun?")).toBeInTheDocument();
         expect(getByText("Kirjaa toisen käyttäjän puolesta")).toBeInTheDocument();
@@ -108,11 +110,15 @@ describe("OwnKeys Component", () => {
         mockAxios.mockResponseFor({ url: "listobjects/nightresponsibilities/" }, { data: [] });
       });
       const create_form = getByTestId("opencreateform");
-      fireEvent.click(create_form);
+      await waitFor(() => {
+        fireEvent.click(create_form);
+      });
       const resp_field_input = await findByRole("textbox", { name: "Kenestä otat vastuun?" });
       fireEvent.change(resp_field_input, { target: { value: "fuksit" } });
       const respButton = getByTestId("createresponsibility");
-      fireEvent.click(respButton);
+      await waitFor(() => {
+        fireEvent.click(respButton);
+      });
   
       await waitFor(() => expect(mockAxios.post).toHaveBeenCalled());
       await waitFor(() => {

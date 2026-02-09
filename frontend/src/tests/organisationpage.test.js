@@ -108,7 +108,9 @@ describe("OrganisationPage", () => {
     );
 
     const editButtons = screen.getAllByRole("button", { name: "" }).filter(btn => btn.id === "modify_org");
-    fireEvent.click(editButtons[0]);
+    await waitFor(() => {
+      fireEvent.click(editButtons[0]);
+    });
 
     expect(await screen.findByText("editorg")).toBeInTheDocument();
     expect(organizationsAPI.getOrganization).toHaveBeenCalledWith(1);
@@ -116,6 +118,10 @@ describe("OrganisationPage", () => {
     expect(screen.getByDisplayValue("Matrix")).toBeInTheDocument();
     expect(screen.getByText("admin")).toBeInTheDocument();
     expect(screen.getByText("user")).toBeInTheDocument();
+
+    await waitFor(() => {
+      fireEvent.click(screen.getByTestId("cancel-org-edit"));
+    });
   });
 
   test("can toggle pending keyholder removal", async () => {
@@ -131,7 +137,9 @@ describe("OrganisationPage", () => {
       />
     );
 
-    fireEvent.click(screen.getAllByRole("button").find(btn => btn.id === "modify_org"));
+    await waitFor(() => {
+      fireEvent.click(screen.getAllByRole("button").find(btn => btn.id === "modify_org"));
+    });
 
     await waitFor(() => screen.getByText("admin"));
 
@@ -139,8 +147,12 @@ describe("OrganisationPage", () => {
     const adminItem = listItems.find(item => item.textContent.includes("admin"));
     const removeBtn = adminItem.querySelectorAll('button')[1];
 
-    fireEvent.click(removeBtn);
-    fireEvent.click(screen.getByText("confirmchanges"));
+    await waitFor(() => {
+      fireEvent.click(removeBtn);
+    });
+    await waitFor(() => {
+      fireEvent.click(screen.getByText("confirmchanges"));
+    });
 
     expect(window.confirm).toHaveBeenCalledWith(expect.stringContaining("removing_keys: admin"));
   });
@@ -158,7 +170,9 @@ describe("OrganisationPage", () => {
       />
     );
 
-    fireEvent.click(screen.getAllByRole("button").find(btn => btn.id === "modify_org"));
+    await waitFor(() => {
+      fireEvent.click(screen.getAllByRole("button").find(btn => btn.id === "modify_org"));
+    });
 
     await waitFor(() => screen.getByText("user"));
 
@@ -166,8 +180,12 @@ describe("OrganisationPage", () => {
     const userItem = listItems.find(item => item.textContent.includes("user"));
     const resRightsBtn = userItem.querySelectorAll('button')[0];
 
-    fireEvent.click(resRightsBtn);
-    fireEvent.click(screen.getByText("confirmchanges"));
+    await waitFor(() => {
+      fireEvent.click(resRightsBtn);
+    });
+    await waitFor(() => {
+      fireEvent.click(screen.getByText("confirmchanges"));
+    });
 
     expect(window.confirm).toHaveBeenCalledWith(expect.stringContaining("user: addresrights"));
   });
@@ -185,7 +203,9 @@ describe("OrganisationPage", () => {
       />
     );
 
-    fireEvent.click(screen.getAllByRole("button").find(btn => btn.id === "modify_org"));
+    await waitFor(() => {
+      fireEvent.click(screen.getAllByRole("button").find(btn => btn.id === "modify_org"));
+    });
 
     await waitFor(() => screen.getByLabelText("chooseuser"));
 
@@ -194,11 +214,15 @@ describe("OrganisationPage", () => {
     fireEvent.keyDown(autocomplete, { key: "ArrowDown" });
     fireEvent.keyDown(autocomplete, { key: "Enter" });
 
-    fireEvent.click(screen.getByText("add"));
+    await waitFor(() => {
+      fireEvent.click(screen.getByText("add"));
+    });
 
     expect(screen.getByText("newbie")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText("confirmchanges"));
+    await waitFor(() => {
+      fireEvent.click(screen.getByText("confirmchanges"));
+    });
     expect(window.confirm).toHaveBeenCalledWith(expect.stringContaining("adding_keys: newbie"));
   });
 
@@ -215,7 +239,9 @@ describe("OrganisationPage", () => {
       />
     );
 
-    fireEvent.click(screen.getAllByRole("button").find(btn => btn.id === "modify_org"));
+    await waitFor(() => {
+      fireEvent.click(screen.getAllByRole("button").find(btn => btn.id === "modify_org"));
+    });
     await waitFor(() => screen.getByText("user"));
 
     const nameInput = document.getElementById("organization_name");
@@ -225,7 +251,9 @@ describe("OrganisationPage", () => {
     const userItem = listItems.find(item => item.textContent.includes("user"));
     fireEvent.click(userItem.querySelectorAll('button')[0]);
 
-    fireEvent.click(screen.getByText("confirmchanges"));
+    await waitFor(() => {
+      fireEvent.click(screen.getByTestId("confirm-org-edit"));
+    });
 
     await waitFor(() => {
       expect(mockHandleOrganizationDetails).toHaveBeenCalledWith(
@@ -253,10 +281,14 @@ describe("OrganisationPage", () => {
       />
     );
 
-    fireEvent.click(screen.getAllByRole("button").find(btn => btn.id === "modify_org"));
+    await waitFor(() => {
+      fireEvent.click(screen.getAllByRole("button").find(btn => btn.id === "modify_org"));
+    });
     await waitFor(() => screen.getByText("deleteorg"));
 
-    fireEvent.click(screen.getByText("deleteorg"));
+    await waitFor(() => {
+      fireEvent.click(screen.getByText("deleteorg"));
+    });
 
     await waitFor(() => {
       expect(mockHandleDeleteOrganization).toHaveBeenCalledWith(1);
@@ -277,7 +309,9 @@ describe("OrganisationPage", () => {
       />
     );
 
-    fireEvent.click(screen.getAllByRole("button").find(btn => btn.id === "modify_org"));
+    await waitFor(() => {
+      fireEvent.click(screen.getAllByRole("button").find(btn => btn.id === "modify_org"));
+    });
     await waitFor(() => screen.getByText("user"));
 
     const listItems = screen.getAllByRole("listitem");
@@ -301,11 +335,42 @@ describe("OrganisationPage", () => {
       />
     );
 
-    fireEvent.click(screen.getAllByRole("button").find(btn => btn.id === "modify_org"));
+    await waitFor(() => {
+      fireEvent.click(screen.getAllByRole("button").find(btn => btn.id === "modify_org"));
+    });
     await waitFor(() => screen.getByText("user"));
 
-    fireEvent.click(screen.getByText("confirmchanges"));
+    await waitFor(() => {
+      fireEvent.click(screen.getByTestId("confirm-org-edit"));
+    });
 
     expect(mockHandleOrganizationDetails).not.toHaveBeenCalled();
+  });
+
+  test("can close dialog with cancel button", async () => {
+    render(
+      <OrganisationPage
+        organizations={mockOrganizations}
+        allUsers={mockAllUsers}
+        hasPermissionOrg={true}
+        handleOrganizationDetails={mockHandleOrganizationDetails}
+        handleDeleteOrganization={mockHandleDeleteOrganization}
+        fetchOrganizations={mockFetchOrganizations}
+        currentUserRole={Role.LEPPISPJ}
+      />
+    );
+
+    await waitFor(() => {
+      fireEvent.click(screen.getAllByRole("button").find(btn => btn.id === "modify_org"));
+    });
+    await screen.findByRole("dialog");
+
+    await waitFor(() => {
+      fireEvent.click(screen.getByTestId("cancel-org-edit"));
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText("editorg")).not.toBeInTheDocument();
+    });
   });
 });

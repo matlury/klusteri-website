@@ -12,7 +12,9 @@ describe("NewAccountPage", () => {
   test("displays error when fields are empty", async () => {
     const { getByText, getByRole } = render(<NewAccountPage />);
 
-    fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    await waitFor(() => {
+      fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    });
 
     await waitFor(() => {
       expect(
@@ -36,7 +38,9 @@ describe("NewAccountPage", () => {
     fireEvent.change(password2Input, { target: { value: "password234" } });
     fireEvent.change(usernameInput, { target: { value: "testuser" } });
 
-    fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    await waitFor(() => {
+      fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    });
 
     await waitFor(() => {
       expect(getByText("Salasanat eivät täsmää.")).toBeTruthy();
@@ -58,7 +62,9 @@ describe("NewAccountPage", () => {
       target: { value: "testuseronliianpitkänimi123456" },
     });
 
-    fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    await waitFor(() => {
+      fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    });
 
     await waitFor(() => {
       expect(
@@ -86,7 +92,9 @@ describe("NewAccountPage", () => {
     });
     fireEvent.change(usernameInput, { target: { value: "testuser" } });
 
-    fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    await waitFor(() => {
+      fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    });
 
     await waitFor(() => {
       expect(
@@ -108,7 +116,9 @@ describe("NewAccountPage", () => {
     fireEvent.change(password2Input, { target: { value: "pass12" } });
     fireEvent.change(usernameInput, { target: { value: "testuser" } });
 
-    fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    await waitFor(() => {
+      fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    });
 
     await waitFor(() => {
       expect(
@@ -130,7 +140,9 @@ describe("NewAccountPage", () => {
     fireEvent.change(password2Input, { target: { value: "12345678" } });
     fireEvent.change(usernameInput, { target: { value: "testuser" } });
 
-    fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    await waitFor(() => {
+      fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    });
 
     await waitFor(() => {
       expect(
@@ -152,7 +164,9 @@ describe("NewAccountPage", () => {
     fireEvent.change(password2Input, { target: { value: "salasanaaaaa" } });
     fireEvent.change(usernameInput, { target: { value: "testuser" } });
 
-    fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    await waitFor(() => {
+      fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    });
 
     await waitFor(() => {
       expect(
@@ -184,7 +198,9 @@ describe("Createpage", () => {
     fireEvent.change(password2Input, { target: { value: "salasana1" } });
     fireEvent.change(usernameInput, { target: { value: "testuser" } });
 
-    fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    await waitFor(() => {
+      fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    });
 
     await waitFor(() => {
       expect(mockAxios.post).toHaveBeenCalledWith("users/register", expect.objectContaining({
@@ -213,7 +229,9 @@ describe("Createpage", () => {
     fireEvent.change(password2Input, { target: { value: "salasana1" } });
     fireEvent.change(usernameInput, { target: { value: "testuser" } });
 
-    fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    await waitFor(() => {
+      fireEvent.click(getByRole('button', { name: /Luo tili/i }));
+    });
 
     await waitFor(() => {
       expect(mockAxios.post).toHaveBeenCalledWith("users/register", expect.objectContaining({
@@ -226,7 +244,8 @@ describe("Createpage", () => {
         response: {
           status: 400,
           data: { email: ["Sähköposti on jo käytössä."] }
-        }
+        },
+        isAxiosError: true
       });
     });
 
