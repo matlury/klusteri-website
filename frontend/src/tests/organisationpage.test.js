@@ -1,6 +1,6 @@
 import React from "react";
-import { render, fireEvent, waitFor, screen, act } from "@testing-library/react";
-import "@testing-library/jest-dom";
+import { render, fireEvent, waitFor, screen } from "@testing-library/react";
+import "@testing-library/dom";
 import OrganisationPage from "../components/OrganisationPage";
 import { Role } from "../roles";
 import { organizationsAPI, usersAPI } from "../api/api.ts";
@@ -110,10 +110,8 @@ describe("OrganisationPage", () => {
     const editButtons = screen.getAllByRole("button", { name: "" }).filter(btn => btn.id === "modify_org");
     fireEvent.click(editButtons[0]);
 
-    await waitFor(() => {
-      expect(screen.getByText("editorg")).toBeInTheDocument();
-      expect(organizationsAPI.getOrganization).toHaveBeenCalledWith(1);
-    });
+    expect(await screen.findByText("editorg")).toBeInTheDocument();
+    expect(organizationsAPI.getOrganization).toHaveBeenCalledWith(1);
 
     expect(screen.getByDisplayValue("Matrix")).toBeInTheDocument();
     expect(screen.getByText("admin")).toBeInTheDocument();
@@ -256,11 +254,9 @@ describe("OrganisationPage", () => {
     );
 
     fireEvent.click(screen.getAllByRole("button").find(btn => btn.id === "modify_org"));
-    await waitFor(() => screen.getByText("delete"));
+    await waitFor(() => screen.getByText("deleteorg"));
 
-    await act(async () => {
-      fireEvent.click(screen.getByText("delete"));
-    });
+    fireEvent.click(screen.getByText("deleteorg"));
 
     await waitFor(() => {
       expect(mockHandleDeleteOrganization).toHaveBeenCalledWith(1);

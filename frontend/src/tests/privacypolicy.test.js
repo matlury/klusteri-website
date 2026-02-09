@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react";
-import "@testing-library/jest-dom";
+import "@testing-library/dom";
 import PrivacyPolicy from "../../src/pages/privacypolicy";
 import i18n from "../i18n.js";
 

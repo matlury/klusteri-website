@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 import ChristinaRegina from "../../src/pages/christina_regina";
-import "@testing-library/jest-dom";
+import "@testing-library/dom";
 
 localStorage.setItem("lang", "fi")
 

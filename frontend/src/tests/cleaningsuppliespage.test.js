@@ -2,10 +2,9 @@ import {
   render,
   fireEvent,
   waitFor,
-  screen,
+  screen
 } from "@testing-library/react";
-import { act } from "react";
-import "@testing-library/jest-dom";
+import "@testing-library/dom";
 import CleaningSupplies from "../../src/pages/cleaningsuppliespage.jsx";
 import mockAxios from "../../__mocks__/axios";
 import { ContextProvider } from "@context/ContextProvider";
@@ -73,22 +72,20 @@ describe("Cleaningsupplies Component", () => {
     // Wait for the axios requests to complete
     await waitFor(() => {
       // Mock the axios post request
-      act(() => {
-        mockAxios.mockResponseFor({ url: "cleaningsupplies/create_tool" }, responseObj);
-      });
-
-      expect(mockAxios.post).toHaveBeenCalledWith(
-        "cleaningsupplies/create_tool",
-        {
-          tool: "imuri",
-        }
-      );
-
-      expect(mockAxios.get).toHaveBeenCalledWith("listobjects/cleaningsupplies/");
+      mockAxios.mockResponseFor({ url: "cleaningsupplies/create_tool" }, responseObj);
     });
 
+    expect(mockAxios.post).toHaveBeenCalledWith(
+      "cleaningsupplies/create_tool",
+      {
+        tool: "imuri",
+      }
+    );
+
+    expect(mockAxios.get).toHaveBeenCalledWith("listobjects/cleaningsupplies/");
+
     // Check if the description appears in the document
-    expect(screen.getByText("Siivousvälineen luonti onnistui")).toBeInTheDocument();
+    expect(await screen.findByText("Siivousvälineen luonti onnistui")).toBeInTheDocument();
   });
 
   it("deleting a cleaning tool succeeds", async () => {
@@ -125,14 +122,10 @@ describe("Cleaningsupplies Component", () => {
 
     await waitFor(() => {
       // Mock the axios get request
-      act(() => {
-        mockAxios.mockResponseFor({ url: "listobjects/cleaningsupplies/" }, responseObj);
-      });
+      mockAxios.mockResponseFor({ url: "listobjects/cleaningsupplies/" }, responseObj);
     })
 
-    await waitFor(() => {
-      expect(screen.getByText("imuri")).toBeInTheDocument();
-    });
+    expect(await screen.findByText("imuri")).toBeInTheDocument();
 
     // // Simulate clicking the trashcan for delete:
     fireEvent.click(screen.getByTestId("delete-tool-button"));

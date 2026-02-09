@@ -1,11 +1,10 @@
-import "@testing-library/jest-dom";
+import "@testing-library/dom";
 import {
   render,
   waitFor,
   fireEvent,
-  within,
+  within
 } from "@testing-library/react";
-import { act } from "react";
 import OwnPage from "../pages/ownpage";
 import mockAxios from "../../__mocks__/axios";
 import { ContextProvider } from "@context/ContextProvider";
@@ -36,19 +35,13 @@ beforeEach(() => {
 const setupMocks = async () => {
   // Mock initial requests
   await waitFor(() => {
-    act(() => {
-      mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
-    });
+    mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
   });
   await waitFor(() => {
-    act(() => {
-      mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
-    });
+    mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
   });
   await waitFor(() => {
-    act(() => {
-      mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [] });
-    });
+    mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [] });
   });
 };
 
@@ -91,8 +84,8 @@ describe("Change Password Functionality", () => {
     fireEvent.click(saveButton);
 
     await waitFor(() => expect(mockAxios.put).toHaveBeenCalled());
-    
-    act(() => {
+
+    await waitFor(() => {
       mockAxios.mockResponse({ data: user });
     });
 
@@ -186,7 +179,7 @@ describe("Change Password Functionality", () => {
     fireEvent.click(saveButton);
 
     await waitFor(() => expect(mockAxios.put).toHaveBeenCalled());
-    
+
     mockAxios.mockError({
       response: {
         status: 400,

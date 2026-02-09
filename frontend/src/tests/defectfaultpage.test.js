@@ -2,10 +2,9 @@ import {
   render,
   fireEvent,
   waitFor,
-  screen,
+  screen
 } from "@testing-library/react";
-import { act } from "react";
-import "@testing-library/jest-dom";
+import "@testing-library/dom";
 import DefectFault from "../../src/pages/defectfaultpage";
 import mockAxios from "../../__mocks__/axios";
 import { ContextProvider } from "@context/ContextProvider";
@@ -76,21 +75,19 @@ describe("DefectFault Component", () => {
     // Wait for the axios requests to complete
     await waitFor(() => {
       // Mock the axios post request
-      act(() => {
-        mockAxios.mockResponseFor({ url: "defects/create_defect" }, responseObj);
-      });
-
-      expect(mockAxios.post).toHaveBeenCalledWith(
-        "defects/create_defect",
-        {
-          description: "jääkapin ovi rikki",
-        }
-      );
-
-      expect(mockAxios.get).toHaveBeenCalledWith("listobjects/defects/");
+      mockAxios.mockResponseFor({ url: "defects/create_defect" }, responseObj);
     });
 
+    expect(mockAxios.post).toHaveBeenCalledWith(
+      "defects/create_defect",
+      {
+        description: "jääkapin ovi rikki",
+      }
+    );
+
+    expect(mockAxios.get).toHaveBeenCalledWith("listobjects/defects/");
+
     // Check if the description appears in the document
-    expect(screen.getByText("Vian kirjaus onnistui")).toBeInTheDocument();
+    expect(await screen.findByText("Vian kirjaus onnistui")).toBeInTheDocument();
   });
 });

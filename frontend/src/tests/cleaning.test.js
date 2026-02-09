@@ -1,10 +1,10 @@
-import React, { act } from 'react';
+import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import CleaningSchedule from '../pages/cleaningschedulepage.jsx';
 import CleanersList from '../components/CleanersList.jsx';
 import mockAxios from "../../__mocks__/axios";
 import { ContextProvider } from "@context/ContextProvider";
-import "@testing-library/jest-dom";
+import "@testing-library/dom";
 import { Role } from '../roles';
 
 localStorage.setItem("lang", "fi")
@@ -78,12 +78,12 @@ describe('CleaningSchedule Component', () => {
         );
 
         await waitFor(() => expect(mockAxios.get).toHaveBeenCalledWith("listobjects/cleaning/"));
-        act(() => {
-            // Here we provide the raw API format
+        
+        await waitFor(() => {
             mockAxios.mockResponse({ data: mockCleaningData });
         });
 
-        expect(screen.getByText('Siivousvuorot')).toBeInTheDocument();
+        expect(await screen.findByText('Siivousvuorot')).toBeInTheDocument();
         expect(screen.getByText('Tuo lista')).toBeInTheDocument();
         expect(screen.getByText('Vie lista')).toBeInTheDocument();
         expect(screen.getByText('Tallenna')).toBeInTheDocument();

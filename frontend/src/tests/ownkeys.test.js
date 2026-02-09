@@ -3,9 +3,9 @@ import {
   fireEvent,
   waitFor,
   within,
+  screen
 } from "@testing-library/react";
-import { act } from "react";
-import "@testing-library/jest-dom";
+import "@testing-library/dom";
 import OwnKeys from "../../src/pages/ownkeys";
 import { ContextProvider } from "@context/ContextProvider";
 import mockAxios from "../../__mocks__/axios";
@@ -28,167 +28,147 @@ describe("OwnKeys Component", () => {
     expect(getByText("Kirjaudu")).toBeInTheDocument();
   });
 
-  it("opens with role 1", async () => {
-    const user = {
-      username: "example_username",
-      email: "example_email@example.com",
-      telegram: "example_telegram",
-      role: Role.LEPPISPJ,
-      keys: { "tko-äly": true },
-      organization: { "tko-äly": true },
-      rights_for_reservation: true,
-      id: 1,
-    };
-
-    localStorage.setItem("loggedUser", JSON.stringify(user));
-
-    const { getByText, getByTestId } = render(
-      <ContextProvider>
-        <OwnKeys />
-      </ContextProvider>,
-    );
-
-    // mock permission and responsibilities responses (respond after requests issued)
-    await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
-    act(() => {
-      mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+    it("opens with role 1", async () => {
+      const user = {
+        username: "example_username",
+        email: "example_email@example.com",
+        telegram: "example_telegram",
+        role: Role.LEPPISPJ,
+        keys: [{ id: 1, name: "tko-äly" }],
+        organization: { "tko-äly": true },
+        rights_for_reservation: true,
+        id: 1,
+      };
+  
+      localStorage.setItem("loggedUser", JSON.stringify(user));
+  
+      const { getByText, getByTestId } = render(
+        <ContextProvider>
+          <OwnKeys />
+        </ContextProvider>,
+      );
+  
+      // mock permission and responsibilities responses (respond after requests issued)
+      await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
+      await waitFor(() => {
+        mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+      });
+      await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
+      // respond to eligible users request (ykv) which happens after permission is set
+      await waitFor(() => {
+        mockAxios.mockResponseFor({ url: "users/ykv/" }, { data: [] });
+      });
+      await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
+      await waitFor(() => {
+        mockAxios.mockResponseFor({ url: "listobjects/nightresponsibilities/" }, { data: [] });
+      });
+  
+      // open the create dialog and assert fields inside
+      const createBtn = getByTestId("opencreateform");
+      fireEvent.click(createBtn);
+      await waitFor(() => {
+        expect(getByText("Kenestä otat vastuun?")).toBeInTheDocument();
+        expect(getByText("Kirjaa toisen käyttäjän puolesta")).toBeInTheDocument();
+        expect(getByText("Organisaatio")).toBeInTheDocument();
+      });
     });
-    await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
-    // respond to eligible users request (ykv) which happens after permission is set
-    act(() => {
-      mockAxios.mockResponseFor({ url: "users/ykv/" }, { data: [] });
+  
+    it("taking responsibility works", async () => {
+      const user = {
+        username: "example_username",
+        email: "example_email@example.com",
+        telegram: "example_telegram",
+        role: Role.LEPPISPJ,
+        keys: [{ id: 1, name: "tko-äly" }],
+        organization: { "tko-äly": true },
+        rights_for_reservation: true,
+        id: 1,
+      };
+  
+      window.confirm = jest.fn(() => true);
+      localStorage.setItem("ACCESS_TOKEN", "example_token");
+      localStorage.setItem("loggedUser", JSON.stringify(user));
+  
+      const { getByTestId, findByRole } = render(
+        <ContextProvider>
+          <OwnKeys />
+        </ContextProvider>,
+      );
+      // respond to initial requests before interacting with the UI
+      await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
+      await waitFor(() => {
+        mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
+      });
+      await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
+      await waitFor(() => {
+        mockAxios.mockResponseFor({ url: "users/ykv/" }, { data: [] });
+      });
+      await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
+      await waitFor(() => {
+        mockAxios.mockResponseFor({ url: "listobjects/nightresponsibilities/" }, { data: [] });
+      });
+      const create_form = getByTestId("opencreateform");
+      fireEvent.click(create_form);
+      const resp_field_input = await findByRole("textbox", { name: "Kenestä otat vastuun?" });
+      fireEvent.change(resp_field_input, { target: { value: "fuksit" } });
+      const respButton = getByTestId("createresponsibility");
+      fireEvent.click(respButton);
+  
+      await waitFor(() => expect(mockAxios.post).toHaveBeenCalled());
+      await waitFor(() => {
+        mockAxios.mockResponseFor({ url: "ykv/create_responsibility" }, { data: {} });
+      });
+      await waitFor(() => expect(mockAxios.get).toHaveBeenCalledWith("listobjects/nightresponsibilities/"));
+      await waitFor(() => {
+        mockAxios.mockResponseFor({ url: "listobjects/nightresponsibilities/" }, { data: [] });
+      });
+      await waitFor(() => {
+        const snackbar = getByTestId("snackbar");
+        expect(snackbar).toBeInTheDocument();
+        expect(within(snackbar).getByRole("alert")).toHaveClass("MuiAlert-standardSuccess");
+      });
+      expect(mockAxios.get).toHaveBeenCalledWith("users/userinfo");
+      expect(mockAxios.get).toHaveBeenCalledWith("users/ykv/");
+      expect(mockAxios.post).toHaveBeenCalledWith(
+        "ykv/create_responsibility",
+        expect.objectContaining({
+          created_by: user.id,
+          responsible_for: "fuksit",
+          user: user.id,
+          organizations: [1],
+        }),
+      );
+      expect(mockAxios.get).toHaveBeenCalledWith(
+        `listobjects/nightresponsibilities/`,
+      );
     });
-    await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
-    act(() => {
-      mockAxios.mockResponseFor({ url: "listobjects/nightresponsibilities/" }, { data: [] });
-    });
-
-    // open the create dialog and assert fields inside
-    const createBtn = getByTestId("opencreateform");
-    fireEvent.click(createBtn);
-    await waitFor(() => {
-      expect(getByText("Kenestä otat vastuun?")).toBeInTheDocument();
-      expect(getByText("Kirjaa toisen käyttäjän puolesta")).toBeInTheDocument();
-    });
-  });
-
-  it("taking responsibility works", async () => {
-    const user = {
-      username: "example_username",
-      email: "example_email@example.com",
-      telegram: "example_telegram",
-      role: Role.LEPPISPJ,
-      keys: { "tko-äly": true },
-      organization: { "tko-äly": true },
-      rights_for_reservation: true,
-      id: 1,
-    };
-
-    window.confirm = jest.fn(() => true);
-    localStorage.setItem("ACCESS_TOKEN", "example_token");
-    localStorage.setItem("loggedUser", JSON.stringify(user));
-
-    const { getByTestId, findByRole } = render(
-      <ContextProvider>
-        <OwnKeys />
-      </ContextProvider>,
-    );
-    // respond to initial requests before interacting with the UI
-    await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
-    act(() => {
-      mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
-    });
-    await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
-    act(() => {
-      mockAxios.mockResponseFor({ url: "users/ykv/" }, { data: [] });
-    });
-    await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
-    act(() => {
-      mockAxios.mockResponseFor({ url: "listobjects/nightresponsibilities/" }, { data: [] });
-    });
-    const create_form = getByTestId("opencreateform");
-    fireEvent.click(create_form);
-    const resp_field_input = await findByRole("textbox", { name: "Kenestä otat vastuun?" });
-    fireEvent.change(resp_field_input, { target: { value: "fuksit" } });
-    const respButton = getByTestId("createresponsibility");
-    fireEvent.click(respButton);
-
-    await waitFor(() => expect(mockAxios.post).toHaveBeenCalled());
-    act(() => {
-      mockAxios.mockResponseFor({ url: "ykv/create_responsibility" }, { data: {} });
-    });
-    await waitFor(() => expect(mockAxios.get).toHaveBeenCalledWith("listobjects/nightresponsibilities/"));
-    act(() => {
-      mockAxios.mockResponseFor({ url: "listobjects/nightresponsibilities/" }, { data: [] });
-    });
-    await waitFor(() => {
-      const snackbar = getByTestId("snackbar");
-      expect(snackbar).toBeInTheDocument();
-      expect(within(snackbar).getByRole("alert")).toHaveClass("MuiAlert-standardSuccess");
-    });
-    expect(mockAxios.get).toHaveBeenCalledWith("users/userinfo");
-    expect(mockAxios.get).toHaveBeenCalledWith("users/ykv/");
-    expect(mockAxios.post).toHaveBeenCalledWith(
-      "ykv/create_responsibility",
-      expect.objectContaining({
-        created_by: user.id,
-        responsible_for: "fuksit",
-        user: user.id,
-      }),
-    );
-    expect(mockAxios.get).toHaveBeenCalledWith(
-      `listobjects/nightresponsibilities/`,
-    );
-  });
-
-  it("filtering works", async () => {
-    const user = {
-      username: "example_username",
-      email: "example_email@example.com",
-      telegram: "example_telegram",
-      role: Role.LEPPISPJ,
-      keys: { "tko-äly": true },
-      organization: { "tko-äly": true },
-      rights_for_reservation: true,
-    };
-
-    window.confirm = jest.fn(() => true);
-    localStorage.setItem("ACCESS_TOKEN", "example_token");
-    localStorage.setItem("loggedUser", JSON.stringify(user));
-
-    const { getByText, queryByText, getByLabelText } = render(
-      <ContextProvider>
-        <OwnKeys />
-      </ContextProvider>,
-    );
-
-    let response = {
-      data: [
-        {
-          id: 1,
-          organizations: [
-            {
-              id: 1,
-              user_set: [
-                {
-                  id: 1,
-                  last_login: null,
-                  username: "example_username",
-                  email: "example_email@example.com",
-                  telegram: "telegram",
-                  role: Role.LEPPISPJ,
-                  keys: [1],
-                },
-              ],
-              name: "tko-aly",
-              email: "tko@aly.com",
-              homepage: "tko-aly.com",
-              size: 1,
-            },
-          ],
-          user: {
+  
+    it("filtering works", async () => {
+      const user = {
+        username: "example_username",
+        email: "example_email@example.com",
+        telegram: "example_telegram",
+        role: Role.LEPPISPJ,
+        keys: [{ id: 1, name: "tko-aly" }],
+        organization: { "tko-aly": true },
+        rights_for_reservation: true,
+      };
+  
+      window.confirm = jest.fn(() => true);
+      localStorage.setItem("ACCESS_TOKEN", "example_token");
+      localStorage.setItem("loggedUser", JSON.stringify(user));
+  
+      const { getByText, queryByText, getByLabelText } = render(
+        <ContextProvider>
+          <OwnKeys />
+        </ContextProvider>,
+      );
+  
+      let response = {
+        data: [
+          {
             id: 1,
-            keys: [
+            organizations: [
               {
                 id: 1,
                 user_set: [
@@ -208,44 +188,44 @@ describe("OwnKeys Component", () => {
                 size: 1,
               },
             ],
-            last_login: null,
-            username: "example_username",
-            email: "example_username@example.com",
-            telegram: "telegram",
-            role: Role.LEPPISPJ,
-          },
-          responsible_for: "fuksit",
-          login_time: "2024-05-30T09:38:07.170043Z",
-          logout_time: "2024-05-30T09:59:08.135103Z",
-          present: true,
-          late: false,
-          created_by: { username: "example_username" },
-        },
-        {
-          id: 2,
-          organizations: [
-            {
+            user: {
               id: 1,
-              user_set: [
+              keys: [
                 {
                   id: 1,
-                  last_login: null,
-                  username: "example_username",
-                  email: "example_email@example.com",
-                  telegram: "telegram",
-                  role: Role.LEPPISPJ,
-                  keys: [1],
+                  user_set: [
+                    {
+                      id: 1,
+                      last_login: null,
+                      username: "example_username",
+                      email: "example_email@example.com",
+                      telegram: "telegram",
+                      role: Role.LEPPISPJ,
+                      keys: [1],
+                    },
+                  ],
+                  name: "tko-aly",
+                  email: "tko@aly.com",
+                  homepage: "tko-aly.com",
+                  size: 1,
                 },
               ],
-              name: "tko-aly",
-              email: "tko@aly.com",
-              homepage: "tko-aly.com",
-              size: 1,
+              last_login: null,
+              username: "example_username",
+              email: "example_username@example.com",
+              telegram: "telegram",
+              role: Role.LEPPISPJ,
             },
-          ],
-          user: {
-            id: 1,
-            keys: [
+            responsible_for: "fuksit",
+            login_time: "2024-05-30T09:38:07.170043Z",
+            logout_time: "2024-05-30T09:59:08.135103Z",
+            present: true,
+            late: false,
+            created_by: { username: "example_username" },
+          },
+          {
+            id: 2,
+            organizations: [
               {
                 id: 1,
                 user_set: [
@@ -262,6 +242,67 @@ describe("OwnKeys Component", () => {
                 name: "tko-aly",
                 email: "tko@aly.com",
                 homepage: "tko-aly.com",
+                size: 1,
+              },
+            ],
+            user: {
+              id: 1,
+              keys: [
+                {
+                  id: 1,
+                  user_set: [
+                    {
+                      id: 1,
+                      last_login: null,
+                      username: "example_username",
+                      email: "example_email@example.com",
+                      telegram: "telegram",
+                      role: Role.LEPPISPJ,
+                      keys: [1],
+                    },
+                  ],
+                  name: "tko-aly",
+                  email: "tko@aly.com",
+                  homepage: "tko-aly.com",
+                  size: 1,
+                },
+              ],
+              last_login: null,
+              username: "example_username",
+              email: "example_email@example.com",
+              telegram: "telegram",
+              role: Role.LEPPISPJ,
+            },
+            responsible_for: "gary",
+            login_time: "2024-05-30T09:59:11.497510Z",
+            logout_time: "2024-05-30T09:59:11.497533Z",
+            present: true,
+            late: false,
+            created_by: { username: "example_username" },
+          },
+        ],
+      };
+      const responsedata = {
+        data: [
+          {
+            id: 1,
+            keys: [
+              {
+                id: 1,
+                user_set: [
+                  {
+                    id: 1,
+                    last_login: null,
+                    username: "example_username",
+                    email: "example_email@example.com",
+                    telegram: "telegram",
+                    role: Role.LEPPISPJ,
+                    keys: [1],
+                  },
+                ],
+                name: "example_org",
+                email: "example@org.org",
+                homepage: "example.org",
                 size: 1,
               },
             ],
@@ -271,74 +312,32 @@ describe("OwnKeys Component", () => {
             telegram: "telegram",
             role: Role.LEPPISPJ,
           },
-          responsible_for: "gary",
-          login_time: "2024-05-30T09:59:11.497510Z",
-          logout_time: "2024-05-30T09:59:11.497533Z",
-          present: true,
-          late: false,
-          created_by: { username: "example_username" },
-        },
-      ],
-    };
-    const responsedata = {
-      data: [
-        {
-          id: 1,
-          keys: [
-            {
-              id: 1,
-              user_set: [
-                {
-                  id: 1,
-                  last_login: null,
-                  username: "example_username",
-                  email: "example_email@example.com",
-                  telegram: "telegram",
-                  role: Role.LEPPISPJ,
-                  keys: [1],
-                },
-              ],
-              name: "example_org",
-              email: "example@org.org",
-              homepage: "example.org",
-              size: 1,
-            },
-          ],
-          last_login: null,
-          username: "example_username",
-          email: "example_email@example.com",
-          telegram: "telegram",
-          role: Role.LEPPISPJ,
-        },
-      ],
-    };
-    await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
-    act(() => {
-      mockAxios.mockResponseFor({ url: "users/userinfo" }, responsedata);
-    });
-    await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
-    act(() => {
-      mockAxios.mockResponseFor({ url: "users/ykv/" }, { data: [] });
-    });
-    await waitFor(() => expect(mockAxios.get).toHaveBeenCalled());
-    act(() => {
-      mockAxios.mockResponseFor({ url: "listobjects/nightresponsibilities/" }, response);
-    });
-
-    await waitFor(() => {
-      expect(mockAxios.get).toHaveBeenCalledWith("users/userinfo");
-      expect(mockAxios.get).toHaveBeenCalledWith(
-        "listobjects/nightresponsibilities/",
-      );
-
-      const filter = getByLabelText("Hae yökäyttövastuista");
+        ],
+      };
+      await waitFor(() => expect(mockAxios.get).toHaveBeenCalledWith("users/userinfo"));
+      await waitFor(() => {
+        mockAxios.mockResponseFor({ url: "users/userinfo" }, responsedata);
+      });
+      
+      await waitFor(() => expect(mockAxios.get).toHaveBeenCalledWith("users/ykv/"));
+      await waitFor(() => {
+        mockAxios.mockResponseFor({ url: "users/ykv/" }, { data: [] });
+      });
+      
+      await waitFor(() => expect(mockAxios.get).toHaveBeenCalledWith("listobjects/nightresponsibilities/"));
+      await waitFor(() => {
+        mockAxios.mockResponseFor({ url: "listobjects/nightresponsibilities/" }, response);
+      });
+  
+      const filter = await screen.findByLabelText("Hae yökäyttövastuista");
       fireEvent.change(filter, { target: { value: "fuksit" } });
-
-      expect(getByText("fuksit")).toBeInTheDocument();
-      expect(queryByText("gary")).toBeNull();
+  
+      await waitFor(() => {
+        const fuksitElements = screen.queryAllByText("fuksit");
+        expect(fuksitElements.length).toBeGreaterThan(0);
+        expect(queryByText("gary")).toBeNull();
+      });
     });
-  });
-
   //it("time filtering works", async () => {
   // const user = {
   // username: "example_username",

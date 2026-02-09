@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom";
+import "@testing-library/dom";
 import { render, fireEvent, waitFor } from "@testing-library/react";
 import LoginPage from "../pages/loginpage";
 import { ContextProvider } from "@context/ContextProvider";

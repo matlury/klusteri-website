@@ -1,5 +1,5 @@
 import { render, fireEvent, waitFor, screen } from "@testing-library/react";
-import "@testing-library/jest-dom";
+import "@testing-library/dom";
 import axiosClient from "../axios.js";
 import AllUsers from "../components/AllUsers";
 import { Role } from "../roles";

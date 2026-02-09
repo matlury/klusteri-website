@@ -227,6 +227,7 @@ const OrganisationPage = ({
           color="primary"
           className="modify_org"
           id="modify_org"
+          data-testid={`edit-org-${params.id}`}
           onClick={() => toggleOrgDetails(params.id)}
         >
           <EditOutlinedIcon />
@@ -405,9 +406,10 @@ const OrganisationPage = ({
               variant="contained"
               style={{ backgroundColor: 'red', color: 'white' }}
               className="delete-org-button"
+              data-testid={`delete-org-${organisation_id}`}
               onClick={() => handleDelete(organisation_id)}
             >
-              <DeleteIcon /> {t("delete")}
+              <DeleteIcon /> {t("deleteorg")}
             </Button>
             <div style={{ flexGrow: 1 }} />
             <Button onClick={handleClose}>{t("cancel")}</Button>

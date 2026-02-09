@@ -1,6 +1,6 @@
 import { render, waitFor } from "@testing-library/react";
 import FrontPage from "../pages/frontpage.jsx";
-import "@testing-library/jest-dom";
+import "@testing-library/dom";
 import axios from "axios";
 
 localStorage.setItem("lang", "fi");

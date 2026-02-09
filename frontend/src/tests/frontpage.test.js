@@ -4,7 +4,7 @@ import {
   waitFor,
   screen,
 } from "@testing-library/react";
-import "@testing-library/jest-dom";
+import "@testing-library/dom";
 import FrontPage from "../../src/pages/frontpage";
 import mockAxios from "../../__mocks__/axios";
 import { Role } from '../../src/roles';

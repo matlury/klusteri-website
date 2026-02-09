@@ -1,9 +1,7 @@
-import { render, fireEvent, waitFor } from "@testing-library/react";
-import { act } from "react";
+import { render, fireEvent, waitFor, screen } from "@testing-library/react";
 import NewAccountPage from "../../src/pages/createpage";
 import mockAxios from "../../__mocks__/axios";
-import "@testing-library/jest-dom";
-import { Role } from "../roles";
+import "@testing-library/dom";
 
 // Test value for the reCAPTCHA site key
 process.env.VITE_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
@@ -195,13 +193,11 @@ describe("Createpage", () => {
       }));
     });
 
-    act(() => {
+    await waitFor(() => {
       mockAxios.mockResponse({ data: { message: "Success" } });
     });
 
-    await waitFor(() => {
-      expect(getByText("Käyttäjä luotu onnistuneesti")).toBeInTheDocument();
-    });
+    expect(await screen.findByText("Käyttäjä luotu onnistuneesti")).toBeInTheDocument();
   })
 
   test("user already exists", async () => {
@@ -225,7 +221,7 @@ describe("Createpage", () => {
       }));
     });
 
-    act(() => {
+    await waitFor(() => {
       mockAxios.mockError({
         response: {
           status: 400,
@@ -234,12 +230,10 @@ describe("Createpage", () => {
       });
     });
 
-    await waitFor(() => {
-      const errorMessage = getByText((content, element) => {
-        return element.tagName.toLowerCase() === 'p' && content.includes("Sähköposti on jo käytössä.");
-      });
-
-      expect(errorMessage).toBeInTheDocument();
+    const errorMessage = await screen.findByText((content, element) => {
+      return element.tagName.toLowerCase() === 'p' && content.includes("Sähköposti on jo käytössä.");
     });
+
+    expect(errorMessage).toBeInTheDocument();
   })
 });

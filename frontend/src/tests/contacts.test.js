@@ -1,5 +1,5 @@
 import { render, fireEvent } from "@testing-library/react";
-import "@testing-library/jest-dom";
+import "@testing-library/dom";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import Contacts from "../../src/pages/contacts";
 import ChristinaRegina from "../../src/pages/christina_regina";

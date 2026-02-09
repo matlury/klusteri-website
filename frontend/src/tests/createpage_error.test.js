@@ -1,6 +1,6 @@
 import { render, fireEvent, waitFor } from "@testing-library/react";
 import NewAccountPage from "../../src/pages/createpage";
-import "@testing-library/jest-dom";
+import "@testing-library/dom";
 
 // Test value for the reCAPTCHA site key
 process.env.VITE_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
