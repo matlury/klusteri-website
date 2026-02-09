@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import {
   Button,
@@ -17,6 +17,40 @@ import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
 import { useStateContext } from "@context/ContextProvider";
 import { Role } from '../roles';
+
+const getBackgroundColor = (color) => lighten(color, 0.7);
+const getHoverBackgroundColor = (color) => lighten(color, 0.6);
+const getSelectedBackgroundColor = (color) => lighten(color, 0.5);
+const getSelectedHoverBackgroundColor = (color) => lighten(color, 0.4);
+
+const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
+  "& .late": {
+    backgroundColor: getBackgroundColor(theme.palette.error.main),
+    transition: "background-color 0.1s ease",
+    "&:hover": {
+      backgroundColor: getHoverBackgroundColor(theme.palette.error.main),
+    },
+    "&.Mui-selected": {
+      backgroundColor: getSelectedBackgroundColor(theme.palette.error.main),
+      "&:hover": {
+        backgroundColor: getSelectedHoverBackgroundColor(theme.palette.error.main),
+      },
+    },
+  },
+  "& .on-time": {
+    backgroundColor: getBackgroundColor(theme.palette.success.main),
+    transition: "background-color 0.1s ease",
+    "&:hover": {
+      backgroundColor: getHoverBackgroundColor(theme.palette.success.main),
+    },
+    "&.Mui-selected": {
+      backgroundColor: getSelectedBackgroundColor(theme.palette.success.main),
+      "&:hover": {
+        backgroundColor: getSelectedHoverBackgroundColor(theme.palette.success.main),
+      },
+    },
+  },
+}));
 
 const YkvLogoutFunction = ({
   handleYkvLogin,
@@ -83,70 +117,42 @@ const YkvLogoutFunction = ({
     }
   };
 
-  const getBackgroundColor = (color) => lighten(color, 0.7);
-  const getHoverBackgroundColor = (color) => lighten(color, 0.6);
-  const getSelectedBackgroundColor = (color) => lighten(color, 0.5);
-  const getSelectedHoverBackgroundColor = (color) => lighten(color, 0.4);
+  const columns = useMemo(
+    () => [
+      {
+        field: "actions",
+        headerName: t("resp_logout"),
+        width: 90,
+        renderCell: (params) => (
+          <Button
+            variant="outlined"
+            onClick={() => handleLogoutClick(params.id, params.row.Vastuussa)}
+            id="removeresp"
+          >
+            <LogoutOutlinedIcon />
+          </Button>
+        ),
+      },
+      { field: "Vastuuhenkilö", headerName: t("reservations_resp"), width: 170 },
+      { field: "Vastuussa", headerName: t("resp_respfor"), width: 200 },
+      { field: "YKV_sisäänkirjaus", headerName: t("resp_login"), width: 200 },
+      { field: "Organisaatiot", headerName: t("resp_orgs"), width: 200 },
+    ],
+    [t]
+  );
 
-  const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
-    "& .late": {
-      backgroundColor: getBackgroundColor(theme.palette.error.main),
-      transition: "background-color 0.1s ease",
-      "&:hover": {
-        backgroundColor: getHoverBackgroundColor(theme.palette.error.main),
-      },
-      "&.Mui-selected": {
-        backgroundColor: getSelectedBackgroundColor(theme.palette.error.main),
-        "&:hover": {
-          backgroundColor: getSelectedHoverBackgroundColor(theme.palette.error.main),
-        },
-      },
-    },
-    "& .on-time": {
-      backgroundColor: getBackgroundColor(theme.palette.success.main),
-      transition: "background-color 0.1s ease",
-      "&:hover": {
-        backgroundColor: getHoverBackgroundColor(theme.palette.success.main),
-      },
-      "&.Mui-selected": {
-        backgroundColor: getSelectedBackgroundColor(theme.palette.success.main),
-        "&:hover": {
-          backgroundColor: getSelectedHoverBackgroundColor(theme.palette.success.main),
-        },
-      },
-    },
-  }));
-
-  const columns = [
-    {
-      field: "actions",
-      headerName: t("resp_logout"),
-      width: 90,
-      renderCell: (params) => (
-        <Button
-          variant="outlined"
-          onClick={() => handleLogoutClick(params.id, params.row.Vastuussa)}
-          id="removeresp"
-        >
-          <LogoutOutlinedIcon />
-        </Button>
-      ),
-    },
-    { field: "Vastuuhenkilö", headerName: t("reservations_resp"), width: 170 },
-    { field: "Vastuussa", headerName: t("resp_respfor"), width: 200 },
-    { field: "YKV_sisäänkirjaus", headerName: t("resp_login"), width: 200 },
-    { field: "Organisaatiot", headerName: t("resp_orgs"), width: 200 },
-  ];
-
-  const columns_2 = [
-    { field: "Vastuuhenkilö", headerName: t("reservations_resp"), width: 170 },
-    { field: "created_by", headerName: t("resp_createdby"), width: 200 },
-    { field: "Vastuussa", headerName: t("resp_respfor"), width: 200 },
-    { field: "YKV_sisäänkirjaus", headerName: t("resp_login"), width: 200 },
-    { field: "logout_time", headerName: t("resp_logout"), width: 200 },
-    { field: "Organisaatiot", headerName: t("resp_orgs"), width: 200 },
-    { field: "late", headerName: t("resp_act"), width: 200, renderCell: getLateIcon },
-  ];
+  const columns_2 = useMemo(
+    () => [
+      { field: "Vastuuhenkilö", headerName: t("reservations_resp"), width: 170 },
+      { field: "created_by", headerName: t("resp_createdby"), width: 200 },
+      { field: "Vastuussa", headerName: t("resp_respfor"), width: 200 },
+      { field: "YKV_sisäänkirjaus", headerName: t("resp_login"), width: 200 },
+      { field: "logout_time", headerName: t("resp_logout"), width: 200 },
+      { field: "Organisaatiot", headerName: t("resp_orgs"), width: 200 },
+      { field: "late", headerName: t("resp_act"), width: 200, renderCell: getLateIcon },
+    ],
+    [t]
+  );
 
   useEffect(() => {
     if (allResponsibilities && allResponsibilities.length > 0) {
@@ -191,23 +197,41 @@ const YkvLogoutFunction = ({
     );
   }
 
-  const filteredUsers = allUsers.filter(
-    (user) =>
-      user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
-      user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase()),
-  ).filter((user) => filtering(user.YKV_sisäänkirjaus, user.logout_time));
+  const filteredUsers = useMemo(
+    () =>
+      allUsers.filter(
+        (user) =>
+          user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
+          user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase()),
+      ).filter((user) => filtering(user.YKV_sisäänkirjaus, user.logout_time)),
+    [allUsers, search, minFilter, maxFilter]
+  );
 
-  const ownUsers = allUsers
-    .filter(
-      (user) =>
-        user.Vastuuhenkilö === loggedUser.username ||
-        user.created_by === loggedUser.username,
-    )
-    .filter(
-      (user) =>
-        user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
-        user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase()),
-    );
+  const ownUsers = useMemo(
+    () =>
+      allUsers
+        .filter(
+          (user) =>
+            user.Vastuuhenkilö === loggedUser.username ||
+            user.created_by === loggedUser.username,
+        )
+        .filter(
+          (user) =>
+            user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
+            user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase()),
+        ),
+    [allUsers, search, loggedUser.username]
+  );
+
+  const filteredActiveUsers = useMemo(
+    () =>
+      activeUsers.filter(
+        (user) =>
+          user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
+          user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase())
+      ),
+    [activeUsers, search]
+  );
 
   const getRowClassName = (params) => {
     if (params.row.late) {
@@ -218,12 +242,6 @@ const YkvLogoutFunction = ({
     }
     return "";
   };
-
-  const filteredActiveUsers = activeUsers.filter(
-    (user) =>
-      user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
-      user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase())
-  );
 
   return loading ? (
     <div>{t("loading")}...</div>
