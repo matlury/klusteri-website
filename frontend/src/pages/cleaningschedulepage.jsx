@@ -169,7 +169,7 @@ const CleaningSchedule = () => {
             autoHideDuration={6000}
             onClose={() => setSnackbarOpen(false)}
           >
-            <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '300%' }}>
+            <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
               {snackbarMessage}
             </Alert>
           </Snackbar>

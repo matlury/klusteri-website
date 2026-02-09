@@ -13,6 +13,7 @@ import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import IconButton from "@mui/material/IconButton";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
@@ -70,7 +71,8 @@ const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
     <Dialog
       open={open}
       onClose={onClose}
-      PaperProps={{ style: { minWidth: "400px" } }} // Set minimum width
+      maxWidth="xs"
+      fullWidth
     >
       <DialogTitle>{t("loginsuggest")}</DialogTitle>
       <DialogContent>
@@ -350,8 +352,8 @@ const AppContent = ({ window }) => {
         position="fixed"
         sx={{
           bgcolor: "#484644",
-          width: { sm: `calc(100% - ${currentDrawerWidth}px)` },
-          ml: { sm: `${currentDrawerWidth}px` },
+          width: { xs: '100%', sm: `calc(100% - ${currentDrawerWidth}px)` },
+          ml: { xs: 0, sm: `${currentDrawerWidth}px` },
           transition: (theme) =>
             theme.transitions.create(["margin", "width"], {
               easing: theme.transitions.easing.sharp,
@@ -433,11 +435,12 @@ const AppContent = ({ window }) => {
         }}
         aria-label="mailbox folders"
       >
-        <Drawer
+        <SwipeableDrawer
           container={container}
           variant="temporary"
           open={mobileOpen}
           onTransitionEnd={handleDrawerTransitionEnd}
+          onOpen={handleDrawerToggle}
           onClose={handleDrawerClose}
           ModalProps={{
             keepMounted: true,
@@ -457,7 +460,7 @@ const AppContent = ({ window }) => {
             collapsed={false}
             onToggle={() => { }}
           />
-        </Drawer>
+        </SwipeableDrawer>
         <Drawer
           variant="permanent"
           sx={{
@@ -489,7 +492,7 @@ const AppContent = ({ window }) => {
         sx={{
           flexGrow: 1,
           p: 3,
-          width: { sm: `calc(100% - ${currentDrawerWidth}px)` },
+          width: { xs: '100%', sm: `calc(100% - ${currentDrawerWidth}px)` },
           transition: (theme) =>
             theme.transitions.create(["margin", "width"], {
               easing: theme.transitions.easing.sharp,

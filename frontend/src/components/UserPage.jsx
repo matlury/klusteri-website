@@ -29,7 +29,7 @@ const UserPage = ({
     return (
       <form>
         <h2>{t("changepassword")}</h2>
-        <div style={{ display: "flex", flexDirection: "column", rowGap: "0.6em", width: "300px" }}>
+        <div style={{ display: "flex", flexDirection: "column", rowGap: "0.6em", maxWidth: "300px", width: "100%" }}>
           <TextField
             id="currentPassword"
             label={t("oldpassword")}
@@ -72,7 +72,7 @@ const UserPage = ({
   return (
     <form>
       <h2>{t("owninfo")}</h2>
-      <div style={{ display: "flex", flexDirection: "column", rowGap: "0.6em", width: "300px" }}>
+      <div style={{ display: "flex", flexDirection: "column", rowGap: "0.6em", maxWidth: "300px", width: "100%" }}>
         <TextField
           id="username"
           label={t("username")}
