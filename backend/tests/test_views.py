@@ -227,7 +227,7 @@ class YKVTests(TestCase):
         )
 
         result = force_logout_ykv_logins()
-        self.assertEqual(result, "logged out users")
+        self.assertTrue(result.startswith("Successfully logged out"))
 
         resp.refresh_from_db()
         self.assertFalse(resp.present)

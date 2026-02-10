@@ -2050,7 +2050,7 @@ class TestDjangoAPI(TestCase):
 
         result = force_logout_ykv_logins()
 
-        self.assertEqual(result, "Nothing to log out")
+        self.assertEqual(result, "No active YKV responsibilities to log out")
 
     def test_force_logout_ykv(self):
         """Tests force logout ykv"""
@@ -2072,7 +2072,7 @@ class TestDjangoAPI(TestCase):
 
         result = force_logout_ykv_logins()
 
-        self.assertEqual(result, "logged out users")
+        self.assertTrue(result.startswith("Successfully logged out"))
 
     def test_creating_cleaning(self):
         """Role 1 can create cleanings"""

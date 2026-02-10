@@ -5,6 +5,9 @@ from django.db import connection
 from django.db.models.signals import post_migrate
 from django.db.utils import OperationalError
 from django.contrib.auth import get_user_model
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def create_default_user(sender, **kwargs):
@@ -28,8 +31,6 @@ def start_scheduler(sender, **kwargs):
         if not scheduler.is_running():
             scheduler.start()
     except Exception as e:
-        import logging
-        logger = logging.getLogger(__name__)
         logger.error(f"Failed to start scheduler: {e}", exc_info=True)
 
 
@@ -83,21 +84,18 @@ class IlotaloConfig(AppConfig):
                         from scheduler import scheduler
                         if not scheduler.is_running():
                             scheduler.start()
-                            print(
+                            logger.info(
                                 f"[Django Ready] Scheduler started (PID {os.getpid()})")
                     except Exception as e:
-                        import logging
-                        logger = logging.getLogger(__name__)
                         logger.error(
                             f"Failed to start scheduler: {e}", exc_info=True)
-                        print(f"[Django Ready] Failed to start scheduler: {e}")
                         # Release lock on error
                         try:
                             os.remove(lock_file)
                         except:
                             pass
                 except FileExistsError:
-                    print(
+                    logger.info(
                         f"[Django Ready] Scheduler already running in another process (PID {os.getpid()})")
 
             threading.Thread(target=start_scheduler_delayed,
