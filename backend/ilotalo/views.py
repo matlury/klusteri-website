@@ -1144,12 +1144,14 @@ def force_logout_ykv_logins():
     try:
         responsibility_to_update = NightResponsibility.objects.filter(
             present=True)
-        if len(responsibility_to_update) == 0:
-            return "Nothing to log out"
+        count = len(responsibility_to_update)
+        if count == 0:
+            return "No active YKV responsibilities to log out"
     except ObjectDoesNotExist:
-        return "Nothing to log out"
+        return "No active YKV responsibilities to log out"
 
     logout_time = timezone.now()
+    logged_out_count = 0
 
     for resp in responsibility_to_update:
         data = {'late': True,
@@ -1160,8 +1162,9 @@ def force_logout_ykv_logins():
         )
         if responsibility.is_valid():
             responsibility.save()
+            logged_out_count += 1
 
-    return "logged out users"
+    return f"Successfully logged out {logged_out_count} YKV responsibility(ies) at {logout_time.strftime('%Y-%m-%d %H:%M:%S')}"
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):

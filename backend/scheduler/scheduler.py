@@ -1,50 +1,83 @@
 import sys
+import logging
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.cron import CronTrigger
-from django_apscheduler.jobstores import DjangoJobStore, register_events
-from django_apscheduler.models import DjangoJobExecution, DjangoJob
-from django.utils import timezone
+from django_apscheduler.jobstores import DjangoJobStore
+from django_apscheduler import util
 
-from ilotalo.views import force_logout_ykv_logins
+logger = logging.getLogger(__name__)
 
 # Global scheduler instance
 scheduler = None
 
 
-def force_logout_ykv():
-    print(force_logout_ykv_logins())
+@util.close_old_connections
+def force_logout_ykv_job():
+    """
+    Job that runs the YKV logout task.
+    The decorator ensures database connections are properly managed.
+    """
+    try:
+        logger.info("[YKV Scheduler] Running automatic YKV logout task...")
+        print("[YKV Scheduler] Running automatic YKV logout task...")
 
+        from ilotalo.views import force_logout_ykv_logins
+        result = force_logout_ykv_logins()
 
-def delete_old_job_executions():
-    DjangoJobExecution.objects.delete_old_job_executions(0)
+        logger.info(f"[YKV Scheduler] Task completed: {result}")
+        print(f"[YKV Scheduler] Task completed: {result}")
+        return result
 
-
-def clear_existing_jobs():
-    DjangoJob.objects.all().delete()
+    except Exception as e:
+        logger.error(
+            f"[YKV Scheduler] Error during task execution: {str(e)}", exc_info=True)
+        print(f"[YKV Scheduler] ERROR: {str(e)}")
 
 
 def start():
+    """Start the APScheduler."""
     global scheduler
-    if scheduler is not None and scheduler.running:
-        return  # Already started
 
-    clear_existing_jobs()
-    delete_old_job_executions()
-    scheduler = BackgroundScheduler(timezone="Europe/Helsinki")
-    scheduler.add_jobstore(DjangoJobStore(), "default")
-    scheduler.add_job(
-        force_logout_ykv,
-        trigger=CronTrigger(hour=8, minute=00),
-        id="force_logout_ykv",
-        max_instances=1,
-        replace_existing=True,
-        jobstore='default'
-    )
-    register_events(scheduler)
-    scheduler.start()
-    print("Scheduler started...", file=sys.stdout)
+    if scheduler is not None and scheduler.running:
+        logger.info("[Scheduler] Scheduler already running")
+        return
+
+    try:
+        from django.conf import settings
+
+        logger.info("[Scheduler] Starting APScheduler...")
+        print("[Scheduler] Starting APScheduler...")
+
+        scheduler = BackgroundScheduler(
+            timezone='Europe/Helsinki')
+        # Don't use DjangoJobStore - causes duplicate execution warnings in development
+
+        # Add the YKV logout job - runs daily at 8:00 AM Helsinki time
+        scheduler.add_job(
+            force_logout_ykv_job,
+            trigger='cron',
+            hour=8,
+            minute=0,
+            id='force_logout_ykv',
+            max_instances=1,
+            replace_existing=True,
+            misfire_grace_time=300  # Allow 5 minutes delay without warning
+        )
+        logger.info(
+            "[Scheduler] Added job: force_logout_ykv (daily at 8:00 AM Helsinki time)")
+        print(
+            "[Scheduler] Added job: force_logout_ykv (daily at 8:00 AM Helsinki time)")
+
+        scheduler.start()
+        logger.info("[Scheduler] APScheduler started successfully")
+        print("[Scheduler] APScheduler started successfully")
+
+    except Exception as e:
+        logger.error(
+            f"[Scheduler] Failed to start scheduler: {str(e)}", exc_info=True)
+        print(f"[Scheduler] ERROR: {str(e)}", file=sys.stderr)
 
 
 def is_running():
+    """Check if scheduler is running."""
     global scheduler
     return scheduler is not None and scheduler.running

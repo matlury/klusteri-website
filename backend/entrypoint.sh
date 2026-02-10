@@ -10,10 +10,5 @@ echo "Django setup complete!"
 echo "Starting Gunicorn with Uvicorn workers..."
 
 # Using UvicornWorker to support ASGI
-exec gunicorn --bind 0.0.0.0:8000 \
-    --workers 2 \
-    --worker-class uvicorn.workers.UvicornWorker \
-    --timeout 60 \
-    --access-logfile - \
-    --error-logfile - \
-    backend.asgi:application
+# Use gunicorn_config.py to control scheduler startup
+exec gunicorn --config gunicorn_config.py backend.asgi:application

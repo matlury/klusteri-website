@@ -27,8 +27,10 @@ def start_scheduler(sender, **kwargs):
         from scheduler import scheduler
         if not scheduler.is_running():
             scheduler.start()
-    except OperationalError:
-        pass
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to start scheduler: {e}", exc_info=True)
 
 
 class IlotaloConfig(AppConfig):
@@ -54,6 +56,49 @@ class IlotaloConfig(AppConfig):
         )
 
         if not is_testing:
-            # Use post_migrate to start scheduler and create default user after DB is ready
+            # Create default user after migrations
             post_migrate.connect(create_default_user, sender=self)
-            post_migrate.connect(start_scheduler, sender=self)
+
+            # Start scheduler with lock file to ensure only one instance across workers
+            import threading
+            import tempfile
+
+            lock_file = os.path.join(
+                tempfile.gettempdir(), 'ilotalo_scheduler.lock')
+
+            def start_scheduler_delayed():
+                import time
+                time.sleep(2)  # Wait for Django to fully initialize
+
+                # Try to create lock file atomically
+                try:
+                    # Create file exclusively - fails if exists
+                    fd = os.open(lock_file, os.O_CREAT |
+                                 os.O_EXCL | os.O_WRONLY, 0o644)
+                    os.write(fd, str(os.getpid()).encode())
+                    os.close(fd)
+
+                    # We got the lock - start scheduler
+                    try:
+                        from scheduler import scheduler
+                        if not scheduler.is_running():
+                            scheduler.start()
+                            print(
+                                f"[Django Ready] Scheduler started (PID {os.getpid()})")
+                    except Exception as e:
+                        import logging
+                        logger = logging.getLogger(__name__)
+                        logger.error(
+                            f"Failed to start scheduler: {e}", exc_info=True)
+                        print(f"[Django Ready] Failed to start scheduler: {e}")
+                        # Release lock on error
+                        try:
+                            os.remove(lock_file)
+                        except:
+                            pass
+                except FileExistsError:
+                    print(
+                        f"[Django Ready] Scheduler already running in another process (PID {os.getpid()})")
+
+            threading.Thread(target=start_scheduler_delayed,
+                             daemon=True).start()
