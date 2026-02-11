@@ -610,6 +610,128 @@ class TestDjangoAPI(TestCase):
         updated_user = User.objects.get(id=new_user_id)
         self.assertEqual(updated_user.role, 3)
 
+    def test_muokkaus_can_change_role_to_avaimellinen(self):
+        """MUOKKAUS user can change another user's role to AVAIMELLINEN (role 4)."""
+        # Create a regular user
+        new_user_data = {
+            "username": "regularuser_test",
+            "password": "X9z!mK4@pQ7n",
+            "email": "regular_test@example.com",
+            "telegram": "regular_test_tg",
+            "role": 5,  # Tavallinen
+        }
+        response = self.client.post(
+            "http://localhost:8000/api/users/register",
+            data=new_user_data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        new_user_id = response.data["id"]
+
+        # MUOKKAUS user changes the role to AVAIMELLINEN (role 4)
+        update_data = {"role": 4}
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{new_user_id}/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data=update_data,
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["role"], 4)
+
+        # Verify in database
+        updated_user = User.objects.get(id=new_user_id)
+        self.assertEqual(updated_user.role, 4)
+
+    def test_muokkaus_cannot_change_role_to_management(self):
+        """MUOKKAUS user CANNOT change a user's role to management positions (1, 2, 3) or organization leadership (6, 7)."""
+        # Create a regular user
+        new_user_data = {
+            "username": "testuser2_mgmt",
+            "password": "Y8w!nL5@rM6p",
+            "email": "test2_mgmt@example.com",
+            "telegram": "test2_mgmt_tg",
+            "role": 5,
+        }
+        response = self.client.post(
+            "http://localhost:8000/api/users/register",
+            data=new_user_data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        new_user_id = response.data["id"]
+
+        # Try to change role to MUOKKAUS (role 3) - should fail
+        update_data = {"role": 3}
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{new_user_id}/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data=update_data,
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn(
+            "Only top administrators can assign management and organization leadership roles", str(response.data))
+
+        # Try to change role to JARJESTOPJ (role 6) - should also fail
+        update_data = {"role": 6}
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{new_user_id}/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data=update_data,
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn(
+            "Only top administrators can assign management and organization leadership roles", str(response.data))
+
+    def test_tavallinen_cannot_change_any_role(self):
+        """Regular user (TAVALLINEN) cannot change any user's role."""
+        # Create a regular user
+        new_user_data = {
+            "username": "anotheruser_test",
+            "password": "Z7v!oK4@sN8m",
+            "email": "another_test@example.com",
+            "telegram": "another_test_tg",
+            "role": 5,
+        }
+        response = self.client.post(
+            "http://localhost:8000/api/users/register",
+            data=new_user_data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        new_user_id = response.data["id"]
+
+        # Try to change role to AVAIMELLINEN (role 4) using tavallinen user - should fail
+        update_data = {"role": 4}
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{new_user_id}/",
+            # tavallinen user
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data=update_data,
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_user_cannot_change_own_role(self):
+        """Users cannot change their own role to prevent self-escalation."""
+        # MUOKKAUS user tries to change their own role
+        update_data = {"role": 1}  # Try to escalate to LEPPISPJ
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{self.muokkaus_id}/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data=update_data,
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("You cannot change your own role", str(response.data))
+
 #    ERROR WITH NEW DATABASE STRUCTURE
 #    def test_updating_as_muokkaus_tavallinen(self):
 #        """
@@ -1093,15 +1215,17 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
+        event_id = event_created.data["id"]
+
         # Attempt updating the room with a tavallinen (role 5) user
         response = self.client.put(
-            "http://localhost:8000/api/events/update_event/1/",
+            f"http://localhost:8000/api/events/update_event/{event_id}/",
             headers={"Authorization": f"Bearer {self.access_token}"},
             data={"room": "Kattohuoneisto"},
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(event_created.data["room"], "Kattilahuone")
 
 #    def test_update_room_no_rights(self):

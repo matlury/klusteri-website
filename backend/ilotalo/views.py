@@ -29,6 +29,7 @@ from datetime import datetime, timedelta, timezone as dt_timezone
 from django.utils import timezone
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer
+from . import permissions as rbac_permissions
 from icalendar import Calendar, Event as ICalEvent
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
@@ -60,6 +61,7 @@ class UserView(viewsets.ReadOnlyModelViewSet):
 
     queryset = User.objects.all()
     pagination_class = None
+    permission_classes = [rbac_permissions.ReadOnly]
 
     def get_serializer_class(self):
         # Use minimal serializer for list action (used by YKV etc.)
@@ -80,6 +82,7 @@ class OrganizationView(viewsets.ReadOnlyModelViewSet):
     serializer_class = OrganizationSerializer
     queryset = Organization.objects.all()
     pagination_class = None
+    permission_classes = [rbac_permissions.ReadOnly]
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -126,7 +129,7 @@ class RetrieveUserView(APIView):
     """View for fetching a User object with a JSON web token at <baseurl>/api/users/userlist/"""
 
     # Isauthenticated will deny access if request has no access token
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [rbac_permissions.ReadOnly]
 
     def get(self, request):
         """
@@ -146,7 +149,7 @@ class RetrieveUserView(APIView):
 
 class UpdateUserView(APIView):
     """View for updating a User object at <baseurl>/api/users/update/<user.id>/"""
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [rbac_permissions.CanModifyUserData]
 
     def put(self, request, pk=None):
         """
@@ -163,15 +166,24 @@ class UpdateUserView(APIView):
             return Response("User ID not provided", status=status.HTTP_400_BAD_REQUEST)
 
         user_id = int(pk)
+        try:
+            user_to_update = User.objects.get(id=user_id)
+        except ObjectDoesNotExist:
+            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+
+        self.check_object_permissions(request, user_to_update)
+
         if user_id == request.user.id:
             return self.update_user(request, user_id)
 
-        user = UserSerializer(request.user).data
+        if request.user.role in [LEPPISPJ, LEPPISVARAPJ]:
+            return self.update_user(
+                request,
+                user_id,
+                allow_password_change=(request.user.role == LEPPISPJ)
+            )
 
-        if user["role"] in [LEPPISPJ, LEPPISVARAPJ]:
-            return self.update_user(request, user_id, allow_password_change=(user["role"] == LEPPISPJ))
-
-        if user["role"] == MUOKKAUS:
+        if request.user.role == MUOKKAUS:
             return self.update_limited_user(request, user_id)
 
         return Response("You are not allowed to edit users", status=status.HTTP_400_BAD_REQUEST)
@@ -202,11 +214,8 @@ class UpdateUserView(APIView):
         except ObjectDoesNotExist:
             return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
-        if user_to_update.role not in [AVAIMELLINEN, TAVALLINEN]:
-            return Response("You are not allowed to edit this user", status=status.HTTP_400_BAD_REQUEST)
-
         user_serializer = UserUpdateSerializer(
-            instance=user_to_update, data=request.data, partial=True)
+            instance=user_to_update, data=request.data, partial=True, context={'request': request})
 
         if user_serializer.is_valid():
             user_serializer.save()
@@ -218,17 +227,9 @@ class UpdateUserView(APIView):
 class RemoveUserView(APIView):
     """View for removing an user <baseurl>/api/users/delete_user/<int:pk>/"""
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [rbac_permissions.IsLeppisPJOrVaraPJ]
 
     def delete(self, request, pk):
-        user = UserSerializer(request.user)
-
-        if user.data["role"] not in [LEPPISPJ, LEPPISVARAPJ]:
-            return Response(
-                "You can't remove users",
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
         try:
             user_to_remove = User.objects.get(id=pk)
         except ObjectDoesNotExist:
@@ -244,17 +245,9 @@ class RemoveUserView(APIView):
 class CreateOrganizationView(APIView):
     """View for creating a new organization <baseurl>/api/organizations/create"""
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [rbac_permissions.IsLeppisPJ]
 
     def post(self, request):
-        user = UserSerializer(request.user)
-
-        if user.data["role"] != LEPPISPJ:
-            return Response(
-                "Only LeppisPJ can create organizations",
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
         serializer = OrganizationSerializer(data=request.data)
 
         if not serializer.is_valid():
@@ -270,17 +263,9 @@ class RemoveOrganizationView(APIView):
     Also removes keys and memberships from users.
     """
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [rbac_permissions.IsLeppisPJ]
 
     def delete(self, request, pk):
-        user = UserSerializer(request.user)
-
-        if user.data["role"] != LEPPISPJ:
-            return Response(
-                "Only LeppisPJ can remove organizations",
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
         try:
             organization_to_remove = Organization.objects.get(id=pk)
         except ObjectDoesNotExist:
@@ -304,14 +289,14 @@ class UpdateOrganizationView(APIView):
     """
 
     # IsAuthenticated will deny access if request has no access token
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [rbac_permissions.IsOrganizationLeader]
 
     def put(self, request, pk=None):
         user = UserSerializer(request.user)
 
         if user.data["role"] in [LEPPISPJ, LEPPISVARAPJ]:
             return self.update_organization(request, pk)
-        elif user.data["role"] == MUOKKAUS:
+        elif user.data["role"] in [MUOKKAUS, JARJESTOPJ, JARJESTOVARAPJ]:
             organization = self.get_organization(pk)
             if organization and request.user.organization[organization.name]:
                 return self.update_organization(request, pk)
@@ -320,11 +305,6 @@ class UpdateOrganizationView(APIView):
                     "You can't edit an organization you are not a member of",
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-        else:
-            return Response(
-                "You can't edit organizations",
-                status=status.HTTP_400_BAD_REQUEST,
-            )
 
     def get_organization(self, pk):
         try:
@@ -422,6 +402,8 @@ class EventView(viewsets.ReadOnlyModelViewSet):
     Displays a list of all Event objects at <baseurl>/events/
     Only supports list and retrieve actions (read-only)
     """
+
+    permission_classes = [rbac_permissions.ReadOnly]
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -564,12 +546,10 @@ class CreateEventView(APIView):
 class RemoveEventView(APIView):
     """View for removing an event <baseurl>/api/events/delete_event/<event.id>/"""
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [rbac_permissions.CanModifyReservation]
 
     def delete(self, request, pk):
         """ pk = primary key """
-        user = UserSerializer(request.user)
-
         try:
             event_to_remove = Event.objects.get(id=pk)
         except ObjectDoesNotExist:
@@ -577,11 +557,7 @@ class RemoveEventView(APIView):
                 "Event not found", status=status.HTTP_404_NOT_FOUND
             )
 
-        if not (user.data["role"] in [LEPPISPJ, LEPPISVARAPJ] or user.data["id"] == event_to_remove.created_by.id):
-            return Response(
-                "You can't remove the event",
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        self.check_object_permissions(request, event_to_remove)
 
         event_to_remove.delete()
 
@@ -595,28 +571,15 @@ class UpdateEventView(APIView):
     """View for updating an Event object at <baseurl>/api/events/update_event/<event.id>/"""
 
     # IsAuthenticated will deny access if request has no access token
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [rbac_permissions.CanModifyReservation]
 
     def put(self, request, pk=None):
-        user = UserSerializer(request.user)
-
-        if user.data["role"] not in [
-            LEPPISPJ,
-            LEPPISVARAPJ,
-            MUOKKAUS,
-            AVAIMELLINEN,
-            JARJESTOPJ,
-            JARJESTOVARAPJ
-        ] and user.data["rights_for_reservation"] is False:
-            return Response(
-                "Users with role 5 can't edit events",
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
         try:
             event_to_update = Event.objects.get(id=pk)
         except ObjectDoesNotExist:
             return Response("Event not found", status=status.HTTP_404_NOT_FOUND)
+
+        self.check_object_permissions(request, event_to_update)
 
         event = EventSerializer(
             instance=event_to_update, data=request.data, partial=True
@@ -637,6 +600,7 @@ class NightResponsibilityView(viewsets.ReadOnlyModelViewSet):
     serializer_class = NightResponsibilitySerializer
     queryset = NightResponsibility.objects.all()
     pagination_class = None
+    permission_classes = [rbac_permissions.ReadOnly]
 
 
 ALLOWED_RESPONSIBILITY_ROLES = [
@@ -783,53 +747,83 @@ class LogoutNightResponsibilityView(APIView):
 
 class RightsForReservationView(APIView):
     """View for changing the rights for making events at <baseurl>/api/users/change_rights_reservation/<int:pk>/"""
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [rbac_permissions.IsOrganizationLeader]
 
     def put(self, request, pk=None):
-        user = UserSerializer(request.user)
+        try:
+            user_to_update = User.objects.get(id=pk)
+        except User.DoesNotExist:
+            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
-        if user.data["role"] not in [LEPPISPJ, LEPPISVARAPJ, JARJESTOPJ, JARJESTOVARAPJ]:
-            return Response("You can't change the rights", status=status.HTTP_400_BAD_REQUEST)
-        else:
-            try:
-                user_to_update = User.objects.get(id=pk)
-            except User.DoesNotExist:
-                return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+        data = {
+            "rights_for_reservation": not user_to_update.rights_for_reservation
+        }
 
-            data = {
-                "rights_for_reservation": not user_to_update.rights_for_reservation
-            }
-
-            user_serializer = UserUpdateSerializer(
-                instance=user_to_update, data=data, partial=True, context={'request': request}
-            )
-            if user_serializer.is_valid():
-                user_serializer.save()
-                return Response(user_serializer.data, status=status.HTTP_200_OK)
-            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        user_serializer = UserUpdateSerializer(
+            instance=user_to_update, data=data, partial=True, context={'request': request}
+        )
+        if user_serializer.is_valid():
+            user_serializer.save()
+            return Response(user_serializer.data, status=status.HTTP_200_OK)
+        return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ResetDatabaseView(APIView):
-    """View for resetting a database during Cypress tests"""
+    """
+    View for resetting a database during Cypress tests
+    SECURITY: This endpoint should NEVER be accessible in production
+    """
+    # SECURITY FIX: Require authentication even for test environments
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         """
-        Post requests are only accepted if the CYPRESS env.variable is "True"
-        or if a Github workflow is running
+        Post requests are only accepted if:
+        1. The CYPRESS env variable is "True" or a Github workflow is running
+        2. The user is authenticated (to prevent unauthenticated access)
+        3. DEBUG mode is enabled (additional safety check)
         """
-        if os.getenv("CYPRESS") in ["True"] or os.environ.get("GITHUB_WORKFLOW"):
-            User.objects.all().delete()
-            Organization.objects.all().delete()
-            NightResponsibility.objects.all().delete()
-            Event.objects.all().delete()
-            DefectFault.objects.all().delete()
+        from django.conf import settings
 
-            return Response("Resetting database successful", status=status.HTTP_200_OK)
+        # SECURITY: Multiple layers of protection
+        is_test_env = os.getenv("CYPRESS") in [
+            "True"] or os.environ.get("GITHUB_WORKFLOW")
+        is_debug = settings.DEBUG
+        is_authenticated = request.user.is_authenticated
 
-        return Response(
-            "This endpoint is for Cypress tests only",
-            status=status.HTTP_403_FORBIDDEN
-        )
+        if not is_test_env:
+            return Response(
+                "This endpoint is for Cypress tests only",
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        if not is_debug:
+            return Response(
+                "This endpoint is only available in DEBUG mode",
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        if not is_authenticated:
+            return Response(
+                "Authentication required",
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        # Additional check: Only allow admin users to reset database
+        if request.user.role not in [LEPPISPJ, LEPPISVARAPJ]:
+            return Response(
+                "Admin privileges required",
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # All checks passed, proceed with database reset
+        User.objects.all().delete()
+        Organization.objects.all().delete()
+        NightResponsibility.objects.all().delete()
+        Event.objects.all().delete()
+        DefectFault.objects.all().delete()
+
+        return Response("Resetting database successful", status=status.HTTP_200_OK)
 
 
 class HandOverKeyView(APIView):

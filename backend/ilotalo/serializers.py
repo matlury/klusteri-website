@@ -238,15 +238,58 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         return tgname
 
     def validate(self, attrs):
-        """Validates password when updating a user."""
+        """Validates password and role changes when updating a user."""
         current_password = attrs.get("current_password")
         new_password = attrs.get("password")
+        new_role = attrs.get("role")
 
         # Skip validation if no fields are actually being changed (might happen in some UI flows)
         if not self.instance:
             return attrs
 
         request_user = self.context['request'].user
+
+        # Prevent privilege escalation - only admins can change roles
+        if new_role is not None and new_role != self.instance.role:
+            # Users cannot change their own role - prevents self-escalation
+            if self.instance.id == request_user.id:
+                raise serializers.ValidationError(
+                    {"role": "You cannot change your own role."}
+                )
+
+            # Define role categories
+            # Restricted roles: management (1,2,3) and organization leadership (6,7)
+            restricted_roles = [
+                Role.LEPPISPJ.value,
+                Role.LEPPISVARAPJ.value,
+                Role.MUOKKAUS.value,
+                Role.JARJESTOPJ.value,
+                Role.JARJESTOVARAPJ.value
+            ]
+            # Basic roles that MUOKKAUS can assign: AVAIMELLINEN (4) and TAVALLINEN (5)
+            basic_roles = [Role.AVAIMELLINEN.value, Role.TAVALLINEN.value]
+
+            is_top_admin = request_user.role in [
+                Role.LEPPISPJ.value, Role.LEPPISVARAPJ.value]
+            has_muokkaus_or_higher = request_user.role <= Role.MUOKKAUS.value
+
+            if new_role in restricted_roles:
+                # Only LEPPISPJ and LEPPISVARAPJ can assign restricted roles (1, 2, 3, 6, 7)
+                if not is_top_admin:
+                    raise serializers.ValidationError(
+                        {"role": "Only top administrators can assign management and organization leadership roles."}
+                    )
+            elif new_role in basic_roles:
+                # MUOKKAUS or higher can assign basic roles (4, 5)
+                if not has_muokkaus_or_higher:
+                    raise serializers.ValidationError(
+                        {"role": "You do not have permission to change user roles."}
+                    )
+            else:
+                # Invalid role
+                raise serializers.ValidationError(
+                    {"role": "Invalid role specified."}
+                )
 
         # Bypass current_password check if LEPPISPJ is updating another user
         if request_user.role == Role.LEPPISPJ.value and self.instance.id != request_user.id:
@@ -374,16 +417,17 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         user = User.objects.filter(Q(email=email) | Q(username=email)).first()
 
         if user:
-            # Handle first login for role 1 (admin)
-            if user.role == 1 and user.first_login:
+            # SECURITY FIX: Always verify password, no exceptions
+            # Removed the first_login bypass which was a security backdoor
+            is_valid = user.check_password(password)
+            if not is_valid:
+                raise serializers.ValidationError(
+                    "Invalid login credentials")
+
+            # Update first_login flag if this is the first login
+            if user.first_login:
                 user.first_login = False
                 user.save()
-                # Skip password check for first admin login as per existing logic
-            else:
-                is_valid = user.check_password(password)
-                if not is_valid:
-                    raise serializers.ValidationError(
-                        "Invalid login credentials")
 
             # Set self.user as expected by SimpleJWT
             self.user = user

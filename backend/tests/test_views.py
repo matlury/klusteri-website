@@ -158,6 +158,30 @@ class ViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertGreaterEqual(len(response.data), 1)
 
+    def test_event_edit_permissions(self):
+        # Ensure only event creator can edit
+        self.client.force_authenticate(user=self.user)
+        response = self.client.put(
+            f'/api/events/update_event/{self.event.id}/', {'title': 'Updated Event'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Ensure regular users without reservation rights cannot edit others' events
+        other_user = User.objects.create_user(
+            username="otheruser",
+            email="other@user.com",
+            password="password123",
+            telegram="otheruser_tg",
+            role=5  # TAVALLINEN (regular user)
+        )
+        # Ensure rights_for_reservation is False (default)
+        other_user.rights_for_reservation = False
+        other_user.save()
+
+        self.client.force_authenticate(user=other_user)
+        response = self.client.put(
+            f'/api/events/update_event/{self.event.id}/', {'title': 'Malicious Update'})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_event_pagination_logic(self):
         """Test that pagination is disabled when start/end/all is provided."""
         from ilotalo.views import EventView
