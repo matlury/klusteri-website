@@ -1,7 +1,7 @@
 import "@testing-library/dom";
-import { render, fireEvent, waitFor } from "@testing-library/react";
+import { render, fireEvent, waitFor, screen } from "@testing-library/react";
 import LoginPage from "../pages/loginpage";
-import { ContextProvider } from "@context/ContextProvider";
+import { ContextProvider, useStateContext } from "@context/ContextProvider";
 import axiosClient from "../axios.js";
 import i18n from "../i18n.js";
 
@@ -19,7 +19,7 @@ afterEach(() => {
 
 test("renders login form", () => {
   const { getByLabelText, getByText } = render(
-    <ContextProvider>
+    <ContextProvider skipHydration>
       <LoginPage />
     </ContextProvider>,
   );
@@ -38,14 +38,20 @@ test("renders login form", () => {
 test("error message when logging in with invalid credentials", async () => {
   axiosClient.post.mockRejectedValueOnce({ response: { status: 401 } });
 
+  const ContextProbe = () => {
+    const { user } = useStateContext();
+    return <div data-testid="context-user">{user ? user.username : ""}</div>;
+  };
+
   // Render the LoginPage component
   const { getByLabelText, getByText, queryByText } = render(
-    <ContextProvider>
+    <ContextProvider skipHydration>
       <LoginPage
         onLogin={jest.fn()}
         onLogout={jest.fn()}
         onCreateNewUser={jest.fn()}
       />
+      <ContextProbe />
     </ContextProvider>,
   );
 
@@ -67,9 +73,7 @@ test("error message when logging in with invalid credentials", async () => {
     expect(
       queryByText("Sähköposti tai salasana virheellinen"),
     ).toBeInTheDocument();
-    const logged = localStorage.getItem("loggedUser");
-    expect(logged === null || logged === "null").toBe(true);
-    expect(localStorage.getItem("isLoggedIn")).toBeNull();
+    expect(screen.getByTestId("context-user")).toHaveTextContent("");
   });
 });
 
@@ -81,14 +85,20 @@ test("logging in with valid credentials works", async () => {
   axiosClient.post.mockResolvedValueOnce({ data: { access: mockToken } });
   axiosClient.get.mockResolvedValueOnce({ data: mockUserData });
 
+  const ContextProbe = () => {
+    const { user } = useStateContext();
+    return <div data-testid="context-user">{user ? user.username : ""}</div>;
+  };
+
   // Render the LoginPage component
   const { getByLabelText, queryByText, getByText } = render(
-    <ContextProvider>
+    <ContextProvider skipHydration>
       <LoginPage
         onLogin={jest.fn()}
         onLogout={jest.fn()}
         onCreateNewUser={jest.fn()}
       />
+      <ContextProbe />
     </ContextProvider>,
   );
 
@@ -108,11 +118,7 @@ test("logging in with valid credentials works", async () => {
     });
     expect(axiosClient.get).toHaveBeenCalledWith("users/userinfo");
 
-    expect(localStorage.getItem("ACCESS_TOKEN")).toEqual(mockToken);
-    expect(localStorage.getItem("loggedUser")).toEqual(
-      JSON.stringify(mockUserData),
-    );
-    expect(localStorage.getItem("isLoggedIn")).toEqual("true");
+    expect(screen.getByTestId("context-user")).toHaveTextContent("testuser");
     expect(
       queryByText("Sähköposti tai salasana virheellinen!"),
     ).not.toBeInTheDocument();

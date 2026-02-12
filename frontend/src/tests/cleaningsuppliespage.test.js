@@ -20,7 +20,7 @@ afterEach(() => {
 describe("Cleaningsupplies Component", () => {
   it("doesn't open without logging in", () => {
     render(
-      <ContextProvider>
+      <ContextProvider skipHydration>
         <CleaningSupplies />
       </ContextProvider>
     );
@@ -40,11 +40,9 @@ describe("Cleaningsupplies Component", () => {
     };
 
     window.confirm = jest.fn(() => true);
-    localStorage.setItem("ACCESS_TOKEN", "example_token");
-    localStorage.setItem("loggedUser", JSON.stringify(user));
 
     render(
-      <ContextProvider>
+      <ContextProvider initialUser={user} skipHydration>
         <CleaningSupplies />
       </ContextProvider>
     );
@@ -105,11 +103,9 @@ describe("Cleaningsupplies Component", () => {
     };
 
     window.confirm = jest.fn(() => true);
-    localStorage.setItem("ACCESS_TOKEN", "example_token");
-    localStorage.setItem("loggedUser", JSON.stringify(user));
 
     render(
-      <ContextProvider>
+      <ContextProvider initialUser={user} skipHydration>
         <CleaningSupplies />
       </ContextProvider>
     );

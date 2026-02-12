@@ -13,13 +13,28 @@ logger = logging.getLogger(__name__)
 def create_default_user(sender, **kwargs):
     User = get_user_model()
     try:
+        default_username = os.getenv("DJANGO_DEFAULT_ADMIN_USERNAME")
+        default_email = os.getenv("DJANGO_DEFAULT_ADMIN_EMAIL")
+        default_password = os.getenv("DJANGO_DEFAULT_ADMIN_PASSWORD")
+
         if not User.objects.exists():
-            if not User.objects.filter(username='leppispj').exists():
+            if not User.objects.filter(username=default_username).exists():
+                if not default_username or not default_email or not default_password:
+                    logger.warning(
+                        "Default admin user not created; missing env credentials.")
+                    return
+
                 user = User.objects.create_user(
-                    'leppispj', '', 'pj@leppis.fi', "", 1)
+                    default_username,
+                    default_password,
+                    default_email,
+                    "",
+                    1
+                )
                 user.first_login = True
                 user.save()
-                print("Default admin user created")
+                logger.info(
+                    "Default admin user created via environment variables")
     except OperationalError:
         pass
 

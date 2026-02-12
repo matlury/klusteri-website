@@ -28,12 +28,10 @@ const user = {
   id: 1,
 };
 
-localStorage.setItem("loggedUser", JSON.stringify(user));
-
 describe("Reservations component", () => {
   it("renders Reservations component", () => {
     const { getByText } = render(
-      <ContextProvider>
+      <ContextProvider skipHydration>
         <Reservations />
       </ContextProvider>
     );
@@ -42,7 +40,7 @@ describe("Reservations component", () => {
 
   it("renders the booking form", async () => {
     const { getByText, queryByText } = render(
-      <ContextProvider>
+      <ContextProvider initialUser={user} skipHydration>
         <Reservations />
       </ContextProvider>
     );
@@ -78,9 +76,8 @@ describe("Reservations component", () => {
       rights_for_reservation: true
     };
 
-    localStorage.setItem('loggedUser', JSON.stringify(user))
     const { getByText } = render(
-      <ContextProvider>
+      <ContextProvider initialUser={user} skipHydration>
         <Reservations />
       </ContextProvider>
     );

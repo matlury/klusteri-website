@@ -160,3 +160,13 @@ class ReadOnly(permissions.BasePermission):
 
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.method in permissions.SAFE_METHODS
+
+
+class ReadOnlyOrAnonymous(permissions.BasePermission):
+    """
+    Permission class that allows read-only access for both authenticated and anonymous users.
+    Used for public data like event listings.
+    """
+
+    def has_permission(self, request, view):
+        return request.method in permissions.SAFE_METHODS

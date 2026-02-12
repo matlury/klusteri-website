@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useStateContext } from "@context/ContextProvider";
-import { usersAPI, organizationsAPI, keysAPI, authAPI } from "../api/api.ts";
+import { usersAPI, organizationsAPI, keysAPI } from "../api/api.ts";
 import UserPage from "../components/UserPage.jsx";
 import OrganisationPage from "../components/OrganisationPage.jsx";
 import CreateOrganization from "../components/CreateOrganization.jsx";
@@ -52,8 +52,14 @@ const OwnPage = () => {
 
   const [allUsers, setAllUsers] = useState([]);
 
-  const [hasPermission, setHasPermission] = useState(false);
-  const [hasPermissionOrg, setHasPermissionOrg] = useState(false);
+  // Derive permissions from user role in context
+  const hasPermission = user && user.role === Role.LEPPISPJ;
+  const hasPermissionOrg = user && (
+    user.role === Role.LEPPISPJ ||
+    user.role === Role.LEPPISVARAPJ ||
+    user.role === Role.MUOKKAUS ||
+    user.role === Role.JARJESTOPJ
+  );
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -69,7 +75,6 @@ const OwnPage = () => {
       setRole(user.role);
       getOrganisations();
       getAllUsers();
-      getPermission();
     }
   }, [isLoggedIn, user]);
 
@@ -215,8 +220,7 @@ const OwnPage = () => {
       const response = await usersAPI.updateUser(userDetailsId, updatedValues);
       handleSnackbar(t("usereditsuccess"), "success");
 
-      if (userDetailsEmail === email) {
-        localStorage.setItem("loggedUser", JSON.stringify(response.data));
+      if (userDetailsId === user?.id) {
         setUser(response.data);
       }
 
@@ -343,8 +347,10 @@ const OwnPage = () => {
   // Handles PJ change
   const handlePJChange = async (userId) => {
     const selectedUserId = userId;
-    const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
-    const loggedUserId = loggedUser.id;
+    if (!user) {
+      return;
+    }
+    const loggedUserId = user.id;
 
     confirmupdate();
 
@@ -360,7 +366,6 @@ const OwnPage = () => {
         usersAPI
           .updateUser(loggedUserId, { role: Role.TAVALLINEN })
           .then((response) => {
-            localStorage.setItem("loggedUser", JSON.stringify(response.data));
             setUser(response.data);
           })
           .catch((error) => {
@@ -428,38 +433,6 @@ const OwnPage = () => {
       console.error("Error in key handover:", error);
       handleSnackbar(t("handoverkeyfail"), "error");
     }
-  };
-
-  const getPermission = async () => {
-    /*
-    Check if the logged user has permissions for something
-    This prevents harm caused by localstorage manipulation
-    */
-
-    await authAPI
-      .getUserInfo()
-      .then((response) => {
-        const currentUser = response.data;
-        if (currentUser.role === Role.LEPPISPJ) {
-          setHasPermission(true);
-          setHasPermissionOrg(true);
-        } else if (
-          currentUser.role == Role.LEPPISVARAPJ ||
-          currentUser.role == Role.MUOKKAUS ||
-          currentUser.role == Role.JARJESTOPJ
-        ) {
-          setHasPermissionOrg(true);
-          setHasPermission(false);
-        } else if (currentUser[0]) {
-          if (currentUser[0].role === Role.LEPPISPJ) {
-            setHasPermission(true);
-            setHasPermissionOrg(true);
-          }
-        } else {
-          setHasPermission(false);
-          setHasPermissionOrg(false);
-        }
-      });
   };
 
   return (

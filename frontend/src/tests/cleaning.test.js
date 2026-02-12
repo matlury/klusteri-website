@@ -40,7 +40,7 @@ describe('CleaningSchedule Component', () => {
 
     test('renders login prompt if not logged in', () => {
         render(
-            <ContextProvider>
+            <ContextProvider skipHydration>
                 <CleaningSchedule />
             </ContextProvider>
         );
@@ -58,7 +58,7 @@ describe('CleaningSchedule Component', () => {
         }));
 
         render(
-            <ContextProvider>
+            <ContextProvider skipHydration>
                 <CleanersList allCleaners={processedData} />
             </ContextProvider>
         );
@@ -68,17 +68,15 @@ describe('CleaningSchedule Component', () => {
 
     test('renders all content when logged as leppispj', async () => {
         window.confirm = jest.fn(() => true);
-        localStorage.setItem("ACCESS_TOKEN", "example_token");
-        localStorage.setItem("loggedUser", JSON.stringify(user));
 
         render(
-            <ContextProvider>
+            <ContextProvider initialUser={user} skipHydration>
                 <CleaningSchedule />
             </ContextProvider>
         );
 
         await waitFor(() => expect(mockAxios.get).toHaveBeenCalledWith("listobjects/cleaning/"));
-        
+
         await waitFor(() => {
             mockAxios.mockResponse({ data: mockCleaningData });
         });

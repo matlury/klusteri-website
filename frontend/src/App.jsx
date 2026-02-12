@@ -291,8 +291,6 @@ const AppContent = ({ window }) => {
 
   // Removes user from context and navigates to front page
   const handleLogout = () => {
-    localStorage.removeItem("ACCESS_TOKEN");
-    localStorage.removeItem("loggedUser");
     setUser(null);
     navigate("/etusivu"); // Navigate to front page after logging out
   };

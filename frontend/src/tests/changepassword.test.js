@@ -28,15 +28,10 @@ afterEach(() => {
 beforeEach(() => {
   mockAxios.reset();
   localStorage.clear();
-  localStorage.setItem("loggedUser", JSON.stringify(user));
-  localStorage.setItem("ACCESS_TOKEN", "example_token");
 });
 
 const setupMocks = async () => {
   // Mock initial requests
-  await waitFor(() => {
-    mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
-  });
   await waitFor(() => {
     mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
   });
@@ -48,7 +43,7 @@ const setupMocks = async () => {
 describe("Change Password Functionality", () => {
   it("navigates to change password tab and shows the form", async () => {
     const { getByText, getByLabelText } = render(
-      <ContextProvider>
+      <ContextProvider initialUser={user} skipHydration>
         <OwnPage isLoggedIn={true} />
       </ContextProvider>
     );
@@ -68,7 +63,7 @@ describe("Change Password Functionality", () => {
   it("successfully changes password", async () => {
     window.confirm = jest.fn(() => true);
     const { getByText, getByLabelText, getByTestId } = render(
-      <ContextProvider>
+      <ContextProvider initialUser={user} skipHydration>
         <OwnPage isLoggedIn={true} />
       </ContextProvider>
     );
@@ -112,7 +107,7 @@ describe("Change Password Functionality", () => {
 
   it("shows error when passwords don't match", async () => {
     const { getByText, getByLabelText, getByTestId } = render(
-      <ContextProvider>
+      <ContextProvider initialUser={user} skipHydration>
         <OwnPage isLoggedIn={true} />
       </ContextProvider>
     );
@@ -143,7 +138,7 @@ describe("Change Password Functionality", () => {
 
   it("shows error when new password is too short", async () => {
     const { getByText, getByLabelText, getByTestId } = render(
-      <ContextProvider>
+      <ContextProvider initialUser={user} skipHydration>
         <OwnPage isLoggedIn={true} />
       </ContextProvider>
     );
@@ -175,7 +170,7 @@ describe("Change Password Functionality", () => {
   it("shows error when current password is wrong (backend error)", async () => {
     window.confirm = jest.fn(() => true);
     const { getByText, getByLabelText, getByTestId } = render(
-      <ContextProvider>
+      <ContextProvider initialUser={user} skipHydration>
         <OwnPage isLoggedIn={true} />
       </ContextProvider>
     );

@@ -1,4 +1,5 @@
 import icalendar
+import os as os_module
 from django.test import TestCase
 from django.utils import timezone
 from rest_framework import status
@@ -30,6 +31,12 @@ class ViewTests(TestCase):
             telegram="testuser_tg",
             role=1
         )
+
+        # Get token for authentication
+        from rest_framework_simplejwt.tokens import RefreshToken
+        refresh = RefreshToken.for_user(self.user)
+        self.token = str(refresh.access_token)
+
         self.event = Event.objects.create(
             title="Test Event",
             start=timezone.now() + timedelta(days=1),
@@ -60,11 +67,9 @@ class ViewTests(TestCase):
         self.assertEqual(len(events), 1)
         self.assertEqual(str(events[0].get('summary')), "Test Event")
         self.assertEqual(str(events[0].get('location')), "Test Room")
+        # iCal now only includes organizer name for PII protection (no responsible person or description)
         self.assertIn("Järjestäjä: Test Org", str(
             events[0].get('description')))
-        self.assertIn("Vastuuhenkilö: Test Person",
-                      str(events[0].get('description')))
-        self.assertIn("Test Description", str(events[0].get('description')))
 
     def test_event_ical_view_filtering(self):
         """Test that the iCal view only returns events from the last 30 days and future."""
@@ -101,7 +106,10 @@ class ViewTests(TestCase):
         )
 
         # 1. Default (current month only)
-        response = self.client.get("/api/listobjects/events/")
+        response = self.client.get(
+            "/api/listobjects/events/",
+            headers={"Authorization": f"Bearer {self.token}"}
+        )
         # Handle paginated response
         events = response.data.get('results', response.data) if isinstance(
             response.data, dict) else response.data
@@ -118,12 +126,17 @@ class ViewTests(TestCase):
         start_str = (now + timedelta(days=30)).strftime('%Y-%m-%d')
         end_str = (now + timedelta(days=35)).strftime('%Y-%m-%d')
         response = self.client.get(
-            f"/api/listobjects/events/?start={start_str}&end={end_str}")
+            f"/api/listobjects/events/?start={start_str}&end={end_str}",
+            headers={"Authorization": f"Bearer {self.token}"}
+        )
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['title'], "Next Month Event")
 
         # 3. 'all' parameter
-        response = self.client.get("/api/listobjects/events/?all=true")
+        response = self.client.get(
+            "/api/listobjects/events/?all=true",
+            headers={"Authorization": f"Bearer {self.token}"}
+        )
         self.assertEqual(len(response.data), 2)
 
     def test_event_list_filtering_iso_datetime(self):
@@ -143,7 +156,9 @@ class ViewTests(TestCase):
         end_iso = (now + timedelta(days=30)).isoformat()
 
         response = self.client.get(
-            f"/api/listobjects/events/?start={start_iso}&end={end_iso}")
+            f"/api/listobjects/events/?start={start_iso}&end={end_iso}",
+            headers={"Authorization": f"Bearer {self.token}"}
+        )
         self.assertEqual(response.status_code, 200)
         # Should get both "Test Event" and "Future Event"
         self.assertGreaterEqual(len(response.data), 1)
@@ -154,7 +169,9 @@ class ViewTests(TestCase):
                      ).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
 
         response = self.client.get(
-            f"/api/listobjects/events/?start={start_iso_z}&end={end_iso_z}")
+            f"/api/listobjects/events/?start={start_iso_z}&end={end_iso_z}",
+            headers={"Authorization": f"Bearer {self.token}"}
+        )
         self.assertEqual(response.status_code, 200)
         self.assertGreaterEqual(len(response.data), 1)
 
@@ -270,6 +287,11 @@ class AppsTests(TestCase):
         mock_request_started.assert_not_called()
 
     @patch('ilotalo.apps.get_user_model')
+    @patch.dict(os_module.environ, {
+        'DJANGO_DEFAULT_ADMIN_USERNAME': 'testadmin',
+        'DJANGO_DEFAULT_ADMIN_EMAIL': 'admin@test.com',
+        'DJANGO_DEFAULT_ADMIN_PASSWORD': 'TestPass123'
+    })
     def test_create_default_user(self, mock_get_user_model):
         """Test the create_default_user signal handler."""
         from ilotalo.apps import create_default_user
@@ -281,10 +303,10 @@ class AppsTests(TestCase):
         create_default_user(None)
         mock_user_model.objects.create_user.assert_not_called()
 
-        # Case 2: No users exist
+        # Case 2: No users exist and env vars are set
         mock_user_model.objects.exists.return_value = False
         mock_user_model.objects.filter.return_value.exists.return_value = False
         create_default_user(None)
         mock_user_model.objects.create_user.assert_called_once_with(
-            'leppispj', '', 'pj@leppis.fi', "", 1
+            'testadmin', 'TestPass123', 'admin@test.com', "", 1
         )

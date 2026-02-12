@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { authAPI } from "../api/api";
 
 // Creates a context for managing global application state
 const StateContext = createContext({
@@ -15,23 +16,28 @@ const StateContext = createContext({
 });
 
 // ContextProvider component to provide state to child components
-export const ContextProvider = ({ children }) => {
-  const [user, setUser] = useState(
-    JSON.parse(localStorage.getItem("loggedUser")) || null,
-  );
-  const [token, setToken] = useState(
-    localStorage.getItem("ACCESS_TOKEN") || null,
-  );
+export const ContextProvider = ({ children, initialUser = null, skipHydration = false }) => {
+  const [user, setUser] = useState(initialUser);
+  const [token, setToken] = useState(null);
   const [notification, setNotification] = useState(null);
   const [timeLeft, setTimeLeft] = useState(30 * 60);
 
+  // Hydrate user from server on app mount using HttpOnly cookie
   useEffect(() => {
-    if (user === null) {
-      localStorage.removeItem("loggedUser");
-    } else {
-      localStorage.setItem("loggedUser", JSON.stringify(user));
+    if (skipHydration) {
+      return;
     }
-  }, [user]);
+    const hydrateUser = async () => {
+      try {
+        const response = await authAPI.getUserInfo();
+        setUser(response.data);
+      } catch (error) {
+        // Not authenticated or session expired; user remains null
+        setUser(null);
+      }
+    };
+    hydrateUser();
+  }, [skipHydration]);
 
   useEffect(() => {
     // Timer logic to decrement timeLeft every second
@@ -50,11 +56,6 @@ export const ContextProvider = ({ children }) => {
 
   const updateToken = (token) => {
     setToken(token);
-    if (token) {
-      localStorage.setItem("ACCESS_TOKEN", token);
-    } else {
-      localStorage.removeItem("ACCESS_TOKEN");
-    }
   };
 
   const updateNotification = (message) => {

@@ -4,6 +4,7 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q, Count
 from .serializers import (
@@ -43,9 +44,8 @@ TAVALLINEN = Role.TAVALLINEN.value
 JARJESTOPJ = Role.JARJESTOPJ.value
 JARJESTOVARAPJ = Role.JARJESTOVARAPJ.value
 
-# Get reCAPTCHA secret key from environment variables, use the testing key if not found
-recaptcha_secret_key = os.getenv(
-    "RECAPTCHA_SECRET_KEY", "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe")
+# Get reCAPTCHA secret key from environment variables
+recaptcha_secret_key = os.getenv("RECAPTCHA_SECRET_KEY")
 
 """
 Views receive web requests and return web responses.
@@ -100,11 +100,18 @@ class OrganizationView(viewsets.ReadOnlyModelViewSet):
 
 class RegisterView(APIView):
     """View for creating a new user at <baseurl>/api/users/register/"""
+    throttle_scope = "register"
 
     def post(self, request):
         data = request.data
         recaptcha_response = data.pop('recaptcha_response', None)
         serializer = UserSerializer(data=data)
+
+        if not recaptcha_secret_key:
+            return Response(
+                {'recaptcha': 'reCAPTCHA is not configured.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
         # Check if the request contains valid data
         if not serializer.is_valid():
@@ -113,7 +120,7 @@ class RegisterView(APIView):
         google_response = requests.post('https://www.google.com/recaptcha/api/siteverify', data={
             'secret': recaptcha_secret_key,
             'response': recaptcha_response,
-        })
+        }, timeout=5)
 
         # Check if the request to Google's API was successful
         if not google_response.json().get('success'):
@@ -401,9 +408,10 @@ class EventView(viewsets.ReadOnlyModelViewSet):
     """
     Displays a list of all Event objects at <baseurl>/events/
     Only supports list and retrieve actions (read-only)
+    Allows both authenticated and anonymous users to view (events are public data)
     """
 
-    permission_classes = [rbac_permissions.ReadOnly]
+    permission_classes = [rbac_permissions.ReadOnlyOrAnonymous]
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -500,7 +508,7 @@ class EventICalView(APIView):
             event.add('dtstart', e.start)
             event.add('dtend', e.end)
 
-            description = f"Järjestäjä: {e.organizer.name}\nVastuuhenkilö: {e.responsible}\n\n{e.description}"
+            description = f"Järjestäjä: {e.organizer.name}"
             event.add('description', description)
             event.add('location', e.room)
             event.add('uid', f"event-{e.id}@ilotalo-new.matlu.fi")
@@ -747,7 +755,7 @@ class LogoutNightResponsibilityView(APIView):
 
 class RightsForReservationView(APIView):
     """View for changing the rights for making events at <baseurl>/api/users/change_rights_reservation/<int:pk>/"""
-    permission_classes = [rbac_permissions.IsOrganizationLeader]
+    permission_classes = [rbac_permissions.IsManagementRole]
 
     def put(self, request, pk=None):
         try:
@@ -783,7 +791,11 @@ class ResetDatabaseView(APIView):
         2. The user is authenticated (to prevent unauthenticated access)
         3. DEBUG mode is enabled (additional safety check)
         """
-        from django.conf import settings
+        if not settings.TESTING:
+            return Response(
+                "Not found",
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         # SECURITY: Multiple layers of protection
         is_test_env = os.getenv("CYPRESS") in [
@@ -1163,6 +1175,39 @@ def force_logout_ykv_logins():
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+    throttle_scope = "login"
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+
+        if response.status_code == status.HTTP_200_OK:
+            access_token = response.data.get("access")
+            refresh_token = response.data.get("refresh")
+            if access_token and refresh_token:
+                access_max_age = int(
+                    settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"].total_seconds())
+                refresh_max_age = int(
+                    settings.SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"].total_seconds())
+                secure_cookie = not settings.DEBUG
+
+                response.set_cookie(
+                    "access_token",
+                    access_token,
+                    max_age=access_max_age,
+                    httponly=True,
+                    secure=secure_cookie,
+                    samesite="Strict",
+                )
+                response.set_cookie(
+                    "refresh_token",
+                    refresh_token,
+                    max_age=refresh_max_age,
+                    httponly=True,
+                    secure=secure_cookie,
+                    samesite="Strict",
+                )
+
+        return response
 
 
 class CleaningSuppliesView(viewsets.ReadOnlyModelViewSet):

@@ -3,7 +3,7 @@ import { useStateContext } from "@context/ContextProvider";
 import { nightResponsibilitiesAPI, ykvAPI } from "../api/api.ts";
 import { getCurrentDateTime } from "../utils/timehelpers.js";
 import {
-  getPermission,
+  fetchAllUsersWithKeys,
 } from "../utils/keyuserhelpers.js";
 import YkvLogoutFunction from "../components/YkvLogoutFunction.jsx";
 import { useTranslation } from "react-i18next";
@@ -18,11 +18,13 @@ const OwnKeys = () => {
   const [allUsersWithKeys, setAllUsersWithKeys] = useState([]);
   const [selectedForYKV, setSelectedForYKV] = useState([]);
   const [selectedOrg, setSelectedOrg] = useState(null);
-  const [hasPermission, setHasPermission] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const { t } = useTranslation();
+
+  // Check if user has permission (LEPPISPJ role)
+  const hasPermission = loggedUser && loggedUser.role === Role.LEPPISPJ;
 
   // Set default organization when loggedUser is available
   useEffect(() => {
@@ -54,14 +56,9 @@ const OwnKeys = () => {
     }
   };
 
-
   useEffect(() => {
     const fetchAllData = async () => {
-      if (isLoggedIn && loggedUser) {
-        if (!hasPermission) {
-          await getPermission({ setHasPermission });
-          return false;
-        }
+      if (isLoggedIn && loggedUser && hasPermission) {
         await fetchEligibleUsers();
         await fetchResponsibilitiesData();
       }
@@ -75,7 +72,7 @@ const OwnKeys = () => {
     const user_id = loggedUser.id;
     const loginTime = getCurrentDateTime();
     const organizations = selectedOrg ? [selectedOrg.id] : [];
-    
+
     const responsibilityObject = {
       user: user_id,
       responsible_for: responsibility,

@@ -352,7 +352,7 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.access_token}"},
             format="json",
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_delete_user_notfound(self):
         """Attempting to delete a non-existent user results in a 404"""
@@ -434,7 +434,7 @@ class TestDjangoAPI(TestCase):
     def test_updating_email_with_invalid_parameters(self):
         """Updating an email fails without authorization or if the new address is invalid"""
 
-        # attempt updating without authorization
+        # attempt updating without Authorizationheader
         user_id = User.objects.all()[0].id
         response = self.client.put(
             f"http://localhost:8000/api/users/update/{user_id}/",
@@ -442,7 +442,7 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(self.user["email"], "klusse.osoite@gmail.com")
 
         # new email address is invalid
@@ -457,7 +457,7 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(self.user["email"], "klusse.osoite@gmail.com")
 
     def test_updating_email_with_taken_address(self):
-        """Updating an email address fails if the address is taken"""
+        """Updating an email address fails if not authorized or if the address is taken"""
 
         response = self.client.post(
             "http://localhost:8000/api/users/register",
@@ -479,14 +479,13 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertRaises(ValidationError)
-        self.assertEqual(self.user["email"], "klusse.osoite@gmail.com")
+        # Cannot modify another user's data as tavallinen user
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_updating_telegram_with_invalid_parameters(self):
         """Updating a telegram name fails without authorization or if the new name is taken"""
 
-        # attempt updating without authorization
+        # attempt updating without authorization header
         user_id = User.objects.all()[0].id
         response = self.client.put(
             f"http://localhost:8000/api/users/update/{user_id}/",
@@ -494,7 +493,7 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(self.user["telegram"], "klussentg")
 
         # telegram name is taken
@@ -547,7 +546,7 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.data["telegram"], "")
 
     def test_updating_non_existent_user(self):
-        """Backend responds with 400 if a user is not found when updating information"""
+        """Backend responds with 404 if a user is not found when updating information"""
 
         # update the telegram name
         response = self.client.put(
@@ -557,7 +556,7 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_updating_as_leppispj(self):
         """LeppisPJ can update all users"""
@@ -979,7 +978,7 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_removing_organization(self):
         """Only LeppisPJ can remove an organization"""
@@ -1007,7 +1006,7 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # delete the organization as LeppisPJ
         response = self.client.delete(
@@ -1353,7 +1352,7 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.access_token}"},
         )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # try delete event that doesn't exist
         response = self.client.delete(
@@ -1786,7 +1785,7 @@ class TestDjangoAPI(TestCase):
 
         # update hompage with organization that doesn't exist
         response = self.client.put(
-            f"http://localhost:8000/api/organizations/update_organization/2/",
+            f"http://localhost:8000/api/organizations/update_organization/9999/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={"homepage": "matrix.fi"},
             format="json",
@@ -1818,7 +1817,7 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(organization_created.data["homepage"], "matrix-ry.fi")
 
 #    ERROR WITH NEW DATABASE STRUCTURE
@@ -2314,20 +2313,22 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_change_rights_for_reservation(self):
-        """Role 6 can add and remove rights for reservation"""
+        """Only LEPPISPJ (role 1) can change rights for reservation"""
 
         response = self.client.put(
             f'http://localhost:8000/api/users/change_rights_reservation/{self.tavallinen_id}/',
-            headers={"Authorization": f"Bearer {self.jarjestopj_access_token}"},
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
         )
 
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["rights_for_reservation"], True)
 
         response = self.client.put(
             f'http://localhost:8000/api/users/change_rights_reservation/{self.tavallinen_id}/',
-            headers={"Authorization": f"Bearer {self.jarjestopj_access_token}"},
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
         )
 
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["rights_for_reservation"], False)
 
     def test_creating_cleaning_supplies(self):
@@ -2470,4 +2471,4 @@ class TestDjangoAPI(TestCase):
             data={"email": "hacked@example.com"},
             format="json",
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

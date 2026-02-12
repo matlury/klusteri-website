@@ -20,7 +20,7 @@ afterEach(() => {
 describe("DefectFault Component", () => {
   it("doesn't open without logging in", () => {
     render(
-      <ContextProvider>
+      <ContextProvider skipHydration>
         <DefectFault />
       </ContextProvider>
     );
@@ -40,11 +40,9 @@ describe("DefectFault Component", () => {
     };
 
     window.confirm = jest.fn(() => true);
-    localStorage.setItem("ACCESS_TOKEN", "example_token");
-    localStorage.setItem("loggedUser", JSON.stringify(user));
 
     render(
-      <ContextProvider>
+      <ContextProvider initialUser={user} skipHydration>
         <DefectFault />
       </ContextProvider>
     );

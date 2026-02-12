@@ -53,9 +53,6 @@ describe("OwnPage Component", () => {
 
   const mockInitialRequests = async (user = defaultUser) => {
     await waitFor(() => {
-      mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: user });
-    });
-    await waitFor(() => {
       mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
     });
     await waitFor(() => {
@@ -65,7 +62,7 @@ describe("OwnPage Component", () => {
 
   it("opens without logging in", () => {
     render(
-      <ContextProvider>
+      <ContextProvider skipHydration>
         <OwnPage isLoggedIn={false} />
       </ContextProvider>
     );
@@ -73,11 +70,8 @@ describe("OwnPage Component", () => {
   });
 
   it("opens with role 5", async () => {
-    localStorage.setItem("loggedUser", JSON.stringify(defaultUser));
-    localStorage.setItem("ACCESS_TOKEN", "example_token");
-
     render(
-      <ContextProvider>
+      <ContextProvider initialUser={defaultUser} skipHydration>
         <OwnPage isLoggedIn={true} />
       </ContextProvider>
     );
@@ -94,11 +88,8 @@ describe("OwnPage Component", () => {
 
   it("User updating works", async () => {
     window.confirm = jest.fn(() => true);
-    localStorage.setItem("ACCESS_TOKEN", "example_token");
-    localStorage.setItem("loggedUser", JSON.stringify(pjUser)); // Use PJ to see all sections
-
     render(
-      <ContextProvider>
+      <ContextProvider initialUser={pjUser} skipHydration>
         <OwnPage isLoggedIn={true} />
       </ContextProvider>
     );
@@ -128,8 +119,11 @@ describe("OwnPage Component", () => {
 
   describe("User updating errors", () => {
     it("Updating fails with no username or email", async () => {
-      localStorage.setItem("loggedUser", JSON.stringify(defaultUser));
-      render(<ContextProvider><OwnPage isLoggedIn={true} /></ContextProvider>);
+      render(
+        <ContextProvider initialUser={defaultUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
       await mockInitialRequests();
 
       const infoForm = within(screen.getByRole("heading", { name: /omat tiedot/i }).parentElement);
@@ -145,8 +139,11 @@ describe("OwnPage Component", () => {
     });
 
     it("Updating fails with missing current password", async () => {
-      localStorage.setItem("loggedUser", JSON.stringify(defaultUser));
-      render(<ContextProvider><OwnPage isLoggedIn={true} /></ContextProvider>);
+      render(
+        <ContextProvider initialUser={defaultUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
       await mockInitialRequests();
 
       const infoForm = within(screen.getByRole("heading", { name: /omat tiedot/i }).parentElement);
@@ -160,8 +157,11 @@ describe("OwnPage Component", () => {
 
     it("Handles invalid current password error from backend", async () => {
       window.confirm = jest.fn(() => true);
-      localStorage.setItem("loggedUser", JSON.stringify(defaultUser));
-      render(<ContextProvider><OwnPage isLoggedIn={true} /></ContextProvider>);
+      render(
+        <ContextProvider initialUser={defaultUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
       await mockInitialRequests();
 
       const infoForm = within(screen.getByRole("heading", { name: /omat tiedot/i }).parentElement);
@@ -178,8 +178,11 @@ describe("OwnPage Component", () => {
 
     it("Handles telegram already in use error from backend", async () => {
       window.confirm = jest.fn(() => true);
-      localStorage.setItem("loggedUser", JSON.stringify(defaultUser));
-      render(<ContextProvider><OwnPage isLoggedIn={true} /></ContextProvider>);
+      render(
+        <ContextProvider initialUser={defaultUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
       await mockInitialRequests();
 
       const infoForm = within(screen.getByRole("heading", { name: /omat tiedot/i }).parentElement);
@@ -195,8 +198,11 @@ describe("OwnPage Component", () => {
     });
 
     it("Updating password with mismatching confirmation fails", async () => {
-      localStorage.setItem("loggedUser", JSON.stringify(defaultUser));
-      render(<ContextProvider><OwnPage isLoggedIn={true} /></ContextProvider>);
+      render(
+        <ContextProvider initialUser={defaultUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
       await mockInitialRequests();
 
       fireEvent.click(screen.getByText("Vaihda salasana"));
@@ -211,8 +217,11 @@ describe("OwnPage Component", () => {
     });
 
     it("Updating password with too short password fails", async () => {
-      localStorage.setItem("loggedUser", JSON.stringify(defaultUser));
-      render(<ContextProvider><OwnPage isLoggedIn={true} /></ContextProvider>);
+      render(
+        <ContextProvider initialUser={defaultUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
       await mockInitialRequests();
 
       fireEvent.click(screen.getByText("Vaihda salasana"));
@@ -227,8 +236,11 @@ describe("OwnPage Component", () => {
     });
 
     it("Updating password without complexity fails", async () => {
-      localStorage.setItem("loggedUser", JSON.stringify(defaultUser));
-      render(<ContextProvider><OwnPage isLoggedIn={true} /></ContextProvider>);
+      render(
+        <ContextProvider initialUser={defaultUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
       await mockInitialRequests();
 
       fireEvent.click(screen.getByText("Vaihda salasana"));
@@ -245,8 +257,11 @@ describe("OwnPage Component", () => {
 
   describe("Organizations Management", () => {
     it("Organization creating works", async () => {
-      localStorage.setItem("loggedUser", JSON.stringify(pjUser));
-      render(<ContextProvider><OwnPage isLoggedIn={true} /></ContextProvider>);
+      render(
+        <ContextProvider initialUser={pjUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
       await mockInitialRequests(pjUser);
 
       await waitFor(() => {
@@ -278,10 +293,12 @@ describe("OwnPage Component", () => {
     it("Organization detail updating works", async () => {
       const orgs = [{ id: 1, name: "org1", Organisaatio: "org1", email: "o@o.com", kotisivu: "h.com", color: "#000", user_set: [] }];
       window.confirm = jest.fn(() => true);
-      localStorage.setItem("loggedUser", JSON.stringify(pjUser));
-      render(<ContextProvider><OwnPage isLoggedIn={true} /></ContextProvider>);
+      render(
+        <ContextProvider initialUser={pjUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
 
-      await waitFor(() => mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: pjUser }));
       await waitFor(() => mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: orgs }));
       await waitFor(() => mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [pjUser, otherUser] }));
 
@@ -309,10 +326,12 @@ describe("OwnPage Component", () => {
     it("Organization deletion works", async () => {
       const orgs = [{ id: 1, name: "org1", Organisaatio: "org1", email: "o@o.com", kotisivu: "h.com", color: "#000", user_set: [] }];
       window.confirm = jest.fn(() => true);
-      localStorage.setItem("loggedUser", JSON.stringify(pjUser));
-      render(<ContextProvider><OwnPage isLoggedIn={true} /></ContextProvider>);
+      render(
+        <ContextProvider initialUser={pjUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
 
-      await waitFor(() => mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: pjUser }));
       await waitFor(() => mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: orgs }));
       await waitFor(() => mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [pjUser, otherUser] }));
 
@@ -346,8 +365,11 @@ describe("OwnPage Component", () => {
   describe("Users Management", () => {
     it("Updating another user works", async () => {
       window.confirm = jest.fn(() => true);
-      localStorage.setItem("loggedUser", JSON.stringify(pjUser));
-      render(<ContextProvider><OwnPage isLoggedIn={true} /></ContextProvider>);
+      render(
+        <ContextProvider initialUser={pjUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
       await mockInitialRequests(pjUser);
 
       await waitFor(() => {
@@ -369,8 +391,11 @@ describe("OwnPage Component", () => {
 
     it("PJ change works", async () => {
       window.confirm = jest.fn(() => true);
-      localStorage.setItem("loggedUser", JSON.stringify(pjUser));
-      render(<ContextProvider><OwnPage isLoggedIn={true} /></ContextProvider>);
+      render(
+        <ContextProvider initialUser={pjUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
       await mockInitialRequests(pjUser);
 
       await waitFor(() => {
@@ -394,10 +419,12 @@ describe("OwnPage Component", () => {
 
     it("Key handover works", async () => {
       window.confirm = jest.fn(() => true);
-      localStorage.setItem("loggedUser", JSON.stringify(pjUser));
-      render(<ContextProvider><OwnPage isLoggedIn={true} /></ContextProvider>);
+      render(
+        <ContextProvider initialUser={pjUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
 
-      await waitFor(() => mockAxios.mockResponseFor({ url: "users/userinfo" }, { data: pjUser }));
       await waitFor(() => mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [{ id: 1, name: "org1", Organisaatio: "org1", email: "o@o.com", kotisivu: "h.com", user_set: [] }] }));
       await waitFor(() => mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [pjUser, otherUser] }));
 
@@ -431,10 +458,12 @@ describe("OwnPage Component", () => {
     it("handles different roles in getPermission", async () => {
       const roles = [Role.LEPPISVARAPJ, Role.MUOKKAUS, Role.JARJESTOPJ];
       for (const role of roles) {
-        localStorage.clear();
         mockAxios.reset();
-        localStorage.setItem("loggedUser", JSON.stringify({ ...defaultUser, role }));
-        const { unmount } = render(<ContextProvider><OwnPage isLoggedIn={true} /></ContextProvider>);
+        const { unmount } = render(
+          <ContextProvider initialUser={{ ...defaultUser, role }} skipHydration>
+            <OwnPage isLoggedIn={true} />
+          </ContextProvider>
+        );
         await mockInitialRequests({ ...defaultUser, role });
         expect(screen.queryByText("Luo uusi järjestö")).not.toBeInTheDocument();
         expect(screen.getByText("Käyttäjät")).toBeInTheDocument();

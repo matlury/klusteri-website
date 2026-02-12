@@ -132,8 +132,19 @@ if os.environ.get('GITHUB_WORKFLOW'):
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "ilotalo.authentication.CookieJWTAuthentication",
     ),
+    "DEFAULT_THROTTLE_CLASSES": (
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+        "rest_framework.throttling.ScopedRateThrottle",
+    ),
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "100/hour",
+        "user": "1000/hour",
+        "login": "10/min",
+        "register": "5/min",
+    },
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 100,
 }
@@ -210,6 +221,8 @@ CORS_ORIGIN_WHITELIST = [
     "https://ilotalo-new-test-v2.matlu.fi",
     "https://ilotalo-new.matlu.fi"
 ]
+
+CORS_ALLOW_CREDENTIALS = True
 
 # Logging configuration
 LOGGING = {

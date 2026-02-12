@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import NewAccountPage from "./createpage";
 import { useStateContext } from "@context/ContextProvider";
 import login from "../utils/login.js";
@@ -13,14 +13,8 @@ const LoginPage = ({ onLogin, onLogout, onCreateNewUser }) => {
   const [error, setError] = useState("");
 
   const { t } = useTranslation();
-  
-  // Saves the logged user (if there is one)
-  useEffect(() => {
-    const loggedUser = localStorage.getItem("loggedUser");
-    if (loggedUser) {
-      setUser(JSON.parse(loggedUser));
-    }
-  }, [setUser]);
+
+  // User state hydrates from ContextProvider via httpOnly cookie
 
   // Handles the switch to the create user view if the button is clicked
   const handleCreateUser = (event) => {

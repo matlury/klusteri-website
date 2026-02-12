@@ -20,6 +20,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import OrgSelect from "./OrganizationChooseBox";
 import { useTranslation } from "react-i18next";
+import { useStateContext } from "@context/ContextProvider";
 
 const ReservationsView = ({
   handleAddNewEventClick,
@@ -44,19 +45,11 @@ const ReservationsView = ({
   const [CSVdata, setCSVdata] = useState(null);
   const [shouldDownload, setShouldDownload] = useState(false);
 
-  let admin = false;
-  let res_rights = false
-  let username = "";
-  const user = JSON.parse(localStorage.getItem("loggedUser"));
-  if (user) {
-    username = user.username
-    if (user.role < 3) {
-      admin = true;
-    }
-    if (user.role !== 5 && user.role !== 4 || user.rights_for_reservation === true) {
-      res_rights = true;
-    }
-  }
+  const { user } = useStateContext();
+  const admin = Boolean(user && user.role < 3);
+  const res_rights = Boolean(
+    user && ((user.role !== 5 && user.role !== 4) || user.rights_for_reservation === true)
+  );
 
   const handleCSV = async () => {
     if (events.length > 0) {

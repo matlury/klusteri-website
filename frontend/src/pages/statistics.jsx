@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 // this file is ignored in the tests because jest doesn't work with the charts
 import React, { useEffect, useState } from "react";
-import { usersAPI, organizationsAPI, eventsAPI, nightResponsibilitiesAPI, authAPI } from "../api/api.ts";
+import { usersAPI, organizationsAPI, eventsAPI, nightResponsibilitiesAPI } from "../api/api.ts";
+import { useStateContext } from "../context/ContextProvider";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { LineChart } from "@mui/x-charts/LineChart";
@@ -35,8 +36,7 @@ const generateRandomColor = (seed) => {
 
 // This page is used to display statistics about users and organizations
 const Statistics = () => {
-  const [, setUsername] = useState(null);
-  const [userRole, setUserRole] = useState(null);
+  const { user } = useStateContext();
   const [orgColorMap, setOrgColorMap] = useState({});
   // YKV by organization
   const [, setOrgStatsData] = useState([]);
@@ -80,26 +80,22 @@ const Statistics = () => {
   const [pieChartData, setPieChartData] = useState([]);
   const [selectedPie, setSelectedPie] = useState(1);
 
-  // Gets the user's role from backend and fetches data. 
+  // Fetch data when user is available
   useEffect(() => {
-    const init = async () => {
-      await getPermission();
-      if (localStorage.getItem("ACCESS_TOKEN")) {
-        fetchData().then(setFetchedData);
-      }
-    };
-    init();
-  }, []);
+    if (user) {
+      fetchData().then(setFetchedData);
+    }
+  }, [user]);
 
   // Updates the data when the filters change
   useEffect(() => {
     // Changes the grid column widths when the window is resized
-    if (fetchedData && userRole !== null) {
+    if (fetchedData && user) {
       const { orgs, resps, users } = fetchedData;
       processOrgStats(orgs, resps);
       processAllUserStats(users, resps, orgs);
     }
-  }, [fetchedData, userRole, minFilter, maxFilter, selectedPie]);
+  }, [fetchedData, user, minFilter, maxFilter, selectedPie]);
 
   useEffect(() => {
     const updateWidth = () => {
@@ -125,20 +121,6 @@ const Statistics = () => {
         users: userResponse.data
       };
     } catch (error) { console.error("Error fetching data", error); }
-  };
-
-  const getPermission = async () => {
-    const accessToken = localStorage.getItem("ACCESS_TOKEN");
-    if (accessToken) {
-      try {
-        const response = await authAPI.getUserInfo();
-        setUsername(response.data.username);
-        setUserRole(response.data.role);
-      } catch (e) {
-        console.error(e);
-        setUserRole(5); // Fallback to basic role if info fetch fails but token exists
-      }
-    }
   };
 
   function filtering(login_time, logout_time) {
