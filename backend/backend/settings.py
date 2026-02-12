@@ -32,6 +32,12 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
 
+# reCAPTCHA secret key (used in registration). Provide a test default for CI.
+RECAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_SECRET_KEY")
+if not RECAPTCHA_SECRET_KEY and os.environ.get("GITHUB_WORKFLOW"):
+    RECAPTCHA_SECRET_KEY = "test-recaptcha-secret-key"
+    os.environ["RECAPTCHA_SECRET_KEY"] = RECAPTCHA_SECRET_KEY
+
 ALLOWED_HOSTS = [
     "klusteri-website-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi",
     "localhost",
@@ -209,6 +215,10 @@ TESTING = (
     or "pytest" in sys.modules
     or "test" in sys.argv
 )
+
+if not RECAPTCHA_SECRET_KEY and TESTING:
+    RECAPTCHA_SECRET_KEY = "test-recaptcha-secret-key"
+    os.environ["RECAPTCHA_SECRET_KEY"] = RECAPTCHA_SECRET_KEY
 
 
 CORS_ORIGIN_WHITELIST = [

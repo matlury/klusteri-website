@@ -44,8 +44,8 @@ TAVALLINEN = Role.TAVALLINEN.value
 JARJESTOPJ = Role.JARJESTOPJ.value
 JARJESTOVARAPJ = Role.JARJESTOVARAPJ.value
 
-# Get reCAPTCHA secret key from environment variables
-recaptcha_secret_key = os.getenv("RECAPTCHA_SECRET_KEY")
+# Get reCAPTCHA secret key from settings (with test defaults applied there)
+recaptcha_secret_key = settings.RECAPTCHA_SECRET_KEY
 
 """
 Views receive web requests and return web responses.
