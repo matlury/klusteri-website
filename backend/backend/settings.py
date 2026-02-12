@@ -32,9 +32,16 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
 
-# reCAPTCHA secret key (used in registration). Provide a test default for CI.
+TESTING = (
+    os.environ.get("RUNNING_TESTS") == "1"
+    or os.environ.get("PYTEST_CURRENT_TEST") is not None
+    or "pytest" in sys.modules
+    or "test" in sys.argv
+)
+
+# reCAPTCHA secret key (used in registration). Provide a test default for CI/tests.
 RECAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_SECRET_KEY")
-if not RECAPTCHA_SECRET_KEY and os.environ.get("GITHUB_WORKFLOW"):
+if not RECAPTCHA_SECRET_KEY and (os.environ.get("GITHUB_WORKFLOW") or TESTING):
     RECAPTCHA_SECRET_KEY = "test-recaptcha-secret-key"
     os.environ["RECAPTCHA_SECRET_KEY"] = RECAPTCHA_SECRET_KEY
 
@@ -206,19 +213,17 @@ AUTH_USER_MODEL = "ilotalo.User"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Detect running under tests so other modules can skip side-effects.
-# Prefer an explicit env var set by the test runner, but also fall back to
-# common indicators (pytest in modules or 'test' in argv).
-TESTING = (
-    os.environ.get("RUNNING_TESTS") == "1"
-    or os.environ.get("PYTEST_CURRENT_TEST") is not None
-    or "pytest" in sys.modules
-    or "test" in sys.argv
-)
-
-if not RECAPTCHA_SECRET_KEY and TESTING:
-    RECAPTCHA_SECRET_KEY = "test-recaptcha-secret-key"
-    os.environ["RECAPTCHA_SECRET_KEY"] = RECAPTCHA_SECRET_KEY
+# When running tests via manage.py or in CI, disable throttling to avoid 429s.
+if TESTING or os.environ.get("GITHUB_WORKFLOW"):
+    REST_FRAMEWORK = {
+        "DEFAULT_AUTHENTICATION_CLASSES": (
+            "ilotalo.authentication.CookieJWTAuthentication",
+        ),
+        "DEFAULT_THROTTLE_CLASSES": (),
+        "DEFAULT_THROTTLE_RATES": {},
+        "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+        "PAGE_SIZE": 100,
+    }
 
 
 CORS_ORIGIN_WHITELIST = [
