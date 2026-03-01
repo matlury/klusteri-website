@@ -51,6 +51,10 @@ const ReservationsView = ({
     user && ((user.role !== 5 && user.role !== 4) || user.rights_for_reservation === true)
   );
 
+  const canEditEvent = Boolean(
+    selectedEvent && (selectedEvent.created_by?.username === user?.username || admin)
+  );
+
   const handleCSV = async () => {
     if (events.length > 0) {
       const data = [
@@ -353,7 +357,7 @@ const ReservationsView = ({
           )}
         </DialogContent>
         <DialogActions>
-          {(selectedEvent && (selectedEvent.created_by?.username === username || admin)) &&
+          {canEditEvent &&
             <Button
               id="deleteEvent"
               variant="contained"
