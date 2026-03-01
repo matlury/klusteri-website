@@ -16,13 +16,13 @@ const PrivacyPolicy = () => {
         textAlign: "left",
       }}
     >
-      <Typography variant={isMobile ? "h4" : "h2"} gutterBottom>
+      <Typography variant={isMobile ? "h5" : "h4"} gutterBottom>
         {t("privacy_1")}
       </Typography>
       <Typography variant="body1" paragraph>
         {t("privacy_2")}
       </Typography>
-      <Typography variant={isMobile ? "h5" : "h3"} gutterBottom>
+      <Typography variant={isMobile ? "h6" : "h5"} gutterBottom>
         {t("privacy_3")}
       </Typography>
       <Typography variant="body1" paragraph>
@@ -31,19 +31,19 @@ const PrivacyPolicy = () => {
       <Typography variant="body1" paragraph>
         {t("privacy_5")}
       </Typography>
-      <Typography variant={isMobile ? "h5" : "h3"} gutterBottom>
+      <Typography variant={isMobile ? "h6" : "h5"} gutterBottom>
         {t("privacy_6")}
       </Typography>
       <Typography variant="body1" paragraph>
         {t("privacy_7")}
       </Typography>
-      <Typography variant={isMobile ? "h5" : "h3"} gutterBottom>
+      <Typography variant={isMobile ? "h6" : "h5"} gutterBottom>
         {t("privacy_8")}
       </Typography>
       <Typography variant="body1" paragraph>
         {t("privacy_9")}
       </Typography>
-      <Typography variant={isMobile ? "h5" : "h3"} gutterBottom>
+      <Typography variant={isMobile ? "h6" : "h5"} gutterBottom>
         {t("privacy_10")}
       </Typography>
       <Typography variant="body1" paragraph>
@@ -52,7 +52,7 @@ const PrivacyPolicy = () => {
       <Typography variant="body1" paragraph>
         {t("privacy_12")}
       </Typography>
-      <Typography variant={isMobile ? "h5" : "h3"} gutterBottom>
+      <Typography variant={isMobile ? "h6" : "h5"} gutterBottom>
         {t("privacy_13")}
       </Typography>
       <Typography variant="body1" paragraph>
@@ -79,19 +79,19 @@ const PrivacyPolicy = () => {
       <Typography variant="body1" paragraph>
         {t("privacy_21")}
       </Typography>
-      <Typography variant={isMobile ? "h5" : "h3"} gutterBottom>
+      <Typography variant={isMobile ? "h6" : "h5"} gutterBottom>
         {t("privacy_22")}
       </Typography>
       <Typography variant="body1" paragraph>
         {t("privacy_23")}
       </Typography>
-      <Typography variant={isMobile ? "h5" : "h3"} gutterBottom>
+      <Typography variant={isMobile ? "h6" : "h5"} gutterBottom>
         {t("privacy_24")}
       </Typography>
       <Typography variant="body1" paragraph>
         {t("privacy_25")}
       </Typography>
-      <Typography variant={isMobile ? "h5" : "h3"} gutterBottom>
+      <Typography variant={isMobile ? "h6" : "h5"} gutterBottom>
         {t("privacy_26")}
       </Typography>
       <Typography variant="body1" paragraph>
@@ -100,31 +100,31 @@ const PrivacyPolicy = () => {
       <Typography variant="body1" paragraph>
         {t("privacy_28")}
       </Typography>
-      <Typography variant={isMobile ? "h5" : "h3"} gutterBottom>
+      <Typography variant={isMobile ? "h6" : "h5"} gutterBottom>
         {t("privacy_29")}
       </Typography>
       <Typography variant="body1" paragraph>
         {t("privacy_30")}
       </Typography>
-      <Typography variant={isMobile ? "h5" : "h3"} gutterBottom>
+      <Typography variant={isMobile ? "h6" : "h5"} gutterBottom>
         {t("privacy_31")}
       </Typography>
       <Typography variant="body1" paragraph>
         {t("privacy_32")}
       </Typography>
-      <Typography variant={isMobile ? "h5" : "h3"} gutterBottom>
+      <Typography variant={isMobile ? "h6" : "h5"} gutterBottom>
         {t("privacy_33")}
       </Typography>
       <Typography variant="body1" paragraph>
         {t("privacy_34")}
       </Typography>
-      <Typography variant={isMobile ? "h5" : "h3"} gutterBottom>
+      <Typography variant={isMobile ? "h6" : "h5"} gutterBottom>
         {t("privacy_35")}
       </Typography>
       <Typography variant="body1" paragraph>
         {t("privacy_36")}
       </Typography>
-      <Typography variant={isMobile ? "h5" : "h3"} gutterBottom>
+      <Typography variant={isMobile ? "h6" : "h5"} gutterBottom>
         {t("privacy_37")}
       </Typography>
       <Typography variant="body1" paragraph>

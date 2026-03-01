@@ -146,8 +146,10 @@ const MyCalendar = () => {
   };
 
   useEffect(() => {
-    getOrganizations();
-  }, []);
+    if (user) {
+      getOrganizations();
+    }
+  }, [user]);
 
   const getOrganizations = () => {
     organizationsAPI
@@ -318,6 +320,10 @@ const MyCalendar = () => {
 
   // Handles clicking the 'Lisää uusi tapahtuma' button and shows the create modal
   const handleAddNewEventClick = () => {
+    if (!user) {
+      handleSnackbar(t("erroreventlogin"), "info");
+      return;
+    }
     setSelectedSlot(null);
     setShowCreateModal(true);
     setEventDetails({

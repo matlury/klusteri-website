@@ -353,15 +353,15 @@ const Rules_and_Instructions = () => {
             <h3>{t("rules_111")}</h3>
             <ul>
               <li>
-              {t("rules_112")} Vili Järvinen, <a href="mailto:vilijarvinen2311@gmail.com">vilijarvinen2311@gmail.com</a>
+              {t("rules_112")} Emma Laasonen
               </li>
               <li>
               {t("rules_113")} <a href="mailto:hairinta@matlu.fi">hairinta@matlu.fi</a>
                 <ul>
-                  <li>Niclas Forsman, <a href="mailto:niklas.forsman@helsinki.fi">niklas.forsman@helsinki.fi</a></li>
-                  <li>Jenna Vahtera, <a href="mailto:jenna.vahtera@helsinki.fi">jenna.vahtera@helsinki.fi</a></li>
-                  <li>Anna Monni, <a href="mailto:anna.monni@helsinki.fi">anna.monni@helsinki.fi</a></li>
-                  <li>Markus Holopainen, <a href="mailto:markus.x.holopainen@helsinki.fi">markus.x.holopainen@helsinki.fi</a></li>
+                  <li>Heljä Lehtinen</li>
+                  <li>Jonna Rönn</li>
+                  <li>Matti Ylhäisi</li>
+                  <li>Tony Brusin</li>
                 </ul>
               </li>
               <li>
