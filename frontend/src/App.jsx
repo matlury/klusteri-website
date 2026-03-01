@@ -64,6 +64,17 @@ import Tooltip from "@mui/material/Tooltip";
 import { useTranslation } from "react-i18next";
 import i18n from "./i18n";
 
+// ScrollToTop component to reset scroll position on route change
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
+
 // Login dialog component
 const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
   const { t } = useTranslation();
@@ -527,6 +538,7 @@ const AppContent = ({ window }) => {
 
 const App = () => (
   <Router>
+    <ScrollToTop />
     <AppContent />
   </Router>
 );
