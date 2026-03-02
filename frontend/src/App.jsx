@@ -8,6 +8,7 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -63,6 +64,68 @@ import Tooltip from "@mui/material/Tooltip";
 
 import { useTranslation } from "react-i18next";
 import i18n from "./i18n";
+
+// Custom theme inspired by old ilotalo greenish colors
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#90b557", // Darker green
+      contrastText: "#ffffff",
+    },
+    secondary: {
+      main: "#d2e5b6", // Lighter green
+    },
+    background: {
+      default: "#fafbf8", // Clean, modern off-white/subtle green tint
+      paper: "#ffffff",
+    },
+    text: {
+      primary: "#1a1a1a", // Softer black for better reading comfort
+      secondary: "#4a4a4a",
+    },
+  },
+  typography: {
+    // using default Roboto/system fonts for a modern look
+    h1: { fontWeight: 700, color: "#1a1a1a" },
+    h2: { fontWeight: 700, color: "#1a1a1a" },
+    h3: { fontWeight: 700, color: "#1a1a1a" },
+    h4: { fontWeight: 700, color: "#1a1a1a" },
+    h5: { fontWeight: 700, color: "#1a1a1a" },
+    h6: { fontWeight: 700, color: "#1a1a1a" },
+  },
+  shape: {
+    borderRadius: 12, // Modern rounded corners
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          fontWeight: 600,
+          borderRadius: 8,
+        },
+      },
+    },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#90b557", // Fresh green header
+          boxShadow: "0px 1px 10px rgba(0,0,0,0.05)", // Subtle shadow
+          color: "#ffffff",
+        },
+      },
+    },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          borderRight: "none",
+          backgroundColor: "#ffffff",
+          boxShadow: "4px 0px 20px rgba(0,0,0,0.02)",
+        }
+      }
+    }
+  },
+});
 
 // ScrollToTop component to reset scroll position on route change
 const ScrollToTop = () => {
@@ -181,7 +244,7 @@ const Sidebar = ({ isLoggedIn, handleDrawerClose, collapsed, onToggle }) => {
         {routes.map(({ key, path, requiresLogin }, index) => {
           if (requiresLogin && !isLoggedIn) return null;
           const content = (
-            <ListItem key={key} disablePadding sx={{ display: 'block' }}>
+            <ListItem key={key} disablePadding sx={{ display: 'block', px: 1, py: 0.5 }}>
               <ListItemButton
                 key={key}
                 component={Link}
@@ -190,11 +253,12 @@ const Sidebar = ({ isLoggedIn, handleDrawerClose, collapsed, onToggle }) => {
                   minHeight: 48,
                   justifyContent: collapsed ? 'center' : 'initial',
                   px: 2.5,
+                  borderRadius: 2,
                   backgroundColor:
-                    location.pathname === path ? "#9e9e9e" : "transparent",
+                    location.pathname === path ? "secondary.main" : "transparent",
                   "&:hover": {
                     backgroundColor:
-                      location.pathname === path ? "#9e9e9e" : "#e0e0e0",
+                      location.pathname === path ? "secondary.main" : "rgba(0, 0, 0, 0.04)",
                   },
                 }}
                 onClick={handleDrawerClose}
@@ -204,11 +268,24 @@ const Sidebar = ({ isLoggedIn, handleDrawerClose, collapsed, onToggle }) => {
                     minWidth: 0,
                     mr: collapsed ? 0 : 3,
                     justifyContent: 'center',
+                    color: location.pathname === path ? "text.primary" : "text.secondary",
                   }}
                 >
                   {icons[index]}
                 </ListItemIcon>
-                {!collapsed && <ListItemText primary={t(key)} />}
+                {!collapsed && (
+                  <ListItemText
+                    primary={t(key)}
+                    slotProps={{
+                      primary: {
+                        sx: {
+                          color: location.pathname === path ? "text.primary" : "text.primary",
+                          fontWeight: location.pathname === path ? 600 : 400,
+                        },
+                      }
+                    }}
+                  />
+                )}
               </ListItemButton>
             </ListItem>
           );
@@ -360,7 +437,7 @@ const AppContent = ({ window }) => {
       <AppBar
         position="fixed"
         sx={{
-          bgcolor: "#484644",
+          bgcolor: "#484643",
           width: { xs: '100%', sm: `calc(100% - ${currentDrawerWidth}px)` },
           ml: { xs: 0, sm: `${currentDrawerWidth}px` },
           transition: (theme) =>
@@ -459,7 +536,6 @@ const AppContent = ({ window }) => {
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: 240, // Keep mobile drawer full width
-              bgcolor: "#E9E9E9", // Set background color here for temporary drawer
             },
           }}
         >
@@ -477,7 +553,6 @@ const AppContent = ({ window }) => {
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: currentDrawerWidth,
-              bgcolor: "#E9E9E9", // Set background color here for permanent drawer
               overflowX: 'hidden',
               transition: (theme) =>
                 theme.transitions.create("width", {
@@ -537,10 +612,12 @@ const AppContent = ({ window }) => {
 };
 
 const App = () => (
-  <Router>
-    <ScrollToTop />
-    <AppContent />
-  </Router>
+  <ThemeProvider theme={theme}>
+    <Router>
+      <ScrollToTop />
+      <AppContent />
+    </Router>
+  </ThemeProvider>
 );
 
 export default App;

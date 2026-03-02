@@ -13,6 +13,7 @@ import {
   DialogContent,
   DialogTitle,
   Typography,
+  Box,
 } from "@mui/material";
 import { CSVLink } from "react-csv";
 import { getCurrentDateTime } from "../utils/timehelpers";
@@ -115,18 +116,14 @@ const ReservationsView = ({
 
   return (
     <div className="textbox">
-      <div style={{ float: "right", display: "flex", gap: "10px", margin: "10px" }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mb: 2 }}>
         <Button
           id="downloadICal"
           variant="outlined"
           onClick={handleICal}
           size="small"
-          style={{
-            padding: "5px 10px",
-            minHeight: "32px",
-            fontSize: "0.75rem"
-          }}
           startIcon={<CalendarMonthIcon />}
+          sx={{ borderRadius: 2, textTransform: 'none' }}
         >
           {t("icaldownload")}
         </Button>
@@ -134,15 +131,11 @@ const ReservationsView = ({
           <>
             <Button
               id="donwloadCSV"
-              variant="contained"
+              variant="outlined"
               onClick={handleCSV}
               size="small"
-              style={{
-                padding: "5px 10px",
-                minHeight: "32px",
-                fontSize: "0.75rem"
-              }}
               startIcon={<DownloadIcon />}
+              sx={{ borderRadius: 2, textTransform: 'none' }}
             >
               {t("csvdownload")}
             </Button>
@@ -155,49 +148,67 @@ const ReservationsView = ({
             )}
           </>
         )}
-      </div>
-      <h2>{t("reservations_res")}</h2>
-      {res_rights &&
-        <div className="add-event-button">
-          <Button
-            id="createEvent"
-            variant="contained"
-            onClick={handleAddNewEventClick}
-            style={{
-              padding: "7px",
-              margin: "10px",
-            }}
-          >
-            {t("reservations_add")}
-          </Button>
+      </Box>
+      <Box sx={{
+        bgcolor: "#ffffff",
+        p: 3,
+        borderRadius: 4,
+        boxShadow: "0px 4px 20px rgba(0,0,0,0.05)",
+        border: "1px solid rgba(0,0,0,0.04)"
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <Typography variant="h5" component="h2" sx={{ fontWeight: 700, color: "text.primary" }}>
+                {t("reservations_res")}
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+                {res_rights && (
+                    <Button
+                        id="createEvent"
+                        variant="contained"
+                        disableElevation
+                        onClick={handleAddNewEventClick}
+                        startIcon={<CalendarMonthIcon />}
+                        sx={{
+                            borderRadius: 2,
+                            textTransform: 'none',
+                            fontWeight: 600,
+                            bgcolor: 'primary.main',
+                            '&:hover': { bgcolor: 'primary.dark' }
+                        }}
+                    >
+                        {t("reservations_add")}
+                    </Button>
+                )}
+            </Box>
         </div>
-      }
-      <Calendar
-        localizer={localizer}
-        events={events}
-
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: "calc(100vh - 250px)", minHeight: "500px" }}
-        selectable
-        onSelectSlot={handleSelectSlot}
-        onSelectEvent={handleSelectEvent}
-        onNavigate={onNavigate}
-        firstDay={1}
-        popup={true}
-        eventPropGetter={(event) => ({
-          style: {
-            backgroundColor: event.open === true ? "#4caf50" : "#F08080",
-            borderRadius: "3px",
-            border: "none",
-            color: "#fff",
-            padding: "2px 5px",
-            fontSize: "0.75rem",
-            margin: "0 1px 1px 1px",
-            cursor: "pointer",
-          },
-        })}
-      />
+        
+        <Calendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: "calc(100vh - 300px)", minHeight: "600px" }}
+          selectable
+          onSelectSlot={handleSelectSlot}
+          onSelectEvent={handleSelectEvent}
+          onNavigate={onNavigate}
+          firstDay={1}
+          popup={true}
+          eventPropGetter={(event) => ({
+            style: {
+              backgroundColor: event.open === true ? "#90b557" : "#ef5350", // Use fresh green and softer red
+              borderRadius: "6px",
+              border: "none",
+              color: "#fff",
+              padding: "4px 8px",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              margin: "2px 0"
+            },
+          })}
+        />
+      </Box>
 
       <Dialog open={showCreateModal} onClose={handleCloseModal}>
         <DialogTitle>{t("reservations_addform")}</DialogTitle>

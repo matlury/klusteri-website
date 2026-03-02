@@ -59,31 +59,33 @@ const FrontPage = () => {
           variant={isMobile ? "h4" : "h2"}
           component="h1"
           gutterBottom
+          sx={{ color: "#000000", fontWeight: "bold" }}
         >
           Ilotalo
         </Typography>
-        <Typography variant="body1" paragraph>
+        <Typography variant="body1" paragraph sx={{ fontStyle: "italic", color: "#000000" }}>
           ”sub hoc tecto cives academici excoluntur”?
         </Typography>
-        <Typography variant="body1" paragraph>
+        <Typography variant="body1" paragraph sx={{ maxWidth: "800px", margin: "0 auto 1.5rem", color: "#000000" }}>
           {t("front_1")}
         </Typography>
-        <Typography variant="body1" paragraph>
+        <Typography variant="body1" paragraph sx={{ maxWidth: "800px", margin: "0 auto", color: "#000000" }}>
           {t("front_2")}
         </Typography>
       </Box>
       <Box
         sx={{
           padding: 2,
-          maxWidth: "600px",
+          maxWidth: "1000px", // Increased from 800px for side-by-side cards
           margin: "0 auto",
           textAlign: "center",
         }}
       >
         <Typography
-          variant={isMobile ? "h6" : "h4"}
-          component="h1"
+          variant={isMobile ? "h5" : "h4"}
+          component="h2"
           gutterBottom
+          sx={{ color: "#000000", fontWeight: "bold", mt: 4 }}
         >
           {t("openevents")}
         </Typography>
