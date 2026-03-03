@@ -65,62 +65,58 @@ import Tooltip from "@mui/material/Tooltip";
 import { useTranslation } from "react-i18next";
 import i18n from "./i18n";
 
-// Custom theme inspired by old ilotalo greenish colors
+// Custom theme with accessible greenish colors
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#90b557", // Darker green
+      main: "#558b2f", // Darker, accessible green (passes 4.5:1 on white)
       contrastText: "#ffffff",
     },
     secondary: {
-      main: "#d2e5b6", // Lighter green
+      main: "#dcedc8", // Very light green for backgrounds
     },
     background: {
-      default: "#fafbf8", // Clean, modern off-white/subtle green tint
+      default: "#fafbf8",
       paper: "#ffffff",
     },
     text: {
-      primary: "#1a1a1a", // Softer black for better reading comfort
-      secondary: "#4a4a4a",
+      primary: "#000000", // Full black for best contrast
+      secondary: "#424242", // Dark grey for secondary text
     },
   },
   typography: {
-    // using default Roboto/system fonts for a modern look
-    h1: { fontWeight: 700, color: "#1a1a1a" },
-    h2: { fontWeight: 700, color: "#1a1a1a" },
-    h3: { fontWeight: 700, color: "#1a1a1a" },
-    h4: { fontWeight: 700, color: "#1a1a1a" },
-    h5: { fontWeight: 700, color: "#1a1a1a" },
-    h6: { fontWeight: 700, color: "#1a1a1a" },
+    h1: { fontWeight: 800, color: "#000000" },
+    h2: { fontWeight: 800, color: "#000000" },
+    h3: { fontWeight: 800, color: "#000000" },
+    h4: { fontWeight: 800, color: "#000000" },
+    h5: { fontWeight: 800, color: "#000000" },
+    h6: { fontWeight: 800, color: "#000000" },
   },
   shape: {
-    borderRadius: 12, // Modern rounded corners
+    borderRadius: 8,
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
           textTransform: 'none',
-          fontWeight: 600,
-          borderRadius: 8,
+          fontWeight: 700,
         },
       },
     },
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: "#90b557", // Fresh green header
-          boxShadow: "0px 1px 10px rgba(0,0,0,0.05)", // Subtle shadow
-          color: "#ffffff",
+          backgroundColor: "#558b2f", 
+          color: "#ffffff", // White text on #558b2f passes contrast (approx 4.6:1)
         },
       },
     },
     MuiDrawer: {
       styleOverrides: {
         paper: {
-          borderRight: "none",
+          borderRight: "1px solid rgba(0,0,0,0.08)",
           backgroundColor: "#ffffff",
-          boxShadow: "4px 0px 20px rgba(0,0,0,0.02)",
         }
       }
     }

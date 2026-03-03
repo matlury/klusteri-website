@@ -409,7 +409,11 @@
       "noevents": "Ei tapahtumia",
       "nodescription": "Ei kuvausta",
       "collapse": "Pienennä",
-      "expand": "Laajenna"
+      "expand": "Laajenna",
+      "today": "Tänään",
+      "tomorrow": "Huomenna",
+      "next_event": "Seuraavaksi",
+      "now": "Nyt"
     }
   },
   "en": {
@@ -822,7 +826,11 @@
       "noevents": "No events",
       "nodescription": "No description",
       "collapse": "Collapse",
-      "expand": "Expand"
+      "expand": "Expand",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "next_event": "Next",
+      "now": "Now"
     }
   }
 }

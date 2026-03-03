@@ -8,19 +8,20 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
 import { useTranslation } from "react-i18next";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import RoomIcon from '@mui/icons-material/Room';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import moment from "moment";
+import moment from "moment/min/moment-with-locales";
 
-// Event cards component for the front page - Optimized for space and clarity
+// Event cards component - Robust responsive centering
 const FrontpageEvents = ({ events }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [openDialogId, setOpenDialogId] = useState(null);
 
+  const currentLang = i18n.language ? i18n.language.split('-')[0] : 'fi';
+  
   const handleClickOpen = (eventId) => {
     setOpenDialogId(eventId);
   };
@@ -42,104 +43,134 @@ const FrontpageEvents = ({ events }) => {
   const isToday = (dateStr) => moment(dateStr).isSame(moment(), 'day');
   const isTomorrow = (dateStr) => moment(dateStr).isSame(moment().add(1, 'day'), 'day');
 
+  const formatNative = (dateStr, options) => {
+    return new Date(dateStr).toLocaleDateString(i18n.language || 'fi', options);
+  };
+
   return (
-    <Box sx={{ px: { xs: 0, sm: 2 }, pb: 4, maxWidth: '800px', margin: '0 auto' }}>
+    <Box sx={{ px: { xs: 1, sm: 2 }, pb: 4, width: '100%' }}>
       {Object.keys(groupedEvents).map((dateStr, groupIndex) => {
-        const dateMoment = moment(dateStr);
+        const dateObj = new Date(dateStr);
         const dayToday = isToday(dateStr);
         const dayTomorrow = isTomorrow(dateStr);
 
         return (
-          <Grid container spacing={0} key={dateStr} sx={{ mb: 2, position: 'relative' }}>
-            {/* Left Column: Date Indicator */}
-            <Grid item xs={3} sm={2} sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              pt: 1,
-              borderRight: '2px solid rgba(0,0,0,0.05)'
+          <Box 
+            key={dateStr} 
+            sx={{ 
+              display: 'flex', 
+              flexDirection: { xs: 'column', md: 'row' }, // Stack on small, side-by-side on md+
+              justifyContent: 'center', 
+              alignItems: { xs: 'center', md: 'flex-start' }, 
+              mb: { xs: 4, md: 6 },
+              width: '100%',
+              gap: { xs: 2, md: 0 }
+            }}
+          >
+            {/* Left Column: Date Indicator (Fixed width on desktop to balance) */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              width: { xs: '100%', md: 120 }, // Wider on desktop for padding
+              pr: { md: 3 },
+              textAlign: 'center',
+              flexShrink: 0
             }}>
-              <Typography variant="caption" sx={{
-                fontWeight: 800,
+              <Typography variant="caption" sx={{ 
+                fontWeight: 800, 
                 color: dayToday ? 'primary.main' : 'text.secondary',
-                fontSize: '0.7rem',
-                textTransform: 'uppercase'
+                fontSize: '0.75rem',
+                textTransform: 'uppercase',
+                letterSpacing: 1
               }}>
-                {dayToday ? t("today") : dayTomorrow ? t("tomorrow") : dateMoment.format("ddd")}
+                {dayToday ? t("today") : dayTomorrow ? t("tomorrow") : formatNative(dateStr, { weekday: 'short' }).replace('.', '')}
               </Typography>
-              <Typography variant="h5" sx={{
-                fontWeight: 900,
-                lineHeight: 1,
+              <Typography variant="h3" sx={{ 
+                fontWeight: 900, 
+                lineHeight: 1, 
                 my: 0.5,
-                color: dayToday ? 'primary.main' : 'text.primary'
+                color: dayToday ? 'primary.main' : 'text.primary',
+                fontSize: { xs: '2rem', md: '2.5rem' }
               }}>
-                {dateMoment.date()}
+                {dateObj.getDate()}
               </Typography>
-              <Typography variant="caption" sx={{ fontWeight: 700, fontSize: '0.65rem', color: 'text.secondary' }}>
-                {dateMoment.format("MMM").toUpperCase()}
+              <Typography variant="caption" sx={{ fontWeight: 800, fontSize: '0.7rem', color: 'text.secondary', textTransform: 'uppercase' }}>
+                {formatNative(dateStr, { month: 'short' }).replace('.', '')}
               </Typography>
-            </Grid>
+            </Box>
 
-            {/* Right Column: Events for this day */}
-            <Grid item xs={9} sm={10} sx={{ pl: { xs: 1, sm: 3 } }}>
+            {/* Middle Column: Event Cards Stack (The Centered Content) */}
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: 1.5,
+              width: '100%',
+              maxWidth: '600px', // Standardized width
+              flexShrink: 1
+            }}>
               {groupedEvents[dateStr].map((event, eventIndex) => {
                 const isNext = groupIndex === 0 && eventIndex === 0;
-
+                
                 return (
                   <Card
                     key={event.id}
                     variant="outlined"
                     sx={{
-                      mb: 1,
-                      borderRadius: 2,
-                      border: isNext ? '1px solid #90b557' : '1px solid rgba(0,0,0,0.08)',
-                      boxShadow: isNext ? '0px 4px 12px rgba(144, 181, 87, 0.1)' : 'none',
+                      borderRadius: 3,
+                      border: isNext ? '2px solid #558b2f' : '1px solid rgba(0,0,0,0.12)',
+                      boxShadow: isNext ? '0px 8px 24px rgba(85, 139, 47, 0.12)' : '0px 2px 8px rgba(0,0,0,0.04)',
                       bgcolor: '#ffffff',
+                      transition: 'transform 0.2s ease',
                       '&:hover': {
-                        bgcolor: 'rgba(144, 181, 87, 0.02)',
-                        borderColor: 'primary.main'
+                        transform: "translateY(-2px)",
+                        borderColor: 'primary.main',
                       }
                     }}
                   >
-                    <CardContent sx={{
-                      p: '12px !important',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between'
+                    <CardContent sx={{ 
+                      p: { xs: '12px !important', sm: '16px 20px !important' }, 
+                      display: 'flex', 
+                      flexDirection: { xs: 'column', sm: 'row' }, // Stack content on very small screens
+                      alignItems: { xs: 'flex-start', sm: 'center' }, 
+                      justifyContent: 'space-between',
+                      gap: 2
                     }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexGrow: 1 }}>
-                        {/* Time */}
-                        <Box sx={{
-                          minWidth: '50px',
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1.5, sm: 3 }, flexGrow: 1 }}>
+                        {/* Time Badge */}
+                        <Box sx={{ 
+                          minWidth: '60px',
                           textAlign: 'center',
-                          bgcolor: isNext ? 'primary.main' : 'rgba(0,0,0,0.04)',
+                          bgcolor: isNext ? 'primary.main' : 'rgba(0,0,0,0.06)',
                           color: isNext ? 'white' : 'text.primary',
-                          borderRadius: 1.5,
-                          py: 0.5,
-                          px: 1
+                          borderRadius: 2,
+                          py: 0.75,
+                          px: 1,
+                          flexShrink: 0
                         }}>
-                          <Typography variant="caption" sx={{ fontWeight: 800, fontSize: '0.75rem' }}>
-                            {moment(event.start).format("HH:mm")}
+                          <Typography variant="body2" sx={{ fontWeight: 900, fontSize: '0.85rem' }}>
+                            {moment(event.start).locale(currentLang).format("HH:mm")}
                           </Typography>
                         </Box>
 
-                        {/* Title & Info */}
-                        <Box>
-                          <Typography variant="body1" sx={{
-                            fontWeight: 700,
-                            lineHeight: 1.2,
+                        {/* Event Details */}
+                        <Box sx={{ textAlign: 'left' }}>
+                          <Typography variant="body1" sx={{ 
+                            fontWeight: 800, 
+                            lineHeight: 1.2, 
                             color: 'text.primary',
-                            fontSize: { xs: '0.9rem', sm: '1rem' }
+                            fontSize: { xs: '0.9rem', sm: '1rem' },
+                            mb: 0.2
                           }}>
                             {event.title}
                           </Typography>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 0.2 }}>
-                            <Typography variant="caption" sx={{ color: 'primary.main', fontWeight: 700 }}>
-                              {event.organizer.name}
+                          <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: { xs: 1, sm: 2 } }}>
+                            <Typography variant="caption" sx={{ color: 'primary.main', fontWeight: 800 }}>
+                              {event.organizer.name.toUpperCase()}
                             </Typography>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
-                              <RoomIcon sx={{ fontSize: '0.8rem', color: 'text.secondary' }} />
-                              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                              <RoomIcon sx={{ fontSize: '0.9rem', color: 'text.secondary' }} />
+                              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 800 }}>
                                 {t(event.room)}
                               </Typography>
                             </Box>
@@ -147,31 +178,39 @@ const FrontpageEvents = ({ events }) => {
                         </Box>
                       </Box>
 
-                      {/* Action */}
                       <Button
+                        variant="outlined"
                         size="small"
+                        fullWidth={false}
                         onClick={() => handleClickOpen(event.id)}
-                        sx={{
-                          minWidth: 'auto',
-                          p: 0.5,
-                          borderRadius: 1,
-                          color: 'primary.main',
+                        sx={{ 
+                          borderRadius: 2,
                           fontWeight: 800,
-                          fontSize: '0.7rem'
+                          fontSize: '0.7rem',
+                          textTransform: 'uppercase',
+                          whiteSpace: 'nowrap',
+                          alignSelf: { xs: 'flex-end', sm: 'center' }
                         }}
                       >
-                        {t("moredetails").toUpperCase()}
+                        {t("moredetails")}
                       </Button>
                     </CardContent>
                   </Card>
                 );
               })}
-            </Grid>
-          </Grid>
+            </Box>
+
+            {/* Right Column: Empty Spacer (Matches Date Indicator width to force centering) */}
+            <Box sx={{ 
+              display: { xs: 'none', md: 'block' }, 
+              width: 120, 
+              flexShrink: 0 
+            }} />
+          </Box>
         );
       })}
 
-      {/* Reusable Dialog */}
+      {/* Dialogs */}
       {events.map(event => (
         <Dialog
           key={`dialog-${event.id}`}
@@ -193,14 +232,14 @@ const FrontpageEvents = ({ events }) => {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                 <CalendarTodayIcon sx={{ fontSize: '1rem', color: 'text.secondary' }} />
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  {moment(event.start).format("dddd D.M.YYYY")}
+                  {moment(event.start).locale(currentLang).format("dddd D.M.YYYY")}
                 </Typography>
               </Box>
 
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                 <AccessTimeIcon sx={{ fontSize: '1rem', color: 'text.secondary' }} />
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  {moment(event.start).format("HH:mm")} - {moment(event.end).format("HH:mm")}
+                  {moment(event.start).locale(currentLang).format("HH:mm")} - {moment(event.end).locale(currentLang).format("HH:mm")}
                 </Typography>
               </Box>
 
