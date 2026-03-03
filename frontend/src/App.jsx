@@ -275,7 +275,7 @@ const Sidebar = ({ isLoggedIn, handleDrawerClose, collapsed, onToggle }) => {
                     primaryTypographyProps={{
                       sx: {
                         color: "text.primary",
-                        fontWeight: location.pathname === path ? 800 : 500,
+                        fontWeight: 600, // Consistent weight to prevent layout shifts
                       },
                     }}
                   />
@@ -374,6 +374,7 @@ const AppContent = ({ window }) => {
   // Removes user from context and navigates to front page
   const handleLogout = () => {
     setUser(null);
+    localStorage.removeItem("hasSession");
     navigate("/etusivu"); // Navigate to front page after logging out
   };
 
