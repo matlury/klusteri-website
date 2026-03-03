@@ -157,7 +157,7 @@ const ReservationsView = ({
       </Box>
       <Box sx={{
         bgcolor: "#ffffff",
-        p: 3,
+        p: { xs: 0.5, sm: 3 }, // Minimal padding on mobile to maximize calendar space
         borderRadius: 4,
         boxShadow: "0px 4px 20px rgba(0,0,0,0.05)",
         border: "1px solid rgba(0,0,0,0.04)"
@@ -165,16 +165,24 @@ const ReservationsView = ({
         <Box sx={{
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center',
+          alignItems: { xs: 'stretch', md: 'center' },
+          p: { xs: 1, sm: 0 },
           marginBottom: '20px',
-          flexWrap: { xs: 'column', md: 'row' },
+          flexDirection: { xs: 'column', md: 'row' },
           gap: 2
         }}>
           <Typography variant="h5" component="h2" sx={{ fontWeight: 700, color: "text.primary" }}>
             {t("reservations_res")}
           </Typography>
 
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', width: { xs: '100%', md: 'auto' } }}>
+          <Box sx={{
+            display: 'flex',
+            gap: 1,
+            alignItems: 'center',
+            flexDirection: { xs: 'column', sm: 'row' },
+            width: { xs: '100%', md: 'auto' }
+          }}>
+
             <Autocomplete
               multiple
               size="small"
@@ -194,12 +202,14 @@ const ReservationsView = ({
                   return <Typography variant="body2" sx={{ ml: 1, fontWeight: 600 }}>{t("all")}</Typography>;
                 }
                 const numSelected = value.length;
-                if (numSelected > 2) {
+                // On small screens, collapse to count more quickly
+                const isSmall = window.innerWidth < 600;
+                if (numSelected > (isSmall ? 1 : 2)) {
                   return <Typography variant="body2" sx={{ ml: 1, fontWeight: 600 }}>{numSelected} {t("selected") || "valittu"}</Typography>;
                 }
                 return value.map((option, index) => (
                   <Chip
-                    key={option.value}
+                    key={option}
                     variant="outlined"
                     size="small"
                     label={option.label}
@@ -225,8 +235,7 @@ const ReservationsView = ({
                 width: { xs: '100%', md: 300 },
                 "& .MuiOutlinedInput-root": {
                   flexWrap: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis"
+                  overflow: "hidden"
                 },
                 // Remove the default green/blue selection highlight
                 "& .MuiAutocomplete-option[aria-selected='true']": {
@@ -251,7 +260,9 @@ const ReservationsView = ({
                   fontWeight: 600,
                   bgcolor: 'primary.main',
                   '&:hover': { bgcolor: 'primary.dark' },
-                  whiteSpace: 'nowrap'
+                  whiteSpace: 'nowrap',
+                  width: { xs: '100%', sm: 'auto' },
+                  height: '40px'
                 }}
               >
                 {t("reservations_add")}
@@ -260,32 +271,63 @@ const ReservationsView = ({
           </Box>
         </Box>
 
-        <Calendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: "calc(100vh - 300px)", minHeight: "600px" }}
-          selectable
-          onSelectSlot={handleSelectSlot}
-          onSelectEvent={handleSelectEvent}
-          onNavigate={onNavigate}
-          firstDay={1}
-          popup={true}
-          eventPropGetter={(event) => ({
-            style: {
-              backgroundColor: event.open === true ? "#90b557" : "#ef5350", // Use fresh green and softer red
-              borderRadius: "6px",
-              border: "none",
-              color: "#fff",
-              padding: "4px 8px",
-              fontSize: "0.85rem",
-              fontWeight: 600,
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-              margin: "2px 0"
-            },
-          })}
-        />
+        <Box sx={{
+          height: "calc(100vh - 300px)",
+          minHeight: "600px",
+          // Target react-big-calendar internal classes for mobile optimization
+          "& .rbc-calendar": {
+            fontSize: { xs: '0.65rem', sm: '0.85rem' }
+          },
+          "& .rbc-toolbar": {
+            flexDirection: { xs: 'column', sm: 'row' },
+            alignItems: 'center',
+            gap: 1,
+            mb: 1,
+            "& .rbc-toolbar-label": {
+              fontWeight: 'bold',
+              py: 0.5
+            }
+          },
+          "& .rbc-event": {
+            padding: { xs: '0px 2px', sm: '2px 10px' },
+            minHeight: { xs: '14px', sm: 'auto' }
+          },
+          "& .rbc-header": {
+            padding: { xs: '2px 0', sm: '5px 0' },
+            fontSize: { xs: '0.6rem', sm: '0.85rem' }
+          },
+          "& .rbc-date-cell": {
+            paddingRight: { xs: '2px', sm: '10px' },
+            paddingTop: { xs: '2px', sm: '5px' },
+            fontSize: { xs: '0.7rem', sm: '1rem' }
+          }
+        }}>
+          <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            selectable
+            onSelectSlot={handleSelectSlot}
+            onSelectEvent={handleSelectEvent}
+            onNavigate={onNavigate}
+            firstDay={1}
+            popup={true}
+            eventPropGetter={(event) => ({
+              style: {
+                backgroundColor: event.open === true ? "#90b557" : "#ef5350", // Use fresh green and softer red
+                borderRadius: "4px",
+                border: "none",
+                color: "#fff",
+                padding: window.innerWidth < 600 ? "0px 2px" : "4px 8px",
+                fontSize: window.innerWidth < 600 ? "0.6rem" : "0.85rem",
+                fontWeight: 600,
+                boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                margin: "1px 0"
+              },
+            })}
+          />
+        </Box>
       </Box>
 
       <Dialog open={showCreateModal} onClose={handleCloseModal}>
