@@ -347,10 +347,11 @@ const MyCalendar = () => {
   };
 
   // Renders the calendar view, event modals and possible night responsibilities
-  const filteredEvents = events.filter(event =>
-    selectedRooms.some(room => room.value === event.room)
-  );
-
+  const filteredEvents = selectedRooms.length === 0 
+    ? events 
+    : events.filter(event => 
+        selectedRooms.some(room => room.value === event.room)
+      );
   return (
     <>
       <ReservationsView
