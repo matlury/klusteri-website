@@ -27,6 +27,10 @@ export const ContextProvider = ({ children, initialUser = null, skipHydration = 
     if (skipHydration) {
       return;
     }
+    // Only fetch if we have reason to believe a session exists (set during login)
+    if (localStorage.getItem("hasSession") !== "true") {
+      return;
+    }
     const hydrateUser = async () => {
       try {
         const response = await authAPI.getUserInfo();
@@ -34,6 +38,7 @@ export const ContextProvider = ({ children, initialUser = null, skipHydration = 
       } catch (error) {
         // Not authenticated or session expired; user remains null
         setUser(null);
+        localStorage.removeItem("hasSession");
       }
     };
     hydrateUser();

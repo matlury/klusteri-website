@@ -16,7 +16,8 @@ const login = async ({ email, password, setError, onLogin, setUser, t }) => {
         .then((response) => {
           // Update context with user data
           setUser(response.data);
-          // No need to store in localStorage - ContextProvider hydrates on mount via httpOnly cookie
+          // Set session flag to enable hydration on refresh
+          localStorage.setItem("hasSession", "true");
           if (typeof onLogin === 'function') {
             onLogin();
           }
