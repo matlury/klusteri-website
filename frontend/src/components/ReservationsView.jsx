@@ -209,7 +209,7 @@ const ReservationsView = ({
                 }
                 return value.map((option, index) => (
                   <Chip
-                    key={option}
+                    key={option.value}
                     variant="outlined"
                     size="small"
                     label={option.label}
@@ -217,12 +217,15 @@ const ReservationsView = ({
                   />
                 ));
               }}
-              renderOption={(props, option, { selected }) => (
-                <li {...props} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                  <Typography variant="body2">{option.label}</Typography>
-                  {selected && <CheckIcon fontSize="small" color="primary" />}
-                </li>
-              )}
+              renderOption={(props, option, { selected }) => {
+                const { key, ...optionProps } = props;
+                return (
+                  <li key={key} {...optionProps} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <Typography variant="body2">{option.label}</Typography>
+                    {selected && <CheckIcon fontSize="small" color="primary" />}
+                  </li>
+                );
+              }}
               renderInput={(params) => (
                 <TextField
                   {...params}
