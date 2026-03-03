@@ -56,6 +56,7 @@
       "Kokoushuone": "Kokoushuone",
       "Kerhotila": "Kerhotila",
       "Oleskelutila": "Oleskelutila",
+      "Christina Regina": "Christina Regina",
       "organisation": "Organisaatio",
       "close": "Sulje",
       "save": "Tallenna",
@@ -413,7 +414,9 @@
       "today": "Tänään",
       "tomorrow": "Huomenna",
       "next_event": "Seuraavaksi",
-      "now": "Nyt"
+      "now": "Nyt",
+      "all": "Kaikki",
+      "filter_rooms": "Suodata tiloja"
     }
   },
   "en": {
@@ -473,6 +476,7 @@
       "Kokoushuone": "Meeting room",
       "Kerhotila": "Club room",
       "Oleskelutila": "Lounge",
+      "Christina Regina": "Christina Regina",
       "organisation": "Organization",
       "close": "Close",
       "save": "Save",
@@ -830,7 +834,9 @@
       "today": "Today",
       "tomorrow": "Tomorrow",
       "next_event": "Next",
-      "now": "Now"
+      "now": "Now",
+      "all": "All",
+      "filter_rooms": "Filter spaces"
     }
   }
 }

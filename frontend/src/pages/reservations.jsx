@@ -5,7 +5,7 @@ import "moment/locale/fi";
 import { useStateContext } from "@context/ContextProvider";
 import { organizationsAPI, eventsAPI } from "../api/api.ts";
 import ReservationsView from "../components/ReservationsView.jsx";
-import { useTranslation } from "react-i18next";
+import { useTranslation, } from "react-i18next";
 import { Snackbar, Alert } from "@mui/material";
 
 // Set locale to Finnish and specify the first day of the week
@@ -21,12 +21,22 @@ moment.locale("fi");
 
 // The main calendar component
 const MyCalendar = () => {
+  const { t } = useTranslation();
   // State variables for event data and modals
   const [events, setEvents] = useState([]);
   const [loadedRanges, setLoadedRanges] = useState([]); // Track ranges already fetched
   const [organizations, setOrganizations] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
+
+  // Filtering state
+  const allRooms = [
+    { value: "Kokoushuone", label: t("Kokoushuone") },
+    { value: "Kerhotila", label: t("Kerhotila") },
+    { value: "Oleskelutila", label: t("Oleskelutila") },
+    { value: "ChristinaRegina", label: t("ChristinaRegina") }
+  ];
+  const [selectedRooms, setSelectedRooms] = useState(allRooms);
   const [eventDetails, setEventDetails] = useState({
     title: "",
     organizer: "",
@@ -42,8 +52,6 @@ const MyCalendar = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const { user } = useStateContext();
-
-  const { t } = useTranslation();
 
   // Snackbar state
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -339,6 +347,10 @@ const MyCalendar = () => {
   };
 
   // Renders the calendar view, event modals and possible night responsibilities
+  const filteredEvents = events.filter(event =>
+    selectedRooms.some(room => room.value === event.room)
+  );
+
   return (
     <>
       <ReservationsView
@@ -353,13 +365,16 @@ const MyCalendar = () => {
         handleAddEvent={handleAddEvent}
         showInfoModal={showInfoModal}
         localizer={localizer}
-        events={events}
+        events={filteredEvents}
         startRef={startTime}
         endRef={endTime}
         selectedEvent={selectedEvent}
         handleDeleteEvent={handleDeleteEvent}
         moment={moment}
         organizations={organizations}
+        selectedRooms={selectedRooms}
+        setSelectedRooms={setSelectedRooms}
+        allRooms={allRooms}
       />
       <Snackbar
         open={snackbarOpen}

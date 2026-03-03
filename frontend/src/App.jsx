@@ -272,13 +272,11 @@ const Sidebar = ({ isLoggedIn, handleDrawerClose, collapsed, onToggle }) => {
                 {!collapsed && (
                   <ListItemText
                     primary={t(key)}
-                    slotProps={{
-                      primary: {
-                        sx: {
-                          color: location.pathname === path ? "text.primary" : "text.primary",
-                          fontWeight: location.pathname === path ? 600 : 400,
-                        },
-                      }
+                    primaryTypographyProps={{
+                      sx: {
+                        color: "text.primary",
+                        fontWeight: location.pathname === path ? 800 : 500,
+                      },
                     }}
                   />
                 )}

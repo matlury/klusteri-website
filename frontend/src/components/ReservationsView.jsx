@@ -14,11 +14,14 @@ import {
   DialogTitle,
   Typography,
   Box,
+  Chip,
+  Autocomplete,
 } from "@mui/material";
 import { CSVLink } from "react-csv";
 import { getCurrentDateTime } from "../utils/timehelpers";
 import DownloadIcon from '@mui/icons-material/Download';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import CheckIcon from '@mui/icons-material/Check';
 import OrgSelect from "./OrganizationChooseBox";
 import { useTranslation } from "react-i18next";
 import { useStateContext } from "@context/ContextProvider";
@@ -42,6 +45,9 @@ const ReservationsView = ({
   handleDeleteEvent,
   moment,
   organizations,
+  selectedRooms,
+  setSelectedRooms,
+  allRooms,
 }) => {
   const [CSVdata, setCSVdata] = useState(null);
   const [shouldDownload, setShouldDownload] = useState(false);
@@ -156,32 +162,104 @@ const ReservationsView = ({
         boxShadow: "0px 4px 20px rgba(0,0,0,0.05)",
         border: "1px solid rgba(0,0,0,0.04)"
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <Typography variant="h5" component="h2" sx={{ fontWeight: 700, color: "text.primary" }}>
-                {t("reservations_res")}
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 1 }}>
-                {res_rights && (
-                    <Button
-                        id="createEvent"
-                        variant="contained"
-                        disableElevation
-                        onClick={handleAddNewEventClick}
-                        startIcon={<CalendarMonthIcon />}
-                        sx={{
-                            borderRadius: 2,
-                            textTransform: 'none',
-                            fontWeight: 600,
-                            bgcolor: 'primary.main',
-                            '&:hover': { bgcolor: 'primary.dark' }
-                        }}
-                    >
-                        {t("reservations_add")}
-                    </Button>
-                )}
-            </Box>
-        </div>
-        
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '20px',
+          flexWrap: { xs: 'column', md: 'row' },
+          gap: 2
+        }}>
+          <Typography variant="h5" component="h2" sx={{ fontWeight: 700, color: "text.primary" }}>
+            {t("reservations_res")}
+          </Typography>
+
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', width: { xs: '100%', md: 'auto' } }}>
+            <Autocomplete
+              multiple
+              size="small"
+              id="room-filter"
+              options={allRooms}
+              disableCloseOnSelect
+              getOptionLabel={(option) => option.label}
+              isOptionEqualToValue={(option, value) => option.value === value.value}
+              value={selectedRooms}
+              onChange={(event, newValue) => {
+                setSelectedRooms(newValue);
+              }}
+
+              // Force single row by preventing wrapping and managing overflow
+              renderTags={(value, getTagProps) => {
+                if (value.length === allRooms.length) {
+                  return <Typography variant="body2" sx={{ ml: 1, fontWeight: 600 }}>{t("all")}</Typography>;
+                }
+                const numSelected = value.length;
+                if (numSelected > 2) {
+                  return <Typography variant="body2" sx={{ ml: 1, fontWeight: 600 }}>{numSelected} {t("selected") || "valittu"}</Typography>;
+                }
+                return value.map((option, index) => (
+                  <Chip
+                    key={option.value}
+                    variant="outlined"
+                    size="small"
+                    label={option.label}
+                    {...getTagProps({ index })}
+                  />
+                ));
+              }}
+              renderOption={(props, option, { selected }) => (
+                <li {...props} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                  <Typography variant="body2">{option.label}</Typography>
+                  {selected && <CheckIcon fontSize="small" color="primary" />}
+                </li>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  label={t("filter_rooms")}
+                  placeholder={selectedRooms.length === 0 ? t("all") : ""}
+                />
+              )}
+              sx={{
+                width: { xs: '100%', md: 300 },
+                "& .MuiOutlinedInput-root": {
+                  flexWrap: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis"
+                },
+                // Remove the default green/blue selection highlight
+                "& .MuiAutocomplete-option[aria-selected='true']": {
+                  backgroundColor: 'transparent !important',
+                },
+                "& .MuiAutocomplete-option[aria-selected='true'].Mui-focused": {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04) !important',
+                }
+              }}
+            />
+
+            {res_rights && (
+              <Button
+                id="createEvent"
+                variant="contained"
+                disableElevation
+                onClick={handleAddNewEventClick}
+                startIcon={<CalendarMonthIcon />}
+                sx={{
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  bgcolor: 'primary.main',
+                  '&:hover': { bgcolor: 'primary.dark' },
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                {t("reservations_add")}
+              </Button>
+            )}
+          </Box>
+        </Box>
+
         <Calendar
           localizer={localizer}
           events={events}
