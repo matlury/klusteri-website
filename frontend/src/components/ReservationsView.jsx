@@ -207,15 +207,18 @@ const ReservationsView = ({
                 if (numSelected > (isSmall ? 1 : 2)) {
                   return <Typography variant="body2" sx={{ ml: 1, fontWeight: 600 }}>{numSelected} {t("selected") || "valittu"}</Typography>;
                 }
-                return value.map((option, index) => (
-                  <Chip
-                    key={option.value}
-                    variant="outlined"
-                    size="small"
-                    label={option.label}
-                    {...getTagProps({ index })}
-                  />
-                ));
+                return value.map((option, index) => {
+                  const { key, ...tagProps } = getTagProps({ index });
+                  return (
+                    <Chip
+                      key={key}
+                      variant="outlined"
+                      size="small"
+                      label={option.label}
+                      {...tagProps}
+                    />
+                  );
+                });
               }}
               renderOption={(props, option, { selected }) => {
                 const { key, ...optionProps } = props;

@@ -416,7 +416,8 @@
       "next_event": "Seuraavaksi",
       "now": "Nyt",
       "all": "Kaikki",
-      "filter_rooms": "Suodata tiloja"
+      "filter_rooms": "Suodata tiloja",
+      "search_rules": "Hae säännöistä tai ohjeista..."
     }
   },
   "en": {
@@ -836,7 +837,8 @@
       "next_event": "Next",
       "now": "Now",
       "all": "All",
-      "filter_rooms": "Filter spaces"
+      "filter_rooms": "Filter spaces",
+      "search_rules": "Search rules or instructions..."
     }
   }
 }
