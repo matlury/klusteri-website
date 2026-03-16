@@ -171,7 +171,8 @@ test("renders upcoming events", async () => {
       expect.any(Object)
     );
 
-    expect(getByText("Test event - tko-äly")).toBeInTheDocument();
+    expect(getByText("Test event")).toBeInTheDocument();
+    expect(screen.getAllByText("TKO-ÄLY")[0]).toBeInTheDocument();
   });
 });
 
@@ -258,9 +259,9 @@ test("event description dialog works correctly", async () => {
       expect.any(Object)
     );
 
-    const moreDetailsButton = getByText("Lisätietoja");
+    const eventTitle = getByText("Test event");
 
-    fireEvent.click(moreDetailsButton);
+    fireEvent.click(eventTitle);
 
     // Now there are two "Test desc": one on the card and one in the dialog.
     expect(screen.getAllByText(/Test desc/i)[0]).toBeInTheDocument();
