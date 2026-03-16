@@ -1,24 +1,21 @@
 import React, { useState, useEffect } from "react";
-import axiosClient from "../axios.js";
+import { defectsAPI } from "../api/api.ts";
 import { Button, Snackbar, Alert } from "@mui/material";
 import DefectForm from "../components/DefectForm";
 import DefectList from "../components/DefectList";
 import RepairConfirmDialog from "../components/RepairConfirmDialog.jsx";
 import EmailConfirmDialog from "../components/EmailConfirmDialog.jsx";
 import { useTranslation } from "react-i18next";
+import { useStateContext } from "@context/ContextProvider";
 
-const DefectFault = ({
-  isLoggedIn: propIsLoggedIn,
-  loggedUser: propLoggedUser,
-}) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
-  const [loggedUser, setLoggedUser] = useState(propLoggedUser);
+const DefectFault = () => {
+  const { user } = useStateContext();
+  const isLoggedIn = !!user;
+  const loggedUser = user;
   const [open, setOpen] = useState(false);
   const [activeDefects, setActiveDefects] = useState([]);
   const [allDefects, setAllDefects] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [selectedDefectId, setSelectedDefectId] = useState(null);
-  const [buttonPopup, setButtonPopup] = useState(false);
   const [confirmRepairOpen, setConfirmRepairOpen] = useState(false);
   const [confirmEmailOpen, setConfirmEmailOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -26,17 +23,6 @@ const DefectFault = ({
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const { t } = useTranslation();
-
-  useEffect(() => {
-    setIsLoggedIn(propIsLoggedIn);
-    if (propIsLoggedIn) {
-      const storedUser = JSON.parse(localStorage.getItem("loggedUser"));
-      if (storedUser) {
-        setLoggedUser(storedUser);
-      }
-    }
-    
-  }, [propIsLoggedIn]);
 
   useEffect(() => {
     if (isLoggedIn && loggedUser) {
@@ -77,9 +63,9 @@ const DefectFault = ({
 
     function confirmDefectFault(defectFaultObject) {
       if (confirm) {
-        axiosClient
-          .post(`/defects/create_defect`, defectFaultObject)
-          .then((response) => {
+        defectsAPI
+          .createDefect(defectFaultObject)
+          .then(() => {
             handleSnackbar(t("defectcreatesuccess"), "success");
             fetchDefects();
           })
@@ -92,27 +78,25 @@ const DefectFault = ({
   };
 
   const handleDefectFaultRepair = (id) => {
-    setButtonPopup(true);
-    axiosClient
-      .put(`defects/repair_defect/${id}/`, {})
-      .then((response) => {
+    defectsAPI
+      .repairDefect(id)
+      .then(() => {
         handleSnackbar(t("defectfixsuccess"), "success");
         fetchDefects();
       })
-      .catch((error) => {
+      .catch(() => {
         handleSnackbar(t("defectfixfail"), "error");
       });
   };
 
   const handleSendEmail = (id) => {
-    setButtonPopup(true);
-    axiosClient
-      .put(`defects/email_defect/${id}/`, {})
-      .then((response) => {
+    defectsAPI
+      .emailDefect(id)
+      .then(() => {
         handleSnackbar(t("defectmailsuccess"), "success");
         fetchDefects();
       })
-      .catch((error) => {
+      .catch(() => {
         handleSnackbar(t("defectmailfail"), "error");
       });
   };
@@ -146,10 +130,11 @@ const DefectFault = ({
   };
 
   const fetchDefects = () => {
-    axiosClient
-      .get("/listobjects/defects/")
+    defectsAPI
+      .getDefects()
       .then((res) => {
-        const defectData = res.data.map((u, index) => ({
+        const rawData = res.data;
+        const defectData = rawData.map((u) => ({
           id: u.id, // DataGrid requires a unique 'id' for each row
           description: u.description,
           time: new Date(u.time),
@@ -163,7 +148,6 @@ const DefectFault = ({
               resp.repaired === "Ei"
           ),
         );
-        setLoading(false);
       })
       .catch((error) => console.error(error));
   };
@@ -193,12 +177,11 @@ const DefectFault = ({
             <DefectForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
           </React.Fragment>
           <React.Fragment>
-            <DefectList 
-              loggedUser={loggedUser} 
-              allDefects={allDefects} 
-              activeDefects={activeDefects} 
-              handleRepairClick={handleRepairClick} 
-              handleEmailClick={handleEmailClick}/>
+            <DefectList
+              allDefects={allDefects}
+              activeDefects={activeDefects}
+              handleRepairClick={handleRepairClick}
+              handleEmailClick={handleEmailClick} />
             <RepairConfirmDialog
               open={confirmRepairOpen}
               handleConfirmClose={handleConfirmRepairClose}

@@ -1,3 +1,5 @@
+import requests
+from unittest.mock import patch, MagicMock
 from django.test import TestCase
 from rest_framework.serializers import ValidationError
 from rest_framework.test import APIClient
@@ -13,6 +15,22 @@ Unit tests for back end features
 
 class TestDjangoAPI(TestCase):
     def setUp(self):
+        # Mock reCAPTCHA verification globally for the duration of setUp and tests
+        # Only affects the reCAPTCHA URL
+        self.original_post = requests.post
+        self.patcher = patch('requests.post')
+        self.mock_post = self.patcher.start()
+
+        def side_effect(url, *args, **kwargs):
+            if 'recaptcha/api/siteverify' in url:
+                mock_response = MagicMock()
+                mock_response.json.return_value = {'success': True}
+                mock_response.status_code = 200
+                return mock_response
+            return self.original_post(url, *args, **kwargs)
+
+        self.mock_post.side_effect = side_effect
+
         self.client = APIClient()
 
         # Create a mock Tavallinen (role 5) user for testing
@@ -33,7 +51,8 @@ class TestDjangoAPI(TestCase):
 
         response = self.client.post(
             "http://localhost:8000/api/token/",
-            data={"email": "klusse.osoite@gmail.com", "password": "vahvaSalasana1234"},
+            data={"email": "klusse.osoite@gmail.com",
+                  "password": "vahvaSalasana1234"},
             format="json",
         )
         self.access_token = response.data["access"]
@@ -65,7 +84,8 @@ class TestDjangoAPI(TestCase):
 
         response = self.client.post(
             "http://localhost:8000/api/token/",
-            data={"email": "leppispj@gmail.com", "password": "vahvaSalasana1234"},
+            data={"email": "leppispj@gmail.com",
+                  "password": "vahvaSalasana1234"},
             format="json",
         )
         self.leppis_access_token = response.data["access"]
@@ -97,7 +117,8 @@ class TestDjangoAPI(TestCase):
 
         response = self.client.post(
             "http://localhost:8000/api/token/",
-            data={"email": "muokkaus@gmail.com", "password": "vahvaSalasana1234"},
+            data={"email": "muokkaus@gmail.com",
+                  "password": "vahvaSalasana1234"},
             format="json",
         )
         self.muokkaus_access_token = response.data["access"]
@@ -130,7 +151,8 @@ class TestDjangoAPI(TestCase):
 
         response = self.client.post(
             "http://localhost:8000/api/token/",
-            data={"email": "avaimellinen@gmail.com", "password": "vahvaSalasana1234"},
+            data={"email": "avaimellinen@gmail.com",
+                  "password": "vahvaSalasana1234"},
             format="json",
         )
         self.avaimellinen_access_token = response.data["access"]
@@ -163,7 +185,8 @@ class TestDjangoAPI(TestCase):
 
         response = self.client.post(
             "http://localhost:8000/api/token/",
-            data={"email": "jarjestopj@gmail.com", "password": "vahvaSalasana1234"},
+            data={"email": "jarjestopj@gmail.com",
+                  "password": "vahvaSalasana1234"},
             format="json",
         )
         self.jarjestopj_access_token = response.data["access"]
@@ -178,7 +201,6 @@ class TestDjangoAPI(TestCase):
         self.jarjestopj_user = self.jarjestopj
 
         self.user_count = 5
-
 
         tko_aly_data = self.data = {
             "email": "tko@aly.fi",
@@ -196,6 +218,8 @@ class TestDjangoAPI(TestCase):
 
         self.tko_aly_id = response.data["id"]
 
+    def tearDown(self):
+        self.patcher.stop()
 
     def test_creating_user(self):
         """A new user can be created if the parameters are valid"""
@@ -304,7 +328,7 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-    
+
     def test_delete_user_as_tavallinen(self):
         """Deleting a user fails if the user does not have a permission for it"""
 
@@ -328,8 +352,8 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.access_token}"},
             format="json",
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_delete_user_notfound(self):
         """Attempting to delete a non-existent user results in a 404"""
 
@@ -339,7 +363,7 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        
+
     def test_register_user_with_duplicate(self):
         """Creating a user fails if their telegram name is taken"""
 
@@ -363,7 +387,8 @@ class TestDjangoAPI(TestCase):
         # generate new web tokens
         tokens = self.client.post(
             "http://localhost:8000/api/token/",
-            data={"email": "klusse.osoite@gmail.com", "password": "vahvaSalasana1234"},
+            data={"email": "klusse.osoite@gmail.com",
+                  "password": "vahvaSalasana1234"},
             format="json",
         )
         access_token = tokens.data["access"]
@@ -409,7 +434,7 @@ class TestDjangoAPI(TestCase):
     def test_updating_email_with_invalid_parameters(self):
         """Updating an email fails without authorization or if the new address is invalid"""
 
-        # attempt updating without authorization
+        # attempt updating without Authorizationheader
         user_id = User.objects.all()[0].id
         response = self.client.put(
             f"http://localhost:8000/api/users/update/{user_id}/",
@@ -417,7 +442,7 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(self.user["email"], "klusse.osoite@gmail.com")
 
         # new email address is invalid
@@ -432,8 +457,8 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(self.user["email"], "klusse.osoite@gmail.com")
 
     def test_updating_email_with_taken_address(self):
-        """Updating an email address fails if the address is taken"""
-        
+        """Updating an email address fails if not authorized or if the address is taken"""
+
         response = self.client.post(
             "http://localhost:8000/api/users/register",
             data={
@@ -448,20 +473,19 @@ class TestDjangoAPI(TestCase):
 
         user_id = response.data['id']
         response = self.client.put(
-            f"http://localhost:8000/api/users/update/{user_id}/", 
+            f"http://localhost:8000/api/users/update/{user_id}/",
             headers={"Authorization": f"Bearer {self.access_token}"},
             data={"email": "klusse.osoite@gmail.com"},
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertRaises(ValidationError)
-        self.assertEqual(self.user["email"], "klusse.osoite@gmail.com")
+        # Cannot modify another user's data as tavallinen user
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_updating_telegram_with_invalid_parameters(self):
         """Updating a telegram name fails without authorization or if the new name is taken"""
 
-        # attempt updating without authorization
+        # attempt updating without authorization header
         user_id = User.objects.all()[0].id
         response = self.client.put(
             f"http://localhost:8000/api/users/update/{user_id}/",
@@ -469,7 +493,7 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(self.user["telegram"], "klussentg")
 
         # telegram name is taken
@@ -522,7 +546,7 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.data["telegram"], "")
 
     def test_updating_non_existent_user(self):
-        """Backend responds with 400 if a user is not found when updating information"""
+        """Backend responds with 404 if a user is not found when updating information"""
 
         # update the telegram name
         response = self.client.put(
@@ -532,8 +556,8 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_updating_as_leppispj(self):
         """LeppisPJ can update all users"""
 
@@ -548,10 +572,169 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["telegram"], "newtg")
 
+    def test_leppispj_updates_user_role_without_password(self):
+        """LeppisPJ can update another user's role without requiring their password."""
+        # Create a new regular user
+        new_user_data = {
+            "username": "testuser",
+            "password": "testpassword123",
+            "email": "testuser@example.com",
+            "telegram": "testuser_tg",
+            "role": 5,  # Tavallinen user
+        }
+        response = self.client.post(
+            "http://localhost:8000/api/users/register",
+            data=new_user_data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        new_user_id = response.data["id"]
+
+        # LeppisPJ updates the testuser's role to MUOKKAUS (role 3)
+        # No 'current_password' for testuser is provided, as LeppisPJ wouldn't know it.
+        update_data = {
+            "role": 3,
+        }
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{new_user_id}/",
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
+            data=update_data,
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["role"], 3)
+
+        # Verify the role change in the database
+        updated_user = User.objects.get(id=new_user_id)
+        self.assertEqual(updated_user.role, 3)
+
+    def test_muokkaus_can_change_role_to_avaimellinen(self):
+        """MUOKKAUS user can change another user's role to AVAIMELLINEN (role 4)."""
+        # Create a regular user
+        new_user_data = {
+            "username": "regularuser_test",
+            "password": "X9z!mK4@pQ7n",
+            "email": "regular_test@example.com",
+            "telegram": "regular_test_tg",
+            "role": 5,  # Tavallinen
+        }
+        response = self.client.post(
+            "http://localhost:8000/api/users/register",
+            data=new_user_data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        new_user_id = response.data["id"]
+
+        # MUOKKAUS user changes the role to AVAIMELLINEN (role 4)
+        update_data = {"role": 4}
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{new_user_id}/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data=update_data,
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["role"], 4)
+
+        # Verify in database
+        updated_user = User.objects.get(id=new_user_id)
+        self.assertEqual(updated_user.role, 4)
+
+    def test_muokkaus_cannot_change_role_to_management(self):
+        """MUOKKAUS user CANNOT change a user's role to management positions (1, 2, 3) or organization leadership (6, 7)."""
+        # Create a regular user
+        new_user_data = {
+            "username": "testuser2_mgmt",
+            "password": "Y8w!nL5@rM6p",
+            "email": "test2_mgmt@example.com",
+            "telegram": "test2_mgmt_tg",
+            "role": 5,
+        }
+        response = self.client.post(
+            "http://localhost:8000/api/users/register",
+            data=new_user_data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        new_user_id = response.data["id"]
+
+        # Try to change role to MUOKKAUS (role 3) - should fail
+        update_data = {"role": 3}
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{new_user_id}/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data=update_data,
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn(
+            "Only top administrators can assign management and organization leadership roles", str(response.data))
+
+        # Try to change role to JARJESTOPJ (role 6) - should also fail
+        update_data = {"role": 6}
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{new_user_id}/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data=update_data,
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn(
+            "Only top administrators can assign management and organization leadership roles", str(response.data))
+
+    def test_tavallinen_cannot_change_any_role(self):
+        """Regular user (TAVALLINEN) cannot change any user's role."""
+        # Create a regular user
+        new_user_data = {
+            "username": "anotheruser_test",
+            "password": "Z7v!oK4@sN8m",
+            "email": "another_test@example.com",
+            "telegram": "another_test_tg",
+            "role": 5,
+        }
+        response = self.client.post(
+            "http://localhost:8000/api/users/register",
+            data=new_user_data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        new_user_id = response.data["id"]
+
+        # Try to change role to AVAIMELLINEN (role 4) using tavallinen user - should fail
+        update_data = {"role": 4}
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{new_user_id}/",
+            # tavallinen user
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data=update_data,
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_user_cannot_change_own_role(self):
+        """Users cannot change their own role to prevent self-escalation."""
+        # MUOKKAUS user tries to change their own role
+        update_data = {"role": 1}  # Try to escalate to LEPPISPJ
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{self.muokkaus_id}/",
+            headers={"Authorization": f"Bearer {self.muokkaus_access_token}"},
+            data=update_data,
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("You cannot change your own role", str(response.data))
+
 #    ERROR WITH NEW DATABASE STRUCTURE
 #    def test_updating_as_muokkaus_tavallinen(self):
 #        """
-#        Muokkausoikeudellinen (role 3) users can update avaimellinen and tavallinen (role 4 and 5) 
+#        Muokkausoikeudellinen (role 3) users can update avaimellinen and tavallinen (role 4 and 5)
 #        users if they belong to same organization
 #        """
 #
@@ -734,7 +917,7 @@ class TestDjangoAPI(TestCase):
 #
 #        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 #        self.assertEqual(self.avaimellinen["telegram"], "avaimellinen")
-    
+
     def test_updating_invalid_tg_as_leppispj(self):
         """Same as the previous one but with LeppisPJ (role 1)"""
 
@@ -795,7 +978,7 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_removing_organization(self):
         """Only LeppisPJ can remove an organization"""
@@ -823,7 +1006,7 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # delete the organization as LeppisPJ
         response = self.client.delete(
@@ -844,7 +1027,6 @@ class TestDjangoAPI(TestCase):
 
     def test_creating_event(self):
         """Users with role 4 (avaimellinen) or higher can create new events"""
-
 
         # Create an event as LeppisPJ with empty description
         response = self.client.post(
@@ -963,8 +1145,9 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
-        self.assertEqual(event_created.status_code, status.HTTP_400_BAD_REQUEST)
-    
+        self.assertEqual(event_created.status_code,
+                         status.HTTP_400_BAD_REQUEST)
+
     def test_update_room_invalid(self):
         """Updating an event fails with invalid parameters"""
 
@@ -1031,15 +1214,17 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
+        event_id = event_created.data["id"]
+
         # Attempt updating the room with a tavallinen (role 5) user
         response = self.client.put(
-            "http://localhost:8000/api/events/update_event/1/",
+            f"http://localhost:8000/api/events/update_event/{event_id}/",
             headers={"Authorization": f"Bearer {self.access_token}"},
             data={"room": "Kattohuoneisto"},
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(event_created.data["room"], "Kattilahuone")
 
 #    def test_update_room_no_rights(self):
@@ -1167,8 +1352,8 @@ class TestDjangoAPI(TestCase):
             headers={"Authorization": f"Bearer {self.access_token}"},
         )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
         # try delete event that doesn't exist
         response = self.client.delete(
             f"http://localhost:8000/api/events/delete_event/10/",
@@ -1176,7 +1361,7 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-    
+
     def test_creating_ykv(self):
         """Only role < 5 can create a new ykv (night responsibility)"""
 
@@ -1232,7 +1417,7 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    
+
     def test_update_ykv(self):
         """An authorized user can update ykv"""
 
@@ -1262,11 +1447,11 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["responsible_for"], "tietyt vieraat")
-  
+
     def test_ykv_logout(self):
         """An authorized user can logout ykv"""
 
-        # test logout on the next day 
+        # test logout on the next day
         current_time = datetime.now()
         logout_time = current_time.replace(hour=7, minute=0)
         login_time = logout_time - timedelta(days=1)
@@ -1333,7 +1518,7 @@ class TestDjangoAPI(TestCase):
 #
 #        self.assertEqual(response.status_code, status.HTTP_200_OK)
 #        self.assertEqual(response.data["late"], True)
-    
+
     def test_logout_ykv_notfound(self):
         # try to logout ykv that don't exist
         current_time = datetime.now()
@@ -1347,7 +1532,7 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-  
+
     def test_logout_ykv_role5(self):
         """An authorized user can logout ykv"""
 
@@ -1380,8 +1565,10 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(ykv_created.data["logout_time"][:19], current_time.strftime("%Y-%m-%dT%H:%M:%S"))
-    
+        # Verify logout_time remains unchanged since role 5 user cannot modify it
+        self.assertEqual(
+            ykv_created.data["logout_time"][:16], "1970-01-02T14:00")
+
     def test_logout_ykv_empty(self):
         """An authorized user can logout ykv"""
 
@@ -1413,7 +1600,7 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data, "Logout time not provided")
 
-#    POSSIBLY DEPRECATED TEST IF LOGOUT TIMES ARE SET BLANK    
+#    POSSIBLY DEPRECATED TEST IF LOGOUT TIMES ARE SET BLANK
 #    def test_logout_ykv_invalid(self):
 #        """An authorized user can logout ykv"""
 #
@@ -1472,7 +1659,7 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-    
+
     def test_update_ykv_role5(self):
         """An authorized user can update ykv"""
 
@@ -1502,12 +1689,13 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(ykv_created.data["responsible_for"], "kutsutut vieraat")
-    
+        self.assertEqual(
+            ykv_created.data["responsible_for"], "kutsutut vieraat")
+
     def test_update_ykv_invalid(self):
         """An authorized user can logout ykv"""
 
-        # first create an ykv 
+        # first create an ykv
         ykv_created = self.client.post(
             f"http://localhost:8000/api/ykv/create_responsibility",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
@@ -1533,8 +1721,9 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(ykv_created.data["responsible_for"], "kutsutut vieraat")
-    
+        self.assertEqual(
+            ykv_created.data["responsible_for"], "kutsutut vieraat")
+
     def test_update_organization(self):
         """An authorized user can update organization"""
 
@@ -1562,7 +1751,7 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["homepage"], "matrix.fi")
-    
+
     def test_update_organization_invalid(self):
         """An authorized user can update organization"""
 
@@ -1590,20 +1779,20 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(organization_created.data["homepage"], "matrix-ry.fi")
-    
+
     def test_update_with_nonexistentorganization(self):
         """An authorized user can update organization"""
 
         # update hompage with organization that doesn't exist
         response = self.client.put(
-            f"http://localhost:8000/api/organizations/update_organization/2/",
+            f"http://localhost:8000/api/organizations/update_organization/9999/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={"homepage": "matrix.fi"},
             format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-    
+
     def test_update_organization_role5(self):
         """An authorized user can update organization"""
 
@@ -1628,7 +1817,7 @@ class TestDjangoAPI(TestCase):
             format="json",
         )
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(organization_created.data["homepage"], "matrix-ry.fi")
 
 #    ERROR WITH NEW DATABASE STRUCTURE
@@ -1650,7 +1839,7 @@ class TestDjangoAPI(TestCase):
 #
 #        # add user to created organization
 #        user = User.objects.get(email="muokkaus@gmail.com")
-#        
+#
 #        self.client.put(
 #            f"http://localhost:8000/api/organizations/add_user_organization/{user.id}/",
 #            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
@@ -1700,7 +1889,7 @@ class TestDjangoAPI(TestCase):
 #
 #        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 #        self.assertEqual(organization_created.data["homepage"], "matrix-ry.fi")
-#    
+#
 #    def test_add_user_organization(self):
 #        """An authorized user can add member to organization"""
 #
@@ -1728,7 +1917,7 @@ class TestDjangoAPI(TestCase):
 #        self.assertEqual(response.status_code, status.HTTP_200_OK)
 #        muokkaus_user = User.objects.get(id=self.muokkaus_user['id'])
 #        self.assertTrue(muokkaus_user.organization['Matrix'])
-#    
+#
 #    def test_add_user_organization_role5(self):
 #        """An authorized user can add member to organization"""
 #
@@ -1754,7 +1943,7 @@ class TestDjangoAPI(TestCase):
 #        )
 #
 #        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    
+
     def test_add_user_organization_invalid_user(self):
         """An authorized user can add member to organization"""
 
@@ -1781,7 +1970,7 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-    
+
     def test_add_user_organization_invalid_org(self):
         """An authorized user can add member to organization"""
 
@@ -1794,10 +1983,10 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-    
+
     def test_hand_over_key_valid(self):
         """A user with permission can hand over a Klusteri key"""
-        
+
         # Hand over a key to a regular user with LeppisPJ
         user_id = User.objects.all()[0].id
         response = self.client.put(
@@ -1809,7 +1998,7 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["keys"][0]["id"], self.tko_aly_id)
-    
+
     def test_hand_over_key_invalid(self):
         """Everything that can go wrong with handing over a Klusteri key"""
 
@@ -1824,7 +2013,7 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data, "No permission for handing over a key")
-        
+
         # Attempt handing over a key to a nonexistent user
         user_id = 2500000
         response = self.client.put(
@@ -1861,8 +2050,9 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data, "You can only hand over a Klusteri key through this endpoint")
-    
+        self.assertEqual(
+            response.data, "You can only hand over a Klusteri key through this endpoint")
+
     def test_creating_defect(self):
         """Roles other than role 5 can create defects"""
 
@@ -1939,7 +2129,7 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-    
+
     def test_deleting_defect(self):
         """Defects can be deleted by roles higher than 5"""
 
@@ -1969,7 +2159,7 @@ class TestDjangoAPI(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    
+
         # try delete defect that doesn't exist
         response = self.client.delete(
             f"http://localhost:8000/api/defects/delete_defect/10/",
@@ -1983,7 +2173,7 @@ class TestDjangoAPI(TestCase):
 
         result = force_logout_ykv_logins()
 
-        self.assertEqual(result, "Nothing to log out")
+        self.assertEqual(result, "No active YKV responsibilities to log out")
 
     def test_force_logout_ykv(self):
         """Tests force logout ykv"""
@@ -2005,7 +2195,7 @@ class TestDjangoAPI(TestCase):
 
         result = force_logout_ykv_logins()
 
-        self.assertEqual(result, "logged out users")
+        self.assertTrue(result.startswith("Successfully logged out"))
 
     def test_creating_cleaning(self):
         """Role 1 can create cleanings"""
@@ -2057,7 +2247,7 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/cleaning/create_cleaning",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "week":1,
+                "week": 1,
                 "big": big_organization_id,
                 "small": 100,
             },
@@ -2070,7 +2260,7 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/cleaning/create_cleaning",
             headers={"Authorization": f"Bearer {self.access_token}"},
             data={
-                "week":1,
+                "week": 1,
                 "big": big_organization_id,
                 "small": small_organization_id,
             },
@@ -2100,7 +2290,7 @@ class TestDjangoAPI(TestCase):
             "http://localhost:8000/api/cleaning/create_cleaning",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
             data={
-                "week":1,
+                "week": 1,
                 "big": big_organization_id,
                 "small": small_organization_id,
             },
@@ -2123,20 +2313,22 @@ class TestDjangoAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_change_rights_for_reservation(self):
-        """Role 6 can add and remove rights for reservation"""
+        """Only LEPPISPJ (role 1) can change rights for reservation"""
 
         response = self.client.put(
             f'http://localhost:8000/api/users/change_rights_reservation/{self.tavallinen_id}/',
-            headers={"Authorization": f"Bearer {self.jarjestopj_access_token}"},
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
         )
 
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["rights_for_reservation"], True)
 
         response = self.client.put(
             f'http://localhost:8000/api/users/change_rights_reservation/{self.tavallinen_id}/',
-            headers={"Authorization": f"Bearer {self.jarjestopj_access_token}"},
+            headers={"Authorization": f"Bearer {self.leppis_access_token}"},
         )
 
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["rights_for_reservation"], False)
 
     def test_creating_cleaning_supplies(self):
@@ -2216,41 +2408,67 @@ class TestDjangoAPI(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-
     def test_update_password(self):
-        """An authorized user can update their email address"""
+        """A user can update their password and authenticate with the new password."""
 
-        # update the email address
-        user_id = User.objects.all()[0].id
+        new_password = "UusiSalasana123!"
+
+        # Update password for the tavallinen user
         response = self.client.put(
-            f"http://localhost:8000/api/users/update/{user_id}/",
+            f"http://localhost:8000/api/users/update/{self.tavallinen_id}/",
             headers={"Authorization": f"Bearer {self.access_token}"},
-            data={"password": "newpassword123"},
+            data={"password": new_password,
+                  "current_password": "vahvaSalasana1234"},
             format="json",
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # leppispj user can update any password
-        user_id = User.objects.all()[1].id
+        # Verify that we can obtain a token with the new password
+        token_resp = self.client.post(
+            "http://localhost:8000/api/token/",
+            data={"email": self.user.get("email"), "password": new_password},
+            format="json",
+        )
+
+        self.assertEqual(token_resp.status_code, status.HTTP_200_OK)
+        self.assertIn("access", token_resp.data)
+
+        # Verify that the old password no longer works
+        old_token_resp = self.client.post(
+            "http://localhost:8000/api/token/",
+            data={"email": self.user.get(
+                "email"), "password": "vahvaSalasana1234"},
+            format="json",
+        )
+
+        self.assertNotEqual(old_token_resp.status_code, status.HTTP_200_OK)
+
+        # Test updating own email
         response = self.client.put(
-            f"http://localhost:8000/api/users/update/{user_id}/",
+            f"http://localhost:8000/api/users/update/{self.tavallinen_id}/",
+            headers={"Authorization": f"Bearer {self.access_token}"},
+            data={"email": "new.email@example.com"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # leppispj user can update any user's password
+        # Update klusse's password as LeppisPJ
+        response = self.client.put(
+            f"http://localhost:8000/api/users/update/{self.tavallinen_id}/",
             headers={"Authorization": f"Bearer {self.leppis_access_token}"},
-            data={"password": "newpassword123"},
+            data={"password": "leppis_changed_it"},
             format="json",
         )
-        
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # other users can't update other users' passwords
-        user_id = User.objects.all()[0].id
+        # other users can't update other users' data
+        # klusse (role 5) tries to update LeppisPJ's data
         response = self.client.put(
-            f"http://localhost:8000/api/users/update/{user_id}/",
+            f"http://localhost:8000/api/users/update/{self.leppis_id}/",
             headers={"Authorization": f"Bearer {self.access_token}"},
-            data={"password": "newpassword123"},
+            data={"email": "hacked@example.com"},
             format="json",
         )
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

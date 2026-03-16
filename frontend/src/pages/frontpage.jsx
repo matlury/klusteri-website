@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import FrontpageEvents from "../components/FrontpageEvents";
-import axios from "axios";
-
-const API_URL = process.env.VITE_API_URL;
+import { eventsAPI } from "../api/api.ts";
 
 const FrontPage = () => {
   const { t } = useTranslation();
@@ -14,10 +12,19 @@ const FrontPage = () => {
 
   // Fetch the events to be shown from the backend
   useEffect(() => {
-    axios
-      .get(`${API_URL}/api/listobjects/events/`)
+    const now = new Date();
+    const futureLimit = new Date();
+    futureLimit.setDate(now.getDate() + 30); // Fetch next 30 days
+
+    eventsAPI
+      .getEventsWithQuery({
+        start: now.toISOString(),
+        end: futureLimit.toISOString()
+      })
       .then((response) => {
-        const events = response.data
+        // Handle both paginated and non-paginated responses
+        const rawData = response.data;
+        const events = rawData
           .filter(
             (event) => new Date() < new Date(event.start) && event.open == true,
           )
@@ -52,31 +59,33 @@ const FrontPage = () => {
           variant={isMobile ? "h4" : "h2"}
           component="h1"
           gutterBottom
+          sx={{ color: "#000000", fontWeight: "bold" }}
         >
           Ilotalo
         </Typography>
-        <Typography variant="body1" paragraph>
+        <Typography variant="body1" paragraph sx={{ fontStyle: "italic", color: "#000000" }}>
           ”sub hoc tecto cives academici excoluntur”?
         </Typography>
-        <Typography variant="body1" paragraph>
+        <Typography variant="body1" paragraph sx={{ maxWidth: "800px", margin: "0 auto 1.5rem", color: "#000000" }}>
           {t("front_1")}
         </Typography>
-        <Typography variant="body1" paragraph>
+        <Typography variant="body1" paragraph sx={{ maxWidth: "800px", margin: "0 auto", color: "#000000" }}>
           {t("front_2")}
         </Typography>
       </Box>
       <Box
         sx={{
           padding: 2,
-          maxWidth: "600px",
+          maxWidth: "1000px", // Increased from 800px for side-by-side cards
           margin: "0 auto",
           textAlign: "center",
         }}
       >
         <Typography
-          variant={isMobile ? "h6" : "h4"}
-          component="h1"
+          variant={isMobile ? "h5" : "h4"}
+          component="h2"
           gutterBottom
+          sx={{ color: "#000000", fontWeight: "bold", mt: 4 }}
         >
           {t("openevents")}
         </Typography>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axiosClient from "../axios.js";
+import { useStateContext } from "@context/ContextProvider";
+import { organizationsAPI, cleaningAPI } from "../api/api.ts";
 import { Button, Snackbar, Alert } from "@mui/material";
 import CleanersList from "../components/CleanersList.jsx";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -12,39 +13,22 @@ import CleanersListAutomateButton from "../components/CleanersListAutomateButton
 import SaveDialog from "../components/SaveDialog";
 import Stack from '@mui/material/Stack';
 import { useTranslation } from "react-i18next";
+import { Role } from "../roles";
 
-const CleaningSchedule = ({
-  isLoggedIn: propIsLoggedIn,
-  loggedUser: propLoggedUser,
-}) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
-  const [loggedUser, setLoggedUser] = useState(propLoggedUser);
-  const [open, setOpen] = useState(false);
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
+const CleaningSchedule = () => {
+  const { user: loggedUser } = useStateContext();
+  const isLoggedIn = !!loggedUser;
   const [confirm, setConfirmOpen] = useState(false);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
-
   const [allCleaning, setAllCleaning] = useState([]);
   const [rawCleaningData, setRawCleaningData] = useState(null);
   const [newData, setNewData] = useState(null);
-  const [loading, setLoading] = useState(true);
-
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-
   const { t } = useTranslation();
 
-  useEffect(() => {
-    setIsLoggedIn(propIsLoggedIn);
-    if (propIsLoggedIn) {
-      const storedUser = JSON.parse(localStorage.getItem("loggedUser"));
-      if (storedUser) {
-        setLoggedUser(storedUser);
-      }
-    }
-  }, [propIsLoggedIn]);
+  // No need to sync isLoggedIn or loggedUser from props/localStorage
 
   useEffect(() => {
     if (isLoggedIn && loggedUser) {
@@ -52,29 +36,11 @@ const CleaningSchedule = ({
     }
   }, [isLoggedIn, loggedUser]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (loggedUser) {
-        await fetchCleaning();
-      }
-    };
-
-    fetchData();
-  }, [loggedUser]);
-
   const handleSnackbar = (message, severity) => {
     setSnackbarMessage(message);
     setSnackbarSeverity(severity);
     setSnackbarOpen(true);
   }
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   const handleClickRemove = () => {
     setConfirmOpen(true);
@@ -91,14 +57,13 @@ const CleaningSchedule = ({
   const handleSaveClose = () => {
     setSaveDialogOpen(false);
   };
-  
+
   const handleFormSubmit = async (json) => {
-    const orgdata = await axiosClient.get("/listobjects/organizations/");
+    const orgdata = await organizationsAPI.getOrganizations();
 
     if (allCleaning.length > 0) {
-       setError(t("cleaningerrorold"));
-       handleSnackbar(t("cleaningerrorold"), "error");
-       return;
+      handleSnackbar(t("cleaningerrorold"), "error");
+      return;
     }
 
     iterateThroughJSON(json);
@@ -117,56 +82,50 @@ const CleaningSchedule = ({
     }
 
     function getOrgId(orgName) {
-      for (let i = 0; i < orgdata.data.length; i++) {
-        if (orgdata.data[i].name === orgName) {
-          return orgdata.data[i].id;
+      const orgs = orgdata.data;
+      for (let i = 0; i < orgs.length; i++) {
+        if (orgs[i].name === orgName) {
+          return orgs[i].id;
         }
       }
-    };
+    }
 
     function confirmCleaning(cleaningObject) {
-      axiosClient
-        .post(`/cleaning/create_cleaning`, cleaningObject)
-        .then((response) => {
-          setSuccess(t("cleaningsubmitsuccess"));
+      cleaningAPI
+        .createCleaning(cleaningObject)
+        .then(() => {
           handleSnackbar(t("cleaningsubmitsuccess"), "success");
-          setTimeout(() => setSuccess(""), 5000);
           fetchCleaning();
         })
         .catch((error) => {
-          setError(t("cleaningsubmitfail"));
           handleSnackbar(t("cleaningsubmitfail"), "error");
-          setTimeout(() => setError(""), 5000);
           console.error("Error submitting cleaning", error);
         });
     }
   };
 
   const handleRemoveFormSubmit = async () => {
-    axiosClient
-      .delete(`/cleaning/remove/all`)
-      .then((response) => {
+    cleaningAPI
+      .deleteAllCleaning()
+      .then(() => {
         fetchCleaning();
-        setSuccess(t("cleaningclearedsuccess"));
         handleSnackbar(t("cleaningclearedsuccess"), "success");
-        setTimeout(() => setSuccess(""), 5000);
       })
       .catch((error) => {
         console.error("Error deleting cleaners:", error + " " + error.response.data);
-        setError(t("cleaningclearfail"));
         handleSnackbar(t("cleaningclearfail"), "error");
-        setTimeout(() => setError(""), 5000);
       });
     setConfirmOpen(false);
   };
 
   const fetchCleaning = () => {
-    axiosClient
-      .get("/listobjects/cleaning/")
+    cleaningAPI
+      .getCleaning()
       .then((res) => {
-        setRawCleaningData(res.data);
+        const rawData = res.data;
+        setRawCleaningData(rawData);
 
-        const cleaningData = res.data.map((u, index) => ({
+        const cleaningData = rawData.map((u) => ({
           id: u.week,
           week: u.week,
           date: moment().day("Monday").week(u.week),
@@ -174,7 +133,6 @@ const CleaningSchedule = ({
           small: u.small.name,
         }));
         setAllCleaning(cleaningData);
-        setLoading(false);
       })
       .catch((error) => console.error(error));
   };
@@ -189,19 +147,19 @@ const CleaningSchedule = ({
             autoHideDuration={6000}
             onClose={() => setSnackbarOpen(false)}
           >
-            <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '300%' }}>
+            <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
               {snackbarMessage}
             </Alert>
           </Snackbar>
           <h2>{t("cleaningschedule")}</h2>
           <Stack direction="row" spacing={2}>
             <CleanersListJSONButton cleaners={rawCleaningData} />
-            {loggedUser && loggedUser.role === 1 && (
+            {isLoggedIn && loggedUser.role === Role.LEPPISPJ && (
               <React.Fragment>
                 <CleanersListUploadButton setNewData={setNewData} onClick={() => handleFormSubmit(newData)} />
-                <CleanersListAutomateButton 
-                  updateNewData={setNewData} 
-                  setError={setError}/>
+                <CleanersListAutomateButton
+                  updateNewData={setNewData}
+                  notifyError={handleSnackbar} />
                 <Button
                   startIcon={<SaveOutlinedIcon />}
                   variant="contained"
@@ -223,14 +181,14 @@ const CleaningSchedule = ({
             )}
           </Stack>
           <React.Fragment>
-            <EmptyCleanersDialog 
-              confirm={confirm} 
-              handleCloseConfirm={handleCloseConfirm} 
+            <EmptyCleanersDialog
+              confirm={confirm}
+              handleCloseConfirm={handleCloseConfirm}
               handleRemoveFormSubmit={handleRemoveFormSubmit} />
-            <SaveDialog 
-              open={saveDialogOpen} 
-              handleClose={handleSaveClose} 
-              handleSave={handleFormSubmit} 
+            <SaveDialog
+              open={saveDialogOpen}
+              handleClose={handleSaveClose}
+              handleSave={handleFormSubmit}
               newData={newData} />
           </React.Fragment>
           <React.Fragment>

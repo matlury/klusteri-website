@@ -1,8 +1,13 @@
+import logging
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
+from django.db.models import Q
 from rest_framework import serializers
 from .models import User, Organization, Event, NightResponsibility, DefectFault, Cleaning, CleaningSupplies
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from .config import Role
+
+logger = logging.getLogger(__name__)
 
 
 """
@@ -12,20 +17,33 @@ back to complex data types.
 More info: https://www.django-rest-framework.org/api-guide/serializers/
 """
 
-class UserSerializer(serializers.ModelSerializer):
 
+class OrganizationNameSerializer(serializers.ModelSerializer):
+    """Minimal serializer for organization name and ID only to boost performance"""
     class Meta:
-        model = User
-        fields = '__all__'
+        model = Organization
+        fields = ('id', 'name')
+
 
 class UserNoPasswordSerializer(serializers.ModelSerializer):
     """
     Serializes a User object as JSON without displaying the hashed password
     """
+    keys = OrganizationNameSerializer(many=True, read_only=True)
 
     class Meta:
         model = User
         exclude = ('password',)
+
+
+class UserMinimalSerializer(serializers.ModelSerializer):
+    """
+    Minimal serializer for user id and username only
+    """
+    class Meta:
+        model = User
+        fields = ('id', 'username')
+
 
 class OrganizationSerializer(serializers.ModelSerializer):
     """Serializes an Organization object as JSON"""
@@ -40,8 +58,29 @@ class OrganizationSerializer(serializers.ModelSerializer):
         """Validates size when creating a new organization."""
 
         if int(size) not in [0, 1]:
-            raise serializers.ValidationError("Organization size must be 0 or 1 (small or large).")
+            raise serializers.ValidationError(
+                "Organization size must be 0 or 1 (small or large).")
         return size
+
+
+class OrganizationListSerializer(serializers.ModelSerializer):
+    """Serializes an Organization object as JSON without heavy nested relationships"""
+
+    user_set = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Organization
+        fields = '__all__'
+
+    def get_user_set(self, obj):
+        # Only include user count if explicitly requested via query parameter
+        request = self.context.get('request')
+        if request and request.query_params.get('include_user_count') == 'true':
+            # Count users with this organization in their keys
+            count = User.objects.filter(keys=obj).count()
+            return [None] * count
+        return None
+
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -52,10 +91,33 @@ class UserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate_username(self, username):
-        """Validates that the username does not contain @ symbol so it doesn't mess with the email login"""
+        """Validates that the username does not contain @ symbol and is not already taken."""
         if "@" in username:
-            raise serializers.ValidationError("Username cannot contain @ symbol")
+            raise serializers.ValidationError(
+                "Username cannot contain @ symbol")
+        user_id = self.instance.id if self.instance else None
+        if username:
+            duplicate = User.objects.all()
+            if user_id:
+                duplicate = duplicate.exclude(id=user_id)
+            duplicate = duplicate.filter(username=username)
+            if duplicate.exists():
+                raise serializers.ValidationError(
+                    "This username is already taken")
         return username
+
+    def validate_email(self, email):
+        """Validates that the email is not already taken."""
+        user_id = self.instance.id if self.instance else None
+        if email:
+            duplicate = User.objects.all()
+            if user_id:
+                duplicate = duplicate.exclude(id=user_id)
+            duplicate = duplicate.filter(email=email)
+            if duplicate.exists():
+                raise serializers.ValidationError(
+                    "This email is already in use")
+        return email
 
     def validate_role(self, role):
         """Validates role when creating a new user. Limits: 1 <= role <= 7."""
@@ -70,23 +132,28 @@ class UserSerializer(serializers.ModelSerializer):
         """Validates telegram name when creating a new user. It must not be taken."""
         user_id = self.instance.id if self.instance else None
         if tgname:
-            duplicate = User.objects.exclude(id=user_id).filter(telegram=tgname)
+            duplicate = User.objects.all()
+            if user_id:
+                duplicate = duplicate.exclude(id=user_id)
+            duplicate = duplicate.filter(telegram=tgname)
             if duplicate.exists():
-                raise serializers.ValidationError("This telegram name is taken")
+                raise serializers.ValidationError(
+                    "This telegram name is taken")
         return tgname
 
-    def validate(self, data):
+    def validate(self, attrs):
         """Validates password when creating a new user. We use Django's own validation function for this."""
-        password = data.get("password")
+        password = attrs.get("password")
 
-        try:
-            validate_password(password)
-        except exceptions.ValidationError as e:
-            serializer_errors = serializers.as_serializer_error(e)
-            raise exceptions.ValidationError(
-                {"password": serializer_errors["non_field_errors"]}
-            )
-        return data
+        if password:
+            try:
+                validate_password(password)
+            except exceptions.ValidationError as e:
+                serializer_errors = serializers.as_serializer_error(e)
+                raise serializers.ValidationError(
+                    {"password": serializer_errors["non_field_errors"]}
+                )
+        return attrs
 
     def create(self, validated_data):
         """Create the new user after data validation."""
@@ -99,7 +166,7 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
         return user
-    
+
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     """
@@ -107,22 +174,47 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     """
 
     keys = OrganizationSerializer(many=True, read_only=True)
+    current_password = serializers.CharField(
+        write_only=True, required=False, allow_blank=True)
 
     class Meta:
         model = User
-        exclude = ('password',)  # Exclude password field from serialization
+        fields = '__all__'
+        extra_kwargs = {
+            'password': {'write_only': True, 'required': False, 'allow_blank': True},
+            'username': {'required': False},
+            'email': {'required': False},
+            'role': {'required': False},
+        }
 
     def validate_username(self, username):
-        """Validates that the username does not contain @ symbol so it doesn't mess with the email login"""
+        """Validates that the username does not contain @ symbol and is not already taken."""
         if "@" in username:
-            raise serializers.ValidationError("Username cannot contain @ symbol")
+            raise serializers.ValidationError(
+                "Username cannot contain @ symbol")
+        user_id = self.instance.id if self.instance else None
+        if username:
+            duplicate = User.objects.all()
+            if user_id:
+                duplicate = duplicate.exclude(id=user_id)
+            duplicate = duplicate.filter(username=username)
+            if duplicate.exists():
+                raise serializers.ValidationError(
+                    "This username is already taken")
         return username
 
-    def validate_username(self, username):
-        """Validates that the username does not contain @ symbol so it doesn't mess with the email login"""
-        if "@" in username:
-            raise serializers.ValidationError("Username cannot contain @ symbol")
-        return username
+    def validate_email(self, email):
+        """Validates that the email is not already taken."""
+        user_id = self.instance.id if self.instance else None
+        if email:
+            duplicate = User.objects.all()
+            if user_id:
+                duplicate = duplicate.exclude(id=user_id)
+            duplicate = duplicate.filter(email=email)
+            if duplicate.exists():
+                raise serializers.ValidationError(
+                    "This email is already in use")
+        return email
 
     def validate_role(self, role):
         """Validates role when updating a user. Limits: 1 <= role <= 7."""
@@ -136,65 +228,167 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         """Checks if a telegram name is taken"""
         user_id = self.instance.id if self.instance else None
         if tgname:
-            duplicate = User.objects.exclude(id=user_id).filter(telegram=tgname)
+            duplicate = User.objects.all()
+            if user_id:
+                duplicate = duplicate.exclude(id=user_id)
+            duplicate = duplicate.filter(telegram=tgname)
             if duplicate.exists():
-                raise serializers.ValidationError("This telegram name is taken")
+                raise serializers.ValidationError(
+                    "This telegram name is taken")
         return tgname
+
+    def validate(self, attrs):
+        """Validates password and role changes when updating a user."""
+        current_password = attrs.get("current_password")
+        new_password = attrs.get("password")
+        new_role = attrs.get("role")
+
+        # Skip validation if no fields are actually being changed (might happen in some UI flows)
+        if not self.instance:
+            return attrs
+
+        request_user = self.context['request'].user
+
+        # Prevent privilege escalation - only admins can change roles
+        if new_role is not None and new_role != self.instance.role:
+            # Users cannot change their own role - prevents self-escalation
+            if self.instance.id == request_user.id:
+                raise serializers.ValidationError(
+                    {"role": "You cannot change your own role."}
+                )
+
+            # Define role categories
+            # Restricted roles: management (1,2,3) and organization leadership (6,7)
+            restricted_roles = [
+                Role.LEPPISPJ.value,
+                Role.LEPPISVARAPJ.value,
+                Role.MUOKKAUS.value,
+                Role.JARJESTOPJ.value,
+                Role.JARJESTOVARAPJ.value
+            ]
+            # Basic roles that MUOKKAUS can assign: AVAIMELLINEN (4) and TAVALLINEN (5)
+            basic_roles = [Role.AVAIMELLINEN.value, Role.TAVALLINEN.value]
+
+            is_top_admin = request_user.role in [
+                Role.LEPPISPJ.value, Role.LEPPISVARAPJ.value]
+            has_muokkaus_or_higher = request_user.role <= Role.MUOKKAUS.value
+
+            if new_role in restricted_roles:
+                # Only LEPPISPJ and LEPPISVARAPJ can assign restricted roles (1, 2, 3, 6, 7)
+                if not is_top_admin:
+                    raise serializers.ValidationError(
+                        {"role": "Only top administrators can assign management and organization leadership roles."}
+                    )
+            elif new_role in basic_roles:
+                # MUOKKAUS or higher can assign basic roles (4, 5)
+                if not has_muokkaus_or_higher:
+                    raise serializers.ValidationError(
+                        {"role": "You do not have permission to change user roles."}
+                    )
+            else:
+                # Invalid role
+                raise serializers.ValidationError(
+                    {"role": "Invalid role specified."}
+                )
+
+        # Bypass current_password check if LEPPISPJ is updating another user
+        if request_user.role == Role.LEPPISPJ.value and self.instance.id != request_user.id:
+            # If a new password is provided, validate it. Current_password not needed here.
+            if new_password:
+                try:
+                    validate_password(new_password)
+                except exceptions.ValidationError as e:
+                    serializer_errors = serializers.as_serializer_error(e)
+                    raise serializers.ValidationError(
+                        {"password": serializer_errors["non_field_errors"]}
+                    )
+            return attrs  # LEPPISPJ can update other fields without knowing target's password
+
+        # For self-updates or non-LEPPISPJ updates of other users:
+        # Only require current_password if a new password is explicitly being set
+        if new_password:
+            if not current_password or not self.instance.check_password(current_password):
+                raise serializers.ValidationError(
+                    {"current_password": "Invalid current password."})
+            try:
+                validate_password(new_password)
+            except exceptions.ValidationError as e:
+                serializer_errors = serializers.as_serializer_error(e)
+                raise serializers.ValidationError(
+                    {"password": serializer_errors["non_field_errors"]}
+                )
+        return attrs
 
     def update(self, instance, validated_data):
         """Update the user instance with validated data."""
+        instance.username = validated_data.get('username', instance.username)
         instance.email = validated_data.get('email', instance.email)
         instance.telegram = validated_data.get('telegram', instance.telegram)
         instance.role = validated_data.get('role', instance.role)
-        instance.rights_for_reservation = validated_data.get('rights_for_reservation', instance.rights_for_reservation)
-        
-        # Check if password is provided and update it if so
+        instance.rights_for_reservation = validated_data.get(
+            'rights_for_reservation', instance.rights_for_reservation)
+
+        # Check if password is provided and not empty, and update it if so
         password = validated_data.get('password')
         if password:
-            validate_password(password)  # Validate the password
             instance.set_password(password)
 
         instance.save()
         return instance
 
-class UserNoPasswordSerializer(serializers.ModelSerializer):
-    """
-    Serializes a User object as JSON without displaying the hashed password
-    """
-
-    keys = OrganizationSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = User
-        exclude = ('password',)
 
 class EventSerializer(serializers.ModelSerializer):
-    """Serializes an Event object as JSON"""
+    """Serializes an Event object as JSON - Full version"""
 
     organizer = OrganizationSerializer(read_only=True)
     created_by = UserNoPasswordSerializer(read_only=True)
 
-
     class Meta:
         model = Event
         fields = '__all__'
+
+
+class EventListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for calendar and list views - Nested object for frontend compatibility"""
+    organizer = OrganizationNameSerializer(read_only=True)
+    created_by = UserMinimalSerializer(read_only=True)
+
+    class Meta:
+        model = Event
+        fields = ('id', 'start', 'end', 'title',
+                  'organizer', 'responsible', 'open', 'room', 'description', 'created_by')
+
 
 class CreateEventSerializer(serializers.ModelSerializer):
-    """Serializes an Event object as JSON"""
+    """Used for creating an event"""
 
     class Meta:
         model = Event
         fields = '__all__'
+        read_only_fields = ('created_by',)
+
+    def validate(self, attrs):
+        """
+        Verify that organizer is provided.
+        created_by is set in the view.
+        """
+        if not attrs.get('organizer'):
+            raise serializers.ValidationError(
+                {"organizer": "Organizer is required."})
+        return attrs
+
 
 class NightResponsibilitySerializer(serializers.ModelSerializer):
     """Serializes a NightResponsibility object as JSON"""
 
     organizations = OrganizationSerializer(many=True, read_only=True)
     user = UserNoPasswordSerializer(read_only=True)
+    created_by = UserNoPasswordSerializer(read_only=True)
 
     class Meta:
         model = NightResponsibility
         fields = '__all__'
+
 
 class CreateNightResponsibilitySerializer(serializers.ModelSerializer):
     """Used for saving a NightResponsibility object to the database"""
@@ -202,6 +396,7 @@ class CreateNightResponsibilitySerializer(serializers.ModelSerializer):
     class Meta:
         model = NightResponsibility
         fields = '__all__'
+
 
 class DefectFaultSerializer(serializers.ModelSerializer):
     """Serializes a DefectFault object as JSON"""
@@ -212,32 +407,40 @@ class DefectFaultSerializer(serializers.ModelSerializer):
         model = DefectFault
         fields = '__all__'
 
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         email = attrs.get("email", "")
         password = attrs.get("password", "")
 
-        user = User.objects.filter(email=email).first() or User.objects.filter(username=email).first()
+        # Search by email or username in a single query
+        user = User.objects.filter(Q(email=email) | Q(username=email)).first()
 
         if user:
-            if user.role == 1 and user.first_login:
+            # SECURITY FIX: Always verify password, no exceptions
+            # Removed the first_login bypass which was a security backdoor
+            is_valid = user.check_password(password)
+            if not is_valid:
+                raise serializers.ValidationError(
+                    "Invalid login credentials")
+
+            # Update first_login flag if this is the first login
+            if user.first_login:
                 user.first_login = False
                 user.save()
 
-                refresh = self.get_token(user)
-                data = {}
-                data['refresh'] = str(refresh)
-                data['access'] = str(refresh.access_token)
-                return data
-            else:
-                if user.check_password(password):
-                    attrs["email"] = user.email
-                else:
-                    raise serializers.ValidationError("Invalid login credentials")
+            # Set self.user as expected by SimpleJWT
+            self.user = user
 
-                return super().validate(attrs)
-        else:
-            raise serializers.ValidationError("User not found")
+            # Generate tokens manually (equivalent to TokenObtainPairSerializer.validate)
+            refresh = self.get_token(self.user)
+            data = {}
+            data['refresh'] = str(refresh)
+            data['access'] = str(refresh.access_token)  # type: ignore
+            return data
+
+        raise serializers.ValidationError("User not found")
+
 
 class OrganizationOnlyNameSerializer(serializers.ModelSerializer):
     """Serializes an Organization object as JSON"""
@@ -246,12 +449,14 @@ class OrganizationOnlyNameSerializer(serializers.ModelSerializer):
         model = Organization
         fields = ('name',)
 
+
 class CreateCleaningSerializer(serializers.ModelSerializer):
     """Used for saving a Cleaning object to the database"""
 
     class Meta:
         model = Cleaning
         fields = '__all__'
+
 
 class CleaningSerializer(serializers.ModelSerializer):
     """Used for saving a Cleaning object to the database"""
@@ -262,6 +467,7 @@ class CleaningSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cleaning
         exclude = ('id',)
+
 
 class CleaningSuppliesSerializer(serializers.ModelSerializer):
     """Serializes a Cleaningsupplies tool"""

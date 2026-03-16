@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom";
+import "@testing-library/dom";
 import {
   render,
   waitFor,
@@ -8,661 +8,467 @@ import {
 } from "@testing-library/react";
 import OwnPage from "../pages/ownpage";
 import mockAxios from "../../__mocks__/axios";
-import i18n from "../i18n.js";
+import { ContextProvider } from "@context/ContextProvider";
+import { Role } from "../roles";
 
 localStorage.setItem("lang", "fi");
 
 afterEach(() => {
   mockAxios.reset();
+  localStorage.clear();
+  jest.clearAllMocks();
 });
 
 beforeEach(() => {
   mockAxios.reset();
+  localStorage.clear();
 });
-
-const user = {
-  username: "example_username",
-  email: "example_email@example.com",
-  telegram: "example_telegram",
-  role: 1,
-};
-
-localStorage.setItem("loggedUser", JSON.stringify(user));
 
 describe("OwnPage Component", () => {
-  it("opens without logging in", () => {
-    localStorage.setItem("loggedUser", null);
-    const { getByText } = render(<OwnPage isLoggedIn={false} />);
-    expect(getByText("Kirjaudu sisään")).toBeInTheDocument();
-  });
-});
-
-it("opens with role 5", () => {
-  const user = {
+  const defaultUser = {
     username: "example_username",
     email: "example_email@example.com",
     telegram: "example_telegram",
-    role: 5,
-  };
-  localStorage.setItem("loggedUser", JSON.stringify(user));
-  const { getByText, getByLabelText } = render(<OwnPage isLoggedIn={true} />);
-  expect(getByLabelText("Käyttäjänimi")).toBeInTheDocument();
-  expect(getByLabelText("Salasana")).toBeInTheDocument();
-  expect(getByLabelText("Vahvista salasana")).toBeInTheDocument();
-  expect(getByLabelText("Sähköposti")).toBeInTheDocument();
-  expect(getByLabelText("Telegram")).toBeInTheDocument();
-  expect(getByText("Käyttäjän rooli: Tavallinen")).toBeInTheDocument();
-  expect(getByText("Tallenna")).toBeInTheDocument();
-  expect(getByText("Järjestöt")).toBeInTheDocument();
-});
-
-// it("opens with role 1", async () => {
-//   const user = {
-//     username: "example_username",
-//     email: "example_email@example.com",
-//     telegram: "example_telegram",
-//     role: 1,
-//   };
-//   localStorage.setItem("loggedUser", JSON.stringify(user));
-//   localStorage.setItem("ACCESS_TOKEN", "example_token");
-//   const { getByText, getByLabelText } = render(<OwnPage isLoggedIn={true} />);
-
-//   let responseObj = {
-//     data: [
-//       {
-//         id: 1,
-//         keys: [
-//           {
-//             id: 1,
-//             user_set: [
-//               {
-//                 id: 1,
-//                 last_login: null,
-//                 username: "example_username",
-//                 email: "example_email@example.com",
-//                 telegram: "telegram",
-//                 role: 1,
-//                 keys: [1],
-//               },
-//             ],
-//             name: "example_org",
-//             email: "example@org.org",
-//             homepage: "example.org",
-//             size: 1,
-//           },
-//         ],
-//         last_login: null,
-//         username: "example_username",
-//         email: "example_email@example.com",
-//         telegram: "telegram",
-//         role: 1,
-//       },
-//     ],
-//   };
-
-//   await waitFor(() => {
-//     mockAxios.mockResponseFor(
-//       { url: "undefined/api/users/userinfo" },
-//       responseObj,
-//     );
-//     expect(mockAxios.get).toHaveBeenCalledWith("undefined/api/users/userinfo", {
-//       headers: { Authorization: "Bearer example_token" },
-//     });
-//     expect(getByLabelText("Käyttäjänimi")).toBeInTheDocument();
-//     expect(getByLabelText("Sähköposti")).toBeInTheDocument();
-//     expect(getByLabelText("Telegram")).toBeInTheDocument();
-//     expect(getByText("Käyttäjän rooli: 1")).toBeInTheDocument();
-//     expect(getByText("Tallenna")).toBeInTheDocument();
-//     expect(getByText("Järjestöt")).toBeInTheDocument();
-//     expect(getByText("Luo uusi järjestö")).toBeInTheDocument();
-//     expect(getByText("Käyttäjät")).toBeInTheDocument();
-//     expect(getByText("Avaimen luovutus")).toBeInTheDocument();
-//   });
-// });
-
-it("User updating works", async () => {
-  const user = {
-    username: "example_username",
-    password: "example_password123",
-    confirmPassword: "example_password123",
-    email: "example_email@example.com",
-    telegram: "example_telegram",
-    role: 5,
+    role: Role.TAVALLINEN,
     id: 1,
   };
-  window.confirm = jest.fn(() => true);
-  localStorage.setItem("ACCESS_TOKEN", "example_token");
-  localStorage.setItem("loggedUser", JSON.stringify(user));
-  const { getByText, getByLabelText, getByTestId } = render(
-    <OwnPage isLoggedIn={true} />,
-  );
 
-  const username_field = getByLabelText("Käyttäjänimi");
-  fireEvent.change(username_field, { target: { value: "username_example" } });
-
-  const email_field = getByLabelText("Sähköposti");
-  fireEvent.change(email_field, {
-    target: { value: "email_example@example.com" },
-  });
-
-  const telegram_field = getByLabelText("Telegram");
-  fireEvent.change(telegram_field, { target: { value: "telegram_example" } });
-
-  const responseObj = {
-    data: [
-      {
-        id: 1,
-        keys: [
-          {
-            id: 1,
-            user_set: [
-              {
-                id: 1,
-                last_login: null,
-                username: "example_username",
-                password: "",
-                email: "example_email@example.com",
-                confirmPassword: "",
-                telegram: "example_telegram",
-                role: 1,
-                keys: [1, 2],
-              },
-            ],
-            name: "tko-äly",
-            email: "tko@aly.org",
-            homepage: "tko-aly.com",
-            size: 1,
-          },
-        ],
-        last_login: null,
-        username: "example_username",
-        password: "",
-        email: "example_email@example.com",
-        confirmPassword: "",
-        telegram: "example_telegram",
-        role: 1,
-      },
-      {
-        id: 2,
-        keys: [
-          {
-            id: 2,
-            user_set: [
-              {
-                id: 2,
-                last_login: null,
-                username: "example_username_two",
-                password: "",
-                email: "example_email_two@example.com",
-                confirmPassword: "",
-                telegram: "example_telegram_two",
-                role: 1,
-                keys: [2],
-              },
-            ],
-            name: "matrix",
-            email: "matrix@aly.org",
-            homepage: "matrix.com",
-            size: 1,
-          },
-        ],
-        last_login: null,
-        username: "example_username_two",
-        password: "",
-        email: "example_email_two@example.com",
-        confirmPassword: "",
-        telegram: "example_telegram_two",
-        role: 1,
-      },
-    ],
+  const pjUser = {
+    username: "leppis",
+    email: "leppis@testi.com",
+    telegram: "leppistele",
+    role: Role.LEPPISPJ,
+    id: 1,
   };
 
-  const resp_updated = {
-    data: {
-      id: 1,
-      keys: [
-        {
-          id: 1,
-          user_set: [
-            {
-              id: 1,
-              last_login: null,
-              username: "username_example",
-              password: "",
-              email: "email_example@example.com",
-              confirmPassword: "",
-              telegram: "telegram_example",
-              role: 1,
-              keys: [1],
-            },
-          ],
-          name: "tko-äly",
-          email: "tko@aly.org",
-          homepage: "tko-aly.com",
-          size: 1,
-        },
-      ],
-      last_login: null,
-      username: "username_example",
-      password: "",
-      email: "email_example@example.com",
-      confirmPassword: "",
-      telegram: "telegram_example",
-      role: 1,
-    },
+  const otherUser = {
+    id: 2,
+    username: "other",
+    email: "other@test.com",
+    telegram: "otherthele",
+    role: Role.TAVALLINEN,
+    resrights: false,
+    memberships: []
   };
 
-  const saveButton = getByTestId("saveuserdata");
-  fireEvent.click(saveButton);
-
-  await waitFor(() => {
-    mockAxios.mockResponseFor(
-      { url: "undefined/api/listobjects/users/?telegram=telegram_example" },
-      responseObj,
-    );
-  });
-  await waitFor(() => {
-    mockAxios.mockResponseFor(
-      {
-        url: "undefined/api/listobjects/users/?email=email_example@example.com",
-      },
-      responseObj,
-    );
-  });
-  await waitFor(() => {
-    mockAxios.mockResponseFor({ url: "/users/update/1/" }, resp_updated);
-  });
-  await waitFor(() => {
-    expect(mockAxios.get).toHaveBeenCalledWith(
-      "undefined/api/listobjects/users/?telegram=telegram_example",
-    );
-  });
-  await waitFor(() => {
-    expect(mockAxios.get).toHaveBeenCalledWith(
-      "undefined/api/listobjects/users/?email=email_example@example.com",
-    );
-  });
-  await waitFor(() => {
-    expect(mockAxios.put).toHaveBeenCalledWith("/users/update/1/", {
-      email: "email_example@example.com",
-      password: "",
-      telegram: "telegram_example",
-      confirmPassword: "",
-      username: "username_example",
+  const mockInitialRequests = async (user = defaultUser) => {
+    await waitFor(() => {
+      mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [] });
     });
-  });
-  await waitFor(() => {
-    const snackbar = getByTestId("snackbar");
-    expect(snackbar).toBeInTheDocument();
-    expect(within(snackbar).getByRole("alert")).toHaveClass(
-      "MuiAlert-standardSuccess",
-    );
-  });
-});
+    await waitFor(() => {
+      mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [user, otherUser] });
+    });
+  };
 
-describe("User updating errors", () => {
-  it("Updating fails with no username or email", async () => {
-    const user = {
-      username: "example_username",
-      email: "example_email@example.com",
-      telegram: "example_telegram",
-      role: 5,
-      id: 1,
-    };
+  it("opens without logging in", () => {
+    render(
+      <ContextProvider skipHydration>
+        <OwnPage isLoggedIn={false} />
+      </ContextProvider>
+    );
+    expect(screen.getByText("Kirjaudu sisään")).toBeInTheDocument();
+  });
+
+  it("opens with role 5", async () => {
+    render(
+      <ContextProvider initialUser={defaultUser} skipHydration>
+        <OwnPage isLoggedIn={true} />
+      </ContextProvider>
+    );
+
+    await mockInitialRequests();
+
+    expect(screen.getByLabelText("Käyttäjänimi")).toBeInTheDocument();
+    expect(screen.getByLabelText("Sähköposti")).toBeInTheDocument();
+    expect(screen.getByLabelText(/Telegram/i)).toBeInTheDocument();
+    expect(screen.getByText("Käyttäjän rooli: Tavallinen")).toBeInTheDocument();
+    expect(screen.getByText("Tallenna")).toBeInTheDocument();
+    expect(screen.getByText("Järjestöt")).toBeInTheDocument();
+  });
+
+  it("User updating works", async () => {
     window.confirm = jest.fn(() => true);
-    localStorage.setItem("ACCESS_TOKEN", "example_token");
-    localStorage.setItem("loggedUser", JSON.stringify(user));
-    const { getByText, getByLabelText, getByTestId } = render(
-      <OwnPage isLoggedIn={true} />,
+    render(
+      <ContextProvider initialUser={pjUser} skipHydration>
+        <OwnPage isLoggedIn={true} />
+      </ContextProvider>
     );
 
-    const username_field = getByLabelText("Käyttäjänimi");
-    fireEvent.change(username_field, { target: { value: "" } });
+    await mockInitialRequests(pjUser);
 
-    const email_field = getByLabelText("Sähköposti");
-    fireEvent.change(email_field, { target: { value: "" } });
-
-    const saveButton = getByTestId("saveuserdata");
-    fireEvent.click(saveButton);
+    const infoForm = within(screen.getByRole("heading", { name: /omat tiedot/i }).parentElement);
+    fireEvent.change(infoForm.getByLabelText("Käyttäjänimi"), { target: { value: "username_example" } });
+    fireEvent.change(infoForm.getByLabelText("Sähköposti"), { target: { value: "email_example@example.com" } });
+    fireEvent.change(infoForm.getByLabelText("Nykyinen salasana"), { target: { value: "password123" } });
 
     await waitFor(() => {
-      const snackbar = getByTestId("snackbar");
+      fireEvent.click(screen.getByTestId("saveuserdata"));
+    });
+
+    await waitFor(() => expect(mockAxios.put).toHaveBeenCalled());
+    await waitFor(() => {
+      mockAxios.mockResponse({ data: { ...pjUser, username: "username_example" } });
+    });
+
+    await waitFor(() => {
+      const snackbar = screen.getByTestId("snackbar");
       expect(snackbar).toBeInTheDocument();
-      expect(within(snackbar).getByRole("alert")).toHaveClass(
-        "MuiAlert-standardError",
-      );
+      expect(within(snackbar).getByText(/Tiedot päivitetty onnistuneesti/i)).toBeInTheDocument();
     });
   });
 
-  it("Updating fails with used telegram", async () => {
-    const user = {
-      username: "example_username",
-      email: "example_email@example.com",
-      telegram: "example_telegram",
-      role: 5,
-      id: 1,
-    };
-    window.confirm = jest.fn(() => true);
-    localStorage.setItem("ACCESS_TOKEN", "example_token");
-    localStorage.setItem("loggedUser", JSON.stringify(user));
-    const { getByText, getByLabelText, getByTestId } = render(
-      <OwnPage isLoggedIn={true} />,
-    );
-
-    const telegram = getByLabelText("Telegram");
-    fireEvent.change(telegram, { target: { value: "example_telegram_two" } });
-
-    const responseObj = {
-      data: [
-        {
-          id: 1,
-          keys: [
-            {
-              id: 1,
-              user_set: [
-                {
-                  id: 1,
-                  last_login: null,
-                  username: "example_username",
-                  email: "example_email@example.com",
-                  telegram: "example_telegram",
-                  role: 1,
-                  keys: [1, 2],
-                },
-              ],
-              name: "tko-äly",
-              email: "tko@aly.org",
-              homepage: "tko-aly.com",
-              size: 1,
-            },
-          ],
-          last_login: null,
-          username: "example_username",
-          email: "example_email@example.com",
-          telegram: "example_telegram",
-          role: 1,
-        },
-        {
-          id: 2,
-          keys: [
-            {
-              id: 2,
-              user_set: [
-                {
-                  id: 2,
-                  last_login: null,
-                  username: "example_username_two",
-                  email: "example_email_two@example.com",
-                  telegram: "example_telegram_two",
-                  role: 1,
-                  keys: [2],
-                },
-              ],
-              name: "matrix",
-              email: "matrix@aly.org",
-              homepage: "matrix.com",
-              size: 1,
-            },
-          ],
-          last_login: null,
-          username: "example_username_two",
-          email: "example_email_two@example.com",
-          telegram: "example_telegram_two",
-          role: 1,
-        },
-      ],
-    };
-
-    const saveButton = getByTestId("saveuserdata");
-    fireEvent.click(saveButton);
-
-    await waitFor(() => {
-      mockAxios.mockResponseFor(
-        {
-          url: "undefined/api/listobjects/users/?telegram=example_telegram_two",
-        },
-        responseObj,
+  describe("User updating errors", () => {
+    it("Updating fails with no username or email", async () => {
+      render(
+        <ContextProvider initialUser={defaultUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
       );
+      await mockInitialRequests();
+
+      const infoForm = within(screen.getByRole("heading", { name: /omat tiedot/i }).parentElement);
+      fireEvent.change(infoForm.getByLabelText("Käyttäjänimi"), { target: { value: "" } });
+      await waitFor(() => {
+        fireEvent.click(screen.getByTestId("saveuserdata"));
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId("snackbar")).toBeInTheDocument();
+        expect(within(screen.getByTestId("snackbar")).getByRole("alert")).toHaveClass("MuiAlert-standardError");
+      });
     });
-    await waitFor(() => {
-      const snackbar = getByTestId("snackbar");
-      expect(snackbar).toBeInTheDocument();
-      expect(within(snackbar).getByRole("alert")).toHaveClass(
-        "MuiAlert-standardError",
+
+    it("Updating fails with missing current password", async () => {
+      render(
+        <ContextProvider initialUser={defaultUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
       );
+      await mockInitialRequests();
+
+      const infoForm = within(screen.getByRole("heading", { name: /omat tiedot/i }).parentElement);
+      fireEvent.change(infoForm.getByLabelText("Käyttäjänimi"), { target: { value: "new" } });
+      await waitFor(() => {
+        fireEvent.click(screen.getByTestId("saveuserdata"));
+      });
+
+      expect(await screen.findByText(/Nykyinen salasana vaaditaan/i)).toBeInTheDocument();
     });
-    await waitFor(() => {
-      expect(mockAxios.get).toHaveBeenCalledWith(
-        "undefined/api/listobjects/users/?telegram=example_telegram_two",
+
+    it("Handles invalid current password error from backend", async () => {
+      window.confirm = jest.fn(() => true);
+      render(
+        <ContextProvider initialUser={defaultUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
       );
+      await mockInitialRequests();
+
+      const infoForm = within(screen.getByRole("heading", { name: /omat tiedot/i }).parentElement);
+      fireEvent.change(infoForm.getByLabelText("Nykyinen salasana"), { target: { value: "wrong" } });
+      await waitFor(() => {
+        fireEvent.click(screen.getByTestId("saveuserdata"));
+      });
+
+      await waitFor(() => expect(mockAxios.put).toHaveBeenCalled());
+      mockAxios.mockError({ response: { data: { current_password: ["invalid"] } } });
+
+      expect(await screen.findByText(/Nykyinen salasana on virheellinen/i)).toBeInTheDocument();
+    });
+
+    it("Handles telegram already in use error from backend", async () => {
+      window.confirm = jest.fn(() => true);
+      render(
+        <ContextProvider initialUser={defaultUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
+      await mockInitialRequests();
+
+      const infoForm = within(screen.getByRole("heading", { name: /omat tiedot/i }).parentElement);
+      fireEvent.change(infoForm.getByLabelText("Nykyinen salasana"), { target: { value: "pass" } });
+      await waitFor(() => {
+        fireEvent.click(screen.getByTestId("saveuserdata"));
+      });
+
+      await waitFor(() => expect(mockAxios.put).toHaveBeenCalled());
+      mockAxios.mockError({ response: { data: { telegram: ["exists"] } } });
+
+      expect(await screen.findByText(/Telegram on jo käytössä/i)).toBeInTheDocument();
+    });
+
+    it("Updating password with mismatching confirmation fails", async () => {
+      render(
+        <ContextProvider initialUser={defaultUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
+      await mockInitialRequests();
+
+      fireEvent.click(screen.getByText("Vaihda salasana"));
+      fireEvent.change(screen.getByLabelText("Uusi salasana"), { target: { value: "Password123" } });
+      fireEvent.change(screen.getByLabelText("Vahvista uusi salasana"), { target: { value: "Password456" } });
+      fireEvent.change(screen.getByLabelText("Vanha salasana"), { target: { value: "old" } });
+      await waitFor(() => {
+        fireEvent.click(screen.getByTestId("savepassword"));
+      });
+
+      expect(screen.getByText(/Salasanat eivät täsmää/i)).toBeInTheDocument();
+    });
+
+    it("Updating password with too short password fails", async () => {
+      render(
+        <ContextProvider initialUser={defaultUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
+      await mockInitialRequests();
+
+      fireEvent.click(screen.getByText("Vaihda salasana"));
+      fireEvent.change(screen.getByLabelText("Uusi salasana"), { target: { value: "Short1" } });
+      fireEvent.change(screen.getByLabelText("Vahvista uusi salasana"), { target: { value: "Short1" } });
+      fireEvent.change(screen.getByLabelText("Vanha salasana"), { target: { value: "old" } });
+      await waitFor(() => {
+        fireEvent.click(screen.getByTestId("savepassword"));
+      });
+
+      expect(screen.getByText(/Salasanan tulee olla 8-20 merkkiä pitkä/i)).toBeInTheDocument();
+    });
+
+    it("Updating password without complexity fails", async () => {
+      render(
+        <ContextProvider initialUser={defaultUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
+      await mockInitialRequests();
+
+      fireEvent.click(screen.getByText("Vaihda salasana"));
+      fireEvent.change(screen.getByLabelText("Uusi salasana"), { target: { value: "onlyletters" } });
+      fireEvent.change(screen.getByLabelText("Vahvista uusi salasana"), { target: { value: "onlyletters" } });
+      fireEvent.change(screen.getByLabelText("Vanha salasana"), { target: { value: "old" } });
+      await waitFor(() => {
+        fireEvent.click(screen.getByTestId("savepassword"));
+      });
+
+      expect(screen.getByText(/Salasana ei saa sisältää pelkkiä numeroita tai kirjaimia/i)).toBeInTheDocument();
     });
   });
 
-//   it("Update fails with used email", async () => {
-//     const user = {
-//       username: "example_username",
-//       email: "example_email@example.com",
-//       telegram: "example_telegram",
-//       role: 5,
-//       id: 1,
-//     };
-//     window.confirm = jest.fn(() => true);
-//     localStorage.setItem("ACCESS_TOKEN", "example_token");
-//     localStorage.setItem("loggedUser", JSON.stringify(user));
-//     const { getByText, getByLabelText, getByTestId } = render(
-//       <OwnPage isLoggedIn={true} />,
-//     );
-
-//     const email = getByLabelText("Sähköposti");
-//     fireEvent.change(email, {
-//       target: { value: "example_email_two@example.com" },
-//     });
-
-//     const responseObj = {
-//       data: [
-//         {
-//           id: 1,
-//           keys: [
-//             {
-//               id: 1,
-//               user_set: [
-//                 {
-//                   id: 1,
-//                   last_login: null,
-//                   username: "example_username",
-//                   email: "example_email@example.com",
-//                   telegram: "example_telegram",
-//                   role: 1,
-//                   keys: [1, 2],
-//                 },
-//               ],
-//               name: "tko-äly",
-//               email: "tko@aly.org",
-//               homepage: "tko-aly.com",
-//               size: 1,
-//             },
-//           ],
-//           last_login: null,
-//           username: "example_username",
-//           email: "example_email@example.com",
-//           telegram: "example_telegram",
-//           role: 1,
-//         },
-//         {
-//           id: 2,
-//           keys: [
-//             {
-//               id: 2,
-//               user_set: [
-//                 {
-//                   id: 2,
-//                   last_login: null,
-//                   username: "example_username_two",
-//                   email: "example_email_two@example.com",
-//                   telegram: "example_telegram_two",
-//                   role: 1,
-//                   keys: [2],
-//                 },
-//               ],
-//               name: "matrix",
-//               email: "matrix@aly.org",
-//               homepage: "matrix.com",
-//               size: 1,
-//             },
-//           ],
-//           last_login: null,
-//           username: "example_username_two",
-//           email: "example_email_two@example.com",
-//           telegram: "example_telegram_two",
-//           role: 1,
-//         },
-//       ],
-//     };
-
-//     const saveButton = getByTestId("saveuserdata");
-//     fireEvent.click(saveButton);
-
-//     await waitFor(() => {
-//       mockAxios.mockResponseFor(
-//         {
-//           url: "undefined/api/listobjects/users/?email=example_email_two@example.com",
-//         },
-//         responseObj,
-//       );
-//     });
-//     await waitFor(() => {
-//       const snackbar = getByTestId("snackbar");
-//       expect(snackbar).toBeInTheDocument();
-//       expect(within(snackbar).getByRole("alert")).toHaveClass(
-//         "MuiAlert-standardError",
-//       );
-//     });
-//     await waitFor(() => {
-//       expect(mockAxios.get).toHaveBeenCalledWith(
-//         "undefined/api/listobjects/users/?email=example_email_two@example.com",
-//       );
-//     });
-//   });
-});
-
-describe("Organizations", () => {
-  it("Organization creating works", async () => {
-    const user = {
-      username: "leppis",
-      email: "leppis@testi.com",
-      telegram: "",
-      role: 1,
-      id: 1,
-    };
-    localStorage.setItem("ACCESS_TOKEN", "example_token");
-    localStorage.setItem("loggedUser", JSON.stringify(user));
-    const { getByText, getByLabelText, getByTestId } = render(
-      <OwnPage isLoggedIn={true} />,
-    );
-
-    const responseObj = {
-      data: [
-        {
-          id: 1,
-          keys: [],
-          last_login: null,
-          username: "leppis",
-          email: "leppis@testi.com",
-          telegram: "",
-          role: 1,
-          rights_for_reservation: false,
-          password:
-            "pbkdf2_sha256$720000$59HfEsJBpE0mRjEioNCe4t$UPY39IbZDP4/QNry7oH4b87/JF4IfTQSrVia4zpV7jc=",
-        },
-      ],
-    };
-
-    const resp = {
-      data: {
-        id: 2,
-        user_set: [],
-        name: "tko-aly",
-        email: "tko@aly.com",
-        homepage: "tko-aly.org",
-        color: "",
-      },
-    };
-
-    await waitFor(() => {
-      mockAxios.mockResponseFor(
-        { url: "undefined/api/users/userinfo" },
-        responseObj,
+  describe("Organizations Management", () => {
+    it("Organization creating works", async () => {
+      render(
+        <ContextProvider initialUser={pjUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
       );
+      await mockInitialRequests(pjUser);
+
+      await waitFor(() => {
+        fireEvent.click(screen.getByTestId("createneworgbutton"));
+      });
+      const modal = within(await screen.findByRole("dialog"));
+
+      fireEvent.change(modal.getByTestId("organization-name").querySelector("input"), { target: { value: "tko-aly" } });
+      fireEvent.change(modal.getByTestId("organization-email").querySelector("input"), { target: { value: "tko@aly.com" } });
+      fireEvent.change(modal.getByTestId("organization-homepage").querySelector("input"), { target: { value: "tko-aly.org" } });
+
+      await waitFor(() => {
+        fireEvent.click(modal.getByText("Luo järjestö"));
+      });
+
+      await waitFor(() => expect(mockAxios.get).toHaveBeenCalledWith("listobjects/organizations/?email=tko@aly.com"));
+      await waitFor(() => {
+        mockAxios.mockResponse({ data: [] });
+      });
+
+      await waitFor(() => expect(mockAxios.post).toHaveBeenCalledWith("organizations/create", expect.anything()));
+      await waitFor(() => {
+        mockAxios.mockResponse({ data: { id: 2, name: "tko-aly" } });
+      });
+
+      expect(await screen.findByText(/Järjestö luotu onnistuneesti/i)).toBeInTheDocument();
     });
 
-    await waitFor(
-      async () => {
-        expect(mockAxios.get).toHaveBeenCalledWith(
-          "undefined/api/users/userinfo",
-          { headers: { Authorization: "Bearer example_token" } },
+    it("Organization detail updating works", async () => {
+      const orgs = [{ id: 1, name: "org1", Organisaatio: "org1", email: "o@o.com", kotisivu: "h.com", color: "#000", user_set: [] }];
+      window.confirm = jest.fn(() => true);
+      render(
+        <ContextProvider initialUser={pjUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
+
+      await waitFor(() => mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: orgs }));
+      await waitFor(() => mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [pjUser, otherUser] }));
+
+      await waitFor(() => {
+        fireEvent.click(screen.getByTestId("edit-org-1"));
+      });
+      await waitFor(() => mockAxios.mockResponseFor({ url: "listobjects/organizations/1/" }, { data: { user_set: [] } }));
+
+      const modal = within(screen.getByRole("dialog"));
+      // In the modal, there might be multiple "Nimi" labels (DataGrid column header and TextField label)
+      // So we scope the search to the modal.
+      fireEvent.change(modal.getByLabelText("Nimi"), { target: { value: "neworgname" } });
+      await waitFor(() => {
+        fireEvent.click(screen.getByText("Vahvista muutokset"));
+      });
+
+      await waitFor(() => expect(mockAxios.put).toHaveBeenCalledWith("organizations/update_organization/1/", expect.anything()));
+      await waitFor(() => {
+        mockAxios.mockResponse({ status: 200 });
+      });
+
+      expect(await screen.findByText(/Järjestö muokattu onnistuneesti/i)).toBeInTheDocument();
+    });
+
+    it("Organization deletion works", async () => {
+      const orgs = [{ id: 1, name: "org1", Organisaatio: "org1", email: "o@o.com", kotisivu: "h.com", color: "#000", user_set: [] }];
+      window.confirm = jest.fn(() => true);
+      render(
+        <ContextProvider initialUser={pjUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
+
+      await waitFor(() => mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: orgs }));
+      await waitFor(() => mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [pjUser, otherUser] }));
+
+      await waitFor(() => {
+        fireEvent.click(screen.getByTestId("edit-org-1"));
+      });
+      await waitFor(() => mockAxios.mockResponseFor({ url: "listobjects/organizations/1/" }, { data: { user_set: [] } }));
+
+      await waitFor(() => {
+        fireEvent.click(screen.getByTestId("delete-org-1"));
+      });
+      await waitFor(() => expect(mockAxios.delete).toHaveBeenCalledWith("organizations/remove/1/"));
+      await waitFor(() => {
+        mockAxios.mockResponse({ status: 200 });
+      });
+
+      // After deletion, it fetches orgs and users again
+      await waitFor(() => expect(mockAxios.get).toHaveBeenCalledWith("listobjects/organizations/?include_user_count=true"));
+      await waitFor(() => {
+        mockAxios.mockResponse({ data: [] });
+      });
+      await waitFor(() => expect(mockAxios.get).toHaveBeenCalledWith("listobjects/users/"));
+      await waitFor(() => {
+        mockAxios.mockResponse({ data: [] });
+      });
+
+      expect(await screen.findByText(/Järjestö poistettu onnistuneesti/i)).toBeInTheDocument();
+    });
+  });
+
+  describe("Users Management", () => {
+    it("Updating another user works", async () => {
+      window.confirm = jest.fn(() => true);
+      render(
+        <ContextProvider initialUser={pjUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
+      await mockInitialRequests(pjUser);
+
+      await waitFor(() => {
+        fireEvent.click(screen.getByTestId("edit-button-2"));
+      });
+      const modal = within(screen.getByRole("dialog"));
+      fireEvent.change(modal.getByTestId("username-input").querySelector("input"), { target: { value: "newother" } });
+      await waitFor(() => {
+        fireEvent.click(modal.getByTestId("save-button"));
+      });
+
+      await waitFor(() => expect(mockAxios.put).toHaveBeenCalledWith("users/update/2/", expect.objectContaining({ username: "newother" })));
+      await waitFor(() => {
+        mockAxios.mockResponse({ data: { ...otherUser, username: "newother" } });
+      });
+
+      expect(await screen.findByText(/Tiedot päivitetty onnistuneesti/i)).toBeInTheDocument();
+    });
+
+    it("PJ change works", async () => {
+      window.confirm = jest.fn(() => true);
+      render(
+        <ContextProvider initialUser={pjUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
+      await mockInitialRequests(pjUser);
+
+      await waitFor(() => {
+        fireEvent.click(screen.getByTestId("edit-button-2"));
+      });
+      const modal = within(screen.getByRole("dialog"));
+      await waitFor(() => {
+        fireEvent.click(modal.getByTestId("change-pj-button"));
+      });
+
+      await waitFor(() => expect(mockAxios.put).toHaveBeenCalledWith("users/update/2/", expect.objectContaining({ role: Role.LEPPISPJ })));
+      await waitFor(() => {
+        mockAxios.mockResponse({ data: { ...otherUser, role: Role.LEPPISPJ } });
+      });
+
+      await waitFor(() => expect(mockAxios.put).toHaveBeenCalledWith("users/update/1/", expect.objectContaining({ role: Role.TAVALLINEN })));
+      await waitFor(() => {
+        mockAxios.mockResponse({ data: { ...pjUser, role: Role.TAVALLINEN } });
+      });
+    });
+
+    it("Key handover works", async () => {
+      window.confirm = jest.fn(() => true);
+      render(
+        <ContextProvider initialUser={pjUser} skipHydration>
+          <OwnPage isLoggedIn={true} />
+        </ContextProvider>
+      );
+
+      await waitFor(() => mockAxios.mockResponseFor({ url: "listobjects/organizations/?include_user_count=true" }, { data: [{ id: 1, name: "org1", Organisaatio: "org1", email: "o@o.com", kotisivu: "h.com", user_set: [] }] }));
+      await waitFor(() => mockAxios.mockResponseFor({ url: "listobjects/users/" }, { data: [pjUser, otherUser] }));
+
+      await waitFor(() => {
+        fireEvent.click(screen.getByTestId("edit-button-2"));
+      });
+      const modal = within(screen.getByRole("dialog"));
+      await waitFor(() => {
+        fireEvent.click(modal.getByTestId("expand-key-accordion"));
+      });
+
+      const orgInput = modal.getByLabelText("Valitse organisaatio");
+      fireEvent.change(orgInput, { target: { value: "org1" } });
+      fireEvent.keyDown(orgInput, { key: "ArrowDown" });
+      fireEvent.keyDown(orgInput, { key: "Enter" });
+
+      await waitFor(() => {
+        fireEvent.click(modal.getByTestId("submit-key-button"));
+      });
+
+      await waitFor(() => expect(mockAxios.put).toHaveBeenCalledWith("keys/hand_over_key/2/", { organization_name: "org1" }));
+      await waitFor(() => {
+        mockAxios.mockResponse({ status: 200 });
+      });
+
+      expect(await screen.findByText(/Avaimen luovutus onnistui/i)).toBeInTheDocument();
+    });
+  });
+
+  describe("Permissions Coverage", () => {
+    it("handles different roles in getPermission", async () => {
+      const roles = [Role.LEPPISVARAPJ, Role.MUOKKAUS, Role.JARJESTOPJ];
+      for (const role of roles) {
+        mockAxios.reset();
+        const { unmount } = render(
+          <ContextProvider initialUser={{ ...defaultUser, role }} skipHydration>
+            <OwnPage isLoggedIn={true} />
+          </ContextProvider>
         );
-
-        const createForm = getByTestId("createneworgbutton");
-        fireEvent.click(createForm);
-
-        const modal = within(await screen.findByRole("dialog"));
-
-        expect(modal.getByText("Peruuta")).toBeInTheDocument();
-
-        const name = modal
-          .getByTestId("organization-name")
-          .querySelector("input");
-        await fireEvent.change(name, { target: { value: "tko-aly" } });
-
-        const email = modal
-          .getByTestId("organization-email")
-          .querySelector("input");
-        await fireEvent.change(email, { target: { value: "tko@aly.com" } });
-
-        const homepage = modal
-          .getByTestId("organization-homepage")
-          .querySelector("input");
-        await fireEvent.change(homepage, { target: { value: "tko-aly.org" } });
-
-        const submit = modal.getByText("Luo järjestö");
-        fireEvent.click(submit);
-
-        mockAxios.mockResponseFor(
-          { url: "undefined/api/listobjects/organizations/?email=tko@aly.com" },
-          {
-            data: [
-              {
-                id: 1,
-                user_set: [],
-                name: "matrix",
-                email: "mat@rix.com",
-                homepage: "matrix.org",
-                color: "",
-              },
-            ],
-          },
-        );
-
-        expect(mockAxios.get).toHaveBeenCalledWith(
-          "undefined/api/listobjects/organizations/?email=tko@aly.com",
-        );
-        mockAxios.mockResponseFor({ url: "organizations/create" }, resp);
-
-        expect(mockAxios.post).toHaveBeenCalledWith("organizations/create", {
-          color: "",
-          email: "tko@aly.com",
-          homepage: "tko-aly.org",
-          name: "tko-aly",
-        });
-        await waitFor(() => {
-          const snackbar = getByTestId("snackbar");
-          expect(snackbar).toBeInTheDocument();
-//          expect(within(snackbar).getByRole("alert")).toHaveClass(
-//            "MuiAlert-standardSuccess",
-//          );
-        });
-      },
-      { timeout: 10000 },
-    );
-  }, 20 * 1000);
+        await mockInitialRequests({ ...defaultUser, role });
+        expect(screen.queryByText("Luo uusi järjestö")).not.toBeInTheDocument();
+        expect(screen.getByText("Käyttäjät")).toBeInTheDocument();
+        unmount();
+      }
+    });
+  });
 });

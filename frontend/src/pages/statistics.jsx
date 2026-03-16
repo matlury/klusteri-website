@@ -1,32 +1,45 @@
 /* istanbul ignore file */
 // this file is ignored in the tests because jest doesn't work with the charts
-import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
-import axiosClient from "../axios";
+import React, { useEffect, useState } from "react";
+import { usersAPI, organizationsAPI, eventsAPI, nightResponsibilitiesAPI } from "../api/api.ts";
+import { useStateContext } from "../context/ContextProvider";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { LineChart } from "@mui/x-charts/LineChart";
-import { Grid } from "@mui/material";
+import { Grid, Box, Typography, TextField, Radio, RadioGroup, FormControlLabel, FormControl, Stack } from "@mui/material";
 import { CSVLink } from "react-csv";
 import { getCurrentDateTime } from "../utils/timehelpers";
 import Button from "@mui/material/Button";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
 import DownloadIcon from "@mui/icons-material/Download";
 import { useTranslation } from "react-i18next";
 
-const API_URL = process.env.VITE_API_URL;
+// Color palette for organizations
+const ORG_COLORS = [
+  "#2196f3", "#4caf50", "#ff9800", "#f44336", "#9c27b0",
+  "#00bcd4", "#ffeb3b", "#795548", "#607d8b", "#e91e63",
+  "#3f51b5", "#009688", "#8bc34a", "#cddc39", "#ffc107",
+  "#ff5722", "#9e9e9e", "#03a9f4", "#43a047", "#d81b60"
+];
+
+const generateRandomColor = (seed) => {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = seed.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  let color = '#';
+  for (let i = 0; i < 3; i++) {
+    const value = (hash >> (i * 8)) & 0xFF;
+    color += ('00' + value.toString(16)).substr(-2);
+  }
+  return color;
+};
 
 // This page is used to display statistics about users and organizations
 const Statistics = () => {
-  const [username, setUsername] = useState(null);
-  const [userRole, setUserRole] = useState(null);
-
+  const { user } = useStateContext();
+  const [orgColorMap, setOrgColorMap] = useState({});
   // YKV by organization
-  const [orgStatsData, setOrgStatsData] = useState([]);
+  const [, setOrgStatsData] = useState([]);
 
   // YKV count by user
   const [allUserStatsData, setAllUserStatsData] = useState([]);
@@ -36,177 +49,139 @@ const Statistics = () => {
   const [shouldDownload, setShouldDownload] = useState(false);
 
   // Time filters
-  const [minFilter, setMinFilter] = useState("");
-  const [maxFilter, setMaxFilter] = useState("");
+  // Default filters to the last 24 hours
+  const now = new Date();
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const formatForInput = (date) => {
+    const tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+    return (new Date(date - tzoffset)).toISOString().slice(0, 16);
+  };
+
+  const [minFilter, setMinFilter] = useState(formatForInput(yesterday));
+  const [maxFilter, setMaxFilter] = useState(formatForInput(now));
 
   // Fetched data from the backend
   const [fetchedData, setFetchedData] = useState(null);
 
   // YKV login and logout times per hour data
   const [logTimesData, setLogTimesData] = useState(null);
-
-  // Window height and width in px & grid column width
-  const [winHeight, setWinHeight] = useState(window.innerHeight);
-  const [winWidth, setWinWidth] = useState(window.innerWidth);
-  const [columnWidth, setColumnWidth] = useState(6);
-  const [widthDivider, setWidthDivider] = useState(2.5);
+  const [, setWidthDivider] = useState(2.5);
 
   // YKV per weekday data
   const [logsPerWeekDayData, setLogsPerWeekDayData] = useState([]);
 
   // Keys by organization
-  const [orgMembersData, setOrgMembersData] = useState([]);
+  const [, setOrgMembersData] = useState([]);
 
   // Late YKV logouts by organization
-  const [orgLateData, setOrgLateData] = useState([]);
+  const [, setOrgLateData] = useState([]);
 
   // Data to be displayed in the pie chart and the selected pie chart option
   const [pieChartData, setPieChartData] = useState([]);
   const [selectedPie, setSelectedPie] = useState(1);
 
-  // Gets the user's role from backend and fetches data. Also adjusts the grid column width if the user device is mobile
+  // Fetch data when user is available
   useEffect(() => {
-    getPermission();
-    if (fetchedData) {
-      processOrgStats(
-        fetchedData.orgResponse.data,
-        fetchedData.responsibilitiesResponse.data,
-      );
-      processAllUserStats(
-        fetchedData.userResponse.data,
-        fetchedData.responsibilitiesResponse.data,
-        fetchedData.orgResponse.data,
-      );
-    } else if (localStorage.getItem("ACCESS_TOKEN")) {
+    if (user) {
       fetchData().then(setFetchedData);
     }
-    if (window.innerWidth <= window.innerHeight) {
-      setColumnWidth(12);
-      setWidthDivider(1.2);
-    }
-  }, []);
+  }, [user]);
 
   // Updates the data when the filters change
   useEffect(() => {
-    if (fetchedData) {
-      processOrgStats(
-        fetchedData.orgResponse.data,
-        fetchedData.responsibilitiesResponse.data,
-      );
-      processAllUserStats(
-        fetchedData.userResponse.data,
-        fetchedData.responsibilitiesResponse.data,
-        fetchedData.orgResponse.data,
-      );
+    // Changes the grid column widths when the window is resized
+    if (fetchedData && user) {
+      const { orgs, resps, users } = fetchedData;
+      processOrgStats(orgs, resps);
+      processAllUserStats(users, resps, orgs);
     }
-  }, [minFilter, maxFilter, fetchedData]);
+  }, [fetchedData, user, minFilter, maxFilter, selectedPie]);
 
-  // Changes the grid column widths when the window is resized
   useEffect(() => {
-    const handleResize = () => {
-      setWinWidth(window.innerWidth);
-      setWinHeight(window.innerHeight);
-      if (window.innerWidth <= window.innerHeight) {
-        setColumnWidth(12);
-        setWidthDivider(1.2);
-      } else {
-        setColumnWidth(6);
-        setWidthDivider(2.5);
-      }
+    const updateWidth = () => {
+      setWidthDivider(window.innerWidth <= window.innerHeight ? 1.2 : 2.5);
     };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    updateWidth();
+    window.addEventListener("resize", updateWidth);
+    return () => window.removeEventListener("resize", updateWidth);
   }, []);
 
   const { t } = useTranslation();
 
   const fetchData = async () => {
     try {
-      const [orgResponse, userResponse, responsibilitiesResponse] =
-        await Promise.all([
-          axiosClient.get("listobjects/organizations/"),
-          axiosClient.get("listobjects/users/"),
-          axiosClient.get("listobjects/nightresponsibilities/"),
-        ]);
-      return { orgResponse, userResponse, responsibilitiesResponse };
-    } catch (error) {
-      console.error("Error fetching data", error);
-    }
-  };
-
-  const getPermission = async () => {
-    const accessToken = localStorage.getItem("ACCESS_TOKEN");
-    if (accessToken) {
-      await axios
-        .get(`${API_URL}/api/users/userinfo`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
-        .then((response) => {
-          setUsername(response.data.username);
-          setUserRole(response.data.role);
-        });
-    }
+      const [orgResponse, userResponse, responsibilitiesResponse] = await Promise.all([
+        organizationsAPI.organizationsWithKeys(),
+        usersAPI.getUsers(),
+        nightResponsibilitiesAPI.getNightResponsibilities(),
+      ]);
+      return {
+        orgs: orgResponse.data,
+        resps: responsibilitiesResponse.data,
+        users: userResponse.data
+      };
+    } catch (error) { console.error("Error fetching data", error); }
   };
 
   function filtering(login_time, logout_time) {
-    return (
-      (Date.parse(login_time) >= Number(Date.parse(minFilter)) &&
-        Date.parse(login_time) <= Number(Date.parse(maxFilter))) ||
-      (Date.parse(logout_time) <= Number(Date.parse(maxFilter)) &&
-        Date.parse(logout_time) >= Number(Date.parse(minFilter))) ||
-      (Date.parse(login_time) >= Number(Date.parse(minFilter)) &&
-        maxFilter === "") ||
-      (Date.parse(logout_time) <= Number(Date.parse(maxFilter)) &&
-        minFilter === "") ||
-      (minFilter === "" && maxFilter === "")
-    );
+    const login = Date.parse(login_time);
+    const logout = Date.parse(logout_time);
+    const min = minFilter ? Date.parse(minFilter) : -Infinity;
+    const max = maxFilter ? Date.parse(maxFilter) : Infinity;
+    return (login >= min && login <= max) || (logout <= max && logout >= min);
   }
 
   // Sets the organization data and the organization member data
   const processOrgStats = (orgData, responsibilities) => {
     const orgdata = {};
-
     const orgmemdata = {};
+    const newColorMap = { ...orgColorMap };
+    const usedColors = new Set(Object.values(newColorMap));
 
-    orgData.forEach((org) => {
-      orgdata[org.name] = {
-        value: 0,
-        label: org.name,
-        ...(org.color ? { color: org.color } : {}),
-      };
-      orgmemdata[org.name] = {
-        value: org.user_set.length,
-        label: org.name,
-        ...(org.color ? { color: org.color } : {}),
-      };
+    const finalOrgData = orgData.map((org, index) => {
+      let color = org.color;
+      // Treat null, empty, or black as "missing color"
+      if (!color || color === "#000000" || color === "null") {
+        if (newColorMap[org.name]) {
+          color = newColorMap[org.name];
+        } else {
+          const paletteColor = ORG_COLORS[index % ORG_COLORS.length];
+          color = usedColors.has(paletteColor) ? generateRandomColor(org.name) : paletteColor;
+          newColorMap[org.name] = color;
+          usedColors.add(color);
+        }
+      } else {
+        usedColors.add(color);
+      }
+      return { ...org, assignedColor: color };
     });
 
-    setOrgMembersData(Object.values(orgmemdata));
+    if (Object.keys(newColorMap).length > Object.keys(orgColorMap).length) {
+      setOrgColorMap(newColorMap);
+    }
+
+    finalOrgData.forEach((org) => {
+      const baseObj = { id: org.id, label: org.name, color: org.assignedColor };
+      orgdata[org.name] = { ...baseObj, value: 0 };
+      orgmemdata[org.name] = { ...baseObj, value: org.user_set ? org.user_set.length : 0 };
+    });
 
     responsibilities.forEach((resp) => {
       resp.organizations.forEach((org) => {
-        if (filtering(resp.login_time, resp.logout_time)) {
-          orgdata[org.name] = {
-            ...orgdata[org.name],
-            value: orgdata[org.name].value + 1,
-          };
+        if (filtering(resp.login_time, resp.logout_time) && orgdata[org.name]) {
+          orgdata[org.name].value += 1;
         }
       });
     });
-    const realdata = Object.values(orgdata);
-    setOrgStatsData(realdata);
 
-    if (selectedPie == 1) {
-      setPieChartData(Object.values(orgmemdata));
-    } else if (selectedPie == 2) {
-      setPieChartData(Object.values(orgdata));
-    }
+    const mData = Object.values(orgmemdata).sort((a, b) => b.value - a.value);
+    const sData = Object.values(orgdata).sort((a, b) => b.value - a.value);
+    setOrgMembersData(mData);
+    setOrgStatsData(sData);
+
+    if (selectedPie === 1) setPieChartData(mData);
+
+    else if (selectedPie === 2) setPieChartData(sData);
   };
 
   // Sets the user data and ykv data
@@ -222,282 +197,192 @@ const Statistics = () => {
 
     const numberdayweek = [6, 0, 1, 2, 3, 4, 5];
 
-    orgdata.forEach((org) => {
-      latedata[org.name] = {
-        value: 0,
-        label: org.name,
-        ...(org.color ? { color: org.color } : {}),
-      };
+    orgdata.forEach((org, index) => {
+      latedata[org.name] = { id: org.id, label: org.name, value: 0, color: org.color || orgColorMap[org.name] || ORG_COLORS[index % ORG_COLORS.length] };
     });
-    users.forEach((usr) => {
-      userdata[usr.username] = { data: [0], label: usr.username };
-    });
+    users.forEach((usr) => { userdata[usr.username] = { id: usr.id, data: [0], label: usr.username }; });
     responsibilities.forEach((resp) => {
-      if (userdata[resp.user.username]) {
-        if (filtering(resp.login_time, resp.logout_time)) {
-          userdata[resp.user.username] = {
-            ...userdata[resp.user.username],
-            data: [userdata[resp.user.username].data[0] + 1],
-          };
-          const loginhours = new Date(resp.login_time).getHours();
-          const logouthours = new Date(resp.logout_time).getHours();
-          logintimesdata[loginhours] += 1;
-          logouttimesdata[logouthours] += 1;
-
-          const day = new Date(resp.login_time).getDay();
-          lpddata[numberdayweek[day]] += 1;
-
-          if (resp.late) {
-            resp.organizations.forEach((org) => {
+      if (userdata[resp.user.username] && filtering(resp.login_time, resp.logout_time)) {
+        userdata[resp.user.username].data[0] += 1;
+        logintimesdata[new Date(resp.login_time).getHours()] += 1;
+        if (resp.logout_time) logouttimesdata[new Date(resp.logout_time).getHours()] += 1;
+        lpddata[numberdayweek[new Date(resp.login_time).getDay()]] += 1;
+        if (resp.late) {
+          resp.organizations.forEach((org) => {
+            if (latedata[org.name]) {
               latedata[org.name].value += 1;
-            });
-          }
+            }
+          });
         }
       }
     });
-
-    setOrgLateData(Object.values(latedata));
-
-    Object.values(userdata).forEach((usr) => {
-      if (usr.data.reduce((partialSum, a) => partialSum + a, 0) === 0) {
-        delete userdata[usr.label];
-      }
-    });
-    const logs = [
-      {
-        data: logintimesdata,
-        label: t("statslogin"),
-        color: "lightGreen",
-        showMark: ({ index }) => index === -1,
-      },
-      {
-        data: logouttimesdata,
-        label: t("statslogout"),
-        color: "red",
-        showMark: ({ index }) => index === -1,
-      },
-    ];
-    setLogTimesData(logs);
-
-    const logsperday = [{ data: lpddata }];
-    setLogsPerWeekDayData(logsperday);
-
-    const realdata = Object.values(userdata);
-    realdata.sort(
-      (a, b) =>
-        parseFloat(b.data.reduce((partialSum, b) => partialSum + b, 0)) -
-        parseFloat(a.data.reduce((partialSum, a) => partialSum + a, 0)),
-    );
-    setAllUserStatsData(realdata);
-
-    if (selectedPie == 3) {
-      setPieChartData(Object.values(latedata));
-    }
+    // Handles the creation of the event CSV file
+    const lateArr = Object.values(latedata).sort((a, b) => b.value - a.value);
+    setOrgLateData(lateArr);
+    setLogTimesData([
+      { data: logintimesdata, label: t("statslogin"), color: "#4caf50", showMark: () => false },
+      { data: logouttimesdata, label: t("statslogout"), color: "#f44336", showMark: () => false }
+    ]);
+    setLogsPerWeekDayData([{ data: lpddata, color: "#2196f3" }]);
+    setAllUserStatsData(Object.values(userdata)
+      .filter(u => u.data[0] > 0)
+      .sort((a, b) => b.data[0] - a.data[0]));
+    if (selectedPie === 3) setPieChartData(lateArr);
   };
 
   // Handles the creation of the event CSV file
   const handleCSV = async () => {
     try {
-      const events = await axiosClient.get("listobjects/events/");
-      if (events.data) {
-        const data = [
-          [
-            "START",
-            "END",
-            "ORGANIZER",
-            "TITLE",
-            "DESCRIPTION",
-            "RESPONSIBLE",
-            "ROOM",
-            "OPEN",
-          ],
-        ];
-        events.data.forEach((e) => {
-          if (filtering(e.start, e.end)) {
-            data.push([
-              e.start,
-              e.end,
-              e.organizer.name,
-              e.title,
-              e.description,
-              e.responsible,
-              e.room,
-              e.open,
-            ]);
-          }
-        });
-        setCSVdata(data);
-        setShouldDownload(true);
-      }
+      // Use current filters for the CSV download
+      const params = new URLSearchParams();
+      if (minFilter) params.append("start", minFilter);
+      if (maxFilter) params.append("end", maxFilter);
+
+      // If no filters are set, we explicitly ask for 'all' to ensure the backend
+      // doesn't just return the current month, but the full history.
+      if (!minFilter && !maxFilter) params.append("all", "true");
+
+      const response = await eventsAPI.getEventsWithParams(params);
+      const rawData = response.data;
+      const data = [[
+        "START",
+        "END",
+        "ORGANIZER",
+        "TITLE",
+        "DESCRIPTION",
+        "RESPONSIBLE",
+        "ROOM",
+        "OPEN"
+      ]];
+      rawData.forEach((e) => {
+        if (filtering(e.start, e.end)) {
+          data.push([
+            e.start,
+            e.end,
+            e.organizer ? e.organizer.name : "",
+            e.title,
+            e.description,
+            e.responsible,
+            e.room,
+            e.open
+          ]);
+        }
+      });
+      setCSVdata(data);
+      setShouldDownload(true);
     } catch (error) {
-      console.error("Error fetching data", error);
+      console.error(error);
     }
   };
 
-  const CSVDownload = (props) => {
-    const btnRef = useRef(null);
-    useEffect(() => {
-      if (btnRef.current) {
-        btnRef.current.click();
-        setShouldDownload(false);
-      }
-    }, [btnRef]);
-
-    return (
-      <CSVLink {...props}>
-        <span ref={btnRef} />
-      </CSVLink>
-    );
-  };
-
-  const handleMaxFilterChange = (event) => {
-    setMaxFilter(event.target.value);
-  };
-  const handleMinFilterChange = (event) => {
-    setMinFilter(event.target.value);
-  };
 
   const date = getCurrentDateTime();
-
   // Handles the change of the pie chart data
   const handleChange = (event) => {
-    if (event.target.value == 1) {
-      setPieChartData(orgMembersData);
-      setSelectedPie(1);
-    } else if (event.target.value == 2) {
-      setPieChartData(orgStatsData);
-      setSelectedPie(2);
-    } else if (event.target.value == 3) {
-      setPieChartData(orgLateData);
-      setSelectedPie(3);
-    }
+    const val = parseInt(event.target.value);
+    setSelectedPie(val);
   };
-
-  if (userRole == null) {
+  if (userRole === null) {
     return <p>{t("login")}</p>;
   }
 
   return (
-    <div>
-      <Grid container spacing={2}>
-        <Grid item xs={columnWidth}>
-          <div>
-            <p>{t("timefilter")}</p>
-            <input type="hidden" id="timezone" name="timezone" value="03:00" />
-            <input
-              value={minFilter}
-              onChange={handleMinFilterChange}
-              type="datetime-local"
-            />
-            <input
-              value={maxFilter}
-              onChange={handleMaxFilterChange}
-              type="datetime-local"
-            />
-          </div>
-        </Grid>
-        <Grid item xs={columnWidth}>
-          <div style={{ float: "right" }}>
-            <Button
-              type="button"
-              variant="contained"
-              onClick={handleCSV}
-              startIcon={<DownloadIcon />}
-            >
-              {t("csvdownload")}
-            </Button>
-            {shouldDownload && CSVdata && (
-              <CSVDownload
-                data={CSVdata}
-                filename={`klusteri-events-${date}.csv`}
-                target="_blank"
+    <Box sx={{ p: { xs: 1, md: 3 } }}>
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={8}>
+          <Box sx={{ p: 2, bgcolor: 'background.paper', boxShadow: 1, borderRadius: 2 }}>
+            <Typography variant="h6" sx={{ mb: 2 }}>{t("timefilter")}</Typography>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+              <TextField
+                label={t("start")}
+                type="datetime-local"
+                value={minFilter}
+                onChange={(e) => setMinFilter(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                fullWidth
+                sx={{
+                  "& .MuiInputBase-input": { fontSize: "0.875rem" },
+                  "& .MuiInputLabel-root": { fontSize: "0.875rem" }
+                }}
               />
-            )}
-          </div>
-        </Grid>
-        <Grid item xs={columnWidth}>
-          <h2>{t("orgstats")}</h2>
-          <FormControl>
-            <FormLabel id="radio-buttons-group" />
-            <RadioGroup
-              row
-              aria-labelledby="radio-buttons-group"
-              name="radio-buttons-group"
-              defaultValue="1"
-              onChange={handleChange}
-            >
-              <FormControlLabel
-                value="1"
-                control={<Radio />}
-                label={t("orgstats_1")}
+              <TextField
+                label={t("end")}
+                type="datetime-local"
+                value={maxFilter}
+                onChange={(e) => setMaxFilter(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                fullWidth
+                sx={{
+                  "& .MuiInputBase-input": { fontSize: "0.875rem" },
+                  "& .MuiInputLabel-root": { fontSize: "0.875rem" }
+                }}
               />
-              <FormControlLabel
-                value="2"
-                control={<Radio />}
-                label={t("orgstats_2")}
-              />
-              <FormControlLabel
-                value="3"
-                control={<Radio />}
-                label={t("orgstats_3")}
-              />
-            </RadioGroup>
-          </FormControl>
-          <PieChart
-            series={[
-              {
-                data: pieChartData,
-              },
-            ]}
-            width={winWidth / widthDivider}
-            height={winHeight / 2.6}
-          />
+            </Stack>
+          </Box>
         </Grid>
-        <Grid item xs={columnWidth}>
-          <h2>{t("userstats_1")}</h2>
-          <BarChart
-            width={winWidth / widthDivider}
-            height={winHeight / 2.6}
-            series={allUserStatsData}
-            yAxis={[{ data: [""], scaleType: "band", barGapRatio: 0.1 }]}
-            layout="horizontal"
-            borderRadius={5}
-          />
+        <Grid item xs={12} md={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', md: 'flex-end' } }}>
+          <Button variant="contained" onClick={handleCSV} startIcon={<DownloadIcon />} size="large" fullWidth sx={{ minHeight: 56, py: 1.5 }}>{t("csvdownload")}</Button>
+          {shouldDownload && CSVdata && <CSVLink data={CSVdata} filename={`klusteri-events-${date}.csv`} target="_blank" asyncOnClick={true}><DownloadIcon /></CSVLink>}
         </Grid>
-        <Grid item xs={columnWidth}>
-          <h2>{t("userstats_2")}</h2>
-          <BarChart
-            series={logsPerWeekDayData || []}
-            xAxis={[
-              {
-                scaleType: "band",
-                data: [
-                  t("monday"),
-                  t("tuesday"),
-                  t("wednesday"),
-                  t("thursday"),
-                  t("friday"),
-                  t("saturday"),
-                  t("sunday"),
-                ],
-              },
-            ]}
-            width={winWidth / widthDivider}
-            height={winHeight / 2.6}
-            borderRadius={5}
-          />
+
+        <Grid item xs={12} lg={7}>
+          <Box sx={{ p: 2, bgcolor: 'background.paper', boxShadow: 1, borderRadius: 2, height: '100%' }}>
+            <Typography variant="h5" gutterBottom>{t("orgstats")}</Typography>
+            <FormControl component="fieldset" sx={{ mb: 2 }}>
+              <RadioGroup row value={selectedPie.toString()} onChange={handleChange}>
+                <FormControlLabel value="1" control={<Radio />} label={t("orgstats_1")} />
+                <FormControlLabel value="2" control={<Radio />} label={t("orgstats_2")} />
+                <FormControlLabel value="3" control={<Radio />} label={t("orgstats_3")} />
+              </RadioGroup>
+            </FormControl>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} md={7}>
+                <PieChart
+                  series={[{
+                    data: pieChartData.filter(d => d.value > 0),
+                    innerRadius: 40, outerRadius: 130, paddingAngle: 2, cornerRadius: 5,
+                    arcLabel: (item) => `${item.value}`,
+                  }]}
+                  width={400} height={350} slotProps={{ legend: { hidden: true } }}
+                />
+              </Grid>
+              <Grid item xs={12} md={5}>
+                <Box sx={{ maxHeight: 350, overflowY: 'auto', pr: 1 }}>
+                  {pieChartData.map((item, i) => (
+                    <Box key={item.id || i} sx={{ display: 'flex', alignItems: 'center', mb: 1, opacity: item.value > 0 ? 1 : 0.5 }}>
+                      <Box sx={{ width: 12, height: 12, bgcolor: item.color, mr: 1, borderRadius: '50%', flexShrink: 0 }} />
+                      <Typography variant="caption" sx={{ fontWeight: item.value > 0 ? 'bold' : 'normal', flex: 1 }}>{item.label}</Typography>
+                      <Typography variant="caption" sx={{ ml: 1 }}>{item.value}</Typography>
+                    </Box>
+                  ))}
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
         </Grid>
-        <Grid item xs={columnWidth}>
-          <h2>{t("userstats_3")}</h2>
-          <LineChart
-            series={logTimesData || []}
-            width={winWidth / widthDivider}
-            height={winHeight / 2.6}
-            borderRadius={5}
-          />
+
+        <Grid item xs={12} lg={5}>
+          <Box sx={{ p: 2, bgcolor: 'background.paper', boxShadow: 1, borderRadius: 2, height: '100%' }}>
+            <Typography variant="h5" gutterBottom>{t("userstats_1")}</Typography>
+            <BarChart height={400} series={allUserStatsData.slice(0, 10)} yAxis={[{ data: [""], scaleType: "band" }]} layout="horizontal" borderRadius={5} margin={{ left: 20, right: 20 }} />
+          </Box>
+        </Grid>
+
+        <Grid item xs={12} lg={6}>
+          <Box sx={{ p: 2, bgcolor: 'background.paper', boxShadow: 1, borderRadius: 2 }}>
+            <Typography variant="h5" gutterBottom>{t("userstats_2")}</Typography>
+            <BarChart series={logsPerWeekDayData} xAxis={[{ scaleType: "band", data: [t("monday"), t("tuesday"), t("wednesday"), t("thursday"), t("friday"), t("saturday"), t("sunday")] }]} height={350} borderRadius={5} />
+          </Box>
+        </Grid>
+
+        <Grid item xs={12} lg={6}>
+          <Box sx={{ p: 2, bgcolor: 'background.paper', boxShadow: 1, borderRadius: 2 }}>
+            <Typography variant="h5" gutterBottom>{t("userstats_3")}</Typography>
+            <LineChart series={logTimesData || []} height={350} borderRadius={5} margin={{ left: 40, right: 40 }} />
+          </Box>
         </Grid>
       </Grid>
-    </div>
+    </Box>
   );
 };
 

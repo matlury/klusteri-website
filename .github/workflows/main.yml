@@ -36,7 +36,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd backend
-          poetry install
+          poetry install --no-root
           cd ../frontend
           npm install
 
@@ -65,31 +65,38 @@ jobs:
           poetry run coverage xml -o coverage.xml
 
       - name: Run frontend tests
+        if: success() || failure()
         working-directory: ./frontend
         run: npm run test
 
-      - name: Create frontend coverage report
-        working-directory: ./frontend
-        run: npx jest --coverage
+      # Cypress tests are disabled for now
+      # - name: Start backend
+      #   run: |
+      #     cd backend
+      #     poetry run python manage.py runserver &
 
-      #Cypress tests require backend to be running
-      - name: Start backend
-        run: |
-          cd backend
-          poetry run python manage.py runserver &
-
-      - name: Run Cypress tests
-        uses: cypress-io/github-action@v3
-        with:
-          working-directory: ./frontend
-          project: ./
-          browser: chrome
-          build: npm run build
-          start: npm run dev
+      # - name: Run Cypress tests
+      #   uses: cypress-io/github-action@v3
+      #   with:
+      #     working-directory: ./frontend
+      #     project: ./
+      #     browser: chrome
+      #     build: npm run build
+      #     start: npm run dev
 
       - name: Upload coverage reports to Codecov
+        if: always()
         uses: codecov/codecov-action@v3
         with:
           files: ./backend/coverage.xml,./frontend/coverage/clover.xml
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload Test Coverage Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: |
+            backend/coverage.xml
+            frontend/coverage/

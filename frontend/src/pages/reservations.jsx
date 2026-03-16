@@ -2,13 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "moment/locale/fi";
-import { useStateContext } from "../context/ContextProvider.jsx";
-import axiosClient from "../axios.js";
-import axios from "axios";
+import { useStateContext } from "@context/ContextProvider";
+import { organizationsAPI, eventsAPI } from "../api/api.ts";
 import ReservationsView from "../components/ReservationsView.jsx";
-import { useTranslation } from "react-i18next";
-
-const API_URL = process.env.VITE_API_URL;
+import { useTranslation, } from "react-i18next";
+import { Snackbar, Alert } from "@mui/material";
 
 // Set locale to Finnish and specify the first day of the week
 moment.updateLocale("fi", {
@@ -23,11 +21,22 @@ moment.locale("fi");
 
 // The main calendar component
 const MyCalendar = () => {
+  const { t } = useTranslation();
   // State variables for event data and modals
   const [events, setEvents] = useState([]);
+  const [loadedRanges, setLoadedRanges] = useState([]); // Track ranges already fetched
   const [organizations, setOrganizations] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
+
+  // Filtering state
+  const allRooms = [
+    { value: "Kokoushuone", label: t("Kokoushuone") },
+    { value: "Kerhotila", label: t("Kerhotila") },
+    { value: "Oleskelutila", label: t("Oleskelutila") },
+    { value: "ChristinaRegina", label: t("ChristinaRegina") }
+  ];
+  const [selectedRooms, setSelectedRooms] = useState(allRooms);
   const [eventDetails, setEventDetails] = useState({
     title: "",
     organizer: "",
@@ -44,44 +53,100 @@ const MyCalendar = () => {
   const [showInfoModal, setShowInfoModal] = useState(false);
   const { user } = useStateContext();
 
-  const { t } = useTranslation();
+  // Snackbar state
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("info");
 
-  // Calls getEvents() to fetch events when starting the page
+  const handleSnackbar = (message, severity = "info") => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
+
+  // Calls getEvents() to fetch events when starting the page or view changes
+  const [viewDate, setViewDate] = useState(new Date());
+
   useEffect(() => {
-    getEvents();
-  }, []);
+    getEvents(viewDate);
+  }, [viewDate]);
 
-  const startRef = useRef(0);
-  const endRef = useRef(0);
+  const handleNavigate = (newDate) => {
+    setViewDate(newDate);
+  };
 
-  const [startTime, setStartTime] = useState(startRef.current.value);
-  const [endTime, setEndTime] = useState(endRef.current.value);
+  const startRef = useRef({ value: "" });
+  const endRef = useRef({ value: "" });
+
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
 
   useEffect(() => {
-    setStartTime(startRef.current.value);
-  }, [startRef.current.value]);
+    if (startRef.current) {
+      setStartTime(startRef.current.value || "");
+    }
+  }, [startRef.current?.value]);
 
   useEffect(() => {
-    if (typeof endRef.current.value !== 'undefined') {
+    if (endRef.current && typeof endRef.current.value !== 'undefined' && endRef.current.value !== "") {
       const date = new Date(endRef.current.value);
       date.setTime(date.getTime() - (date.getTimezoneOffset() * 60 * 1000) - (1000 * 60));
       setEndTime(date.toISOString().slice(0, 16));
-    } else {
-      setEndTime(endRef.current.value);
+    } else if (endRef.current) {
+      setEndTime(endRef.current.value || "");
     }
-  }, [endRef.current.value]);
+  }, [endRef.current?.value]);
 
-  // Gets all created events from backend
-  const getEvents = () => {
-    axios
-      .get(`${API_URL}/api/listobjects/events/`)
+  // Gets events for the current view from backend
+  const getEvents = (date, isPrefetch = false) => {
+    const startRange = isPrefetch
+      ? moment(date).subtract(1, 'months').startOf('month')
+      : moment(date).startOf('month').subtract(7, 'days');
+
+    const endRange = isPrefetch
+      ? moment(date).add(1, 'months').endOf('month')
+      : moment(date).endOf('month').add(7, 'days');
+
+    // If prefetching, we only care if the WHOLE range is already loaded.
+    // If not prefetching, we check if the requested month is already loaded.
+    const isLoaded = loadedRanges.some(range =>
+      startRange.isSameOrAfter(range.start) && endRange.isSameOrBefore(range.end)
+    );
+
+    if (isLoaded) return;
+
+    eventsAPI
+      .getEventsWithQuery({
+        start: startRange.toISOString(),
+        end: endRange.toISOString()
+      })
       .then((response) => {
-        const events = response.data.map((event) => ({
+        const rawData = response.data;
+        const newEventsList = rawData.map((event) => ({
           ...event,
           start: new Date(event.start),
           end: new Date(event.end),
         }));
-        setEvents(events);
+
+        setEvents(prevEvents => {
+          const existingIds = new Set(prevEvents.map(e => e.id));
+          const uniqueNewEvents = newEventsList.filter(e => !existingIds.has(e.id));
+          return [...prevEvents, ...uniqueNewEvents];
+        });
+
+        setLoadedRanges(prev => [...prev, { start: startRange, end: endRange }]);
+
+        // If we just finished loading the current month, now trigger the background prefetch
+        if (!isPrefetch) {
+          getEvents(date, true);
+        }
       })
       .catch((error) => {
         console.error(t("errorfetchevents"), error);
@@ -89,12 +154,14 @@ const MyCalendar = () => {
   };
 
   useEffect(() => {
-    getOrganizations();
-  }, []);
+    if (user) {
+      getOrganizations();
+    }
+  }, [user]);
 
   const getOrganizations = () => {
-    axios
-      .get(`${API_URL}/api/listobjects/organizations/`)
+    organizationsAPI
+      .getOrganizations()
       .then((response) => {
         const organizations = response.data;
         setOrganizations(organizations);
@@ -110,7 +177,7 @@ const MyCalendar = () => {
       setSelectedSlot({ start, end });
       setShowCreateModal(true);
     } else {
-      alert(t("erroreventlogin"));
+      handleSnackbar(t("erroreventlogin"), "info");
     }
   };
 
@@ -118,8 +185,8 @@ const MyCalendar = () => {
   useEffect(() => {
     if (showCreateModal && selectedSlot) {
       if (!startRef.current || !endRef.current) {
-          startRef.current = { value: "" };
-          endRef.current = { value: "" };
+        startRef.current = { value: "" };
+        endRef.current = { value: "" };
       }
       startRef.current.value = moment(selectedSlot.start).format(
         "YYYY-MM-DDTHH:mm",
@@ -166,7 +233,7 @@ const MyCalendar = () => {
     const open = isOpen === "avoin" ? true : false;
 
     if (duration > 24) {
-      alert(t("errorlongevent"));
+      handleSnackbar(t("errorlongevent"), "warning");
       return;
     }
     if (
@@ -193,7 +260,7 @@ const MyCalendar = () => {
       });
 
       if (isRoomOccupied) {
-        alert(t("erroreventroom"));
+        handleSnackbar(t("erroreventroom"), "error");
         return;
       }
 
@@ -211,12 +278,13 @@ const MyCalendar = () => {
       };
 
       // Saves the event to the database through axiosClient and fetches the event id that is automatically created in the db
-      axiosClient
-        .post(`events/create_event`, newEvent)
+      eventsAPI
+        .createEvent(newEvent)
         .then((response) => {
           const updatedEvent = { ...newEvent, id: response.data.id };
           setEvents([...events, updatedEvent]);
           setShowCreateModal(false);
+          handleSnackbar(t("eventsuccess"), "success");
           setEventDetails({
             title: "",
             organizer: "",
@@ -231,20 +299,20 @@ const MyCalendar = () => {
           });
         })
         .catch((error) => {
-          alert(t("errorevent"));
+          handleSnackbar(t("errorevent"), "error");
           console.error(t("errorevent"), error);
         });
     } else {
-      alert(t("erroreventfields"));
+      handleSnackbar(t("erroreventfields"), "warning");
     }
   };
 
   // Handles deleting an event with the event id
   const handleDeleteEvent = (eventId) => {
     if (eventId) {
-      axiosClient
-        .delete(`events/delete_event/${eventId}/`)
-        .then((response) => {
+      eventsAPI
+        .deleteEvent(eventId)
+        .then(() => {
           setEvents(events.filter((event) => event.id !== eventId));
         })
         .catch((error) => {
@@ -260,6 +328,10 @@ const MyCalendar = () => {
 
   // Handles clicking the 'Lisää uusi tapahtuma' button and shows the create modal
   const handleAddNewEventClick = () => {
+    if (!user) {
+      handleSnackbar(t("erroreventlogin"), "info");
+      return;
+    }
     setSelectedSlot(null);
     setShowCreateModal(true);
     setEventDetails({
@@ -275,26 +347,51 @@ const MyCalendar = () => {
   };
 
   // Renders the calendar view, event modals and possible night responsibilities
+  const filteredEvents = selectedRooms.length === 0 
+    ? events 
+    : events.filter(event => 
+        selectedRooms.some(room => room.value === event.room)
+      );
   return (
-    <ReservationsView
-      handleAddNewEventClick={handleAddNewEventClick}
-      handleSelectSlot={handleSelectSlot}
-      handleSelectEvent={handleSelectEvent}
-      showCreateModal={showCreateModal}
-      handleCloseModal={handleCloseModal}
-      handleInputChange={handleInputChange}
-      eventDetails={eventDetails}
-      handleAddEvent={handleAddEvent}
-      showInfoModal={showInfoModal}
-      localizer={localizer}
-      events={events}
-      startRef={startTime}
-      endRef={endTime}
-      selectedEvent={selectedEvent}
-      handleDeleteEvent={handleDeleteEvent}
-      moment={moment}
-      organizations={organizations}
-    />
+    <>
+      <ReservationsView
+        handleAddNewEventClick={handleAddNewEventClick}
+        handleSelectSlot={handleSelectSlot}
+        handleSelectEvent={handleSelectEvent}
+        onNavigate={handleNavigate}
+        showCreateModal={showCreateModal}
+        handleCloseModal={handleCloseModal}
+        handleInputChange={handleInputChange}
+        eventDetails={eventDetails}
+        handleAddEvent={handleAddEvent}
+        showInfoModal={showInfoModal}
+        localizer={localizer}
+        events={filteredEvents}
+        startRef={startTime}
+        endRef={endTime}
+        selectedEvent={selectedEvent}
+        handleDeleteEvent={handleDeleteEvent}
+        moment={moment}
+        organizations={organizations}
+        selectedRooms={selectedRooms}
+        setSelectedRooms={setSelectedRooms}
+        allRooms={allRooms}
+      />
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        data-testid="snackbar"
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
 

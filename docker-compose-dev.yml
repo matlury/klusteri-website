@@ -1,0 +1,55 @@
+services:
+  api:
+    build:
+      context: "./backend"
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend:/backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - TEST_DB_NAME=${POSTGRES_DB:-ilotalo_dev}
+      - TEST_DB_USER=${POSTGRES_USER:-user}
+      - TEST_DB_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - TEST_DB_HOST=db
+      - TEST_DB_PORT=5432
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: "./frontend"
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./frontend:/frontend
+      - /frontend/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    env_file:
+      - .env
+    environment:
+      - SITE_KEY=${SITE_KEY}
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+
+  db:
+    image: postgres:18
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-ilotalo_dev}
+      - POSTGRES_USER=${POSTGRES_USER:-user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+    ports:
+      - "5433:5432"
+
+volumes:
+  postgres_data_dev:

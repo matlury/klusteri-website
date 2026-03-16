@@ -1,6 +1,6 @@
-from aenum import Enum
+from enum import IntEnum
 
-class Role(Enum):
+class Role(IntEnum):
     """Define user roles as words for clarity"""
     LEPPISPJ = 1
     LEPPISVARAPJ = 2

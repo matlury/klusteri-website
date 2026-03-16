@@ -1,139 +1,103 @@
-import React, { useState, useEffect } from "react";
-import axiosClient from "../axios.js";
+import { useState, useEffect } from "react";
+import { useStateContext } from "@context/ContextProvider";
+import { nightResponsibilitiesAPI, ykvAPI } from "../api/api.ts";
 import { getCurrentDateTime } from "../utils/timehelpers.js";
 import {
-  getPermission,
   fetchAllUsersWithKeys,
 } from "../utils/keyuserhelpers.js";
 import YkvLogoutFunction from "../components/YkvLogoutFunction.jsx";
 import { useTranslation } from "react-i18next";
 import { Snackbar, Alert } from '@mui/material';
+import { Role } from "../roles.js";
 
-const OwnKeys = ({
-  isLoggedIn: propIsLoggedIn,
-  loggedUser: propLoggedUser,
-}) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
+const OwnKeys = () => {
+  const { user: loggedUser } = useStateContext();
+  const isLoggedIn = !!loggedUser;
   const [responsibility, setResponsibility] = useState("");
-  const [email, setEmail] = useState("");
-  const [loggedUser, setLoggedUser] = useState(propLoggedUser);
   const [allResponsibilities, setAllResponsibilities] = useState([]);
-  const [ownResponsibilities, setOwnResponsibilities] = useState([]);
-  const [activeResponsibilities, setActiveResponsibilities] = useState([]);
   const [allUsersWithKeys, setAllUsersWithKeys] = useState([]);
-
-  const [nameFilter, setNameFilter] = useState("");
-  const [ykvFilter, setYkvFilter] = useState("");
-  var d = new Date();
-  d.setDate(d.getDate() - 6);
-  const [minFilter, setMinFilter] = useState(d.toISOString().slice(0, -8));
-  d.setDate(d.getDate() + 7);
-  const [maxFilter, setMaxFilter] = useState(d.toISOString().slice(0, -8));
-
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-
-  const [buttonPopup, setButtonPopup] = useState(false);
-  const [idToLogout, setIdToLogout] = useState([]);
-
-  const [editButtonPopup, setEditButtonPopup] = useState(false);
-  const [respToEdit, setRespToEdit] = useState("");
-
   const [selectedForYKV, setSelectedForYKV] = useState([]);
-  const [hasPermission, setHasPermission] = useState(false);
-
+  const [selectedOrg, setSelectedOrg] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-
-  const API_URL = process.env.VITE_API_URL;
-
   const { t } = useTranslation();
 
+  // Check if user has permission (LEPPISPJ role)
+  const hasPermission = loggedUser && loggedUser.role === Role.LEPPISPJ;
+
+  // Set default organization when loggedUser is available
   useEffect(() => {
-    setIsLoggedIn(propIsLoggedIn);
-    if (propIsLoggedIn) {
-      const storedUser = JSON.parse(localStorage.getItem("loggedUser"));
-      if (storedUser) {
-        setEmail(storedUser.email);
-        setLoggedUser(storedUser);
-        getPermission({ API_URL, setHasPermission });
-      }
+    if (loggedUser && loggedUser.keys && loggedUser.keys.length > 0 && !selectedOrg) {
+      setSelectedOrg(loggedUser.keys[0]);
     }
-  }, [propIsLoggedIn]);
+  }, [loggedUser, selectedOrg]);
+
+  // fetches eligible users for YKV
+  const fetchEligibleUsers = async () => {
+    try {
+      const response = await ykvAPI.getEligibleUsers();
+      // Filter out the logged-in user if present
+      const filteredUsers = response.data.filter(user => user.id !== loggedUser.id);
+      setAllUsersWithKeys(filteredUsers);
+    } catch (error) {
+      console.error("Error fetching eligible users", error);
+    }
+  };
+
+  // fetches all of the responsibilities and the ones that the logged user has done
+  const fetchResponsibilitiesData = async () => {
+    try {
+      const response = await nightResponsibilitiesAPI.getNightResponsibilities();
+      const rawData = response.data;
+      setAllResponsibilities(rawData);
+    } catch (error) {
+      console.error("Error fetching responsibilities", error);
+    }
+  };
 
   useEffect(() => {
-    if (isLoggedIn && loggedUser) {
-      getResponsibility();
-      getActiveResponsibilities();
-      getPermission({ API_URL, setHasPermission });
-    }
-  }, [isLoggedIn, loggedUser, selectedForYKV]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (loggedUser) {
-        await getActiveResponsibilities();
-        await fetchAllUsersWithKeys({
-          API_URL,
-          allUsersWithKeys,
-          setAllUsersWithKeys,
-          loggedUser,
-          allResponsibilities,
-        });
+    const fetchAllData = async () => {
+      if (isLoggedIn && loggedUser && hasPermission) {
+        await fetchEligibleUsers();
+        await fetchResponsibilitiesData();
       }
     };
+    fetchAllData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoggedIn, loggedUser?.id, hasPermission]);
 
-    fetchData();
-  }, [loggedUser]);
-
-  const handleYkvLogin = async (event) => {
-    const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
+  const handleYkvLogin = async () => {
     if (!loggedUser) return;
-
     const user_id = loggedUser.id;
-    const email = loggedUser.email;
     const loginTime = getCurrentDateTime();
-
-    const userdata = await axiosClient.get("/listobjects/users/");
-    const user = userdata.data.find((user) => user.id === user_id);
-    const user_orgs = user.keys.map((key) => key.id);
+    const organizations = selectedOrg ? [selectedOrg.id] : [];
 
     const responsibilityObject = {
       user: user_id,
-      email: email,
       responsible_for: responsibility,
       login_time: loginTime,
-      created_by: loggedUser.username,
-      organizations: user_orgs,
+      created_by: loggedUser.id,
+      organizations: organizations,
     };
-
     await confirmYKV(responsibilityObject);
-
     for (const user of selectedForYKV) {
       const responsibilityObject = {
         user: user.id,
-        email: user.email,
         responsible_for: responsibility,
         login_time: loginTime,
-        created_by: loggedUser.username,
-        organizations: user_orgs,
+        created_by: loggedUser.id,
+        organizations: organizations,
       };
       await confirmYKV(responsibilityObject);
     }
-
     async function confirmYKV(responsibilityObject) {
       try {
-        await axiosClient.post(`/ykv/create_responsibility`, responsibilityObject);
-        setSuccess(t("ykvsuccess"));
+        await ykvAPI.createResponsibility(responsibilityObject);
         handleSnackbar(t("ykvsuccess"), "success");
-        setTimeout(() => setSuccess(""), 5000);
-        await getResponsibility();
-        await getActiveResponsibilities();
+        await fetchResponsibilitiesData();
       } catch (error) {
-        setError(t("ykvfail"));
         handleSnackbar(t("ykvfail"), "error");
-        setTimeout(() => setError(""), 5000);
         console.error(t("ykvfail"), error);
       }
     }
@@ -143,7 +107,7 @@ const OwnKeys = ({
   // function that checks if the user logged in (if there are no responsibilities, the user cant be logged in either)
   function checkIfLoggedIn() {
     if (loggedUser) {
-      if (loggedUser.role !== 5) {
+      if (loggedUser.role !== Role.TAVALLINEN) {
         return true;
       }
       return false;
@@ -153,76 +117,19 @@ const OwnKeys = ({
 
   // THE FOLLOWING FUNCTIONS RENDER SPECIFIC YKV-RESPONSIBILITIES
 
-  // fetches all of the responsibilities and the ones that the logged user has done
-  const getResponsibility = async () => {
-    try {
-      const response = await axiosClient.get(`listobjects/nightresponsibilities/`);
-      setAllResponsibilities(response.data);
-      const filteredResponsibilities = response.data.filter(
-        (item) =>
-          item.email === email ||
-          (loggedUser && item.created_by === loggedUser.username),
-      );
-      setOwnResponsibilities(filteredResponsibilities);
-    } catch (error) {
-      console.error("Error fetching responsibilities", error);
-    }
-  };
-
-  const getActiveResponsibilities = async () => {
-    try {
-      const response = await axiosClient.get(`listobjects/nightresponsibilities/`);
-      setAllResponsibilities(response.data);
-      const active = response.data.filter((item) => item.present === true);
-      setActiveResponsibilities(active);
-    } catch (error) {
-      console.error("Error fetching responsibilities", error);
-    }
-  };
-
   // THE FOLLOWING FUNCTIONS HANDLE THE YKV-LOGOUT
 
   // handles the end of taking responsibility
   const handleYkvLogout = async (id) => {
-    setButtonPopup(true);
     try {
-      await axiosClient.put(`ykv/logout_responsibility/${id}/`, {
+      await ykvAPI.logoutResponsibility(id, {
         logout_time: getCurrentDateTime(),
       });
-      setSuccess(t("ykvlogoutsuccess"));
       handleSnackbar(t("ykvlogoutsuccess"), "success");
-      setTimeout(() => setSuccess(""), 5000);
-      await getResponsibility();
-      await getActiveResponsibilities();
-      await fetchAllUsersWithKeys({
-        API_URL,
-        allUsersWithKeys,
-        setAllUsersWithKeys,
-        loggedUser,
-        allResponsibilities,
-      });
+      await fetchResponsibilitiesData();
     } catch (error) {
-      setError(t("ykvlogoutfail"));
       handleSnackbar(t("ykvlogoutfail"), "error");
-      setTimeout(() => setError(""), 5000);
       console.error(t("ykvlogoutfail"), error);
-    }
-  };
-
-  // THE FOLLOWING FUNCTIONS HANDLE THE YKV-LOGIN EDITS
-  const handleYkvEdit = async (respId, respToEdit) => {
-    try {
-      await axiosClient.put(`ykv/update_responsibility/${respId}/`, respToEdit);
-      setSuccess(t("ykveditsuccess"));
-      handleSnackbar(t("ykveditsuccess"), "success");
-      setTimeout(() => setSuccess(""), 5000);
-      await getResponsibility();
-      await getActiveResponsibilities();
-    } catch (error) {
-      setError(t("ykveditfail"));
-        handleSnackbar(t("ykveditfail"), "error");
-      setTimeout(() => setError(""), 5000);
-      console.error("Ykv-muokkaus epäonnistui", error);
     }
   };
 
@@ -241,20 +148,17 @@ const OwnKeys = ({
             <YkvLogoutFunction
               handleYkvLogin={handleYkvLogin}
               handleYkvLogout={handleYkvLogout}
-              idToLogout={idToLogout}
-              buttonPopup={buttonPopup}
-              setButtonPopup={setButtonPopup}
-              activeResponsibilities={activeResponsibilities}
-              setIdToLogout={setIdToLogout}
-              loggedUser={loggedUser}
-              setEditButtonPopup={setEditButtonPopup}
-              editButtonPopup={editButtonPopup}
-              setRespToEdit={setRespToEdit}
-              handleYkvEdit={handleYkvEdit}
+              allResponsibilities={allResponsibilities}
+              allUsersWithKeys={allUsersWithKeys}
               responsibility={responsibility}
               setResponsibility={setResponsibility}
+              selectedForYKV={selectedForYKV}
+              setSelectedForYKV={setSelectedForYKV}
+              selectedOrg={selectedOrg}
+              setSelectedOrg={setSelectedOrg}
             />
           )}
+
           <Snackbar
             open={snackbarOpen}
             autoHideDuration={6000}

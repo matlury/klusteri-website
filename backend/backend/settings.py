@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 import os
+import sys
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -29,7 +30,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
+
+TESTING = (
+    os.environ.get("RUNNING_TESTS") == "1"
+    or os.environ.get("PYTEST_CURRENT_TEST") is not None
+    or "pytest" in sys.modules
+    or "test" in sys.argv
+)
+
+# reCAPTCHA secret key (used in registration). Provide a test default for CI/tests.
+RECAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_SECRET_KEY")
+if not RECAPTCHA_SECRET_KEY and (os.environ.get("GITHUB_WORKFLOW") or TESTING):
+    RECAPTCHA_SECRET_KEY = "test-recaptcha-secret-key"
+    os.environ["RECAPTCHA_SECRET_KEY"] = RECAPTCHA_SECRET_KEY
 
 ALLOWED_HOSTS = [
     "klusteri-website-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi",
@@ -37,7 +51,11 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "klusteri-website-db-test-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi",
     "klusteri-website-back-matlury-test.apps.ocp-prod-0.k8s.it.helsinki.fi",
-    "klusteri-website-matlury-test.apps.ocp-prod-0.k8s.it.helsinki.fi"
+    "klusteri-website-matlury-test.apps.ocp-prod-0.k8s.it.helsinki.fi",
+    "klusteri-website-db-test-matlury-test.apps.ocp-prod-0.k8s.it.helsinki.fi",
+    "ilotalo-new.matlu.fi",
+    "api.matlury-test.svc.cluster.local",
+    'ilotalo-new-test-v2.matlu.fi'
 ]
 
 
@@ -54,10 +72,11 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "ilotalo",
-    'django_apscheduler'
+    "django_apscheduler",
 ]
 
 MIDDLEWARE = [
+    "ilotalo.middleware.RequestTimeMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -104,10 +123,10 @@ DATABASES = {
 DATABASES = {
     "default": {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv("CYPRESS_DB_NAME") if os.getenv("CYPRESS") in ["True"] else os.getenv("TEST_DB_NAME"), 
+        'NAME': os.getenv("CYPRESS_DB_NAME") if os.getenv("CYPRESS") in ["True"] else os.getenv("TEST_DB_NAME"),
         'USER': os.getenv("TEST_DB_USER"),
         'PASSWORD': os.getenv("TEST_DB_PASSWORD"),
-        'HOST': os.getenv("TEST_DB_HOST"), 
+        'HOST': os.getenv("TEST_DB_HOST"),
         'PORT': os.getenv("TEST_DB_PORT"),
     }
 }
@@ -115,23 +134,36 @@ DATABASES = {
 if os.environ.get('GITHUB_WORKFLOW'):
     DATABASES = {
         'default': {
-           'ENGINE': 'django.db.backends.postgresql',
-           'NAME': 'github_actions',
-           'USER': 'postgres',
-           'PASSWORD': 'postgres',
-           'HOST': '127.0.0.1',
-           'PORT': '5432',
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'github_actions',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'HOST': '127.0.0.1',
+            'PORT': '5432',
         }
     }
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "ilotalo.authentication.CookieJWTAuthentication",
     ),
+    "DEFAULT_THROTTLE_CLASSES": (
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+        "rest_framework.throttling.ScopedRateThrottle",
+    ),
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "100/hour",
+        "user": "1000/hour",
+        "login": "10/min",
+        "register": "5/min",
+    },
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 100,
 }
 
 SIMPLE_JWT = {
-    #'AUTH_HEADER_TYPES': ('JWT',),
+    # 'AUTH_HEADER_TYPES': ('JWT',),
     "AUTH_HEADER_TYPES": ("Bearer",),
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
@@ -172,6 +204,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 AUTH_USER_MODEL = "ilotalo.User"
 
@@ -180,6 +213,18 @@ AUTH_USER_MODEL = "ilotalo.User"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# When running tests via manage.py or in CI, disable throttling to avoid 429s.
+if TESTING or os.environ.get("GITHUB_WORKFLOW"):
+    REST_FRAMEWORK = {
+        "DEFAULT_AUTHENTICATION_CLASSES": (
+            "ilotalo.authentication.CookieJWTAuthentication",
+        ),
+        "DEFAULT_THROTTLE_CLASSES": (),
+        "DEFAULT_THROTTLE_RATES": {},
+        "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+        "PAGE_SIZE": 100,
+    }
+
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:5173",
@@ -187,5 +232,57 @@ CORS_ORIGIN_WHITELIST = [
     "https://klusteri-website-front-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi",
     "https://klusteri-website-frontend-test-matlury-test.apps.ocp-test-0.k8s.it.helsinki.fi",
     "https://klusteri-website-front-matlury-test.apps.ocp-prod-0.k8s.it.helsinki.fi",
-    "https://klusteri.ext.ocp-prod-0.k8s.it.helsinki.fi"
+    "https://klusteri.ext.ocp-prod-0.k8s.it.helsinki.fi",
+    "https://ilotalo-new-test-v2.matlu.fi",
+    "https://ilotalo-new.matlu.fi"
 ]
+
+CORS_ALLOW_CREDENTIALS = True
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'ilotalo': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}

@@ -1,5 +1,5 @@
 import React from "react";
-import christinaregina from "../ChristinaRegina.png";
+import christinaregina from "/ChristinaRegina.png";
 import { useTranslation } from "react-i18next";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 

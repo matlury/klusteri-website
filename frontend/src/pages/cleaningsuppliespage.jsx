@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axiosClient from "../axios.js";
+import { useStateContext } from "@context/ContextProvider";
+import { cleaningSuppliesAPI } from "../api/api.ts";
 import { Button } from "@mui/material";
 import CleaningToolForm from "../components/CleaningToolForm.jsx";
 import CleaningSuppliesList from "../components/CleaningSuppliesList.jsx";
@@ -8,12 +9,9 @@ import { useTranslation } from "react-i18next";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 
-const CleaningSupplies = ({
-  isLoggedIn: propIsLoggedIn,
-  loggedUser: propLoggedUser,
-}) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
-  const [loggedUser, setLoggedUser] = useState(propLoggedUser);
+const CleaningSupplies = () => {
+  const { user: loggedUser } = useStateContext();
+  const isLoggedIn = !!loggedUser;
   const [open, setOpen] = useState(false);
   const [allCleaningSupplies, setAllCleaningSupplies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,35 +21,15 @@ const CleaningSupplies = ({
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-
   const { t } = useTranslation();
 
-  useEffect(() => {
-    setIsLoggedIn(propIsLoggedIn);
-    if (propIsLoggedIn) {
-      const storedUser = JSON.parse(localStorage.getItem("loggedUser"));
-      if (storedUser) {
-        setLoggedUser(storedUser);
-      }
-    }
-    
-  }, [propIsLoggedIn]);
+  // No need to sync isLoggedIn or loggedUser from props/localStorage
 
   useEffect(() => {
     if (isLoggedIn && loggedUser) {
       fetchSupplies();
     }
   }, [isLoggedIn, loggedUser]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (loggedUser) {
-        await fetchSupplies();
-      }
-    };
-
-    fetchData();
-  }, [loggedUser]);
 
   const handleSnackbar = (message, severity) => {
     setSnackbarMessage(message);
@@ -75,9 +53,10 @@ const CleaningSupplies = ({
     confirmCleaningSupplies(cleaningSupplyObject);
 
     function confirmCleaningSupplies(cleaningSupplyObject) {
-      if (confirm) {
-        axiosClient
-          .post(`/cleaningsupplies/create_tool`, cleaningSupplyObject)
+      const confirmMessage = t("confirm_create_tool") || "Confirm create cleaning tool?";
+      if (window.confirm(confirmMessage)) {
+        cleaningSuppliesAPI
+          .createTool(cleaningSupplyObject)
           .then((response) => {
             handleSnackbar(t("createtool"), "success");
             fetchSupplies();
@@ -93,8 +72,8 @@ const CleaningSupplies = ({
 
   const handleDeleteCleaningTool = (id) => {
     setButtonPopup(true);
-    axiosClient
-      .delete(`cleaningsupplies/delete_tool/${id}/`, {})
+    cleaningSuppliesAPI
+      .deleteTool(id)
       .then((response) => {
         handleSnackbar(t("deletetoolsuccess"), "success");
         fetchSupplies();
@@ -122,10 +101,11 @@ const CleaningSupplies = ({
   };
 
   const fetchSupplies = () => {
-    axiosClient
-      .get("/listobjects/cleaningsupplies/")
+    cleaningSuppliesAPI
+      .getCleaningSupplies()
       .then((res) => {
-        const suppliesData = res.data.map((u, index) => ({
+        const rawData = res.data;
+        const suppliesData = rawData.map((u, index) => ({
           id: u.id, // DataGrid requires a unique 'id' for each row
           tool: u.tool,
         }));
@@ -153,9 +133,8 @@ const CleaningSupplies = ({
             <CleaningToolForm open={open} handleClose={handleClose} handleFormSubmit={handleFormSubmit} />
           </React.Fragment>
           <React.Fragment>
-            <CleaningSuppliesList 
-              loggedUser={loggedUser} 
-              allCleaningSupplies={allCleaningSupplies} 
+            <CleaningSuppliesList
+              allCleaningSupplies={allCleaningSupplies}
               handleDeleteClick={handleDeleteClick}
             />
             <CleaningSuppliesConfirmDialog

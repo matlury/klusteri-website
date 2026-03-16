@@ -4,11 +4,11 @@
 import React, { useState } from "react";
 import { Button } from "@mui/material";
 import SmartToyOutlinedIcon from '@mui/icons-material/SmartToyOutlined';
-import axiosClient from "../axios.js";
+import { organizationsAPI } from "../api/api.ts";
 import AutomateCleanersDialog from "./AutomateCleanersDialog.jsx";
 import { useTranslation } from "react-i18next";
 
-export default function CleanersListAutomateButton({ updateNewData, setError}) {
+export default function CleanersListAutomateButton({ updateNewData, notifyError}) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -25,12 +25,12 @@ export default function CleanersListAutomateButton({ updateNewData, setError}) {
   const handleAutomate = async (threshold) => {
     setLoading(true);
     try {
-      const response = await axiosClient.get("/listobjects/organizations/");
+      const response = await organizationsAPI.organizationsWithKeys();
       const orgdata = response.data;
 
       // Check if orgdata is an array
       if (!Array.isArray(orgdata)) {
-        setError(t("cleaningautomatefail"));
+        notifyError(t("cleaningautomatefail"), "error");
         throw new Error("Unexpected API response format");
       }
 
@@ -53,10 +53,7 @@ export default function CleanersListAutomateButton({ updateNewData, setError}) {
       return list;
     } catch (error) {
       console.error("Error fetching organization data:", error);
-      setError(t("cleaningautomatefail"));
-      setTimeout(() => {
-        setError(null);
-      }, 5000);
+      notifyError(t("cleaningautomatefail"), "error");
     } finally {
       setLoading(false);
     }

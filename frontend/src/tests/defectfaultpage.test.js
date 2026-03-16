@@ -2,12 +2,13 @@ import {
   render,
   fireEvent,
   waitFor,
-  screen,
+  screen
 } from "@testing-library/react";
-import "@testing-library/jest-dom";
+import "@testing-library/dom";
 import DefectFault from "../../src/pages/defectfaultpage";
 import mockAxios from "../../__mocks__/axios";
-import i18n from "../i18n.js";
+import { ContextProvider } from "@context/ContextProvider";
+import { Role } from '../../src/roles';
 
 localStorage.setItem("lang", "fi")
 
@@ -18,7 +19,11 @@ afterEach(() => {
 
 describe("DefectFault Component", () => {
   it("doesn't open without logging in", () => {
-    render(<DefectFault />);
+    render(
+      <ContextProvider skipHydration>
+        <DefectFault />
+      </ContextProvider>
+    );
     expect(screen.getByText("Kirjaudu sisään")).toBeInTheDocument();
   });
 
@@ -27,7 +32,7 @@ describe("DefectFault Component", () => {
       username: "example_username",
       email: "example_email@example.com",
       telegram: "example_telegram",
-      role: 1,
+      role: Role.LEPPISPJ,
       keys: { "tko-äly": true },
       organization: { "tko-äly": true },
       rights_for_reservation: true,
@@ -35,20 +40,26 @@ describe("DefectFault Component", () => {
     };
 
     window.confirm = jest.fn(() => true);
-    localStorage.setItem("ACCESS_TOKEN", "example_token");
-    localStorage.setItem("loggeduser", JSON.stringify(user));
 
-    render(<DefectFault isLoggedIn={true} loggedUser={user} />);
+    render(
+      <ContextProvider initialUser={user} skipHydration>
+        <DefectFault />
+      </ContextProvider>
+    );
 
     // Simulate opening the defect creation dialog
-    fireEvent.click(screen.getByTestId("defectfaultdialog"));
+    await waitFor(() => {
+      fireEvent.click(screen.getByTestId("defectfaultdialog"));
+    });
 
     // Fill in the defect description
     const descriptionInput = screen.getByTestId("description").querySelector("input");
     fireEvent.change(descriptionInput, { target: { value: "jääkapin ovi rikki" } });
 
     // Simulate clicking the create button
-    fireEvent.click(screen.getByTestId("createdefect"));
+    await waitFor(() => {
+      fireEvent.click(screen.getByTestId("createdefect"));
+    });
 
     // Mock the response
     const responseObj = {
@@ -66,19 +77,19 @@ describe("DefectFault Component", () => {
     // Wait for the axios requests to complete
     await waitFor(() => {
       // Mock the axios post request
-      mockAxios.mockResponseFor({ url: "/defects/create_defect" }, responseObj);
-      
-      expect(mockAxios.post).toHaveBeenCalledWith(
-        "/defects/create_defect",
-        {
-          description: "jääkapin ovi rikki",
-        }
-      );
-
-      expect(mockAxios.get).toHaveBeenCalledWith("/listobjects/defects/");
+      mockAxios.mockResponseFor({ url: "defects/create_defect" }, responseObj);
     });
 
+    expect(mockAxios.post).toHaveBeenCalledWith(
+      "defects/create_defect",
+      {
+        description: "jääkapin ovi rikki",
+      }
+    );
+
+    expect(mockAxios.get).toHaveBeenCalledWith("listobjects/defects/");
+
     // Check if the description appears in the document
-    expect(screen.getByText("Vian kirjaus onnistui")).toBeInTheDocument();
+    expect(await screen.findByText("Vian kirjaus onnistui")).toBeInTheDocument();
   });
 });

@@ -1,28 +1,26 @@
-import axiosClient from "../axios.js";
+import { authAPI } from "../api/api.ts";
 
 // Handles the login function
-const login = async ({ email, password, setError, setToken, onLogin, setUser, t }) => {
+const login = async ({ email, password, setError, onLogin, setUser, t }) => {
   const credentials = {
     email: email,
     password: password,
   };
 
   // Return a promise that resolves when login is complete
-  return axiosClient
-    .post("/token/", credentials)
-    .then(({ data }) => {
-      setToken(data.access);
-      return axiosClient
-        .get("/users/userinfo", {
-          headers: {
-            Authorization: `Bearer ${data.access}`,
-          },
-        })
+  return authAPI
+    .login(credentials)
+    .then(() => {
+      return authAPI
+        .getUserInfo()
         .then((response) => {
+          // Update context with user data
           setUser(response.data);
-          localStorage.setItem("loggedUser", JSON.stringify(response.data));
-          localStorage.setItem("isLoggedIn", true);
-          onLogin();
+          // Set session flag to enable hydration on refresh
+          localStorage.setItem("hasSession", "true");
+          if (typeof onLogin === 'function') {
+            onLogin();
+          }
         });
     })
     .catch((err) => {

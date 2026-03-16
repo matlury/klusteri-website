@@ -1,6 +1,7 @@
-import "@testing-library/jest-dom";
-import { render, fireEvent, waitFor } from "@testing-library/react";
+import "@testing-library/dom";
+import { render, fireEvent, waitFor, screen } from "@testing-library/react";
 import LoginPage from "../pages/loginpage";
+import { ContextProvider, useStateContext } from "@context/ContextProvider";
 import axiosClient from "../axios.js";
 import i18n from "../i18n.js";
 
@@ -11,8 +12,17 @@ localStorage.setItem("lang", "fi")
 
 jest.mock("../axios");
 
+afterEach(() => {
+  jest.clearAllMocks();
+  localStorage.clear();
+});
+
 test("renders login form", () => {
-  const { getByLabelText, getByText } = render(<LoginPage />);
+  const { getByLabelText, getByText } = render(
+    <ContextProvider skipHydration>
+      <LoginPage />
+    </ContextProvider>,
+  );
 
   const emailInput = getByLabelText("Sähköposti tai käyttäjätunnus");
   const passwordInput = getByLabelText("Salasana");
@@ -28,13 +38,21 @@ test("renders login form", () => {
 test("error message when logging in with invalid credentials", async () => {
   axiosClient.post.mockRejectedValueOnce({ response: { status: 401 } });
 
+  const ContextProbe = () => {
+    const { user } = useStateContext();
+    return <div data-testid="context-user">{user ? user.username : ""}</div>;
+  };
+
   // Render the LoginPage component
   const { getByLabelText, getByText, queryByText } = render(
-    <LoginPage
-      onLogin={jest.fn()}
-      onLogout={jest.fn()}
-      onCreateNewUser={jest.fn()}
-    />,
+    <ContextProvider skipHydration>
+      <LoginPage
+        onLogin={jest.fn()}
+        onLogout={jest.fn()}
+        onCreateNewUser={jest.fn()}
+      />
+      <ContextProbe />
+    </ContextProvider>,
   );
 
   // Fill in email and password fields
@@ -47,7 +65,7 @@ test("error message when logging in with invalid credentials", async () => {
   fireEvent.click(loginButton);
 
   await waitFor(() => {
-    expect(axiosClient.post).toHaveBeenCalledWith("/token/", {
+    expect(axiosClient.post).toHaveBeenCalledWith("token/", {
       email: "test@example.com",
       password: "invalidpassword",
     });
@@ -55,8 +73,7 @@ test("error message when logging in with invalid credentials", async () => {
     expect(
       queryByText("Sähköposti tai salasana virheellinen"),
     ).toBeInTheDocument();
-    expect(localStorage.getItem("loggedUser")).toBeNull();
-    expect(localStorage.getItem("isLoggedIn")).toBeNull();
+    expect(screen.getByTestId("context-user")).toHaveTextContent("");
   });
 });
 
@@ -68,13 +85,21 @@ test("logging in with valid credentials works", async () => {
   axiosClient.post.mockResolvedValueOnce({ data: { access: mockToken } });
   axiosClient.get.mockResolvedValueOnce({ data: mockUserData });
 
+  const ContextProbe = () => {
+    const { user } = useStateContext();
+    return <div data-testid="context-user">{user ? user.username : ""}</div>;
+  };
+
   // Render the LoginPage component
   const { getByLabelText, queryByText, getByText } = render(
-    <LoginPage
-      onLogin={jest.fn()}
-      onLogout={jest.fn()}
-      onCreateNewUser={jest.fn()}
-    />,
+    <ContextProvider skipHydration>
+      <LoginPage
+        onLogin={jest.fn()}
+        onLogout={jest.fn()}
+        onCreateNewUser={jest.fn()}
+      />
+      <ContextProbe />
+    </ContextProvider>,
   );
 
   // Fill in email and password fields
@@ -87,20 +112,13 @@ test("logging in with valid credentials works", async () => {
   fireEvent.click(loginButton);
 
   await waitFor(() => {
-    expect(axiosClient.post).toHaveBeenCalledWith("/token/", {
+    expect(axiosClient.post).toHaveBeenCalledWith("token/", {
       email: "test@example.com",
       password: "password123",
     });
-    expect(axiosClient.get).toHaveBeenCalledWith("/users/userinfo", {
-      headers: {
-        Authorization: `Bearer ${mockToken}`,
-      },
-    });
+    expect(axiosClient.get).toHaveBeenCalledWith("users/userinfo");
 
-    expect(localStorage.getItem("loggedUser")).toEqual(
-      JSON.stringify(mockUserData),
-    );
-    expect(localStorage.getItem("isLoggedIn")).toEqual("true");
+    expect(screen.getByTestId("context-user")).toHaveTextContent("testuser");
     expect(
       queryByText("Sähköposti tai salasana virheellinen!"),
     ).not.toBeInTheDocument();

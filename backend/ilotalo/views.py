@@ -4,27 +4,37 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q, Count
 from .serializers import (
     UserSerializer,
     OrganizationSerializer,
+    OrganizationListSerializer,
     UserNoPasswordSerializer,
     UserUpdateSerializer,
     EventSerializer,
+    EventListSerializer,
     CreateEventSerializer,
     NightResponsibilitySerializer,
     CreateNightResponsibilitySerializer,
     DefectFaultSerializer,
     CleaningSerializer,
     CreateCleaningSerializer,
-    CleaningSuppliesSerializer
+    CleaningSuppliesSerializer,
+    UserMinimalSerializer
 )
 from .models import User, Organization, Event, NightResponsibility, DefectFault, Cleaning, CleaningSupplies
 from .config import Role
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone as dt_timezone
+from django.utils import timezone
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer
+from . import permissions as rbac_permissions
+from icalendar import Calendar, Event as ICalEvent
+from django.http import HttpResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 LEPPISPJ = Role.LEPPISPJ.value
 LEPPISVARAPJ = Role.LEPPISVARAPJ.value
@@ -34,8 +44,8 @@ TAVALLINEN = Role.TAVALLINEN.value
 JARJESTOPJ = Role.JARJESTOPJ.value
 JARJESTOVARAPJ = Role.JARJESTOVARAPJ.value
 
-# Get reCAPTCHA secret key from environment variables, use the testing key if not found
-recaptcha_secret_key = os.getenv("RECAPTCHA_SECRET_KEY", "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe")
+# Get reCAPTCHA secret key from settings (with test defaults applied there)
+recaptcha_secret_key = settings.RECAPTCHA_SECRET_KEY
 
 """
 Views receive web requests and return web responses.
@@ -49,8 +59,18 @@ class UserView(viewsets.ReadOnlyModelViewSet):
     Only supports list and retrieve actions (read-only)
     """
 
-    serializer_class = UserNoPasswordSerializer
     queryset = User.objects.all()
+    pagination_class = None
+    permission_classes = [rbac_permissions.ReadOnly]
+
+    def get_serializer_class(self):
+        # Use minimal serializer for list action (used by YKV etc.)
+        if self.action == 'list':
+            # Management roles can see all user details in the list
+            if self.request.user.is_authenticated and self.request.user.role in [LEPPISPJ, LEPPISVARAPJ, MUOKKAUS, JARJESTOPJ]:
+                return UserNoPasswordSerializer
+            return UserMinimalSerializer
+        return UserNoPasswordSerializer
 
 
 class OrganizationView(viewsets.ReadOnlyModelViewSet):
@@ -61,24 +81,46 @@ class OrganizationView(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = OrganizationSerializer
     queryset = Organization.objects.all()
+    pagination_class = None
+    permission_classes = [rbac_permissions.ReadOnly]
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return OrganizationListSerializer
+        return OrganizationSerializer
+
+    def get_serializer(self, *args, **kwargs):
+        """
+        Override to pass request context to serializer for conditional field inclusion
+        """
+        serializer_class = self.get_serializer_class()
+        kwargs['context'] = self.get_serializer_context()
+        return serializer_class(*args, **kwargs)
 
 
 class RegisterView(APIView):
     """View for creating a new user at <baseurl>/api/users/register/"""
+    throttle_scope = "register"
 
     def post(self, request):
         data = request.data
         recaptcha_response = data.pop('recaptcha_response', None)
         serializer = UserSerializer(data=data)
 
+        if not recaptcha_secret_key:
+            return Response(
+                {'recaptcha': 'reCAPTCHA is not configured.'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
         # Check if the request contains valid data
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
         google_response = requests.post('https://www.google.com/recaptcha/api/siteverify', data={
             'secret': recaptcha_secret_key,
             'response': recaptcha_response,
-        })
+        }, timeout=5)
 
         # Check if the request to Google's API was successful
         if not google_response.json().get('success'):
@@ -89,11 +131,12 @@ class RegisterView(APIView):
 
         return Response(user.data, status=status.HTTP_201_CREATED)
 
+
 class RetrieveUserView(APIView):
     """View for fetching a User object with a JSON web token at <baseurl>/api/users/userlist/"""
 
     # Isauthenticated will deny access if request has no access token
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [rbac_permissions.ReadOnly]
 
     def get(self, request):
         """
@@ -106,14 +149,14 @@ class RetrieveUserView(APIView):
             the matching user's unique identifier (email address)
         """
         user = request.user
-        user = UserSerializer(user)
+        user = UserNoPasswordSerializer(user)
 
         return Response(user.data, status=status.HTTP_200_OK)
 
 
 class UpdateUserView(APIView):
     """View for updating a User object at <baseurl>/api/users/update/<user.id>/"""
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [rbac_permissions.CanModifyUserData]
 
     def put(self, request, pk=None):
         """
@@ -128,17 +171,26 @@ class UpdateUserView(APIView):
         """
         if not pk:
             return Response("User ID not provided", status=status.HTTP_400_BAD_REQUEST)
-        
+
         user_id = int(pk)
+        try:
+            user_to_update = User.objects.get(id=user_id)
+        except ObjectDoesNotExist:
+            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+
+        self.check_object_permissions(request, user_to_update)
+
         if user_id == request.user.id:
             return self.update_user(request, user_id)
 
-        user = UserSerializer(request.user).data
+        if request.user.role in [LEPPISPJ, LEPPISVARAPJ]:
+            return self.update_user(
+                request,
+                user_id,
+                allow_password_change=(request.user.role == LEPPISPJ)
+            )
 
-        if user["role"] in [LEPPISPJ, LEPPISVARAPJ]:
-            return self.update_user(request, user_id, allow_password_change=(user["role"] == LEPPISPJ))
-        
-        if user["role"] == MUOKKAUS:
+        if request.user.role == MUOKKAUS:
             return self.update_limited_user(request, user_id)
 
         return Response("You are not allowed to edit users", status=status.HTTP_400_BAD_REQUEST)
@@ -149,14 +201,18 @@ class UpdateUserView(APIView):
         except ObjectDoesNotExist:
             return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
-        user_serializer = UserUpdateSerializer(instance=user_to_update, data=request.data, partial=True)
+        data = request.data.copy()
+        # If password change is not allowed, remove it from data to prevent update
+        if not allow_password_change and 'password' in data:
+            data.pop('password')
+
+        user_serializer = UserUpdateSerializer(
+            instance=user_to_update, data=data, partial=True, context={'request': request})
 
         if user_serializer.is_valid():
-            if allow_password_change and 'password' in request.data and request.data['password']:
-                user_to_update.set_password(request.data['password'])
             user_serializer.save()
             return Response(user_serializer.data, status=status.HTTP_200_OK)
-        
+
         return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def update_limited_user(self, request, user_id):
@@ -165,31 +221,22 @@ class UpdateUserView(APIView):
         except ObjectDoesNotExist:
             return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
-        if user_to_update.role not in [AVAIMELLINEN, TAVALLINEN]:
-            return Response("You are not allowed to edit this user", status=status.HTTP_400_BAD_REQUEST)
+        user_serializer = UserUpdateSerializer(
+            instance=user_to_update, data=request.data, partial=True, context={'request': request})
 
-        user_serializer = UserUpdateSerializer(instance=user_to_update, data=request.data, partial=True)
-        
         if user_serializer.is_valid():
             user_serializer.save()
             return Response(user_serializer.data, status=status.HTTP_200_OK)
-        
+
         return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class RemoveUserView(APIView):
     """View for removing an user <baseurl>/api/users/delete_user/<int:pk>/"""
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [rbac_permissions.IsLeppisPJOrVaraPJ]
 
     def delete(self, request, pk):
-        user = UserSerializer(request.user)
-
-        if user.data["role"] not in [LEPPISPJ, LEPPISVARAPJ]:
-            return Response(
-                "You can't remove users",
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
         try:
             user_to_remove = User.objects.get(id=pk)
         except ObjectDoesNotExist:
@@ -201,20 +248,13 @@ class RemoveUserView(APIView):
 
         return Response(f"User {user_to_remove.username} successfully removed", status=status.HTTP_200_OK)
 
+
 class CreateOrganizationView(APIView):
     """View for creating a new organization <baseurl>/api/organizations/create"""
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [rbac_permissions.IsLeppisPJ]
 
     def post(self, request):
-        user = UserSerializer(request.user)
-
-        if user.data["role"] != LEPPISPJ:
-            return Response(
-                "Only LeppisPJ can create organizations",
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
         serializer = OrganizationSerializer(data=request.data)
 
         if not serializer.is_valid():
@@ -230,17 +270,9 @@ class RemoveOrganizationView(APIView):
     Also removes keys and memberships from users.
     """
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [rbac_permissions.IsLeppisPJ]
 
     def delete(self, request, pk):
-        user = UserSerializer(request.user)
-
-        if user.data["role"] != LEPPISPJ:
-            return Response(
-                "Only LeppisPJ can remove organizations",
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
         try:
             organization_to_remove = Organization.objects.get(id=pk)
         except ObjectDoesNotExist:
@@ -264,14 +296,14 @@ class UpdateOrganizationView(APIView):
     """
 
     # IsAuthenticated will deny access if request has no access token
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [rbac_permissions.IsOrganizationLeader]
 
     def put(self, request, pk=None):
         user = UserSerializer(request.user)
 
         if user.data["role"] in [LEPPISPJ, LEPPISVARAPJ]:
             return self.update_organization(request, pk)
-        elif user.data["role"] == MUOKKAUS:
+        elif user.data["role"] in [MUOKKAUS, JARJESTOPJ, JARJESTOVARAPJ]:
             organization = self.get_organization(pk)
             if organization and request.user.organization[organization.name]:
                 return self.update_organization(request, pk)
@@ -280,11 +312,6 @@ class UpdateOrganizationView(APIView):
                     "You can't edit an organization you are not a member of",
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-        else:
-            return Response(
-                "You can't edit organizations",
-                status=status.HTTP_400_BAD_REQUEST,
-            )
 
     def get_organization(self, pk):
         try:
@@ -306,6 +333,7 @@ class UpdateOrganizationView(APIView):
             organization.save()
             return Response(organization.data, status=status.HTTP_200_OK)
         return Response(organization.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class AddUserOrganizationView(APIView):
     """
@@ -375,14 +403,124 @@ class AddUserOrganizationView(APIView):
 #        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     pass
 
+
 class EventView(viewsets.ReadOnlyModelViewSet):
     """
     Displays a list of all Event objects at <baseurl>/events/
     Only supports list and retrieve actions (read-only)
+    Allows both authenticated and anonymous users to view (events are public data)
     """
 
-    serializer_class = EventSerializer
-    queryset = Event.objects.all()
+    permission_classes = [rbac_permissions.ReadOnlyOrAnonymous]
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return EventListSerializer
+        return EventSerializer
+
+    def get_queryset(self):
+        queryset = Event.objects.all().select_related('organizer', 'created_by')
+        start_date = self.request.query_params.get('start')
+        end_date = self.request.query_params.get('end')
+        all_time = self.request.query_params.get('all')
+
+        if start_date:
+            # Parse ISO datetime string (handles both 'YYYY-MM-DD' and 'YYYY-MM-DDTHH:MM:SS.sssZ')
+            # Fix URL encoding: '+' becomes ' ' in query params, restore it
+            start_date_normalized = start_date.replace(
+                ' ', '+').replace('Z', '+00:00')
+            try:
+                start_dt = datetime.fromisoformat(start_date_normalized)
+            except ValueError:
+                # Fallback to date-only parsing for backwards compatibility
+                start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+                start_dt = timezone.make_aware(start_dt, dt_timezone.utc)
+
+            # Ensure timezone-aware
+            if timezone.is_naive(start_dt):
+                start_dt = timezone.make_aware(start_dt, dt_timezone.utc)
+            queryset = queryset.filter(start__gte=start_dt)
+
+        if end_date:
+            # Parse ISO datetime string (handles both 'YYYY-MM-DD' and 'YYYY-MM-DDTHH:MM:SS.sssZ')
+            # Fix URL encoding: '+' becomes ' ' in query params, restore it
+            end_date_normalized = end_date.replace(
+                ' ', '+').replace('Z', '+00:00')
+            try:
+                end_dt = datetime.fromisoformat(end_date_normalized)
+            except ValueError:
+                # Fallback to date-only parsing for backwards compatibility
+                end_dt = datetime.strptime(end_date, '%Y-%m-%d')
+                end_dt = end_dt.replace(hour=23, minute=59, second=59)
+                end_dt = timezone.make_aware(end_dt, dt_timezone.utc)
+
+            # Ensure timezone-aware
+            if timezone.is_naive(end_dt):
+                end_dt = timezone.make_aware(end_dt, dt_timezone.utc)
+            queryset = queryset.filter(end__lte=end_dt)
+
+        # Default to current month if no filters are provided and 'all' is not requested.
+        # This prevents loading thousands of historical events by accident.
+        if not start_date and not end_date and not all_time:
+            now = timezone.now()
+            queryset = queryset.filter(
+                start__year=now.year, start__month=now.month)
+
+        return queryset.order_by('start')
+
+    def paginate_queryset(self, queryset):
+        """
+        Pagination is enabled by default for the list view (e.g., /events/).
+        It is disabled if:
+        1. 'all' is provided (CSV exports).
+        2. 'start' or 'end' is provided (Calendar view, which handles its own data slicing).
+        """
+        if 'all' in self.request.query_params or 'start' in self.request.query_params or 'end' in self.request.query_params:
+            return None
+        return super().paginate_queryset(queryset)
+
+
+class EventICalView(APIView):
+    """
+    Returns an iCalendar (.ics) file containing all events from the last 3 months onwards.
+    Publicly accessible to allow calendar subscriptions.
+    Cached for 15 minutes to reduce server load.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    @method_decorator(cache_page(60 * 15))
+    def get(self, request):
+        cal = Calendar()
+        cal.add('prodid', '-//Ilotalo Events Calendar//matlu.fi//')
+        cal.add('version', '2.0')
+        cal.add('x-wr-calname', 'Ilotalo Varaukset')
+        cal.add('x-wr-timezone', 'Europe/Helsinki')
+
+        # Limit to last 30 days and all future events to keep the file size reasonable
+        # but provide enough context.
+        start_limit = timezone.now() - timedelta(days=30)
+        events = Event.objects.filter(
+            start__gte=start_limit).select_related('organizer')
+
+        for e in events:
+            event = ICalEvent()
+            event.add('summary', e.title)
+            event.add('dtstart', e.start)
+            event.add('dtend', e.end)
+
+            description = f"Järjestäjä: {e.organizer.name}"
+            event.add('description', description)
+            event.add('location', e.room)
+            event.add('uid', f"event-{e.id}@ilotalo-new.matlu.fi")
+            event.add('dtstamp', timezone.now())
+
+            cal.add_component(event)
+
+        response = HttpResponse(
+            cal.to_ical(), content_type="text/calendar; charset=utf-8")
+        response['Content-Disposition'] = 'attachment; filename="ilotalo_events.ics"'
+        return response
+
 
 class CreateEventView(APIView):
     """View for creating a new event <baseurl>/api/events/create_event"""
@@ -408,30 +546,26 @@ class CreateEventView(APIView):
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        serializer.save()
+
+        serializer.save(created_by=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class RemoveEventView(APIView):
     """View for removing an event <baseurl>/api/events/delete_event/<event.id>/"""
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [rbac_permissions.CanModifyReservation]
 
     def delete(self, request, pk):
         """ pk = primary key """
-        user = UserSerializer(request.user)
-
         try:
             event_to_remove = Event.objects.get(id=pk)
         except ObjectDoesNotExist:
             return Response(
                 "Event not found", status=status.HTTP_404_NOT_FOUND
             )
-        
-        if not (user.data["role"] in [LEPPISPJ, LEPPISVARAPJ] or user.data["id"] == event_to_remove.created_by.id):
-            return Response(
-                "You can't remove the event",
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+
+        self.check_object_permissions(request, event_to_remove)
 
         event_to_remove.delete()
 
@@ -440,32 +574,20 @@ class RemoveEventView(APIView):
             status=status.HTTP_200_OK
         )
 
+
 class UpdateEventView(APIView):
     """View for updating an Event object at <baseurl>/api/events/update_event/<event.id>/"""
 
     # IsAuthenticated will deny access if request has no access token
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [rbac_permissions.CanModifyReservation]
 
     def put(self, request, pk=None):
-        user = UserSerializer(request.user)
-
-        if user.data["role"] not in [
-            LEPPISPJ,
-            LEPPISVARAPJ,
-            MUOKKAUS,
-            AVAIMELLINEN,
-            JARJESTOPJ,
-            JARJESTOVARAPJ
-        ] and user.data["rights_for_reservation"] is False:
-            return Response(
-                "Users with role 5 can't edit events",
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
         try:
             event_to_update = Event.objects.get(id=pk)
         except ObjectDoesNotExist:
             return Response("Event not found", status=status.HTTP_404_NOT_FOUND)
+
+        self.check_object_permissions(request, event_to_update)
 
         event = EventSerializer(
             instance=event_to_update, data=request.data, partial=True
@@ -476,6 +598,7 @@ class UpdateEventView(APIView):
             return Response(event.data, status=status.HTTP_200_OK)
         return Response(event.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class NightResponsibilityView(viewsets.ReadOnlyModelViewSet):
     """
     Displays a list of all NightResponsibility objects at <baseurl>/ykv/
@@ -484,6 +607,25 @@ class NightResponsibilityView(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = NightResponsibilitySerializer
     queryset = NightResponsibility.objects.all()
+    pagination_class = None
+    permission_classes = [rbac_permissions.ReadOnly]
+
+
+ALLOWED_RESPONSIBILITY_ROLES = [
+    LEPPISPJ, LEPPISVARAPJ, MUOKKAUS, AVAIMELLINEN, JARJESTOPJ]
+
+# Eligible users for responsibility endpoint
+
+
+class EligibleResponsibilityUsersView(APIView):
+    """Endpoint to get users eligible to take responsibility <baseurl>/users/ykv/"""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        users = User.objects.filter(role__in=ALLOWED_RESPONSIBILITY_ROLES)
+        serializer = UserMinimalSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class CreateNightResponsibilityView(APIView):
     """View for creating a new ykv <baseurl>/api/ykv/create_responsibility"""
@@ -493,13 +635,7 @@ class CreateNightResponsibilityView(APIView):
     def post(self, request):
         user = UserSerializer(request.user)
 
-        if user.data["role"] not in [
-            LEPPISPJ,
-            LEPPISVARAPJ,
-            MUOKKAUS,
-            AVAIMELLINEN,
-            JARJESTOPJ
-        ]:
+        if user.data["role"] not in ALLOWED_RESPONSIBILITY_ROLES:
             return Response(
                 "You can't take responsibility",
                 status=status.HTTP_400_BAD_REQUEST,
@@ -513,6 +649,7 @@ class CreateNightResponsibilityView(APIView):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+
 class UpdateNightResponsibilityView(APIView):
     """View for updating a NightResponsibility object at <baseurl>/api/ykv/update_responsibility/<responsibility.id>/"""
 
@@ -522,13 +659,7 @@ class UpdateNightResponsibilityView(APIView):
     def put(self, request, pk=None):
         user = UserSerializer(request.user)
 
-        if user.data["role"] not in [
-            LEPPISPJ,
-            LEPPISVARAPJ,
-            MUOKKAUS,
-            AVAIMELLINEN,
-            JARJESTOPJ
-        ]:
+        if user.data["role"] not in ALLOWED_RESPONSIBILITY_ROLES:
             return Response(
                 "You can't edit this",
                 status=status.HTTP_400_BAD_REQUEST,
@@ -556,6 +687,7 @@ class UpdateNightResponsibilityView(APIView):
             return Response(responsibility.data, status=status.HTTP_200_OK)
         return Response(responsibility.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class LogoutNightResponsibilityView(APIView):
     """View for logout for NightResponsibility object at <baseurl>/api/ykv/logout_responsibility/<responsibility.id>/"""
 
@@ -565,13 +697,7 @@ class LogoutNightResponsibilityView(APIView):
     def put(self, request, pk=None):
         user = UserSerializer(request.user)
 
-        if user.data["role"] not in [
-            LEPPISPJ,
-            LEPPISVARAPJ,
-            MUOKKAUS,
-            AVAIMELLINEN,
-            JARJESTOPJ
-        ]:
+        if user.data["role"] not in ALLOWED_RESPONSIBILITY_ROLES:
             return Response(
                 "You can't edit this",
                 status=status.HTTP_400_BAD_REQUEST,
@@ -594,22 +720,31 @@ class LogoutNightResponsibilityView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Check if logout is later than 7.15
-        # ATTENTION! Current method is bad and doesn't acknowledge timezones
-        limit = datetime.now().replace(hour=5, minute=15)
+        # Check if logout is later than 7:15 AM Finland/Helsinki time
+        # We convert to naive local datetimes for comparison if they are aware
+        # as the 'limit' is constructed as a naive datetime.
         datetime_format = "%Y-%m-%d %H:%M"
-        logout_time = datetime.strptime(request.data["logout_time"], datetime_format)
-        login_time = datetime.strptime(str(responsibility_to_update.login_time)[:-16], datetime_format)
+        logout_time = datetime.strptime(
+            request.data["logout_time"], datetime_format)
 
+        # Create limit at 7:15 AM on the same day as logout
+        limit = logout_time.replace(hour=7, minute=15, second=0, microsecond=0)
+
+        # Get naive local time from the login_time field
+        login_time = timezone.localtime(
+            responsibility_to_update.login_time).replace(tzinfo=None)
+
+        data = {}
         if (logout_time > limit) and (login_time < limit):
-            request.data["late"] = True
+            data["late"] = True
         else:
-            request.data["late"] = False
+            data["late"] = False
 
-        request.data["present"] = False
+        data["present"] = False
+        data["logout_time"] = request.data["logout_time"]
 
         responsibility = NightResponsibilitySerializer(
-            instance=responsibility_to_update, data=request.data, partial=True
+            instance=responsibility_to_update, data=data, partial=True
         )
 
         if responsibility.is_valid():
@@ -617,55 +752,91 @@ class LogoutNightResponsibilityView(APIView):
             return Response(responsibility.data, status=status.HTTP_200_OK)
         return Response(responsibility.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class RightsForReservationView(APIView):
     """View for changing the rights for making events at <baseurl>/api/users/change_rights_reservation/<int:pk>/"""
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [rbac_permissions.IsManagementRole]
 
     def put(self, request, pk=None):
-        user = UserSerializer(request.user)
+        try:
+            user_to_update = User.objects.get(id=pk)
+        except User.DoesNotExist:
+            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
-        if user.data["role"] not in [LEPPISPJ, LEPPISVARAPJ, JARJESTOPJ, JARJESTOVARAPJ]:
-            return Response("You can't change the rights", status=status.HTTP_400_BAD_REQUEST)
-        else:
-            try:
-                user_to_update = User.objects.get(id=pk)
-            except User.DoesNotExist:
-                return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+        data = {
+            "rights_for_reservation": not user_to_update.rights_for_reservation
+        }
 
-            data = {
-                "rights_for_reservation": not user_to_update.rights_for_reservation
-            }
+        user_serializer = UserUpdateSerializer(
+            instance=user_to_update, data=data, partial=True, context={'request': request}
+        )
+        if user_serializer.is_valid():
+            user_serializer.save()
+            return Response(user_serializer.data, status=status.HTTP_200_OK)
+        return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            user_serializer = UserUpdateSerializer(
-                instance=user_to_update, data=data, partial=True
-            )
-            if user_serializer.is_valid():
-                user_serializer.save()
-                return Response(user_serializer.data, status=status.HTTP_200_OK)
-            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ResetDatabaseView(APIView):
-    """View for resetting a database during Cypress tests"""
+    """
+    View for resetting a database during Cypress tests
+    SECURITY: This endpoint should NEVER be accessible in production
+    """
+    # SECURITY FIX: Require authentication even for test environments
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-
         """
-        Post requests are only accepted if the CYPRESS env.variable is "True"
-        or if a Github workflow is running
+        Post requests are only accepted if:
+        1. The CYPRESS env variable is "True" or a Github workflow is running
+        2. The user is authenticated (to prevent unauthenticated access)
+        3. DEBUG mode is enabled (additional safety check)
         """
-        if os.getenv("CYPRESS") in ["True"] or os.environ.get("GITHUB_WORKFLOW"):
-            User.objects.all().delete()
-            Organization.objects.all().delete()
-            NightResponsibility.objects.all().delete()
-            Event.objects.all().delete()
-            DefectFault.objects.all().delete()
+        if not settings.TESTING:
+            return Response(
+                "Not found",
+                status=status.HTTP_404_NOT_FOUND
+            )
 
-            return Response("Resetting database successful", status=status.HTTP_200_OK)
+        # SECURITY: Multiple layers of protection
+        is_test_env = os.getenv("CYPRESS") in [
+            "True"] or os.environ.get("GITHUB_WORKFLOW")
+        is_debug = settings.DEBUG
+        is_authenticated = request.user.is_authenticated
 
-        return Response(
-            "This endpoint is for Cypress tests only",
-            status=status.HTTP_403_FORBIDDEN
-        )
+        if not is_test_env:
+            return Response(
+                "This endpoint is for Cypress tests only",
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        if not is_debug:
+            return Response(
+                "This endpoint is only available in DEBUG mode",
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        if not is_authenticated:
+            return Response(
+                "Authentication required",
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        # Additional check: Only allow admin users to reset database
+        if request.user.role not in [LEPPISPJ, LEPPISVARAPJ]:
+            return Response(
+                "Admin privileges required",
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # All checks passed, proceed with database reset
+        User.objects.all().delete()
+        Organization.objects.all().delete()
+        NightResponsibility.objects.all().delete()
+        Event.objects.all().delete()
+        DefectFault.objects.all().delete()
+
+        return Response("Resetting database successful", status=status.HTTP_200_OK)
+
 
 class HandOverKeyView(APIView):
     """View for handing over a Klusteri key at <baseurl>/api/keys/hand_over_key/<user.id>/"""
@@ -715,7 +886,8 @@ class HandOverKeyView(APIView):
             return Response("User not found", status=status.HTTP_404_NOT_FOUND)
 
         try:
-            organization_to_update = Organization.objects.get(name=request.data["organization_name"])
+            organization_to_update = Organization.objects.get(
+                name=request.data["organization_name"])
         except ObjectDoesNotExist:
             return Response("Organization not found", status=status.HTTP_404_NOT_FOUND)
         except KeyError:
@@ -734,7 +906,7 @@ class HandOverKeyView(APIView):
             updated_data["role"] = 4
 
         serializer = UserUpdateSerializer(
-            instance=user_to_update, data=updated_data, partial=True
+            instance=user_to_update, data=updated_data, partial=True, context={'request': request}
         )
 
         if serializer.is_valid():
@@ -742,6 +914,7 @@ class HandOverKeyView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class DefectFaultView(viewsets.ReadOnlyModelViewSet):
     """
@@ -751,6 +924,8 @@ class DefectFaultView(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = DefectFaultSerializer
     queryset = DefectFault.objects.all()
+    pagination_class = None
+
 
 class CreateDefectFaultView(APIView):
     """View for creating a new defect/fault report <baseurl>/api/defects/create_defect"""
@@ -766,6 +941,7 @@ class CreateDefectFaultView(APIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class RepairDefectFaultView(APIView):
     """View for updating a DefectFault object at <baseurl>/api/defects/repair_defect/<defect.id>/"""
@@ -802,6 +978,7 @@ class RepairDefectFaultView(APIView):
             return Response(defectfault.data, status=status.HTTP_200_OK)
         return Response(defectfault.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class EmailDefectFaultView(APIView):
     """View for updating a DefectFault object at <baseurl>/api/defects/email_defect/<defect.id>/"""
 
@@ -837,6 +1014,7 @@ class EmailDefectFaultView(APIView):
             return Response(defectfault.data, status=status.HTTP_200_OK)
         return Response(defectfault.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class UpdateDefectFaultView(APIView):
     """View for updating a DefectFault object at <baseurl>/api/defects/update_defect/<defect.id>/"""
 
@@ -870,6 +1048,7 @@ class UpdateDefectFaultView(APIView):
             return Response(defect.data, status=status.HTTP_200_OK)
         return Response(defect.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class RemoveDefectFaultView(APIView):
     """View for removing a defect <baseurl>/api/defects/delete_defect/<defect.id>/"""
 
@@ -901,6 +1080,7 @@ class RemoveDefectFaultView(APIView):
 
         return Response(f"Defect {defect_to_remove.description} successfully removed", status=status.HTTP_200_OK)
 
+
 class CleaningView(viewsets.ReadOnlyModelViewSet):
     """
     Displays a list of all cleaning objects at <baseurl>/cleaning/
@@ -909,6 +1089,8 @@ class CleaningView(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = CleaningSerializer
     queryset = Cleaning.objects.all()
+    pagination_class = None
+
 
 class CreateCleaningView(APIView):
     """View for creating cleaning schedule <baseurl>/api/cleaning/create_cleaning"""
@@ -921,7 +1103,7 @@ class CreateCleaningView(APIView):
         if user.data["role"] not in [
             LEPPISPJ,
         ]:
-          return Response(
+            return Response(
                 "You can't edit cleaning schedule",
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -936,6 +1118,7 @@ class CreateCleaningView(APIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class RemoveCleaningView(APIView):
     """View for removing the cleaning schedule <baseurl>/api/cleaning/remove/all/"""
@@ -965,29 +1148,66 @@ class RemoveCleaningView(APIView):
 
 def force_logout_ykv_logins():
     try:
-        responsibility_to_update = NightResponsibility.objects.filter(present=True)
-        if len(responsibility_to_update) == 0:
-            return "Nothing to log out"
+        responsibility_to_update = NightResponsibility.objects.filter(
+            present=True)
+        count = len(responsibility_to_update)
+        if count == 0:
+            return "No active YKV responsibilities to log out"
     except ObjectDoesNotExist:
-        return "Nothing to log out"
+        return "No active YKV responsibilities to log out"
 
-    datetime_format = "%Y-%m-%d %H:%M"
-    logout_time = datetime.strptime(str(datetime.now())[:-10], datetime_format)
+    logout_time = timezone.now()
+    logged_out_count = 0
 
     for resp in responsibility_to_update:
         data = {'late': True,
-                'present': False, 
+                'present': False,
                 'logout_time': logout_time}
         responsibility = NightResponsibilitySerializer(
             instance=resp, data=data, partial=True
         )
         if responsibility.is_valid():
             responsibility.save()
+            logged_out_count += 1
 
-    return "logged out users"
+    return f"Successfully logged out {logged_out_count} YKV responsibility(ies) at {logout_time.strftime('%Y-%m-%d %H:%M:%S')}"
+
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+    throttle_scope = "login"
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+
+        if response.status_code == status.HTTP_200_OK:
+            access_token = response.data.get("access")
+            refresh_token = response.data.get("refresh")
+            if access_token and refresh_token:
+                access_max_age = int(
+                    settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"].total_seconds())
+                refresh_max_age = int(
+                    settings.SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"].total_seconds())
+                secure_cookie = not settings.DEBUG
+
+                response.set_cookie(
+                    "access_token",
+                    access_token,
+                    max_age=access_max_age,
+                    httponly=True,
+                    secure=secure_cookie,
+                    samesite="Strict",
+                )
+                response.set_cookie(
+                    "refresh_token",
+                    refresh_token,
+                    max_age=refresh_max_age,
+                    httponly=True,
+                    secure=secure_cookie,
+                    samesite="Strict",
+                )
+
+        return response
 
 
 class CleaningSuppliesView(viewsets.ReadOnlyModelViewSet):
@@ -998,6 +1218,8 @@ class CleaningSuppliesView(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = CleaningSuppliesSerializer
     queryset = CleaningSupplies.objects.all()
+    pagination_class = None
+
 
 class CreateCleaningSuppliesView(APIView):
     """View for creating cleaning supplies <baseurl>/api/cleaningsupplies/create_tool"""
@@ -1015,18 +1237,19 @@ class CreateCleaningSuppliesView(APIView):
             JARJESTOPJ,
             JARJESTOVARAPJ
         ]:
-          return Response(
+            return Response(
                 "You can't edit cleaning tool",
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        serializer =CleaningSuppliesSerializer(data=request.data)
+        serializer = CleaningSuppliesSerializer(data=request.data)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-  
+
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class RemoveCleaningSuppliesView(APIView):
     """View for removing a defect <baseurl>/api/cleaningsupplies/delete_tool/<id>/"""

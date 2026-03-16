@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { authAPI } from "../api/api";
 
 // Creates a context for managing global application state
 const StateContext = createContext({
@@ -8,26 +9,40 @@ const StateContext = createContext({
   timeLeft: null,
 
   // Functions to update state values
-  setUser: () => {},
-  setToken: () => {},
-  setNotification: () => {},
-  setTimeLeft: () => {},
+  setUser: () => { },
+  setToken: () => { },
+  setNotification: () => { },
+  setTimeLeft: () => { },
 });
 
 // ContextProvider component to provide state to child components
-export const ContextProvider = ({ children }) => {
-  const [user, setUser] = useState(
-    JSON.parse(localStorage.getItem("loggedUser")) || null,
-  );
-  const [token, setToken] = useState(
-    localStorage.getItem("ACCESS_TOKEN") || null,
-  );
+export const ContextProvider = ({ children, initialUser = null, skipHydration = false }) => {
+  const [user, setUser] = useState(initialUser);
+  const [token, setToken] = useState(null);
   const [notification, setNotification] = useState(null);
   const [timeLeft, setTimeLeft] = useState(30 * 60);
 
+  // Hydrate user from server on app mount using HttpOnly cookie
   useEffect(() => {
-    localStorage.setItem("loggedUser", JSON.stringify(user));
-  }, [user]);
+    if (skipHydration) {
+      return;
+    }
+    // Only fetch if we have reason to believe a session exists (set during login)
+    if (localStorage.getItem("hasSession") !== "true") {
+      return;
+    }
+    const hydrateUser = async () => {
+      try {
+        const response = await authAPI.getUserInfo();
+        setUser(response.data);
+      } catch (error) {
+        // Not authenticated or session expired; user remains null
+        setUser(null);
+        localStorage.removeItem("hasSession");
+      }
+    };
+    hydrateUser();
+  }, [skipHydration]);
 
   useEffect(() => {
     // Timer logic to decrement timeLeft every second
@@ -46,11 +61,6 @@ export const ContextProvider = ({ children }) => {
 
   const updateToken = (token) => {
     setToken(token);
-    if (token) {
-      localStorage.setItem("ACCESS_TOKEN", token);
-    } else {
-      localStorage.removeItem("ACCESS_TOKEN");
-    }
   };
 
   const updateNotification = (message) => {

@@ -1,131 +1,145 @@
 import {
-    render,
-    fireEvent,
-    waitFor,
-    screen,
-    within,
+  render,
+  fireEvent,
+  waitFor,
+  screen
 } from "@testing-library/react";
-import "@testing-library/jest-dom";
+import "@testing-library/dom";
 import CleaningSupplies from "../../src/pages/cleaningsuppliespage.jsx";
 import mockAxios from "../../__mocks__/axios";
-import i18n from "../i18n.js";
+import { ContextProvider } from "@context/ContextProvider";
+import { Role } from '../../src/roles';
 
 localStorage.setItem("lang", "fi");
 
 afterEach(() => {
-    // Cleaning up the mess left behind the previous test
-    mockAxios.reset();
+  // Cleaning up the mess left behind the previous test
+  mockAxios.reset();
 });
 
 describe("Cleaningsupplies Component", () => {
-    it("doesn't open without logging in", () => {
-        render(<CleaningSupplies />);
-        expect(screen.getByText("Kirjaudu sisään")).toBeInTheDocument();
-    });
+  it("doesn't open without logging in", () => {
+    render(
+      <ContextProvider skipHydration>
+        <CleaningSupplies />
+      </ContextProvider>
+    );
+    expect(screen.getByText("Kirjaudu sisään")).toBeInTheDocument();
+  });
 
-    it("creating a new cleaning tool succeeds", async () => {
-      const user = {
-        username: "superman",
-        email: "superman@example.com",
-        telegram: "super_telegram",
-        role: 1,
-        keys: { "tko-äly": true },
-        organization: { "tko-äly": true },
-        rights_for_reservation: true,
-        id: 1,
-      };
-  
-      window.confirm = jest.fn(() => true);
-      localStorage.setItem("ACCESS_TOKEN", "example_token");
-      localStorage.setItem("loggeduser", JSON.stringify(user));
-  
-      render(<CleaningSupplies isLoggedIn={true} loggedUser={user} />);
-  
-      // Simulate opening of the dialog for creating new cleaning tool:
+  it("creating a new cleaning tool succeeds", async () => {
+    const user = {
+      username: "superman",
+      email: "superman@example.com",
+      telegram: "super_telegram",
+      role: Role.LEPPISPJ,
+      keys: { "tko-äly": true },
+      organization: { "tko-äly": true },
+      rights_for_reservation: true,
+      id: 1,
+    };
+
+    window.confirm = jest.fn(() => true);
+
+    render(
+      <ContextProvider initialUser={user} skipHydration>
+        <CleaningSupplies />
+      </ContextProvider>
+    );
+
+    // Simulate opening of the dialog for creating new cleaning tool:
+    await waitFor(() => {
       fireEvent.click(screen.getByTestId("addcleaningsupplies"));
-  
-      // Fill in the defect description
-      const descriptionInput = screen.getByTestId("description").querySelector("input");
-      fireEvent.change(descriptionInput, { target: { value: "imuri" } });
-  
-      // Simulate clicking the create button
-      fireEvent.click(screen.getByTestId("createtool"));
-  
-      // Mock the response
-      const responseObj = {
-        data: [
-          {
-            id: 1,
-            description: "imuri",
-          },
-        ],
-      };
-  
-      // Wait for the axios requests to complete
-      await waitFor(() => {
-        // Mock the axios post request
-        mockAxios.mockResponseFor({ url: "/cleaningsupplies/create_tool" }, responseObj);
-
-        expect(mockAxios.post).toHaveBeenCalledWith(
-          "/cleaningsupplies/create_tool",
-          {
-            tool: "imuri",
-          }
-        );
-  
-        expect(mockAxios.get).toHaveBeenCalledWith("/listobjects/cleaningsupplies/");
-      });
-  
-      // Check if the description appears in the document
-      expect(screen.getByText("Siivousvälineen luonti onnistui")).toBeInTheDocument();
     });
 
-    it("deleting a cleaning tool succeeds", async () => {
-      const user = {
-        username: "superman",
-        email: "superman@example.com",
-        telegram: "super_telegram",
-        role: 1,
-        keys: { "tko-äly": true },
-        organization: { "tko-äly": true },
-        rights_for_reservation: true,
-        id: 1,
-      };
-  
-      window.confirm = jest.fn(() => true);
-      localStorage.setItem("ACCESS_TOKEN", "example_token");
-      localStorage.setItem("loggeduser", JSON.stringify(user));
-  
-      render(<CleaningSupplies isLoggedIn={true} loggedUser={user} />);
-  
-      // Mock the response
-      const responseObj = {
-        data: [
-          {
-            id: 1,
-            tool: "imuri",
-          },
-        ],
-      };
+    // Fill in the defect description
+    const descriptionInput = screen.getByTestId("description").querySelector("input");
+    fireEvent.change(descriptionInput, { target: { value: "imuri" } });
 
-      await waitFor(() => {
-        // Mock the axios get request
-        mockAxios.mockResponseFor({ url: "/listobjects/cleaningsupplies/" }, responseObj);
-      })
+    // Simulate clicking the create button
+    await waitFor(() => {
+      fireEvent.click(screen.getByTestId("createtool"));
+    });
 
-      await waitFor(() => {
-        expect(screen.getByText("imuri")).toBeInTheDocument();
-      });
+    // Mock the response
+    const responseObj = {
+      data: [
+        {
+          id: 1,
+          description: "imuri",
+        },
+      ],
+    };
 
-      // // Simulate clicking the trashcan for delete:
+    // Wait for the axios requests to complete
+    await waitFor(() => {
+      // Mock the axios post request
+      mockAxios.mockResponseFor({ url: "cleaningsupplies/create_tool" }, responseObj);
+    });
+
+    expect(mockAxios.post).toHaveBeenCalledWith(
+      "cleaningsupplies/create_tool",
+      {
+        tool: "imuri",
+      }
+    );
+
+    expect(mockAxios.get).toHaveBeenCalledWith("listobjects/cleaningsupplies/");
+
+    // Check if the description appears in the document
+    expect(await screen.findByText("Siivousvälineen luonti onnistui")).toBeInTheDocument();
+  });
+
+  it("deleting a cleaning tool succeeds", async () => {
+    const user = {
+      username: "superman",
+      email: "superman@example.com",
+      telegram: "super_telegram",
+      role: Role.LEPPISPJ,
+      keys: { "tko-äly": true },
+      organization: { "tko-äly": true },
+      rights_for_reservation: true,
+      id: 1,
+    };
+
+    window.confirm = jest.fn(() => true);
+
+    render(
+      <ContextProvider initialUser={user} skipHydration>
+        <CleaningSupplies />
+      </ContextProvider>
+    );
+
+    // Mock the response
+    const responseObj = {
+      data: [
+        {
+          id: 1,
+          tool: "imuri",
+        },
+      ],
+    };
+
+    await waitFor(() => {
+      // Mock the axios get request
+      mockAxios.mockResponseFor({ url: "listobjects/cleaningsupplies/" }, responseObj);
+    })
+
+    expect(await screen.findByText("imuri")).toBeInTheDocument();
+
+    // // Simulate clicking the trashcan for delete:
+    await waitFor(() => {
       fireEvent.click(screen.getByTestId("delete-tool-button"));
-   
+    });
 
+
+    await waitFor(() => {
       fireEvent.click(screen.getByTestId("confirmdelete"));
+    });
 
     //   await waitFor(() => {
     //   expect(screen.getByText("Siivousvälineen poisto onnistui")).toBeInTheDocument();
     // });  
 
-    });
+  });
 });

@@ -1,20 +1,11 @@
 import axios from "axios";
 
 // Get API_URL from environment or use a default value
-const API_URL = process.env.VITE_API_URL;
+const API_URL = process.env.VITE_API_URL || "http://localhost:8000/api/";
 
 const axiosClient = axios.create({
-  baseURL: `${API_URL}/api`,
-});
-
-// Checks the authorization of the user using axios
-
-axiosClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem("ACCESS_TOKEN");
-  //const refreshtoken = localStorage.getItem('REFRESH_TOKEN')
-  config.headers = config.headers || {};
-  config.headers.Authorization = `Bearer ${token}`;
-  return config;
+  baseURL: API_URL,
+  withCredentials: true,
 });
 
 axiosClient.interceptors.response.use(
@@ -23,11 +14,35 @@ axiosClient.interceptors.response.use(
   },
   (error) => {
     const { response } = error;
-    if (response.status === 401) {
-      localStorage.removeItem("ACCESS_TOKEN");
-      // window.location.reload()
-    } else if (response.status === 404) {
-      //Show not found
+
+    // If session is invalid or expired (401), route to a public page
+    if (response && response.status === 401) {
+      const publicRoutes = [
+        "/",
+        "/etusivu",
+        "/christina_regina",
+        "/varaukset",
+        "/yhteystiedot",
+        "/saannot_ja_ohjeet",
+        "/tietosuojaseloste"
+      ];
+
+      // Normalize current path for comparison (remove trailing slash)
+      const currentPath = window.location.pathname === "/"
+        ? "/"
+        : window.location.pathname.replace(/\/$/, "");
+
+      const isPublic = publicRoutes.some(route => {
+        const normalizedRoute = route === "/" ? "/" : route.replace(/\/$/, "");
+        return normalizedRoute === currentPath;
+      });
+
+      if (!isPublic) {
+        window.location.href = "/";
+      } else {
+        // Just reload to clear React state if we are on a public page
+        window.location.reload();
+      }
     }
 
     throw error;

@@ -1,58 +1,65 @@
 import React, { useState, useEffect } from "react";
-import { useStateContext } from "../context/ContextProvider";
-import axios from "axios";
-import axiosClient from "../axios.js";
+import { useStateContext } from "@context/ContextProvider";
+import { usersAPI, organizationsAPI, keysAPI } from "../api/api.ts";
 import UserPage from "../components/UserPage.jsx";
 import OrganisationPage from "../components/OrganisationPage.jsx";
 import CreateOrganization from "../components/CreateOrganization.jsx";
 import AllUsers from "../components/AllUsers.jsx";
 import updateaccountcheck from "../utils/updateaccountcheck.js";
 import { useTranslation } from "react-i18next";
-import { Snackbar, Alert } from "@mui/material";
-import { ROLE_DESCRIPTIONS, ROLE_OPTIONS } from "../roles.js";
+import { Snackbar, Alert, Tabs, Tab, Box } from "@mui/material";
+import { Role } from "../roles.js";
 
-const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
+const TabPanel = (props) => {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          {children}
+        </Box>
+      )}
+    </div>
+  );
+};
+
+const OwnPage = () => {
   const { user, setUser } = useStateContext();
-  const [username, setUsername] = useState("");
+  const isLoggedIn = !!user;
+  const [username, setUsername] = useState(user?.username || "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [telegram, setTelegram] = useState("");
-  const [role, setRole] = useState("5");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [email, setEmail] = useState(user?.email || "");
+  const [telegram, setTelegram] = useState(user?.telegram || "");
+  const [role, setRole] = useState(user?.role || Role.TAVALLINEN);
 
-  // user_details* variables for viewing and updating someone else's information
-  const [userDetailsUsername, setUserDetailsUsername] = useState("");
-  const [userDetailsPassword, setUserDetailsPassword] = useState("");
-  const [userDetailsConfirmPassword, setUserDetailsConfirmPassword] =
-    useState("");
-  const [userDetailsEmail, setuserDetailsEmail] = useState("");
-  const [userDetailsTelegram, setuserDetailsTelegram] = useState("");
-  const [userDetailsRole, setuserDetailsRole] = useState(null);
-  const [userDetailsOrganizations, setuserDetailsOrganizations] = useState([]);
-  const [userDetailsId, setuserDetailsId] = useState("");
+
+  const [tabValue, setTabValue] = useState(0);
+
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
 
   const [organisations, setOrganisations] = useState([]);
-  const [selectedOrg, setSelectedOrg] = useState(null);
-
-  const [organization_email, setOrganizationEmail] = useState("");
-  const [organization_name, setOrganizationName] = useState("");
-  const [organization_homepage, setOrganizationHomePage] = useState("");
-  const [organization_color, setOrganizationColor] = useState("");
-
-  const [organization_new_email, setOrganizationNewEmail] = useState("");
-  const [organization_new_name, setOrganizationNewName] = useState("");
-  const [organization_new_homepage, setOrganizationNewHomePage] = useState("");
-  const [organization_new_color, setOrganizationNewColor] = useState("");
 
   const [allUsers, setAllUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedOrganization, setSelectedOrganization] = useState(null);
 
-  const [hasPermission, setHasPermission] = useState(false);
-  const [hasPermissionOrg, setHasPermissionOrg] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  // Derive permissions from user role in context
+  const hasPermission = user && user.role === Role.LEPPISPJ;
+  const hasPermissionOrg = user && (
+    user.role === Role.LEPPISPJ ||
+    user.role === Role.LEPPISVARAPJ ||
+    user.role === Role.MUOKKAUS ||
+    user.role === Role.JARJESTOPJ
+  );
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -60,32 +67,16 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
 
   const { t } = useTranslation();
 
-  const API_URL = process.env.VITE_API_URL;
-  // Writes down if a user is logged in
   useEffect(() => {
-    setIsLoggedIn(false);
-    const loggedUser = JSON.parse(localStorage.getItem("loggedUser")) || null;
-    if (loggedUser) {
-      setIsLoggedIn(true);
-      setUsername(loggedUser.username);
-      setEmail(loggedUser.email);
-      setTelegram(loggedUser.telegram);
-      setRole(loggedUser.role);
-      getOrganisations();
-      getPermission();
-    }
-  }, [user || propIsLoggedIn]);
-
-  // Fetches the organisations if a user is logged in
-  useEffect(() => {
-    if (isLoggedIn) {
+    if (isLoggedIn && user) {
+      setUsername(user.username);
+      setEmail(user.email);
+      setTelegram(user.telegram);
+      setRole(user.role);
       getOrganisations();
       getAllUsers();
-      getPermission();
     }
-  }, [isLoggedIn]);
-
-  // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION OF THE LOGGED IN USER
+  }, [isLoggedIn, user]);
 
   // Handles the user info update when the 'Vahvista Muutokset' button is clicked and gives error messages if the new username, email or telegram are taken by some other user
   const handleUserDetails = async (event) => {
@@ -95,84 +86,79 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       username: username,
       password: password,
       confirmPassword: confirmPassword,
+      current_password: currentPassword,
       email: email,
       telegram: telegram,
     };
 
-    const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
-    const user_id = loggedUser.id;
+    const user_id = user.id;
 
     if (!username || !email) {
-      setError(t("usereditmandfields"));
-      setTimeout(() => setError(""), 5000);
       handleSnackbar(t("usereditmandfields"), "error");
       return;
     }
-  
+
+    if (!currentPassword) {
+      handleSnackbar(t("currentpasswordrequired"), "error");
+      return;
+    }
+
     try {
-      if (telegram) {
-        const response = await axios.get(`${API_URL}/api/listobjects/users/?telegram=${telegram}`);
-        const existingUsers = response.data;
-        if (existingUsers.some((user) => user.telegram === telegram && user.id !== loggedUser.id)) {
-          setError(t("telegraminuse"));
-          handleSnackbar(t("telegraminuse"), "error");
-          setTimeout(() => setError(""), 5000);
-          return;
-        }
-      }
-  
+      // Validation is now handled by the backend
       if (password) {
         if (password !== confirmPassword) {
-          setError(t("diffpass"));
-          setTimeout(() => setError(""), 5000);
           handleSnackbar(t("diffpass"), "error");
           return;
         }
         if (password.length < 8 || password.length > 20) {
-          setError(t("mincharspass"));
-          setTimeout(() => setError(""), 5000);
           handleSnackbar(t("mincharspass"), "error");
           return;
         }
         if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
-          setError(t("invalidpass"));
-          setTimeout(() => setError(""), 5000);
           handleSnackbar(t("invalidpass"), "error");
           return;
         }
       }
-  
-      const response = await axios.get(`${API_URL}/api/listobjects/users/?email=${email}`);
-      const existingUsers = response.data;
-      if (existingUsers.some((user) => user.email === email && user.id !== loggedUser.id)) {
-        setError(t("emailinuse"));
-        handleSnackbar(t("emailinuse"), "error");
-        setTimeout(() => setError(""), 5000);
-        return;
-      }
-  
+
       const confirmUpdate = window.confirm(t("usereditconfirm"));
       if (!confirmUpdate) {
         console.log("User cancelled the update.");
         return;
       }
 
-      const updateResponse = await axiosClient.put(`/users/update/${user_id}/`, details);
-      localStorage.setItem("loggedUser", JSON.stringify(updateResponse.data));
+      const updateResponse = await usersAPI.updateUser(user_id, details);
       setUser(updateResponse.data);
-      setSuccess(t("usereditsuccess"));
-      setTimeout(() => setSuccess(""), 5000);
       handleSnackbar(t("usereditsuccess"), "success");
       await getAllUsers();
+
+      // Clear passwords after successful update
+      setPassword("");
+      setConfirmPassword("");
+      setCurrentPassword("");
     } catch (error) {
       console.error(t("usereditfail"), error);
-      setError(t("usereditfail"));
-      setTimeout(() => setError(""), 5000);
+      // Handle specific validation errors from backend
+      if (error.response && error.response.data) {
+        const errors = error.response.data;
+        if (errors.current_password) {
+          handleSnackbar(t("invalidcurrentpassword"), "error");
+          return;
+        }
+        if (errors.email) {
+          handleSnackbar(t("emailinuse"), "error");
+          return;
+        }
+        if (errors.username) {
+          handleSnackbar(t("usernameinuse"), "error");
+          return;
+        }
+        if (errors.telegram) {
+          handleSnackbar(t("telegraminuse"), "error");
+          return;
+        }
+      }
       handleSnackbar(t("usereditfail"), "error");
     }
-
-    setPassword("");
-    setConfirmPassword("");
   };
 
   const handleSnackbar = (message, severity) => {
@@ -189,7 +175,6 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     userDetailsEmail,
     userDetailsTelegram,
     userDetailsRole,
-    userDetailsOrganizations,
   ) => {
     /*
     Event handler for updating someone else's information.
@@ -204,9 +189,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
 
     if (!userDetailsUsername || !userDetailsEmail) {
-      setError(t("usereditmandfields"));
       handleSnackbar(t("usereditmandfields"), "error");
-      setTimeout(() => setError(""), 5000);
       return;
     }
 
@@ -218,7 +201,7 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       role: userDetailsRole,
       id: userDetailsId,
     };
-  
+
     try {
       const validationError = await updateaccountcheck({
         username: userDetailsUsername,
@@ -226,32 +209,24 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
         email: userDetailsEmail,
         telegram: userDetailsTelegram,
         confirmPassword: userDetailsConfirmPassword,
-        API_URL,
         t
       });
-  
+
       if (typeof validationError === "string") {
-        setError(validationError);
         handleSnackbar(validationError, "error");
-        setTimeout(() => setError(""), 5000);
         return;
       }
 
-      const response = await axiosClient.put(`/users/update/${userDetailsId}/`, updatedValues);
-      setSuccess(t("usereditsuccess"));
+      const response = await usersAPI.updateUser(userDetailsId, updatedValues);
       handleSnackbar(t("usereditsuccess"), "success");
-      setTimeout(() => setSuccess(""), 5000);
-  
-      if (userDetailsEmail === email) {
-        localStorage.setItem("loggedUser", JSON.stringify(response.data));
+
+      if (userDetailsId === user?.id) {
         setUser(response.data);
       }
-  
+
       await getAllUsers();
     } catch (error) {
-      setError(t("usereditfail"));
       handleSnackbar(t("usereditfail"), "error");
-      setTimeout(() => setError(""), 5000);
     }
   };
   // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION OF THE ORGANIZATIONS
@@ -259,40 +234,21 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   // Keeps the organization information up-to-date
   const getOrganisations = async () => {
     try {
-      const res = await 
-      axiosClient.get("listobjects/organizations/")
-      const orgData = res.data.map((u) => ({
-            id: u.id,
-            Organisaatio: u.name,
-            email: u.email,
-            kotisivu: u.homepage,
-            color: u.color,
-            Avaimia: u.user_set.length,
+      const res = await organizationsAPI.organizationsWithKeys();
+      const rawData = res.data;
+      const orgData = rawData.map((u) => ({
+        id: u.id,
+        Organisaatio: u.name,
+        email: u.email,
+        kotisivu: u.homepage,
+        color: u.color,
+        Avaimia: u.user_set.length,
 
       }));
       setOrganisations(orgData);
     } catch (error) {
       console.error(error);
     }
-  };
-
-  useEffect(() => {
-    getOrganisations();
-  }, []);
-
-  // Shows the information of organizations after clicking the view-button
-  const toggleOrgDetails = (orgId) => {
-    const organization = organisations.find((org) => org.id === orgId);
-    setOrganizationNewName(organization.name);
-    setOrganizationNewEmail(organization.email);
-    setOrganizationNewHomePage(organization.homepage);
-    setOrganizationNewColor(organization.color);
-    setSelectedOrg((prevSelectedOrg) => {
-      if (prevSelectedOrg === orgId) {
-        return null;
-      }
-      return orgId;
-    });
   };
 
   // Handles organization detail updates
@@ -310,18 +266,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       color: organization_new_color,
     };
     try {
-      await axiosClient
-        .put(
-          `/organizations/update_organization/${orgId}/`,
-          newOrganizationObject);
-        setSuccess("Järjestö muokattu onnistuneesti!");
-        handleSnackbar("Järjestö muokattu onnistuneesti!", "success");
-        setTimeout(() => setSuccess(""), 5000);
-        await getOrganisations();
-        } catch(error) {
-          console.error("Error creating account:", error);
-        }
-    };
+      await organizationsAPI.updateOrganization(orgId, newOrganizationObject);
+      handleSnackbar("Järjestö muokattu onnistuneesti!", "success");
+      await getOrganisations();
+    } catch (error) {
+      console.error("Error creating account:", error);
+    }
+  };
 
   // Handles deletion of organization
   const handleDeleteOrganization = async (orgId) => {
@@ -330,46 +281,31 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     );
     if (confirmUpdate) {
       try {
-        const response = await axiosClient.delete(`/organizations/remove/${orgId}/`);
+        await organizationsAPI.deleteOrganization(orgId);
         await getOrganisations();
         await getAllUsers();
-        setSuccess(t("orgdeletesuccess"));
         handleSnackbar(t("orgdeletesuccess"), "success");
-        setTimeout(() => setSuccess(""), 5000);
-      } catch(error) {
-        setError(t("orgdeletefail"));
+      } catch (error) {
+        handleSnackbar(t("orgdeletefail"), "error");
       }
     }
   };
 
   // Handles the creation of organizations
-  const handleCreateOrganization = async () => {
+  const handleCreateOrganization = async (organizationObject) => {
     try {
-      const response = await axios
-      .get(
-        `${API_URL}/api/listobjects/organizations/?email=${organization_email}`,
-      );
+      const response = await organizationsAPI.getOrganizationsByEmail(organizationObject.email);
       const existingOrganizations = response.data;
       if (
-        existingOrganizations.some((org) => org.name === organization_name)
+        existingOrganizations.some((org) => org.name === organizationObject.name)
       ) {
-        setError(t("orgcreatenamefail"));
         handleSnackbar(t("orgcreatenamefail"), "error");
-        setTimeout(() => setError(""), 5000);
       }
       if (
-        existingOrganizations.some((org) => org.email === organization_email)
+        existingOrganizations.some((org) => org.email === organizationObject.email)
       ) {
-        setError(t("emailinuse"));
         handleSnackbar(t("emailinuse"), "error");
-        setTimeout(() => setError(""), 5000);
       } else {
-        const organizationObject = {
-          name: organization_name,
-          email: organization_email,
-          homepage: organization_homepage,
-          color: organization_color,
-        };
         await createOrganization(organizationObject);
       }
     } catch (error) {
@@ -378,30 +314,28 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
   };
   const createOrganization = async (organizationObject) => {
     try {
-      await axiosClient
-      .post("organizations/create", organizationObject);
-      setSuccess(t("orgcreatesuccess"));
+      await organizationsAPI.createOrganization(organizationObject);
       handleSnackbar(t("orgcreatesuccess"), "success");
-      setTimeout(() => setSuccess(""), 5000);
       await getOrganisations();
-    } catch(error) {
+    } catch (error) {
       console.error("Error creating organization:", error);
     }
   };
-    
+
   // HERE BEGINS THE FUNCTIONS THAT HANDLES THE INFORMATION FOR ALL USERS (ONLY VISIBLE FOR LEPPIS PJ)
 
   // Gets every users data from backend
   const getAllUsers = async () => {
     try {
-      const response = await axiosClient.get("listobjects/users/");
-      const userData = response.data.map((u) => ({
+      const response = await usersAPI.getUsers();
+      const rawData = response.data;
+      const userData = rawData.map((u) => ({
         id: u.id,
-        Käyttäjänimi: u.username,
+        username: u.username,
         email: u.email,
-        Telegram: u.telegram,
-        Rooli: ROLE_DESCRIPTIONS[u.role],
-        Jäsenyydet: u.keys.map((organization) => organization.name),
+        telegram: u.telegram,
+        role: u.role,
+        memberships: u.keys ? u.keys.map((organization) => organization.name) : [],
         resrights: u.rights_for_reservation,
       }));
       setAllUsers(userData);
@@ -410,31 +344,13 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
   };
 
-  const toggleUserDetails = (userId) => {
-    const showThisUser = allUsers.find((user) => user.id === userId);
-    setUserDetailsUsername(showThisUser.username);
-    setuserDetailsEmail(showThisUser.email);
-    setuserDetailsTelegram(showThisUser.telegram);
-    setuserDetailsRole(showThisUser.role);
-    setuserDetailsId(showThisUser.id);
-
-    // get a list of each organization the user is a member of
-    const orgDict = showThisUser.keys;
-    setuserDetailsOrganizations(orgDict.map((org) => org.name));
-
-    setSelectedUser((prevSelectedUser) => {
-      if (prevSelectedUser === userId) {
-        return null;
-      }
-      return userId;
-    });
-  };
-
   // Handles PJ change
   const handlePJChange = async (userId) => {
     const selectedUserId = userId;
-    const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
-    const loggedUserId = loggedUser.id;
+    if (!user) {
+      return;
+    }
+    const loggedUserId = user.id;
 
     confirmupdate();
 
@@ -442,18 +358,15 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       const confirmUpdate = window.confirm(t("pjchange"));
 
       if (confirmUpdate) {
-        axiosClient
-          .put(`/users/update/${selectedUserId}/`, { role: 1 })
+        usersAPI
+          .updateUser(selectedUserId, { role: Role.LEPPISPJ })
           .then((response) => {
             console.log("Role updated successfully:", response.data);
           });
-        axiosClient
-          .put(`/users/update/${loggedUserId}/`, { role: 5 })
+        usersAPI
+          .updateUser(loggedUserId, { role: Role.TAVALLINEN })
           .then((response) => {
-            localStorage.setItem("loggedUser", JSON.stringify(response.data));
             setUser(response.data);
-            setSuccess(t("usereditsuccess"));
-            setTimeout(() => setSuccess(""), 5000);
           })
           .catch((error) => {
             console.error("Error updating user details:", error);
@@ -473,10 +386,9 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
       const confirmUpdate = window.confirm(t("resrightsconfirm"));
 
       if (confirmUpdate) {
-        axiosClient
-          .put(`/users/change_rights_reservation/${selectedUserId}/`)
-          .then((response) => {
-            setSuccess(t("usereditsuccess"));
+        usersAPI
+          .changeReservationRights(selectedUserId)
+          .then(() => {
           })
           .catch((error) => {
             console.error("Error changing reservation rights:", error);
@@ -505,81 +417,22 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
     }
 
     try {
-      const accessToken = localStorage.getItem("ACCESS_TOKEN");
-      const response = await axios.put(
-        `${API_URL}/api/keys/hand_over_key/${UserId}/`,
-        {
-          organization_name: Organization,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
+      const response = await keysAPI.handOverKey(UserId, {
+        organization_name: Organization,
+      });
       // Check the response and update the UI accordingly
       if (response.status === 200) {
         // Successful key handover
-        setSuccess(t("handoverkeysuccess"));
-        setTimeout(() => {
-          setSuccess("");
-        }, 5000);
+        handleSnackbar(t("handoverkeysuccess"), "success");
         await getAllUsers();
       } else {
         // Error in key handover
-        setError("ERROR");
+        handleSnackbar("ERROR", "error");
       }
     } catch (error) {
       console.error("Error in key handover:", error);
-      setError(t("handoverkeyfail"));
+      handleSnackbar(t("handoverkeyfail"), "error");
     }
-  };
-
-  // Handles select user
-  const handleSelectUser = (event) => {
-    setSelectedUser(event.target.value);
-  };
-
-  // Handles select organization
-  const handleSelectOrganization = (event) => {
-    setSelectedOrganization(event.target.value);
-  };
-
-  const getPermission = async () => {
-    /*
-    Check if the logged user has permissions for something
-    This prevents harm caused by localstorage manipulation
-    */
-
-    const accessToken = localStorage.getItem("ACCESS_TOKEN");
-    await axios
-      .get(`${API_URL}/api/users/userinfo`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((response) => {
-        const currentUser = response.data;
-        if (currentUser.role === 1) {
-          setHasPermission(true);
-          setHasPermissionOrg(true);
-        } else if (
-          currentUser.role == 2 ||
-          currentUser.role == 3 ||
-          currentUser.role == 6
-        ) {
-          setHasPermissionOrg(true);
-          setHasPermission(false);
-        } else if (currentUser[0]) {
-          if (currentUser[0].role === 1) {
-            setHasPermission(true);
-            setHasPermissionOrg(true);
-          }
-        } else {
-          setHasPermission(false);
-          setHasPermissionOrg(false);
-        }
-      });
   };
 
   return (
@@ -604,52 +457,52 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
           <div style={{ display: "flex" }}>
             <div id="left_content">
               <div id="leftleft_content">
-                {
+                <Box sx={{ width: '100%', borderBottom: 1, borderColor: 'divider' }}>
+                  <Tabs value={tabValue} onChange={handleTabChange} aria-label="user settings tabs">
+                    <Tab label={t("owninfo")} />
+                    <Tab label={t("changepassword")} />
+                  </Tabs>
+                </Box>
+                <TabPanel value={tabValue} index={0}>
                   <UserPage
+                    mode="info"
                     username={username}
                     setUsername={setUsername}
-                    password={password}
-                    setPassword={setPassword}
-                    confirmPassword={confirmPassword}
-                    setConfirmPassword={setConfirmPassword}
                     email={email}
                     setEmail={setEmail}
                     telegram={telegram}
                     setTelegram={setTelegram}
+                    currentPassword={currentPassword}
+                    setCurrentPassword={setCurrentPassword}
                     handleUserDetails={handleUserDetails}
                     role={role}
                   />
-                }
+                </TabPanel>
+                <TabPanel value={tabValue} index={1}>
+                  <UserPage
+                    mode="password"
+                    password={password}
+                    setPassword={setPassword}
+                    confirmPassword={confirmPassword}
+                    setConfirmPassword={setConfirmPassword}
+                    currentPassword={currentPassword}
+                    setCurrentPassword={setCurrentPassword}
+                    handleUserDetails={handleUserDetails}
+                  />
+                </TabPanel>
                 {
                   <OrganisationPage
                     organizations={organisations}
-                    selectedOrg={selectedOrg}
+                    allUsers={allUsers}
                     hasPermissionOrg={hasPermissionOrg}
-                    organization_new_name={organization_new_name}
-                    setOrganizationNewName={setOrganizationNewName}
-                    organization_new_homepage={organization_new_homepage}
-                    setOrganizationNewHomePage={setOrganizationNewHomePage}
-                    organization_new_email={organization_new_email}
-                    setOrganizationNewEmail={setOrganizationNewEmail}
-                    organization_new_color={organization_new_color}
-                    setOrganizationNewColor={setOrganizationNewColor}
                     handleOrganizationDetails={handleOrganizationDetails}
-                    hasPermission={hasPermission}
                     handleDeleteOrganization={handleDeleteOrganization}
-                    toggleOrgDetails={toggleOrgDetails}
                     fetchOrganizations={getOrganisations}
+                    currentUserRole={user?.role}
                   />
                 }
                 {hasPermission === true && (
                   <CreateOrganization
-                    organization_name={organization_name}
-                    setOrganizationName={setOrganizationName}
-                    organization_email={organization_email}
-                    setOrganizationEmail={setOrganizationEmail}
-                    organization_homepage={organization_homepage}
-                    setOrganizationHomePage={setOrganizationHomePage}
-                    organization_color={organization_color}
-                    setOrganizationColor={setOrganizationColor}
                     handleCreateOrganization={handleCreateOrganization}
                     fetchOrganizations={getOrganisations}
                   />
@@ -658,20 +511,8 @@ const OwnPage = ({ isLoggedIn: propIsLoggedIn }) => {
                   <AllUsers
                     allUsers={allUsers}
                     organizations={organisations}
-                    toggleUserDetails={toggleUserDetails}
-                    userDetailsUsername={userDetailsUsername}
-                    setUserDetailsUsername={setUserDetailsUsername}
-                    userDetailsEmail={userDetailsEmail}
-                    setuserDetailsEmail={setuserDetailsEmail}
-                    userDetailsTelegram={userDetailsTelegram}
-                    userDetailsRole={userDetailsRole}
-                    setuserDetailsRole={setuserDetailsRole}
-                    userDetailsOrganizations={userDetailsOrganizations}
-                    hasPermissionOrg={hasPermissionOrg}
                     handleUpdateAnotherUser={handleUpdateAnotherUser}
-                    hasPermission={hasPermission}
                     handlePJChange={handlePJChange}
-                    selectedUser={selectedUser}
                     handleKeySubmit={handleKeySubmit}
                     handleResRightChange={handleResRightChange}
                     fetchOrganizations={getOrganisations}

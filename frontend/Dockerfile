@@ -5,7 +5,7 @@ WORKDIR /frontend
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci
 
 COPY . .
 
@@ -28,9 +28,12 @@ COPY --from=build /frontend/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Ensure proper permissions for Nginx directories
-RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
+RUN touch /var/run/nginx.pid && \
+    mkdir -p /var/cache/nginx/api_cache /var/log/nginx && \
+    chmod -R g+w /var/cache/nginx /var/run /var/log/nginx /var/run/nginx.pid && \
+    chgrp -R 0 /var/cache/nginx /var/run /var/log/nginx /var/run/nginx.pid
 
 # Expose the necessary port
-EXPOSE 5173 8000
+EXPOSE 5173
 
 CMD ["nginx", "-g", "daemon off;"]

@@ -1,24 +1,20 @@
-import axios from "axios";
+import { authAPI, usersAPI } from "../api/api.ts";
+import { Role } from "../roles.js";
 
-export const getPermission = async ({ API_URL, setHasPermission }) => {
+export const getPermission = async ({ setHasPermission }) => {
   /*
         Check if the logged user has permissions for something
         This prevents harm caused by localstorage manipulation
         */
 
-  const accessToken = localStorage.getItem("ACCESS_TOKEN");
-  await axios
-    .get(`${API_URL}/api/users/userinfo`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    })
+  await authAPI
+    .getUserInfo()
     .then((response) => {
       const currentUser = response.data;
-      if (currentUser.role === 1) {
+      if (currentUser.role === Role.LEPPISPJ) {
         setHasPermission(true);
       } else if (currentUser[0]) {
-        if (currentUser[0].role === 1) {
+        if (currentUser[0].role === Role.LEPPISPJ) {
           setHasPermission(true);
         }
       } else {
@@ -29,16 +25,14 @@ export const getPermission = async ({ API_URL, setHasPermission }) => {
 
 // fetch each user with keys if someone is logged in
 export const fetchAllUsersWithKeys = async ({
-  API_URL,
   setAllUsersWithKeys,
   loggedUser,
-  allResponsibilities,
 }) => {
   try {
-    const response = await axios.get(`${API_URL}/api/listobjects/users/`);
-    const allUsers = response.data;
-    const filteredUsers = allUsers.filter((user) =>
-      checkUser(user, loggedUser, allResponsibilities),
+    const response = await usersAPI.getUsers();
+    const rawData = response.data;
+    const filteredUsers = rawData.filter((user) =>
+      checkUser(user, loggedUser),
     );
     setAllUsersWithKeys(filteredUsers);
   } catch (error) {
@@ -47,8 +41,8 @@ export const fetchAllUsersWithKeys = async ({
 };
 
 // check if a user is valid for making an YKV-login
-const checkUser = (user, loggedUser, allResponsibilities) => {
-  if (user.role === 5) {
+const checkUser = (user, loggedUser) => {
+  if (user.role === Role.TAVALLINEN) {
     return false;
   }
   if (user.id === loggedUser.id) {

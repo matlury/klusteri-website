@@ -10,6 +10,10 @@
 
 ## Dokumentaatiot
 
+### Tekniset dokumentit
+- [Roolipohjaisen Pääsynhallinnan Dokumentaatio](docs/ROLE_PERMISSIONS.md) - Käyttäjäroolit ja oikeudet
+
+### Sprint dokumentaatio
 - [Product Backlog](https://github.com/orgs/matlury/projects/1)
 - [Sprint 0 Task Board](https://github.com/orgs/matlury/projects/18)
 - [Sprint 1 Task Board](https://github.com/orgs/matlury/projects/20)
@@ -77,6 +81,10 @@ python manage.py test tests
 Testit voi ajaa myös pytestin avulla
 ```bash
 poetry run coverage run --branch -m pytest
+```
+Testit voi ajaa myös rinnakkain
+```bash
+pytest -n auto
 ```
 Tällöin testikattavuusraportin saa tulostettua konsoliin komennolla
 ```

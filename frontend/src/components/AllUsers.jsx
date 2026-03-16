@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import axiosClient from "../axios.js";
+import React, { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import {
@@ -16,22 +15,21 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useTranslation } from "react-i18next";
-import { ROLE_DESCRIPTIONS, ROLE_OPTIONS } from "../roles.js";
+import { ROLE_OPTIONS } from "../roles.js";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import Tooltip from "@mui/material/Tooltip";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import Box from "@mui/material/Box";
 
 const AllUsers = ({
   allUsers,
   organizations,
   handleUpdateAnotherUser,
-  hasPermissionOrg,
-  hasPermission,
   handlePJChange,
   handleKeySubmit,
   handleResRightChange,
-  setUserDetailsPassword,
-  userDetailsPassword,
   fetchOrganizations,
   getAllUsers,
 }) => {
@@ -42,7 +40,6 @@ const AllUsers = ({
   const [userDetailsEmail, setuserDetailsEmail] = useState("");
   const [userDetailsTelegram, setuserDetailsTelegram] = useState("");
   const [userDetailsRole, setuserDetailsRole] = useState("");
-  const [userDetailsOrganizations, setuserDetailsOrganizations] = useState("");
   const [userDetailsId, setuserDetailsId] = useState("");
   const [userDetailsResRights, setuserDetailsResRights] = useState(false);
   const [selectedOrganization, setSelectedOrganization] = useState(null);
@@ -68,12 +65,11 @@ const AllUsers = ({
   // Function to toggle user details in the dialog
   const toggleUserDetails = (userId) => {
     const showThisUser = allUsers.find((user) => user.id === userId);
-    setUserDetailsUsername(showThisUser.Käyttäjänimi);
+    setUserDetailsUsername(showThisUser.username);
     setuserDetailsEmail(showThisUser.email);
-    setuserDetailsTelegram(showThisUser.Telegram);
-    setuserDetailsRole(showThisUser.Rooli);
+    setuserDetailsTelegram(showThisUser.telegram);
+    setuserDetailsRole(showThisUser.role);
     setuserDetailsId(showThisUser.id);
-    setuserDetailsOrganizations(showThisUser.Jäsenyydet ? showThisUser.Jäsenyydet.join(", ") : "");
     setuserDetailsResRights(showThisUser.resrights);
     handleClickOpen();
   };
@@ -81,9 +77,7 @@ const AllUsers = ({
   // Function to handle form submission (updating user details)
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    const roleIntValue = ROLE_OPTIONS.find(
-      (option) => option.label === userDetailsRole,
-    ).value;
+    const roleIntValue = userDetailsRole;
     await handleUpdateAnotherUser(
       userDetailsId,
       userDetailsUsername,
@@ -92,7 +86,6 @@ const AllUsers = ({
       userDetailsEmail,
       userDetailsTelegram,
       roleIntValue,
-      userDetailsOrganizations.split(", ").map((org) => org.trim()),
     );
     await fetchOrganizations();
     handleClose();
@@ -131,13 +124,12 @@ const AllUsers = ({
         </Button>
       ),
     },
-    { field: "Käyttäjänimi", headerName: t("username"), width: 150 },
+    { field: "username", headerName: t("username"), width: 150 },
     { field: "email", headerName: t("email"), width: 200 },
-    { field: "Telegram", headerName: "Telegram", width: 200 },
-    { field: "Rooli", headerName: t("role"), width: 80 },
-    { field: "Jäsenyydet", headerName: t("resp_orgs"), width: 200 },
+    { field: "telegram", headerName: t("telegram"), width: 200 },
+    { field: "role", headerName: t("role"), width: 80 },
+    { field: "memberships", headerName: t("resp_orgs"), width: 200 },
   ];
-
   return (
     <div>
       {/* Display DataGrid for users */}
@@ -163,6 +155,7 @@ const AllUsers = ({
               fullWidth
               sx={{ marginBottom: "1rem" }} // Add spacing below the field
               data-testid="username-input"
+              style={{ marginTop: "0.5em" }}
             />
             <TextField
               label={t("newpassword")}
@@ -190,7 +183,7 @@ const AllUsers = ({
               data-testid="email-input"
             />
             <TextField
-              label="Telegram"
+              label={t("telegram")}
               id="user_new_telegram"
               value={userDetailsTelegram}
               onChange={(e) => setuserDetailsTelegram(e.target.value)}
@@ -198,19 +191,27 @@ const AllUsers = ({
               sx={{ marginBottom: "1rem" }} // Add spacing below the field
               data-testid="telegram-input"
             />
-            <InputLabel id="user-role-label">{t("role")}</InputLabel>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, marginBottom: '0.5rem' }}>
+              <InputLabel id="user-role-label">{t("role")}</InputLabel>
+              <Tooltip title={<Box sx={{ whiteSpace: 'pre-line' }}>{t("role_info")}</Box>} arrow>
+                <InfoOutlinedIcon color="primary" sx={{ fontSize: 20, cursor: 'pointer' }} />
+              </Tooltip>
+            </Box>
             <Select
               labelId="user-role-label"
               id="user_new_role"
               value={userDetailsRole}
               label={t("role")}
-              onChange={(e) => setuserDetailsRole(e.target.value)}
+              onChange={(e) => {
+                console.log(e)
+                setuserDetailsRole(e.target.value)
+              }}
               fullWidth
               sx={{ marginBottom: "1rem" }}
               data-testid="role-select"
             >
               {ROLE_OPTIONS.map((option) => (
-                <MenuItem key={option.value} value={option.label}>
+                <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>
               ))}
@@ -244,7 +245,7 @@ const AllUsers = ({
                   variant="contained"
                   className="submit-key-button"
                   data-testid="submit-key-button"
-                  onClick={() => {handleKeyForm(userDetailsId, selectedOrganization.Organisaatio)}}
+                  onClick={() => { handleKeyForm(userDetailsId, selectedOrganization.Organisaatio) }}
                 >
                   {t("givekey")}
                 </Button>
@@ -261,18 +262,18 @@ const AllUsers = ({
             </Button>
             {userDetailsResRights ? (
               <Button
-              onClick={() => {handleRightsFormChange(userDetailsId)}}
-              sx={{ marginBottom: '1rem' }} // Add spacing below the button
+                onClick={() => { handleRightsFormChange(userDetailsId) }}
+                sx={{ marginBottom: '1rem' }} // Add spacing below the button
               >
                 {t("removeresrights")}
               </Button>
-            ):
-            <Button
-              onClick={() => {handleRightsFormChange(userDetailsId)}}
-              sx={{ marginBottom: '1rem' }} // Add spacing below the button
-            >
-              {t("addresrights")}
-            </Button>}
+            ) :
+              <Button
+                onClick={() => { handleRightsFormChange(userDetailsId) }}
+                sx={{ marginBottom: '1rem' }} // Add spacing below the button
+              >
+                {t("addresrights")}
+              </Button>}
 
             {/* Dialog actions */}
             <DialogActions>

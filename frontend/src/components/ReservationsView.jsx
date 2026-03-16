@@ -13,17 +13,24 @@ import {
   DialogContent,
   DialogTitle,
   Typography,
+  Box,
+  Chip,
+  Autocomplete,
 } from "@mui/material";
 import { CSVLink } from "react-csv";
 import { getCurrentDateTime } from "../utils/timehelpers";
 import DownloadIcon from '@mui/icons-material/Download';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import CheckIcon from '@mui/icons-material/Check';
 import OrgSelect from "./OrganizationChooseBox";
 import { useTranslation } from "react-i18next";
+import { useStateContext } from "@context/ContextProvider";
 
 const ReservationsView = ({
   handleAddNewEventClick,
   handleSelectSlot,
   handleSelectEvent,
+  onNavigate,
   showCreateModal,
   handleCloseModal,
   handleInputChange,
@@ -38,23 +45,22 @@ const ReservationsView = ({
   handleDeleteEvent,
   moment,
   organizations,
+  selectedRooms,
+  setSelectedRooms,
+  allRooms,
 }) => {
   const [CSVdata, setCSVdata] = useState(null);
   const [shouldDownload, setShouldDownload] = useState(false);
 
-  let admin = false;
-  let res_rights = false
-  let username = "";
-  const user = JSON.parse(localStorage.getItem("loggedUser"));
-  if (user) {
-    username = user.username
-    if (user.role < 3) {
-      admin = true;
-    }
-    if (user.role !== 5 && user.role !== 4 || user.rights_for_reservation === true) {
-      res_rights = true;
-    }
-  }
+  const { user } = useStateContext();
+  const admin = Boolean(user && user.role < 3);
+  const res_rights = Boolean(
+    user && ((user.role !== 5 && user.role !== 4) || user.rights_for_reservation === true)
+  );
+
+  const canEditEvent = Boolean(
+    selectedEvent && (selectedEvent.created_by?.username === user?.username || admin)
+  );
 
   const handleCSV = async () => {
     if (events.length > 0) {
@@ -87,6 +93,13 @@ const ReservationsView = ({
     }
   };
 
+  const handleICal = () => {
+    // Construct the absolute URL for the ical endpoint
+    const icalUrl = `${window.location.origin}/api/events/ical/`;
+    // Opening it in a new window/tab usually triggers the calendar app or download
+    window.open(icalUrl, "_blank");
+  };
+
   const date = getCurrentDateTime();
 
   const CSVDownload = (props) => {
@@ -109,68 +122,219 @@ const ReservationsView = ({
 
   return (
     <div className="textbox">
-      {admin && (
-        <div className="csv-download-button">
-          <Button
-            id="donwloadCSV"
-            variant="contained"
-            onClick={handleCSV}
-            style={{
-              padding: "7px",
-              margin: "10px",
-              float: "right",
-            }}
-            startIcon={<DownloadIcon />}
-          >
-            {t("csvdownload")}
-          </Button>
-          {shouldDownload && CSVdata && (
-            <CSVDownload
-              data={CSVdata}
-              filename={`klusteri-events-${date}.csv`}
-              target="_blank"
-            />
-          )}
-        </div>
-      )}
-      <h2>{t("reservations_res")}</h2>
-      {res_rights && 
-        <div className="add-event-button">
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mb: 2 }}>
         <Button
-          id="createEvent"
-          variant="contained"
-          onClick={handleAddNewEventClick}
-          style={{
-            padding: "7px",
-            margin: "10px",
-          }}
+          id="downloadICal"
+          variant="outlined"
+          onClick={handleICal}
+          size="small"
+          startIcon={<CalendarMonthIcon />}
+          sx={{ borderRadius: 2, textTransform: 'none' }}
         >
-          {t("reservations_add")}
+          {t("icaldownload")}
         </Button>
-      </div>  
-      }
-      <Calendar
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: 500 }}
-        selectable
-        onSelectSlot={handleSelectSlot}
-        onSelectEvent={handleSelectEvent}
-        firstDay={1}
-        eventPropGetter={(event) => ({
-          style: {
-            backgroundColor: event.open === true ? "#4caf50" : "#F08080",
-            borderRadius: "5px",
-            border: "none",
-            color: "#fff",
-            padding: "5px",
-            margin: "0 3px",
-            cursor: "pointer",
+        {admin && (
+          <>
+            <Button
+              id="donwloadCSV"
+              variant="outlined"
+              onClick={handleCSV}
+              size="small"
+              startIcon={<DownloadIcon />}
+              sx={{ borderRadius: 2, textTransform: 'none' }}
+            >
+              {t("csvdownload")}
+            </Button>
+            {shouldDownload && CSVdata && (
+              <CSVDownload
+                data={CSVdata}
+                filename={`klusteri-events-${date}.csv`}
+                target="_blank"
+              />
+            )}
+          </>
+        )}
+      </Box>
+      <Box sx={{
+        bgcolor: "#ffffff",
+        p: { xs: 0.5, sm: 3 }, // Minimal padding on mobile to maximize calendar space
+        borderRadius: 4,
+        boxShadow: "0px 4px 20px rgba(0,0,0,0.05)",
+        border: "1px solid rgba(0,0,0,0.04)"
+      }}>
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: { xs: 'stretch', md: 'center' },
+          p: { xs: 1, sm: 0 },
+          marginBottom: '20px',
+          flexDirection: { xs: 'column', md: 'row' },
+          gap: 2
+        }}>
+          <Typography variant="h5" component="h2" sx={{ fontWeight: 700, color: "text.primary" }}>
+            {t("reservations_res")}
+          </Typography>
+
+          <Box sx={{
+            display: 'flex',
+            gap: 1,
+            alignItems: 'center',
+            flexDirection: { xs: 'column', sm: 'row' },
+            width: { xs: '100%', md: 'auto' }
+          }}>
+
+            <Autocomplete
+              multiple
+              size="small"
+              id="room-filter"
+              options={allRooms}
+              disableCloseOnSelect
+              getOptionLabel={(option) => option.label}
+              isOptionEqualToValue={(option, value) => option.value === value.value}
+              value={selectedRooms}
+              onChange={(event, newValue) => {
+                setSelectedRooms(newValue);
+              }}
+
+              // Force single row by preventing wrapping and managing overflow
+              renderTags={(value, getTagProps) => {
+                if (value.length === allRooms.length) {
+                  return <Typography variant="body2" sx={{ ml: 1, fontWeight: 600 }}>{t("all")}</Typography>;
+                }
+                const numSelected = value.length;
+                // On small screens, collapse to count more quickly
+                const isSmall = window.innerWidth < 600;
+                if (numSelected > (isSmall ? 1 : 2)) {
+                  return <Typography variant="body2" sx={{ ml: 1, fontWeight: 600 }}>{numSelected} {t("selected") || "valittu"}</Typography>;
+                }
+                return value.map((option, index) => {
+                  const { key, ...tagProps } = getTagProps({ index });
+                  return (
+                    <Chip
+                      key={key}
+                      variant="outlined"
+                      size="small"
+                      label={option.label}
+                      {...tagProps}
+                    />
+                  );
+                });
+              }}
+              renderOption={(props, option, { selected }) => {
+                const { key, ...optionProps } = props;
+                return (
+                  <li key={key} {...optionProps} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <Typography variant="body2">{option.label}</Typography>
+                    {selected && <CheckIcon fontSize="small" color="primary" />}
+                  </li>
+                );
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  label={t("filter_rooms")}
+                  placeholder={selectedRooms.length === 0 ? t("all") : ""}
+                />
+              )}
+              sx={{
+                width: { xs: '100%', md: 300 },
+                "& .MuiOutlinedInput-root": {
+                  flexWrap: "nowrap",
+                  overflow: "hidden"
+                },
+                // Remove the default green/blue selection highlight
+                "& .MuiAutocomplete-option[aria-selected='true']": {
+                  backgroundColor: 'transparent !important',
+                },
+                "& .MuiAutocomplete-option[aria-selected='true'].Mui-focused": {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04) !important',
+                }
+              }}
+            />
+
+            {res_rights && (
+              <Button
+                id="createEvent"
+                variant="contained"
+                disableElevation
+                onClick={handleAddNewEventClick}
+                startIcon={<CalendarMonthIcon />}
+                sx={{
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  bgcolor: 'primary.main',
+                  '&:hover': { bgcolor: 'primary.dark' },
+                  whiteSpace: 'nowrap',
+                  width: { xs: '100%', sm: 'auto' },
+                  height: '40px'
+                }}
+              >
+                {t("reservations_add")}
+              </Button>
+            )}
+          </Box>
+        </Box>
+
+        <Box sx={{
+          height: "calc(100vh - 300px)",
+          minHeight: "600px",
+          // Target react-big-calendar internal classes for mobile optimization
+          "& .rbc-calendar": {
+            fontSize: { xs: '0.65rem', sm: '0.85rem' }
           },
-        })}
-      />
+          "& .rbc-toolbar": {
+            flexDirection: { xs: 'column', sm: 'row' },
+            alignItems: 'center',
+            gap: 1,
+            mb: 1,
+            "& .rbc-toolbar-label": {
+              fontWeight: 'bold',
+              py: 0.5
+            }
+          },
+          "& .rbc-event": {
+            padding: { xs: '0px 2px', sm: '2px 10px' },
+            minHeight: { xs: '14px', sm: 'auto' }
+          },
+          "& .rbc-header": {
+            padding: { xs: '2px 0', sm: '5px 0' },
+            fontSize: { xs: '0.6rem', sm: '0.85rem' }
+          },
+          "& .rbc-date-cell": {
+            paddingRight: { xs: '2px', sm: '10px' },
+            paddingTop: { xs: '2px', sm: '5px' },
+            fontSize: { xs: '0.7rem', sm: '1rem' }
+          }
+        }}>
+          <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            selectable
+            onSelectSlot={handleSelectSlot}
+            onSelectEvent={handleSelectEvent}
+            onNavigate={onNavigate}
+            firstDay={1}
+            popup={true}
+            eventPropGetter={(event) => ({
+              style: {
+                backgroundColor: event.open === true ? "#90b557" : "#ef5350", // Use fresh green and softer red
+                borderRadius: "4px",
+                border: "none",
+                color: "#fff",
+                padding: window.innerWidth < 600 ? "0px 2px" : "4px 8px",
+                fontSize: window.innerWidth < 600 ? "0.6rem" : "0.85rem",
+                fontWeight: 600,
+                boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                margin: "1px 0"
+              },
+            })}
+          />
+        </Box>
+      </Box>
 
       <Dialog open={showCreateModal} onClose={handleCloseModal}>
         <DialogTitle>{t("reservations_addform")}</DialogTitle>
@@ -281,7 +445,7 @@ const ReservationsView = ({
                 <MenuItem value="Kokoushuone">{t("Kokoushuone")}</MenuItem>
                 <MenuItem value="Kerhotila">{t("Kerhotila")}</MenuItem>
                 <MenuItem value="Oleskelutila">{t("Oleskelutila")}</MenuItem>
-                <MenuItem value="ChristinaRegina">ChristinaRegina</MenuItem>
+                <MenuItem value="ChristinaRegina">Christina Regina</MenuItem>
               </Select>
             </FormControl>
           </div>
@@ -317,8 +481,8 @@ const ReservationsView = ({
               <Typography variant="body1">
                 {t("reservations_resp")}: {selectedEvent.responsible}
               </Typography>
-              <Typography variant="body1">
-                {t("reservations_desc")}: {selectedEvent.description}
+              <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                {t("reservations_desc")}: {selectedEvent.description || (<i>{t("nodescription")}</i>)}
               </Typography>
               <Typography variant="body1">
                 {t("reservations_openness")}: {selectedEvent.open === true ? t("reservations_open") : t("reservations_closed")}
@@ -330,15 +494,15 @@ const ReservationsView = ({
           )}
         </DialogContent>
         <DialogActions>
-          {(selectedEvent && (selectedEvent.created_by.username === username || admin)) && 
-          <Button
-          id="deleteEvent"
-          variant="contained"
-          color="error"
-          onClick={() => handleDeleteEvent(selectedEvent.id)}
-          >
-          {t("remove_event")}
-          </Button>
+          {canEditEvent &&
+            <Button
+              id="deleteEvent"
+              variant="contained"
+              color="error"
+              onClick={() => handleDeleteEvent(selectedEvent.id)}
+            >
+              {t("remove_event")}
+            </Button>
           }
           <Button id="closeEvent" variant="outlined" onClick={handleCloseModal}>
             {t("close")}

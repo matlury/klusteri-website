@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from django.test import TestCase
 from ilotalo.models import NightResponsibility, User, Organization, Cleaning, CleaningSupplies
 
+
 class UserTestCase(TestCase):
     # Creating a new User object via test data
     def setUp(self):
@@ -26,6 +27,7 @@ class UserTestCase(TestCase):
         self.user.keys.add(self.org)
         self.assertTrue(self.user.keys.all().contains(self.org))
 
+
 class OrganizationTestCase(TestCase):
     # Creating a new User object via test data
     def setUp(self):
@@ -41,11 +43,12 @@ class OrganizationTestCase(TestCase):
         self.assertEqual(self.org.email, "tko@aly.fi")
         self.assertEqual(self.org.homepage, "tekis.fi")
 
+
 class NightResponsibilityTestCase(TestCase):
     # Creating a new NightResponsibility object via test data
     def setUp(self):
-        global current_time 
-        current_time = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+        global current_time
+        current_time = datetime.now(timezone.utc)
         self.org = Organization.objects.create(
             name="TKO-äly",
             email="tko@aly.fi",
@@ -71,13 +74,20 @@ class NightResponsibilityTestCase(TestCase):
     # Testing the creation of a NightResponsibility object and the correctness of its attributes
     def test_night_responsibility_creation(self):
         self.assertEqual(self.night_responsibility.user.username, "admin")
-        self.assertEqual(self.night_responsibility.user.email, "admin@admin.fi")
-        self.assertTrue(self.night_responsibility.organizations.all().contains(self.org))
-        self.assertEqual(self.night_responsibility.responsible_for, "Testing duties")
-        self.assertEqual(str(self.night_responsibility.login_time)[:-13], current_time)
-        self.assertEqual(str(self.night_responsibility.logout_time)[:-13], current_time)
+        self.assertEqual(self.night_responsibility.user.email,
+                         "admin@admin.fi")
+        self.assertTrue(
+            self.night_responsibility.organizations.all().contains(self.org))
+        self.assertEqual(
+            self.night_responsibility.responsible_for, "Testing duties")
+        # Compare the first 19 characters (YYYY-MM-DD HH:MM:SS format)
+        self.assertEqual(str(self.night_responsibility.login_time)[
+                         :19], current_time.strftime("%Y-%m-%d %H:%M:%S"))
+        self.assertEqual(str(self.night_responsibility.logout_time)[
+                         :19], current_time.strftime("%Y-%m-%d %H:%M:%S"))
         self.assertTrue(self.night_responsibility.present)
         self.assertFalse(self.night_responsibility.late)
+
 
 class CleaningTestCase(TestCase):
     def setUp(self):
@@ -107,7 +117,8 @@ class CleaningTestCase(TestCase):
         self.assertEqual(cleaning.small.name, "Small Organization")
 
     def test_week_default(self):
-        cleaning_default_week = Cleaning.objects.create(big=self.big_org, small=self.small_org)
+        cleaning_default_week = Cleaning.objects.create(
+            big=self.big_org, small=self.small_org)
         self.assertEqual(cleaning_default_week.week, 0)
 
 

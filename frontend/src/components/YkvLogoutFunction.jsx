@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import axiosClient from "../axios.js";
+import React, { useState, useEffect, useMemo } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import {
   Button,
@@ -16,24 +15,56 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { lighten, styled } from "@mui/material/styles";
 import CheckIcon from "@mui/icons-material/Check";
 import { useTranslation } from "react-i18next";
+import { useStateContext } from "@context/ContextProvider";
+import { Role } from '../roles';
+
+const getBackgroundColor = (color) => lighten(color, 0.7);
+const getHoverBackgroundColor = (color) => lighten(color, 0.6);
+const getSelectedBackgroundColor = (color) => lighten(color, 0.5);
+const getSelectedHoverBackgroundColor = (color) => lighten(color, 0.4);
+
+const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
+  "& .late": {
+    backgroundColor: getBackgroundColor(theme.palette.error.main),
+    transition: "background-color 0.1s ease",
+    "&:hover": {
+      backgroundColor: getHoverBackgroundColor(theme.palette.error.main),
+    },
+    "&.Mui-selected": {
+      backgroundColor: getSelectedBackgroundColor(theme.palette.error.main),
+      "&:hover": {
+        backgroundColor: getSelectedHoverBackgroundColor(theme.palette.error.main),
+      },
+    },
+  },
+  "& .on-time": {
+    backgroundColor: getBackgroundColor(theme.palette.success.main),
+    transition: "background-color 0.1s ease",
+    "&:hover": {
+      backgroundColor: getHoverBackgroundColor(theme.palette.success.main),
+    },
+    "&.Mui-selected": {
+      backgroundColor: getSelectedBackgroundColor(theme.palette.success.main),
+      "&:hover": {
+        backgroundColor: getSelectedHoverBackgroundColor(theme.palette.success.main),
+      },
+    },
+  },
+}));
 
 const YkvLogoutFunction = ({
   handleYkvLogin,
   handleYkvLogout,
-  idToLogout,
-  buttonPopup,
-  setButtonPopup,
-  activeResponsibilities,
-  setIdToLogout,
-  loggedUser,
-  setEditButtonPopup,
-  editButtonPopup,
-  setRespToEdit,
-  handleYkvEdit,
+  allResponsibilities,
+  allUsersWithKeys,
   responsibility,
   setResponsibility,
-  addedResponsibility,
+  selectedForYKV,
+  setSelectedForYKV,
+  selectedOrg,
+  setSelectedOrg,
 }) => {
+  const { user: loggedUser } = useStateContext();
   const [open, setOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
@@ -41,9 +72,7 @@ const YkvLogoutFunction = ({
   const [search, setSearch] = useState("");
   const [minFilter, setMinFilter] = useState("");
   const [maxFilter, setMaxFilter] = useState("");
-
   const { t } = useTranslation();
-
   const handleMaxFilterChange = (event) => {
     setMaxFilter(event.target.value);
   };
@@ -69,7 +98,6 @@ const YkvLogoutFunction = ({
 
   const handleRemove = async (id) => {
     await handleYkvLogout(id);
-    await fetchResponsibilities();
     setConfirmOpen(false);
   };
 
@@ -89,104 +117,69 @@ const YkvLogoutFunction = ({
     }
   };
 
-  const getBackgroundColor = (color) => lighten(color, 0.7);
-  const getHoverBackgroundColor = (color) => lighten(color, 0.6);
-  const getSelectedBackgroundColor = (color) => lighten(color, 0.5);
-  const getSelectedHoverBackgroundColor = (color) => lighten(color, 0.4);
-
-  const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
-    "& .late": {
-      backgroundColor: getBackgroundColor(theme.palette.error.main),
-      transition: "background-color 0.1s ease",
-      "&:hover": {
-        backgroundColor: getHoverBackgroundColor(theme.palette.error.main),
+  const columns = useMemo(
+    () => [
+      {
+        field: "actions",
+        headerName: t("resp_logout"),
+        width: 90,
+        renderCell: (params) => (
+          <Button
+            variant="outlined"
+            onClick={() => handleLogoutClick(params.id, params.row.Vastuussa)}
+            id="removeresp"
+          >
+            <LogoutOutlinedIcon />
+          </Button>
+        ),
       },
-      "&.Mui-selected": {
-        backgroundColor: getSelectedBackgroundColor(theme.palette.error.main),
-        "&:hover": {
-          backgroundColor: getSelectedHoverBackgroundColor(theme.palette.error.main),
-        },
-      },
-    },
-    "& .on-time": {
-      backgroundColor: getBackgroundColor(theme.palette.success.main),
-      transition: "background-color 0.1s ease",
-      "&:hover": {
-        backgroundColor: getHoverBackgroundColor(theme.palette.success.main),
-      },
-      "&.Mui-selected": {
-        backgroundColor: getSelectedBackgroundColor(theme.palette.success.main),
-        "&:hover": {
-          backgroundColor: getSelectedHoverBackgroundColor(theme.palette.success.main),
-        },
-      },
-    },
-  }));
+      { field: "Vastuuhenkilö", headerName: t("reservations_resp"), width: 170 },
+      { field: "Vastuussa", headerName: t("resp_respfor"), width: 200 },
+      { field: "YKV_sisäänkirjaus", headerName: t("resp_login"), width: 200 },
+      { field: "Organisaatiot", headerName: t("resp_orgs"), width: 200 },
+    ],
+    [t]
+  );
 
-  const columns = [
-    {
-      field: "actions",
-      headerName: t("resp_logout"),
-      width: 90,
-      renderCell: (params) => (
-        <Button
-          variant="outlined"
-          onClick={() => handleLogoutClick(params.id, params.row.Vastuussa)}
-          id="removeresp"
-        >
-          <LogoutOutlinedIcon />
-        </Button>
-      ),
-    },
-    { field: "Vastuuhenkilö", headerName: t("reservations_resp"), width: 170 },
-    { field: "Vastuussa", headerName: t("resp_respfor"), width: 200 },
-    { field: "YKV_sisäänkirjaus", headerName: t("resp_login"), width: 200 },
-    { field: "Organisaatiot", headerName: t("resp_orgs"), width: 200 },
-  ];
+  const columns_2 = useMemo(
+    () => [
+      { field: "Vastuuhenkilö", headerName: t("reservations_resp"), width: 170 },
+      { field: "created_by", headerName: t("resp_createdby"), width: 200 },
+      { field: "Vastuussa", headerName: t("resp_respfor"), width: 200 },
+      { field: "YKV_sisäänkirjaus", headerName: t("resp_login"), width: 200 },
+      { field: "logout_time", headerName: t("resp_logout"), width: 200 },
+      { field: "Organisaatiot", headerName: t("resp_orgs"), width: 200 },
+      { field: "late", headerName: t("resp_act"), width: 200, renderCell: getLateIcon },
+    ],
+    [t]
+  );
 
-  const columns_2 = [
-    { field: "Vastuuhenkilö", headerName: t("reservations_resp"), width: 170 },
-    { field: "created_by", headerName: t("resp_createdby"), width: 200 },
-    { field: "Vastuussa", headerName: t("resp_respfor"), width: 200 },
-    { field: "YKV_sisäänkirjaus", headerName: t("resp_login"), width: 200 },
-    { field: "logout_time", headerName: t("resp_logout"), width: 200 },
-    { field: "Organisaatiot", headerName: t("resp_orgs"), width: 200 },
-    { field: "late", headerName: t("resp_act"), width: 200, renderCell: getLateIcon },
-  ];
-
-  const fetchResponsibilities = async () => {
-    try {
-      const res = await axiosClient.get("/listobjects/nightresponsibilities/");
-      const userData = res.data.map((u) => ({
-        id: u.id, // DataGrid requires a unique 'id' for each row
+  useEffect(() => {
+    if (allResponsibilities && allResponsibilities.length > 0) {
+      const userData = allResponsibilities.map((u) => ({
+        id: u.id,
         Vastuuhenkilö: u.user.username,
         Vastuussa: u.responsible_for,
-        YKV_sisäänkirjaus: new Date(u.login_time), // Assuming login_time is available
-        Organisaatiot: u.organizations.map((organization) => organization.name), // Assuming login_time is available
+        YKV_sisäänkirjaus: new Date(u.login_time),
+        Organisaatiot: u.organizations.map((organization) => organization.name),
         present: u.present,
-        created_by: u.created_by,
+        created_by: u.created_by?.username || "",
         logout_time: u.present ? null : new Date(u.logout_time),
         late: u.late,
       }));
       setAllUsers(userData);
       setActiveUsers(userData.filter((resp) => resp.present === true));
       setLoading(false);
-    } catch (error) {
-      console.error(error);
+    } else if (allResponsibilities && allResponsibilities.length === 0) {
+      setAllUsers([]);
+      setActiveUsers([]);
+      setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchResponsibilities();
-  }, []);
+  }, [allResponsibilities]);
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const formJson = Object.fromEntries(formData.entries());
-    const email = formJson.email;
     await handleYkvLogin(); // Call handleYkvLogin if needed
-    await fetchResponsibilities(); // Fetch responsibilities after login
     handleClose(); // Close the dialog
   };
 
@@ -204,23 +197,41 @@ const YkvLogoutFunction = ({
     );
   }
 
-  const filteredUsers = allUsers.filter(
-    (user) =>
-      user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
-      user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase()),
-    ).filter((user) => filtering(user.YKV_sisäänkirjaus, user.logout_time));
+  const filteredUsers = useMemo(
+    () =>
+      allUsers.filter(
+        (user) =>
+          user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
+          user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase()),
+      ).filter((user) => filtering(user.YKV_sisäänkirjaus, user.logout_time)),
+    [allUsers, search, minFilter, maxFilter]
+  );
 
-  const ownUsers = allUsers
-    .filter(
-      (user) =>
-        user.Vastuuhenkilö === loggedUser.username ||
-        user.created_by === loggedUser.username,
-    )
-    .filter(
-      (user) =>
-        user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
-        user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase()),
-    );
+  const ownUsers = useMemo(
+    () =>
+      allUsers
+        .filter(
+          (user) =>
+            user.Vastuuhenkilö === loggedUser.username ||
+            user.created_by === loggedUser.username,
+        )
+        .filter(
+          (user) =>
+            user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
+            user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase()),
+        ),
+    [allUsers, search, loggedUser.username]
+  );
+
+  const filteredActiveUsers = useMemo(
+    () =>
+      activeUsers.filter(
+        (user) =>
+          user.Vastuussa.toLowerCase().includes(search.toLowerCase()) ||
+          user.Vastuuhenkilö.toLowerCase().includes(search.toLowerCase())
+      ),
+    [activeUsers, search]
+  );
 
   const getRowClassName = (params) => {
     if (params.row.late) {
@@ -276,10 +287,31 @@ const YkvLogoutFunction = ({
             />
 
             <Autocomplete
+              id="org-select"
+              options={loggedUser.keys || []}
+              getOptionLabel={(option) => option.name}
+              value={selectedOrg}
+              onChange={(event, newValue) => setSelectedOrg(newValue)}
+              fullWidth
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label={t("organisation")}
+                  variant="standard"
+                  required
+                />
+              )}
+              sx={{ mt: 2 }}
+            />
+
+            <Autocomplete
+              multiple
               id="combo-box-demo"
-              options={allUsers}
-              getOptionLabel={(option) => option.Vastuuhenkilö}
-              style={{ width: 300 }}
+              options={allUsersWithKeys}
+              getOptionLabel={(option) => option.username}
+              value={selectedForYKV}
+              onChange={(event, newValue) => setSelectedForYKV(newValue)}
+              fullWidth
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -287,6 +319,7 @@ const YkvLogoutFunction = ({
                   variant="standard"
                 />
               )}
+              sx={{ mt: 2 }}
             />
           </DialogContent>
           <DialogActions>
@@ -305,10 +338,11 @@ const YkvLogoutFunction = ({
       </React.Fragment>
 
       <DataGrid
-        rows={activeUsers}
+        rows={filteredActiveUsers}
         columns={columns}
         pageSize={5}
         rowsPerPageOptions={[5, 10, 20]}
+        disableRowSelectionOnClick
       />
 
       <Dialog open={confirmOpen} onClose={handleConfirmClose}>
@@ -330,7 +364,7 @@ const YkvLogoutFunction = ({
           </Button>
         </DialogActions>
       </Dialog>
-      {loggedUser.role !== 5 && (
+      {loggedUser.role !== Role.TAVALLINEN && (
         <div>
           <TextField
             label={t("YKVsearch")}
@@ -342,7 +376,7 @@ const YkvLogoutFunction = ({
         </div>
       )}
 
-      {loggedUser.role !== 1 && loggedUser.role !== 5 && (
+      {loggedUser.role !== Role.LEPPISPJ && loggedUser.role !== Role.TAVALLINEN && (
         <div>
           <h2>{t("ownresps")}</h2>
           <StyledDataGrid
@@ -351,11 +385,12 @@ const YkvLogoutFunction = ({
             pageSize={5}
             rowsPerPageOptions={[5, 10, 20]}
             getRowClassName={getRowClassName}
+            disableRowSelectionOnClick
           />
         </div>
       )}
 
-      {loggedUser.role === 1 && (
+      {loggedUser.role === Role.LEPPISPJ && (
         <div>
           <h2>{t("allresps")}</h2>
           <div>
@@ -380,6 +415,7 @@ const YkvLogoutFunction = ({
             pageSize={5}
             rowsPerPageOptions={[5, 10, 20]}
             getRowClassName={getRowClassName}
+            disableRowSelectionOnClick
           />
         </div>
       )}

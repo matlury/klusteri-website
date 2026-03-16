@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useStateContext } from "@context/ContextProvider";
 import {
   BrowserRouter as Router,
   Route,
@@ -7,11 +8,13 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import IconButton from "@mui/material/IconButton";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
@@ -39,7 +42,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { MenuItem, Menu } from "@mui/material";
 import TranslateIcon from "@mui/icons-material/Translate";
-import matlu from "./matlu.png";
+import matlu from "/matlu.png";
 
 import FrontPage from "./pages/frontpage";
 import LoginPage from "./pages/loginpage";
@@ -55,11 +58,81 @@ import Reservations from "./pages/reservations";
 import OwnKeys from "./pages/ownkeys";
 import Statistics from "./pages/statistics";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import Tooltip from "@mui/material/Tooltip";
 
 import { useTranslation } from "react-i18next";
 import i18n from "./i18n";
 
-const drawerWidth = 240;
+// Custom theme with accessible greenish colors
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#558b2f", // Darker, accessible green (passes 4.5:1 on white)
+      contrastText: "#ffffff",
+    },
+    secondary: {
+      main: "#dcedc8", // Very light green for backgrounds
+    },
+    background: {
+      default: "#fafbf8",
+      paper: "#ffffff",
+    },
+    text: {
+      primary: "#000000", // Full black for best contrast
+      secondary: "#424242", // Dark grey for secondary text
+    },
+  },
+  typography: {
+    h1: { fontWeight: 800, color: "#000000" },
+    h2: { fontWeight: 800, color: "#000000" },
+    h3: { fontWeight: 800, color: "#000000" },
+    h4: { fontWeight: 800, color: "#000000" },
+    h5: { fontWeight: 800, color: "#000000" },
+    h6: { fontWeight: 800, color: "#000000" },
+  },
+  shape: {
+    borderRadius: 8,
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          fontWeight: 700,
+        },
+      },
+    },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#558b2f", 
+          color: "#ffffff", // White text on #558b2f passes contrast (approx 4.6:1)
+        },
+      },
+    },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          borderRight: "1px solid rgba(0,0,0,0.08)",
+          backgroundColor: "#ffffff",
+        }
+      }
+    }
+  },
+});
+
+// ScrollToTop component to reset scroll position on route change
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
 
 // Login dialog component
 const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
@@ -68,7 +141,8 @@ const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
     <Dialog
       open={open}
       onClose={onClose}
-      PaperProps={{ style: { minWidth: "400px" } }} // Set minimum width
+      maxWidth="xs"
+      fullWidth
     >
       <DialogTitle>{t("loginsuggest")}</DialogTitle>
       <DialogContent>
@@ -82,23 +156,23 @@ const LoginDialog = ({ open, onClose, onLogin, onCreateNewUser }) => {
 };
 
 // Sidebar component
-const Sidebar = ({ isLoggedIn, handleDrawerClose }) => {
+const Sidebar = ({ isLoggedIn, handleDrawerClose, collapsed, onToggle }) => {
   const { t } = useTranslation();
   const location = useLocation();
 
   const icons = [
-    <HomeOutlinedIcon />,
-    <InfoOutlinedIcon />,
-    <CalendarMonthOutlinedIcon />,
-    <BedtimeOutlinedIcon />,
-    <ManageAccountsOutlinedIcon />,
-    <BarChartIcon />,
-    <LocationOnOutlinedIcon />,
-    <BuildOutlinedIcon />,
-    <CleaningServicesIcon />,
-    <CleaningServicesIcon />,
-    <FactCheckOutlinedIcon />,
-    <AdminPanelSettingsOutlinedIcon />,
+    <HomeOutlinedIcon key="home" />,
+    <InfoOutlinedIcon key="info" />,
+    <CalendarMonthOutlinedIcon key="calendar" />,
+    <BedtimeOutlinedIcon key="bedtime" />,
+    <ManageAccountsOutlinedIcon key="accounts" />,
+    <BarChartIcon key="bar" />,
+    <LocationOnOutlinedIcon key="location" />,
+    <BuildOutlinedIcon key="build" />,
+    <CleaningServicesIcon key="cleaning1" />,
+    <CleaningServicesIcon key="cleaning2" />,
+    <FactCheckOutlinedIcon key="factcheck" />,
+    <AdminPanelSettingsOutlinedIcon key="admin" />,
   ];
 
   const routes = [
@@ -147,57 +221,114 @@ const Sidebar = ({ isLoggedIn, handleDrawerClose }) => {
   ];
 
   return (
-    <div>
-      <Box sx={{ padding: "16px", width: "100%" }}>
-        <a href="/">
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Box sx={{ padding: collapsed ? "8px" : "16px", width: "100%", textAlign: 'center' }}>
+        <Link to="/" onClick={handleDrawerClose}>
           <img
             src={matlu}
             alt="logo"
-            style={{ height: "auto", width: "100%" }}
+            style={{
+              height: collapsed ? "40px" : "auto",
+              width: collapsed ? "40px" : "100%",
+              objectFit: 'contain'
+            }}
           />
-        </a>
+        </Link>
       </Box>
       <Divider />
-      <List>
+      <List sx={{ flexGrow: 1, overflowX: 'hidden' }}>
         {routes.map(({ key, path, requiresLogin }, index) => {
           if (requiresLogin && !isLoggedIn) return null;
-          return (
-            <ListItem key={key} disablePadding>
+          const content = (
+            <ListItem key={key} disablePadding sx={{ display: 'block', px: 1, py: 0.5 }}>
               <ListItemButton
                 key={key}
                 component={Link}
                 to={path}
                 sx={{
+                  minHeight: 48,
+                  justifyContent: collapsed ? 'center' : 'initial',
+                  px: 2.5,
+                  borderRadius: 2,
                   backgroundColor:
-                    location.pathname === path ? "#9e9e9e" : "transparent",
+                    location.pathname === path ? "secondary.main" : "transparent",
                   "&:hover": {
                     backgroundColor:
-                      location.pathname === path ? "#9e9e9e" : "#e0e0e0",
+                      location.pathname === path ? "secondary.main" : "rgba(0, 0, 0, 0.04)",
                   },
                 }}
                 onClick={handleDrawerClose}
               >
-                <ListItemIcon>{icons[index]}</ListItemIcon>
-                <ListItemText primary={t(key)} />
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: collapsed ? 0 : 3,
+                    justifyContent: 'center',
+                    color: location.pathname === path ? "text.primary" : "text.secondary",
+                  }}
+                >
+                  {icons[index]}
+                </ListItemIcon>
+                {!collapsed && (
+                  <ListItemText
+                    primary={t(key)}
+                    primaryTypographyProps={{
+                      sx: {
+                        color: "text.primary",
+                        fontWeight: 600, // Consistent weight to prevent layout shifts
+                      },
+                    }}
+                  />
+                )}
               </ListItemButton>
             </ListItem>
           );
+
+          return collapsed ? (
+            <Tooltip key={key} title={t(key)} placement="right">
+              {content}
+            </Tooltip>
+          ) : content;
         })}
+        <Divider />
+        <ListItem disablePadding sx={{ display: 'block' }}>
+          <ListItemButton
+            onClick={onToggle}
+            sx={{
+              minHeight: 48,
+              justifyContent: collapsed ? 'center' : 'initial',
+              px: 2.5,
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: collapsed ? 0 : 3,
+                justifyContent: 'center',
+              }}
+            >
+              {collapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+            </ListItemIcon>
+            {!collapsed && <ListItemText primary={collapsed ? t("expand") : t("collapse")} />}
+          </ListItemButton>
+        </ListItem>
       </List>
-      <Divider />
-    </div>
+    </Box>
   );
 };
 
 const AppContent = ({ window }) => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
-
-  const [showLoginPage, setShowLoginPage] = React.useState(true);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-  const [loggedUser, setLoggedUser] = React.useState(
-    JSON.parse(localStorage.getItem("loggedUser")) || null,
+  const [collapsed, setCollapsed] = React.useState(
+    localStorage.getItem("sidebarCollapsed") === "true"
   );
+
+  const currentDrawerWidth = collapsed ? 64 : 240;
+
+  // Removed unused showLoginPage state
+  const { user: loggedUser, setUser } = useStateContext();
+  const isLoggedIn = !!loggedUser;
 
   const [loginDialogOpen, setLoginDialogOpen] = React.useState(false);
 
@@ -212,10 +343,6 @@ const AppContent = ({ window }) => {
 
   React.useEffect(() => {
     i18n.changeLanguage(localStorage.getItem("lang") || "fi");
-    const loggedInStatus = localStorage.getItem("isLoggedIn");
-    if (loggedInStatus === "true") {
-      setIsLoggedIn(true);
-    }
   }, []);
 
   // Handles the sidebar closing on mobile
@@ -236,23 +363,18 @@ const AppContent = ({ window }) => {
 
   // Hides login page and shows create new user page
   const handleCreateNewUser = () => {
-    setShowLoginPage(false);
+    // No-op: showLoginPage state removed
   };
 
-  // Sets localstorage value to true, if someone is logged in
+  // Sets login dialog state only
   const handleLogin = () => {
-    setIsLoggedIn(true);
-    localStorage.setItem("isLoggedIn", "true");
     setLoginDialogOpen(false); // Close the dialog upon successful login
   };
 
-  // Removes localstorage value if someone logs out
+  // Removes user from context and navigates to front page
   const handleLogout = () => {
-    localStorage.removeItem("ACCESS_TOKEN");
-    localStorage.removeItem("loggedUser");
-    localStorage.removeItem("isLoggedIn");
-    setLoggedUser(null);
-    setIsLoggedIn(false);
+    setUser(null);
+    localStorage.removeItem("hasSession");
     navigate("/etusivu"); // Navigate to front page after logging out
   };
 
@@ -295,6 +417,12 @@ const AppContent = ({ window }) => {
     setAnchorEl(null);
   };
 
+  const handleToggleCollapse = () => {
+    const newState = !collapsed;
+    setCollapsed(newState);
+    localStorage.setItem("sidebarCollapsed", newState);
+  };
+
   const container =
     window !== undefined ? () => window().document.body : undefined;
 
@@ -304,9 +432,14 @@ const AppContent = ({ window }) => {
       <AppBar
         position="fixed"
         sx={{
-          bgcolor: "#484644",
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
+          bgcolor: "#484643",
+          width: { xs: '100%', sm: `calc(100% - ${currentDrawerWidth}px)` },
+          ml: { xs: 0, sm: `${currentDrawerWidth}px` },
+          transition: (theme) =>
+            theme.transitions.create(["margin", "width"], {
+              easing: theme.transitions.easing.sharp,
+              duration: theme.transitions.duration.leavingScreen,
+            }),
         }}
       >
         <Toolbar>
@@ -372,14 +505,23 @@ const AppContent = ({ window }) => {
       </AppBar>
       <Box
         component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        sx={{
+          width: { sm: currentDrawerWidth },
+          flexShrink: { sm: 0 },
+          transition: (theme) =>
+            theme.transitions.create("width", {
+              easing: theme.transitions.easing.sharp,
+              duration: theme.transitions.duration.leavingScreen,
+            }),
+        }}
         aria-label="mailbox folders"
       >
-        <Drawer
+        <SwipeableDrawer
           container={container}
           variant="temporary"
           open={mobileOpen}
           onTransitionEnd={handleDrawerTransitionEnd}
+          onOpen={handleDrawerToggle}
           onClose={handleDrawerClose}
           ModalProps={{
             keepMounted: true,
@@ -388,24 +530,30 @@ const AppContent = ({ window }) => {
             display: { xs: "block", sm: "none" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
-              width: drawerWidth,
-              bgcolor: "#E9E9E9", // Set background color here for temporary drawer
+              width: 240, // Keep mobile drawer full width
             },
           }}
         >
           <Sidebar
             isLoggedIn={isLoggedIn}
             handleDrawerClose={handleDrawerClose}
+            collapsed={false}
+            onToggle={() => { }}
           />
-        </Drawer>
+        </SwipeableDrawer>
         <Drawer
           variant="permanent"
           sx={{
             display: { xs: "none", sm: "block" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
-              width: drawerWidth,
-              bgcolor: "#E9E9E9", // Set background color here for permanent drawer
+              width: currentDrawerWidth,
+              overflowX: 'hidden',
+              transition: (theme) =>
+                theme.transitions.create("width", {
+                  easing: theme.transitions.easing.sharp,
+                  duration: theme.transitions.duration.leavingScreen,
+                }),
             },
           }}
           open
@@ -413,6 +561,8 @@ const AppContent = ({ window }) => {
           <Sidebar
             isLoggedIn={isLoggedIn}
             handleDrawerClose={handleDrawerClose}
+            collapsed={collapsed}
+            onToggle={handleToggleCollapse}
           />
         </Drawer>
       </Box>
@@ -421,7 +571,12 @@ const AppContent = ({ window }) => {
         sx={{
           flexGrow: 1,
           p: 3,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          width: { xs: '100%', sm: `calc(100% - ${currentDrawerWidth}px)` },
+          transition: (theme) =>
+            theme.transitions.create(["margin", "width"], {
+              easing: theme.transitions.easing.sharp,
+              duration: theme.transitions.duration.leavingScreen,
+            }),
         }}
       >
         <Toolbar />
@@ -430,47 +585,15 @@ const AppContent = ({ window }) => {
           <Route path="/etusivu" element={<FrontPage />} />
           <Route path="/christina_regina" element={<ChristinaRegina />} />
           <Route path="/varaukset" element={<Reservations />} />
-          <Route
-            path="/ykv"
-            element={
-              <OwnKeys isLoggedIn={isLoggedIn} loggedUser={loggedUser} />
-            }
-          />
-          <Route
-            path="/omat_tiedot"
-            element={<OwnPage isLoggedIn={isLoggedIn} />}
-          />
+          <Route path="/ykv" element={<OwnKeys />} />
+          <Route path="/omat_tiedot" element={<OwnPage />} />
           <Route path="/tilastot" element={<Statistics />} />
           <Route path="/yhteystiedot" element={<Contacts />} />
-          <Route
-            path="/viat"
-            element={
-              <DefectFault isLoggedIn={isLoggedIn} loggedUser={loggedUser} />
-            }
-          />
-          <Route
-            path="/siivousvuorot"
-            element={
-              <CleaningSchedule
-                isLoggedIn={isLoggedIn}
-                loggedUser={loggedUser}
-              />
-            }
-          />
-          <Route
-            path="/saannot_ja_ohjeet"
-            element={<Rules_and_Instructions />}
-          />
+          <Route path="/viat" element={<DefectFault />} />
+          <Route path="/siivousvuorot" element={<CleaningSchedule />} />
+          <Route path="/saannot_ja_ohjeet" element={<Rules_and_Instructions />} />
           <Route path="/tietosuojaseloste" element={<PrivacyPolicy />} />
-          <Route
-            path="/siivoustarvikkeet"
-            element={
-              <CleaningSupplies
-                isLoggedIn={isLoggedIn}
-                loggedUser={loggedUser}
-              />
-            }
-          />
+          <Route path="/siivoustarvikkeet" element={<CleaningSupplies />} />
         </Routes>
         <LoginDialog
           open={loginDialogOpen}
@@ -484,9 +607,12 @@ const AppContent = ({ window }) => {
 };
 
 const App = () => (
-  <Router>
-    <AppContent />
-  </Router>
+  <ThemeProvider theme={theme}>
+    <Router>
+      <ScrollToTop />
+      <AppContent />
+    </Router>
+  </ThemeProvider>
 );
 
 export default App;
